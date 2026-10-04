@@ -24,7 +24,7 @@ public interface IFacetEnvironment
     void Provide<T>(Service<T> service, T implementation);
 
     /// <summary>声明多实例服务所有权并返回延迟孵化能力。</summary>
-    Action SpawnDeferred<T>(Service<T> service, Func<string, T> factory);
+    Action SpawnDeferred<T>(Service<T> service, Func<string, T> factory) where T : class;
 
     /// <summary>以不可变所有权创建初始化的可变复制状态。</summary>
     MutableReplicatedState<T> ReplicatedState<T>(T initial) where T : class;

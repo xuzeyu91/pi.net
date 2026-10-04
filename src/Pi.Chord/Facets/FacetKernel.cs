@@ -30,6 +30,10 @@ public sealed class FacetKernel
     private readonly IReadOnlyList<IFacet> _initialFacets;
     private readonly Action<Exception> _onError;
     private readonly Dictionary<string, FacetRuntime> _facets = [];
+    private readonly HostServiceSlots _serviceSlots = new();
+    private readonly List<(string ServiceId, bool Local, object Implementation)> _singletonProvisions = [];
+    private readonly List<(string ServiceId, Func<string, IReadOnlyDictionary<string, object>>, Action<string, IReadOnlyDictionary<string, object>>)> _keyedProvisions = [];
+    private RemoteServiceProvider? _provider;
     private IReadOnlyList<string> _activationOrder = [];
     private bool _active;
 
@@ -42,6 +46,20 @@ public sealed class FacetKernel
         _initialFacets = options.Facets;
         _onError = options.OnError ?? (_ => { });
     }
+
+    /// <summary>远程服务提供者（装配完成后可用）。对应 TS <c>provider</c>。</summary>
+    public RemoteServiceProvider Provider
+    {
+        get
+        {
+            if (_provider is null)
+                throw new InvalidOperationException("Facet service provider is not assembled");
+            return _provider;
+        }
+    }
+
+    /// <summary>本地 keyed 注册表（装配完成后可用）。</summary>
+    public LocalKeyedServiceRegistry? LocalKeyedServices { get; private set; }
 
     /// <summary>原子启动：装配 → 依赖校验 → 拓扑序激活；失败反向清理。对应 TS <c>activate()</c>。</summary>
     public async Task ActivateAsync()
@@ -58,6 +76,7 @@ public sealed class FacetKernel
             }
 
             _activationOrder = ValidateFacets(records, new Dictionary<string, ServiceMode>());
+            AssembleProviders();
             foreach (var id in _activationOrder)
             {
                 await _facets[id].Lifecycle.ActivateAsync().ConfigureAwait(false);
@@ -164,12 +183,57 @@ public sealed class FacetKernel
             .OfType<FacetRuntime>()
             .Reverse());
         _facets.Clear();
+        _serviceSlots.Dispose();
+        LocalKeyedServices?.Dispose();
         return errors;
+    }
+
+    /// <summary>
+    /// 装配服务提供者：远程单例装进 RemoteServiceProvider（成员字典实现）、
+    /// 本地单例绑定槽。对应 TS <c>assembleProviders/bindServices</c> 的核心路径。
+    /// </summary>
+    private void AssembleProviders()
+    {
+        // 仅成员字典实现（方法/复制状态）可远程发布。
+        static bool IsPublishable(object implementation)
+            => implementation is IReadOnlyDictionary<string, object> members
+                && members.Count > 0
+                && members.Values.All(v => v is Func<object?[], object?> or IReplicatedStateInternals);
+        var remoteDefinitions = _singletonProvisions
+            .Where(p => !p.Local && IsPublishable(p.Implementation))
+            .Select(p => p.ServiceId)
+            .Distinct()
+            .ToList();
+        if (remoteDefinitions.Count > 0)
+        {
+            _provider = new RemoteServiceProvider(remoteDefinitions
+                .Select(id => new RemoteServiceProvider.ProviderDefinition(id)));
+        }
+        var localKeyedIds = _keyedProvisions.Select(p => p.ServiceId).Distinct().ToList();
+        LocalKeyedServices = localKeyedIds.Count > 0
+            ? new LocalKeyedServiceRegistry(localKeyedIds, _onError)
+            : null;
+
+        foreach (var (serviceId, local, implementation) in _singletonProvisions)
+        {
+            if (local)
+            {
+                _serviceSlots.BindSingleton(serviceId, implementation);
+                continue;
+            }
+            if (_provider is not null && implementation is IReadOnlyDictionary<string, object> members
+                && members.Count > 0
+                && members.Values.All(v => v is Func<object?[], object?> or IReplicatedStateInternals))
+            {
+                _provider.Provide(serviceId, members);
+            }
+            _serviceSlots.BindSingleton(serviceId, implementation);
+        }
     }
 
     private void SetupFacet(IFacet facet, FacetRuntime record)
     {
-        var environment = new Environment(record);
+        var environment = new Environment(this, record);
         facet.Setup(environment);
         record.Lifecycle.Prepared();
     }
@@ -298,7 +362,7 @@ public sealed class FacetKernel
     /// 装配环境实现：记录 requires/provides、注册生命周期、创建复制状态。
     /// 服务槽解析（Use/Observe/ProvideMany 的实例接线）在 provider 集成阶段接通。
     /// </summary>
-    private sealed class Environment(FacetRuntime record) : IFacetEnvironment
+    private sealed class Environment(FacetKernel kernel, FacetRuntime record) : IFacetEnvironment
     {
         private readonly HashSet<(string ServiceId, ServiceMode Mode)> _declared = [];
 
@@ -311,24 +375,55 @@ public sealed class FacetKernel
         public T Use<T>(Service<T> service)
         {
             RecordReference(record.Requires, service.Id, ServiceMode.Singleton);
-            // 实例解析在服务槽接线阶段完成；当前返回委托句柄的占位由依赖图校验保证可满足。
-            throw new InvalidOperationException(
-                $"Service slot resolution for {service.Id} is wired at provider integration stage");
+            // 槽在 AssembleProviders 阶段绑定（先于激活回调），绑定前的解析由槽自身报错。
+            return kernel._serviceSlots.GetSingleton(service, () => { });
         }
 
         public void Observe<T>(Service<T> service, Func<T, Context.Context, Task?> handler)
-            => RecordReference(record.Requires, service.Id, ServiceMode.Keyed);
+        {
+            RecordReference(record.Requires, service.Id, ServiceMode.Keyed);
+            // keyed 源在装配后连接；装配前注册的观察在 OnActivate 时仍可重新注册。
+            var observable = kernel._serviceSlots.Observe(service, () =>
+            {
+                if (!kernel._active)
+                    throw new InvalidOperationException($"Service {service.Id} is not assembled yet");
+            }, handler);
+            record.Lifecycle.Own(() =>
+            {
+                observable.Dispose();
+                return Task.CompletedTask;
+            });
+        }
 
         public void Provide<T>(Service<T> service, T implementation)
         {
             RecordReference(record.Provides, service.Id, ServiceMode.Singleton);
             record.Implementations.Add(implementation!);
+            kernel._singletonProvisions.Add((service.Id, service.Local, implementation!));
         }
 
         public Action SpawnDeferred<T>(Service<T> service, Func<string, T> factory)
+            where T : class
         {
             RecordReference(record.Provides, service.Id, ServiceMode.Keyed);
-            return () => { };
+            // 本地 keyed：注册表装配后由工厂孵化。
+            var spawner = new StagedServiceSpawner<T>(
+                new FacetLifecycleAccessor(operation =>
+                {
+                    if (!kernel._active)
+                        throw new InvalidOperationException($"Facet host cannot {operation} before activation");
+                }), (key, _) =>
+                {
+                    if (key.Length == 0)
+                        throw new ArgumentException("Instance key must not be empty");
+                });
+            spawner.Connect((key, _) =>
+            {
+                var registry = kernel.LocalKeyedServices
+                    ?? throw new InvalidOperationException("Local keyed services are not assembled");
+                return registry.Spawn(service, key, factory(key));
+            });
+            return () => spawner.Spawn("__deferred__", factory("__deferred__"));
         }
 
         public MutableReplicatedState<T> ReplicatedState<T>(T initial) where T : class
