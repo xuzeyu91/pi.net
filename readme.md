@@ -10,13 +10,13 @@
 | protocol | **Pi.Protocol** | 0.9k 行 | ✅ 完整移植（CBOR/framing/codec）+ 测试 14/14 通过 |
 | ai | Pi.Ai | 26.3k 行 | 🚧 核心类型层完成（消息/内容块/流事件/工具/Model，中文注释）+ EventStream + faux 测试 provider；provider 实现待移植 |
 | agent | Pi.Agent | 2.5k 行 | ✅ 完整移植（除 proxy.ts）：Agent 类（状态机/双队列/订阅/abort/reset）+ agent-loop 主循环 + sequential/parallel 工具执行；测试 13/13 通过 |
-| mcp | Pi.Mcp | 3.2k 行 | 🚧 JSON-RPC 协议层 + 传输层（in-memory 成对传输、stdio 子进程）+ McpClient 完整会话（initialize 握手/请求超时与中止/分页列举/工具调用/服务器请求处理）；测试 6/6 通过；streamable-http 与 OAuth 待移植 |
+| mcp | Pi.Mcp | 3.2k 行 | 🚧 JSON-RPC 协议层 + 传输层全套（in-memory / stdio / **streamable-http**：SSE 解析器、会话 id 捕获、GET 监听流、401/404 专用错误）+ McpClient 完整会话；测试 9/9 通过；仅 OAuth 流程待移植 |
 | chord | Pi.Chord | 8.8k 行 | 🚧 JSON 契约 + **delta 引擎核心**（Op 判别联合/路径安全/不可变路径拷贝 applier/diffRevisions）+ 测试 6/6 通过；tracker 滑动窗口与 services/facets 待移植 |
 | server / client | Pi.Server / Pi.Client | 3.1k 行 | 🚧 骨架（ByteTransport/ConnectionState/错误类型） |
 | coding-agent | （未建） | 85k 行 | ⏳ 待 tui/codemode/durable 之后分阶段移植 |
 | tui / codemode / durable / evals | （未建） | 41k 行 | ⏳ 后续会话 |
 
-测试项目共 5 个：Pi.Telemetry.Tests(12) / Pi.Protocol.Tests(14) / Pi.Agent.Tests(13) / Pi.Mcp.Tests(6) / Pi.Chord.Tests(6)，合计 **51 项全部通过**。
+测试项目共 5 个：Pi.Telemetry.Tests(12) / Pi.Protocol.Tests(14) / Pi.Agent.Tests(13) / Pi.Mcp.Tests(9) / Pi.Chord.Tests(6)，合计 **54 项全部通过**。
 构建：`dotnet build Pi.slnx`（当前 0 警告 0 错误）。
 
 ## 目录约定
@@ -50,6 +50,6 @@ pi.net/
 1. **ai 包**：openai-completions（HttpClient 直调 REST，对齐原 fetch 行为）→ anthropic-messages → model catalog（JSON 资源替代 models.generated.ts）→ 其余 ~20 家 provider（lazy 注册模式）。types 核心/EventStream/faux 已完成。
 2. **agent 包**：agent.ts（Agent 类：状态机/队列/subscribe API）+ proxy.ts；agent-loop 主循环与工具执行已完成。
 3. **chord 包**：delta 引擎核心已完成（Op/apply/diff；tracker 滑动窗口、WireOp 编码压缩待续）→ services（provider/consumer/handle/instances）→ facets → node bundle。（json.ts 的 isJsonValue/copyJson 已完成）
-4. **mcp 包剩余**：streamable-http 传输 + OAuth 流程（jsonrpc/stdio/in-memory/client 已完成）。
+4. **mcp 包剩余**：OAuth 流程（jsonrpc/stdio/in-memory/streamable-http/client 已完成）。
 5. **server/client**：在 chord 之上接通 listener/session-router 与连接状态机。
 6. **coding-agent**：85k 行主产品（会话/工具系统/技能/主题/RPC 模式），最后阶段按"核心命令最小闭环 → 逐步补全"推进。
