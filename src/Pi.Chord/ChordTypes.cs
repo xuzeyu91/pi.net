@@ -41,6 +41,13 @@ public static class Json
         IEnumerable<KeyValuePair<string, object?>> map => map.ToDictionary(kv => kv.Key, kv => CopyJson(kv.Value)),
         _ => throw new ArgumentException($"Unsupported JSON value type: {value.GetType().Name}", nameof(value)),
     };
+
+    /// <summary>结构化拷贝别名（对齐 delta 侧的 deep-clone 命名）。</summary>
+    public static object? DeepClone(object? value) => CopyJson(value);
+
+    public static Dictionary<string, object?> EmptyObject() => [];
+
+    public static List<object?> EmptyArray() => [];
 }
 
 /// <summary>
