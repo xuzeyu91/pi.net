@@ -8,7 +8,7 @@
 |---|---|---|---|
 | telemetry | **Pi.Telemetry** | 0.9k 行 | ✅ 完整移植 + conformance 测试 12/12 通过 |
 | protocol | **Pi.Protocol** | 0.9k 行 | ✅ 完整移植（CBOR/framing/codec）+ 测试 14/14 通过 |
-| ai | Pi.Ai | 26.3k 行 | 🚧 核心类型层 + EventStream + faux + **openai-completions provider**（HttpClient 直调 REST：消息转换/SSE 流式/工具调用参数聚合/usage）+ 测试 3/3 通过；reasoning details 兼容层与其余 provider 待移植 |
+| ai | Pi.Ai | 26.3k 行 | 🚧 核心类型层 + EventStream + faux + 两个真实 provider（**openai-completions**：delta 模型 + **anthropic-messages**：content_block 事件模型/tool_result 块/system 独立字段）+ 测试 6/6 通过；兼容层与其余 provider 待移植 |
 | agent | Pi.Agent | 2.5k 行 | ✅ 完整移植（除 proxy.ts）：Agent 类（状态机/双队列/订阅/abort/reset）+ agent-loop 主循环 + sequential/parallel 工具执行；测试 13/13 通过 |
 | mcp | Pi.Mcp | 3.2k 行 | 🚧 JSON-RPC 协议层 + 传输层全套（in-memory / stdio / **streamable-http**：SSE 解析器、会话 id 捕获、GET 监听流、401/404 专用错误）+ McpClient 完整会话；测试 9/9 通过；仅 OAuth 流程待移植 |
 | chord | Pi.Chord | 8.8k 行 | 🚧 JSON 契约 + **delta 引擎核心**（Op 判别联合/路径安全/不可变路径拷贝 applier/diffRevisions）+ 测试 6/6 通过；tracker 滑动窗口与 services/facets 待移植 |
@@ -16,7 +16,7 @@
 | coding-agent | （未建） | 85k 行 | ⏳ 待 tui/codemode/durable 之后分阶段移植 |
 | tui / codemode / durable / evals | （未建） | 41k 行 | ⏳ 后续会话 |
 
-测试项目共 6 个：Pi.Telemetry.Tests(12) / Pi.Protocol.Tests(14) / Pi.Agent.Tests(13) / Pi.Mcp.Tests(9) / Pi.Chord.Tests(6) / Pi.Ai.Tests(3)，合计 **57 项全部通过**。
+测试项目共 6 个：Pi.Telemetry.Tests(12) / Pi.Protocol.Tests(14) / Pi.Agent.Tests(13) / Pi.Mcp.Tests(9) / Pi.Chord.Tests(6) / Pi.Ai.Tests(6)，合计 **60 项全部通过**。
 构建：`dotnet build Pi.slnx`（当前 0 警告 0 错误）。
 
 ## 目录约定
@@ -47,7 +47,7 @@ pi.net/
 
 ## 后续会话路线图
 
-1. **ai 包**：anthropic-messages → model catalog（JSON 资源替代 models.generated.ts）→ 其余 ~20 家 provider（lazy 注册模式）→ reasoning details/cache control 兼容层。openai-completions 核心/types/EventStream/faux 已完成。
+1. **ai 包**：model catalog（JSON 资源替代 models.generated.ts）→ 其余 ~20 家 provider（lazy 注册模式，两大事件模型样板已就位）→ reasoning details/cache control/thinking budgets 兼容层。openai-completions 与 anthropic-messages 核心/types/EventStream/faux 已完成。
 2. **agent 包**：agent.ts（Agent 类：状态机/队列/subscribe API）+ proxy.ts；agent-loop 主循环与工具执行已完成。
 3. **chord 包**：delta 引擎核心已完成（Op/apply/diff；tracker 滑动窗口、WireOp 编码压缩待续）→ services（provider/consumer/handle/instances）→ facets → node bundle。（json.ts 的 isJsonValue/copyJson 已完成）
 4. **mcp 包剩余**：OAuth 流程（jsonrpc/stdio/in-memory/streamable-http/client 已完成）。
