@@ -11,6 +11,7 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Pi.Agent.Tests/Pi.Agent.Tests.csproj" />
+    <Project Path="tests/Pi.Ai.Tests/Pi.Ai.Tests.csproj" />
     <Project Path="tests/Pi.Chord.Tests/Pi.Chord.Tests.csproj" />
     <Project Path="tests/Pi.Mcp.Tests/Pi.Mcp.Tests.csproj" />
     <Project Path="tests/Pi.Protocol.Tests/Pi.Protocol.Tests.csproj" />
