@@ -48,6 +48,16 @@ public sealed record Path(IReadOnlyList<Seg> Segments)
 
     public Path Append(Seg segment) => new([.. Segments, segment]);
 
+    /// <summary>值相等：按段序列逐一比较（record 默认对接口属性走引用比较，需显式覆盖）。</summary>
+    public bool Equals(Path? other) => other is not null && Segments.SequenceEqual(other.Segments);
+
+    public override int GetHashCode()
+    {
+        var hash = new HashCode();
+        foreach (var segment in Segments) hash.Add(segment);
+        return hash.ToHashCode();
+    }
+
     public override string ToString() => string.Join("/", Segments.Select(s => s.ToString()));
 }
 
