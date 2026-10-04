@@ -8,7 +8,7 @@
 |---|---|---|---|
 | telemetry | **Pi.Telemetry** | 0.9k 行 | ✅ 完整移植 + conformance 测试 12/12 通过 |
 | protocol | **Pi.Protocol** | 0.9k 行 | ✅ 完整移植（CBOR/framing/codec）+ 测试 14/14 通过 |
-| ai | Pi.Ai | 26.3k 行 | 🚧 核心类型层 + EventStream + faux + 两个真实 provider + ModelCatalog + Models 编排门面 + **Auth 层**（Credential 判别联合 api_key/oauth 与 auth.json 形状 wire 兼容、InMemoryCredentialStore 串行化写、AuthResolver 逐字段合并解析 credential.key??env）+ 测试 18/18 通过；OAuthAuth 登录流程/deferred/images/classify 与其余 provider 待移植 |
+| ai | Pi.Ai | 26.3k 行 | 🚧 核心类型层 + EventStream + faux + 两个真实 provider + ModelCatalog + Models 门面 + Auth 层（存储/解析）+ **ProviderRegistry**（OpenAiCompatibleProvider 通用工厂 + 10 家 openai-completions 兼容家批量注册：deepseek/groq/cerebras/together/fireworks/moonshotai(-cn)/xai/openrouter/mistral，baseUrl/envVars 一比一）+ EnvApiKeyAuth（credential.key 优先→envVars 顺序）+ 测试 23/23 通过；OAuthAuth 登录/deferred/images/classify 与非兼容家（google/anthropic 专属/bedrock）待移植 |
 | agent | Pi.Agent | 2.5k 行 | ✅ 完整移植（除 proxy.ts）：Agent 类（状态机/双队列/订阅/abort/reset）+ agent-loop 主循环 + sequential/parallel 工具执行；测试 13/13 通过 |
 | mcp | Pi.Mcp | 3.2k 行 | ✅ **完整移植**：JSON-RPC 协议层 + 传输层全套（in-memory / stdio / streamable-http）+ McpClient 会话 + OAuth 全层（解析/发现/PKCE 授权码流程/动态注册/凭据失效重试/MemoryStateStore/本地回调服务器）；测试 19/19 通过 |
 | chord | Pi.Chord | 8.8k 行 | 🚧 delta 引擎全部 + services 核心 + facets（依赖图/拓扑激活/reload/服务槽接线/**外部源绑定**：IRemoteServiceSource 目录发现→重复 offered 拒绝→deferred 延迟源→按源分组 open→就绪门→门面绑槽；Require 声明与 Use 解析两阶段拆分）+ Context 值链；测试 43/43 通过；仅剩 node bundler（打包器，chord 侧非核心运行时） |
@@ -16,7 +16,7 @@
 | coding-agent | （未建） | 85k 行 | ⏳ 待 tui/codemode/durable 之后分阶段移植 |
 | tui / codemode / durable / evals | （未建） | 41k 行 | ⏳ 后续会话 |
 
-测试项目共 7 个：Pi.Telemetry(12) / Pi.Protocol(14) / Pi.Agent(13) / Pi.Mcp(19) / Pi.Chord(43) / Pi.Ai(18) / Pi.Server(2)，合计 **121 项全部通过**。
+测试项目共 7 个：Pi.Telemetry(12) / Pi.Protocol(14) / Pi.Agent(13) / Pi.Mcp(19) / Pi.Chord(43) / Pi.Ai(23) / Pi.Server(2)，合计 **126 项全部通过**。
 构建：`dotnet build Pi.slnx`（当前 0 警告 0 错误）。
 
 ## 目录约定
@@ -47,7 +47,7 @@ pi.net/
 
 ## 后续会话路线图
 
-1. **ai 包**：Models 门面 + Auth 存储/解析完成 → OAuthAuth 登录与刷新（store 锁内）→ deferred/images/classify → 其余 ~20 家 provider → 兼容层。
+1. **ai 包**：兼容家批量注册完成（通用工厂一实现服务全部 openai-completions 兼容家）→ OAuthAuth 登录与刷新（store 锁内）→ google/bedrock 等专属 provider → deferred/images/classify → 兼容层。
 2. **agent 包**：agent.ts（Agent 类：状态机/队列/subscribe API）+ proxy.ts；agent-loop 主循环与工具执行已完成。
 3. **chord 包**：核心全面完成（delta/services/facets/外部源绑定）；仅剩 node bundler（esbuild 打包器的 C# 等价物，非运行时核心）。（json.ts/context 已完成）
 4. **mcp 包**：✅ 全部完成。
