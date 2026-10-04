@@ -1,0 +1,41 @@
+{
+  "openai-completions": {
+    "chat:deepseek-chat": {
+      "id": "deepseek-chat",
+      "name": "DeepSeek Chat",
+      "api": "openai-completions",
+      "provider": "deepseek",
+      "baseUrl": "https://api.deepseek.com/v1",
+      "input": [
+        "text"
+      ],
+      "cost": {
+        "input": 0.27,
+        "output": 1.1,
+        "cache_read": 0.0675,
+        "cache_write": 0.3375
+      },
+      "contextWindow": 128000,
+      "maxTokens": 16384
+    },
+    "chat:deepseek-reasoner": {
+      "id": "deepseek-reasoner",
+      "name": "DeepSeek Reasoner",
+      "api": "openai-completions",
+      "provider": "deepseek",
+      "baseUrl": "https://api.deepseek.com/v1",
+      "input": [
+        "text"
+      ],
+      "cost": {
+        "input": 0.55,
+        "output": 2.19,
+        "cache_read": 0.1375,
+        "cache_write": 0.6875
+      },
+      "contextWindow": 128000,
+      "maxTokens": 16384,
+      "reasoning": true
+    }
+  }
+}

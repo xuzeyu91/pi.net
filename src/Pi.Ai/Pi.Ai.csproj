@@ -3,4 +3,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Pi.Telemetry\Pi.Telemetry.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ModelData\*.json" />
+  </ItemGroup>
 </Project>

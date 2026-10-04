@@ -1,0 +1,43 @@
+{
+  "anthropic-messages": {
+    "chat:claude-sonnet-4-5": {
+      "id": "claude-sonnet-4-5",
+      "name": "Claude Sonnet 4.5",
+      "api": "anthropic-messages",
+      "provider": "anthropic",
+      "baseUrl": "https://api.anthropic.com/v1",
+      "input": [
+        "text",
+        "image"
+      ],
+      "cost": {
+        "input": 3.0,
+        "output": 15.0,
+        "cache_read": 0.75,
+        "cache_write": 3.75
+      },
+      "contextWindow": 200000,
+      "maxTokens": 64000,
+      "reasoning": true
+    },
+    "chat:claude-haiku-4-5": {
+      "id": "claude-haiku-4-5",
+      "name": "Claude Haiku 4.5",
+      "api": "anthropic-messages",
+      "provider": "anthropic",
+      "baseUrl": "https://api.anthropic.com/v1",
+      "input": [
+        "text",
+        "image"
+      ],
+      "cost": {
+        "input": 1.0,
+        "output": 5.0,
+        "cache_read": 0.25,
+        "cache_write": 1.25
+      },
+      "contextWindow": 128000,
+      "maxTokens": 16384
+    }
+  }
+}
