@@ -11,12 +11,12 @@
 | ai | Pi.Ai | 26.3k 行 | 🚧 核心类型层 + EventStream + faux + 两个真实 provider（**openai-completions**：delta 模型 + **anthropic-messages**：content_block 事件模型/tool_result 块/system 独立字段）+ 测试 6/6 通过；兼容层与其余 provider 待移植 |
 | agent | Pi.Agent | 2.5k 行 | ✅ 完整移植（除 proxy.ts）：Agent 类（状态机/双队列/订阅/abort/reset）+ agent-loop 主循环 + sequential/parallel 工具执行；测试 13/13 通过 |
 | mcp | Pi.Mcp | 3.2k 行 | ✅ **完整移植**：JSON-RPC 协议层 + 传输层全套（in-memory / stdio / streamable-http）+ McpClient 会话 + OAuth 全层（解析/发现/PKCE 授权码流程/动态注册/凭据失效重试/MemoryStateStore/本地回调服务器）；测试 19/19 通过 |
-| chord | Pi.Chord | 8.8k 行 | 🚧 delta 引擎全部 + services 核心（state/provider/endpoint）+ facets（FacetKernel 依赖图/拓扑激活/reload/dispose + **服务槽接线完成**：Use 槽解析/Provide 本地与远程装配（成员字典实现进 RemoteServiceProvider）/Observe keyed 源）+ Context 值链；测试 39/39 通过；剩外部服务源绑定与 node bundle |
+| chord | Pi.Chord | 8.8k 行 | 🚧 delta 引擎全部 + services 核心 + facets（依赖图/拓扑激活/reload/服务槽接线/**外部源绑定**：IRemoteServiceSource 目录发现→重复 offered 拒绝→deferred 延迟源→按源分组 open→就绪门→门面绑槽；Require 声明与 Use 解析两阶段拆分）+ Context 值链；测试 43/43 通过；仅剩 node bundler（打包器，chord 侧非核心运行时） |
 | server / client | Pi.Server / Pi.Client | 3.1k 行 | ✅ **核心完整移植**：RpcServer（TCP listener/会话循环/hello 握手校验/请求分发/cancel/service_update 推送）+ RpcClient（握手/请求超时与取消/service 订阅/关闭清理）；端到端测试 2/2 通过 |
 | coding-agent | （未建） | 85k 行 | ⏳ 待 tui/codemode/durable 之后分阶段移植 |
 | tui / codemode / durable / evals | （未建） | 41k 行 | ⏳ 后续会话 |
 
-测试项目共 7 个：Pi.Telemetry(12) / Pi.Protocol(14) / Pi.Agent(13) / Pi.Mcp(19) / Pi.Chord(39) / Pi.Ai(6) / Pi.Server(2)，合计 **105 项全部通过**。
+测试项目共 7 个：Pi.Telemetry(12) / Pi.Protocol(14) / Pi.Agent(13) / Pi.Mcp(19) / Pi.Chord(43) / Pi.Ai(6) / Pi.Server(2)，合计 **109 项全部通过**。
 构建：`dotnet build Pi.slnx`（当前 0 警告 0 错误）。
 
 ## 目录约定
@@ -49,7 +49,7 @@ pi.net/
 
 1. **ai 包**：model catalog（JSON 资源替代 models.generated.ts）→ 其余 ~20 家 provider（lazy 注册模式，两大事件模型样板已就位）→ reasoning details/cache control/thinking budgets 兼容层。openai-completions 与 anthropic-messages 核心/types/EventStream/faux 已完成。
 2. **agent 包**：agent.ts（Agent 类：状态机/队列/subscribe API）+ proxy.ts；agent-loop 主循环与工具执行已完成。
-3. **chord 包**：delta 引擎 + services + facets（含服务槽接线）完成；剩余外部服务源绑定（RemoteServiceSource）与 node bundler。（json.ts/context 已完成）
+3. **chord 包**：核心全面完成（delta/services/facets/外部源绑定）；仅剩 node bundler（esbuild 打包器的 C# 等价物，非运行时核心）。（json.ts/context 已完成）
 4. **mcp 包**：✅ 全部完成。
 5. **server/client**：TCP 核心链路已完成（握手/请求/取消/推送）；chord services 集成（session-router、多服务路由）与 unix socket/named pipe 监听器待续。
 6. **coding-agent**：85k 行主产品（会话/工具系统/技能/主题/RPC 模式），最后阶段按"核心命令最小闭环 → 逐步补全"推进。

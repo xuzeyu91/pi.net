@@ -28,6 +28,8 @@ internal sealed class FacetRuntime
 public sealed class FacetKernel
 {
     private readonly IReadOnlyList<IFacet> _initialFacets;
+    private readonly IReadOnlyList<IRemoteServiceSource> _serviceSources;
+    private readonly Dictionary<IRemoteServiceSource, IRemoteServices> _sourceBindings = [];
     private readonly Action<Exception> _onError;
     private readonly Dictionary<string, FacetRuntime> _facets = [];
     private readonly HostServiceSlots _serviceSlots = new();
@@ -44,6 +46,7 @@ public sealed class FacetKernel
         if (ids.Distinct().Count() != ids.Count)
             throw new ArgumentException("Facet IDs must be unique within a generation");
         _initialFacets = options.Facets;
+        _serviceSources = options.ServiceSources;
         _onError = options.OnError ?? (_ => { });
     }
 
@@ -75,8 +78,16 @@ public sealed class FacetKernel
                 records.Add(record);
             }
 
-            _activationOrder = ValidateFacets(records, new Dictionary<string, ServiceMode>());
+            var externalServices = await ResolveExternalServicesAsync().ConfigureAwait(false);
+            _activationOrder = ValidateFacets(records,
+                externalServices.ToDictionary(kv => kv.Key, kv => kv.Value.Mode));
             AssembleProviders();
+            BindExternalServices(externalServices);
+            // 外部源就绪门。
+            foreach (var services in _sourceBindings.Values)
+            {
+                await services.ReadyAsync().ConfigureAwait(false);
+            }
             foreach (var id in _activationOrder)
             {
                 await _facets[id].Lifecycle.ActivateAsync().ConfigureAwait(false);
@@ -185,7 +196,91 @@ public sealed class FacetKernel
         _facets.Clear();
         _serviceSlots.Dispose();
         LocalKeyedServices?.Dispose();
+        _sourceBindings.Clear();
         return errors;
+    }
+
+    /// <summary>
+    /// 解析外部服务依赖：目录汇总（重复 offered 拒绝）→ 未本地供给的 requires
+    /// 从 offered（或唯一 deferred 源）解析 → 按源分组打开。对应 TS <c>resolveExternalServices</c>。
+    /// </summary>
+    private async Task<IReadOnlyDictionary<string, ExternalServiceBinding>> ResolveExternalServicesAsync()
+    {
+        var catalogues = new List<(IRemoteServiceSource Source, IReadOnlyList<ServiceCatalogueEntry> Entries)>();
+        foreach (var source in _serviceSources)
+        {
+            catalogues.Add((source, await source.CatalogueAsync().ConfigureAwait(false)));
+        }
+        var offered = new Dictionary<string, (ServiceMode Mode, IRemoteServiceSource Source)>();
+        foreach (var (source, entries) in catalogues)
+        {
+            foreach (var entry in entries)
+            {
+                if (offered.ContainsKey(entry.ServiceId))
+                    throw new InvalidOperationException($"Facet host service {entry.ServiceId} is offered by more than one source");
+                offered[entry.ServiceId] = (entry.Mode, source);
+            }
+        }
+
+        var local = _singletonProvisions.Select(p => p.ServiceId).ToHashSet();
+        var external = new Dictionary<string, ExternalServiceBinding>();
+        foreach (var record in _facets.Values)
+        {
+            foreach (var requirement in record.Requires)
+            {
+                if (local.Contains(requirement.ServiceId) || external.ContainsKey(requirement.ServiceId)) continue;
+                if (!offered.TryGetValue(requirement.ServiceId, out var source))
+                {
+                    var deferred = _serviceSources.Where(s => s.AcceptsUnavailableServices).ToList();
+                    if (deferred.Count > 1)
+                    {
+                        throw new InvalidOperationException(
+                            $"Facet host service {requirement.ServiceId} has more than one deferred source");
+                    }
+                    if (deferred.Count == 1)
+                        source = (requirement.Mode, deferred[0]);
+                }
+                if (source.Mode is { } mode && source.Source is { } sourceRef)
+                {
+                    external[requirement.ServiceId] = new ExternalServiceBinding(
+                        requirement.ServiceId, mode, sourceRef);
+                }
+            }
+        }
+
+        var serviceIdsBySource = new Dictionary<IRemoteServiceSource, List<string>>();
+        foreach (var binding in external.Values)
+        {
+            if (!serviceIdsBySource.TryGetValue(binding.Source, out var serviceIds))
+                serviceIdsBySource[binding.Source] = serviceIds = [];
+            serviceIds.Add(binding.ServiceId);
+        }
+        foreach (var (source, serviceIds) in serviceIdsBySource)
+        {
+            _sourceBindings[source] = source.Open(new RemoteServicesOptions
+            {
+                Services = serviceIds,
+                AssertAccess = () =>
+                {
+                    if (!_active) throw new InvalidOperationException("Facet host is not active");
+                },
+                OnError = _onError,
+            });
+        }
+        return external;
+    }
+
+    /// <summary>把外部服务绑定到本地槽（门面由源实现提供）。对应 TS <c>bindServices</c> 的外部路径。</summary>
+    private void BindExternalServices(IReadOnlyDictionary<string, ExternalServiceBinding> externalServices)
+    {
+        foreach (var serviceId in externalServices.Keys)
+        {
+            var source = externalServices[serviceId].Source;
+            if (_sourceBindings.TryGetValue(source, out var services) && services.UseRaw(serviceId) is { } facade)
+            {
+                _serviceSlots.BindSingleton(serviceId, facade);
+            }
+        }
     }
 
     /// <summary>
@@ -371,6 +466,9 @@ public sealed class FacetKernel
             if (target.Any(reference => reference.ServiceId == serviceId && reference.Mode == mode)) return;
             target.Add(new FacetServiceReference(serviceId, mode));
         }
+
+        public void Require<T>(Service<T> service)
+            => RecordReference(record.Requires, service.Id, ServiceMode.Singleton);
 
         public T Use<T>(Service<T> service)
         {

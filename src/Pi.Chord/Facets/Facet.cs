@@ -14,7 +14,13 @@ public sealed record FacetServiceReference(string ServiceId, ServiceMode Mode);
 /// </summary>
 public interface IFacetEnvironment
 {
-    /// <summary>声明对单例服务的硬依赖并返回稳定句柄。</summary>
+    /// <summary>
+    /// 仅声明对服务的依赖（不解析；装配期据此发现外部源）。
+    /// 对应 TS <c>use()</c> 的声明侧——TS 的延迟 view 在 C# 拆分为 Require（声明）+ Use（解析）。
+    /// </summary>
+    void Require<T>(Service<T> service);
+
+    /// <summary>解析单例服务（须在装配后调用，例如 OnActivate 回调中）。</summary>
     T Use<T>(Service<T> service);
 
     /// <summary>声明对 keyed 服务的依赖并观察每个存活实例。</summary>
@@ -52,6 +58,9 @@ public interface IFacet
 public sealed record FacetOptions
 {
     public required IReadOnlyList<IFacet> Facets { get; init; }
+
+    /// <summary>外部远程服务源（目录发现 + 打开）。</summary>
+    public IReadOnlyList<IRemoteServiceSource> ServiceSources { get; init; } = [];
 
     /// <summary>失败上报器（默认忽略）。</summary>
     public Action<Exception>? OnError { get; init; }
