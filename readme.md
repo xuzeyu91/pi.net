@@ -11,12 +11,12 @@
 | ai | Pi.Ai | 26.3k 行 | 🚧 核心类型层 + EventStream + faux + 两个真实 provider（**openai-completions**：delta 模型 + **anthropic-messages**：content_block 事件模型/tool_result 块/system 独立字段）+ 测试 6/6 通过；兼容层与其余 provider 待移植 |
 | agent | Pi.Agent | 2.5k 行 | ✅ 完整移植（除 proxy.ts）：Agent 类（状态机/双队列/订阅/abort/reset）+ agent-loop 主循环 + sequential/parallel 工具执行；测试 13/13 通过 |
 | mcp | Pi.Mcp | 3.2k 行 | ✅ **完整移植**：JSON-RPC 协议层 + 传输层全套（in-memory / stdio / streamable-http）+ McpClient 会话 + OAuth 全层（解析/发现/PKCE 授权码流程/动态注册/凭据失效重试/MemoryStateStore/本地回调服务器）；测试 19/19 通过 |
-| chord | Pi.Chord | 8.8k 行 | 🚧 JSON 契约 + **delta 引擎**（Op/路径安全/不可变 applier/diff/**wire 编解码（path 驻留+元数省略）**/revision-validator）+ **services 协议层**（控制调用/wire 快照与更新解析/状态编解码器注册表）+ 测试 15/15 通过；tracker（Proxy 可变视图）与 services/state+provider/facets 待移植 |
+| chord | Pi.Chord | 8.8k 行 | 🚧 delta 引擎**含 tracker**（事务变更：beginChange/prepare/adopt/stale 失效/ops 洪水防护——C# 显式动词 API 替代 JS Proxy，不变式 apply(base,ops)==value 保持）+ services 协议层；测试 22/22 通过；剩 services/state+provider（订阅状态机）与 facets/host |
 | server / client | Pi.Server / Pi.Client | 3.1k 行 | ✅ **核心完整移植**：RpcServer（TCP listener/会话循环/hello 握手校验/请求分发/cancel/service_update 推送）+ RpcClient（握手/请求超时与取消/service 订阅/关闭清理）；端到端测试 2/2 通过 |
 | coding-agent | （未建） | 85k 行 | ⏳ 待 tui/codemode/durable 之后分阶段移植 |
 | tui / codemode / durable / evals | （未建） | 41k 行 | ⏳ 后续会话 |
 
-测试项目共 7 个：Pi.Telemetry(12) / Pi.Protocol(14) / Pi.Agent(13) / Pi.Mcp(19) / Pi.Chord(15) / Pi.Ai(6) / Pi.Server(2)，合计 **81 项全部通过**。
+测试项目共 7 个：Pi.Telemetry(12) / Pi.Protocol(14) / Pi.Agent(13) / Pi.Mcp(19) / Pi.Chord(22) / Pi.Ai(6) / Pi.Server(2)，合计 **88 项全部通过**。
 构建：`dotnet build Pi.slnx`（当前 0 警告 0 错误）。
 
 ## 目录约定
@@ -49,7 +49,7 @@ pi.net/
 
 1. **ai 包**：model catalog（JSON 资源替代 models.generated.ts）→ 其余 ~20 家 provider（lazy 注册模式，两大事件模型样板已就位）→ reasoning details/cache control/thinking budgets 兼容层。openai-completions 与 anthropic-messages 核心/types/EventStream/faux 已完成。
 2. **agent 包**：agent.ts（Agent 类：状态机/队列/subscribe API）+ proxy.ts；agent-loop 主循环与工具执行已完成。
-3. **chord 包**：delta 引擎 + services 协议层已完成；剩余 tracker.ts（JS Proxy 可变视图 → C# 需选型 DynamicObject 或显式 API）、services/state.ts+provider.ts（订阅状态机）、facets/host → node bundle。（json.ts 已完成）
+3. **chord 包**：delta 引擎（含 tracker）+ services 协议层已完成；剩余 services/state.ts+provider.ts（订阅状态机，依赖 state-internals 注册表）与 facets/host → node bundle。（json.ts 已完成）
 4. **mcp 包**：✅ 全部完成。
 5. **server/client**：TCP 核心链路已完成（握手/请求/取消/推送）；chord services 集成（session-router、多服务路由）与 unix socket/named pipe 监听器待续。
 6. **coding-agent**：85k 行主产品（会话/工具系统/技能/主题/RPC 模式），最后阶段按"核心命令最小闭环 → 逐步补全"推进。
