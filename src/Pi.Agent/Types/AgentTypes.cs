@@ -45,6 +45,19 @@ public abstract record AgentEvent
 /// <summary>事件槽：AgentLoop 的每一事件都经过它发出。对应 TS <c>AgentEventSink</c>。</summary>
 public delegate Task AgentEventSink(AgentEvent @event);
 
+/// <summary>
+/// 到达队列排空点时注入的排队用户消息数量。对应 TS <c>QueueMode</c>。
+/// </summary>
+[JsonConverter(typeof(JsonStringEnumConverter<QueueMode>))]
+public enum QueueMode
+{
+    /// <summary>在该排空点注入全部排队消息。</summary>
+    All,
+
+    /// <summary>每次只注入最旧的一条，其余留给后续排空点。</summary>
+    OneAtATime,
+}
+
 /// <summary>工具执行结果。对应 TS <c>AgentToolResult</c>。</summary>
 public sealed record AgentToolResult(
     IReadOnlyList<ContentBlock> Content,
