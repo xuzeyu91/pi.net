@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Port of packages/protocol: CBOR codec, framing, RPC codec. -->
+  <ItemGroup>
+    <ProjectReference Include="..\Pi.Chord\Pi.Chord.csproj" />
+  </ItemGroup>
+</Project>

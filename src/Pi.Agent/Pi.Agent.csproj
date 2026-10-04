@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Port of packages/agent: minimal agent loop. -->
+  <ItemGroup>
+    <ProjectReference Include="..\Pi.Ai\Pi.Ai.csproj" />
+  </ItemGroup>
+</Project>

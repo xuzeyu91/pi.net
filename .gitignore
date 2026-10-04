@@ -1,0 +1,19 @@
+# .NET build outputs
+[Bb]in/
+[Oo]bj/
+[Aa]rtifacts/
+
+# Visual Studio and IDE files
+.vs/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.DotSettings.user
+
+# Test results and local package artifacts
+[Tt]est[Rr]esults/
+*.nupkg
+*.snupkg
+

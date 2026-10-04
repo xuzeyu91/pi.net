@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Port of packages/telemetry: vendor-neutral telemetry contracts. -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="Pi.Telemetry.Tests" />
+  </ItemGroup>
+</Project>

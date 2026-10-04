@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Port of packages/ai: unified multi-provider LLM API. -->
+  <ItemGroup>
+    <ProjectReference Include="..\Pi.Telemetry\Pi.Telemetry.csproj" />
+  </ItemGroup>
+</Project>

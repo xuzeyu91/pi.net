@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Port of packages/client: RPC client (connection, transport, request/response promise map). -->
+  <ItemGroup>
+    <ProjectReference Include="..\Pi.Chord\Pi.Chord.csproj" />
+    <ProjectReference Include="..\Pi.Protocol\Pi.Protocol.csproj" />
+  </ItemGroup>
+</Project>
