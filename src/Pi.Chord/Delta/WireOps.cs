@@ -9,6 +9,10 @@ namespace Pi.Chord.Delta;
 /// </summary>
 public static class DeltaWire
 {
+    /// <summary>批首是否为整体替换（base 批/恢复点）。对应 TS <c>isBase</c>。</summary>
+    public static bool IsBase(IReadOnlyList<DeltaOp> ops)
+        => ops.Count > 0 && ops[0] is DeltaOp.Replace;
+
     /// <summary>线上格式校验：允许整数路径 id、省略路径与 <c>#</c> 定义。对应 TS <c>assertValidWireOp</c>。</summary>
     public static void AssertValidWireOp(object? op)
     {
