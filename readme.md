@@ -8,15 +8,16 @@
 |---|---|---|---|
 | telemetry | **Pi.Telemetry** | 0.9k 行 | ✅ 完整移植 + conformance 测试 12/12 通过 |
 | protocol | **Pi.Protocol** | 0.9k 行 | ✅ 完整移植（CBOR/framing/codec）+ 测试 14/14 通过 |
-| ai | Pi.Ai | 26.3k 行 | 🚧 核心类型骨架（消息/事件/Model/Usage 等）已就位 |
-| agent | Pi.Agent | 2.5k 行 | 🚧 类型骨架（StreamFn/ToolExecutionMode/AgentLoopConfig 等）已就位 |
-| mcp | Pi.Mcp | 3.2k 行 | 🚧 骨架（JsonRpc 消息模型/错误层级/McpClient 占位） |
+| ai | Pi.Ai | 26.3k 行 | 🚧 核心类型层完成（消息/内容块/流事件/工具/Model，中文注释）+ EventStream + faux 测试 provider；provider 实现待移植 |
+| agent | Pi.Agent | 2.5k 行 | ✅ 核心完整移植：agent-loop 主循环（steering/follow-up/finishTurn/prepareRequest 钩子）、流式响应桥接、工具声明差异、sequential+parallel 工具执行；测试 7/7 通过 |
+| mcp | Pi.Mcp | 3.2k 行 | 🚧 JSON-RPC 协议层完成（解析/判别/序列化/错误层级）+ 测试 4/4 通过；client 与 transports 待移植 |
 | chord | Pi.Chord | 8.8k 行 | 🚧 骨架（JsonValue 契约/CopyJson/RemoteServiceError） |
 | server / client | Pi.Server / Pi.Client | 3.1k 行 | 🚧 骨架（ByteTransport/ConnectionState/错误类型） |
 | coding-agent | （未建） | 85k 行 | ⏳ 待 tui/codemode/durable 之后分阶段移植 |
 | tui / codemode / durable / evals | （未建） | 41k 行 | ⏳ 后续会话 |
 
-构建：`dotnet build Pi.slnx`（当前 0 警告 0 错误）。测试：`dotnet test`。
+测试项目共 4 个：Pi.Telemetry.Tests(12) / Pi.Protocol.Tests(14) / Pi.Agent.Tests(7) / Pi.Mcp.Tests(4)，合计 **37 项全部通过**。
+构建：`dotnet build Pi.slnx`（当前 0 警告 0 错误）。
 
 ## 目录约定
 
@@ -46,9 +47,9 @@ pi.net/
 
 ## 后续会话路线图
 
-1. **ai 包**：types.ts 全量（1172 行）→ utils/event-stream → providers/faux → openai-completions（HttpClient 直调 REST，对齐原 fetch 行为）→ anthropic-messages → model catalog（JSON 资源替代 models.generated.ts）→ 其余 ~20 家 provider（lazy 注册模式）。
-2. **agent 包**：agent-loop.ts（940 行，队列/steering/工具批执行/事件面）+ agent.ts + proxy。
+1. **ai 包**：openai-completions（HttpClient 直调 REST，对齐原 fetch 行为）→ anthropic-messages → model catalog（JSON 资源替代 models.generated.ts）→ 其余 ~20 家 provider（lazy 注册模式）。types 核心/EventStream/faux 已完成。
+2. **agent 包**：agent.ts（Agent 类：状态机/队列/subscribe API）+ proxy.ts；agent-loop 主循环与工具执行已完成。
 3. **chord 包**：delta 引擎（diff/draft/tracker/revision-validator）→ services（provider/consumer/handle/instances）→ facets → node bundle。
-4. **mcp 包**：jsonrpc 帧解析 → stdio/streamable-http/in-memory transports → client 会话 → OAuth。
+4. **mcp 包**：JSON-RPC 协议层已完成 → stdio/streamable-http/in-memory transports → client 会话（initialize/工具调用）→ OAuth。
 5. **server/client**：在 chord 之上接通 listener/session-router 与连接状态机。
 6. **coding-agent**：85k 行主产品（会话/工具系统/技能/主题/RPC 模式），最后阶段按"核心命令最小闭环 → 逐步补全"推进。
