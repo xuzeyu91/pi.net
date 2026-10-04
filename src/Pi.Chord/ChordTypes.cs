@@ -51,15 +51,7 @@ public static class Json
 }
 
 /// <summary>
-/// Error raised by remote service calls. Mirrors TS <c>RemoteServiceError</c>;
-/// the error-code table (REMOTE_SERVICE_ERROR_CODES) is ported with services/.
-/// </summary>
-public sealed class RemoteServiceError(string code, string message) : Exception(message)
-{
-    public string Code { get; } = code;
 
-    public static bool IsRemoteServiceErrorCode(string code) => false; // ported with services/errors.ts
-}
 
 /// <summary>
 /// Immutable draft handle over replicated state. Mirrors TS <c>Draft</c> from
