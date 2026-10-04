@@ -24,9 +24,34 @@ public static partial class CborCodec
     {
         var resolved = Resolve(options);
         var writer = new CborWriter(resolved.MaxByteLength);
-        EncodeValue(writer, value, resolved, 0, new HashSet<object>());
+        EncodeValue(writer, Normalize(value), resolved, 0, new HashSet<object>());
         return writer.Finish();
     }
+
+    /// <summary>
+    /// 把 System.Text.Json 的 JsonNode 树归一化为 CBOR 值模型（JsonObject →
+    /// Dictionary，JsonArray → List，JsonValue → 标量），让 RPC 层的 JSON 载荷
+    /// 可以直接进 CBOR 编码。
+    /// </summary>
+    public static object? Normalize(object? value) => value switch
+    {
+        System.Text.Json.Nodes.JsonObject obj => obj.ToDictionary(kv => kv.Key,
+            kv => Normalize(kv.Value is System.Text.Json.Nodes.JsonNode n ? n : null)),
+        System.Text.Json.Nodes.JsonArray array => array.Select(n => Normalize(n)).ToList<object?>(),
+        System.Text.Json.Nodes.JsonValue jsonValue => jsonValue.TryGetValue<double>(out var d)
+            ? (object)(double.IsInteger(d) ? (long)d : d)
+            : jsonValue.TryGetValue<string>(out var s)
+                ? s
+                : jsonValue.TryGetValue<bool>(out var b) ? b : null,
+        // 容器递归：普通字典/列表里也可能嵌着 JsonNode。
+        Dictionary<string, object?> map => map.ToDictionary(kv => kv.Key, kv => Normalize(kv.Value)),
+        List<object?> list => list.Select(Normalize).ToList<object?>(),
+        IReadOnlyDictionary<string, object?> map => map.ToDictionary(kv => kv.Key, kv => Normalize(kv.Value)),
+        IReadOnlyList<object?> list => list.Select(Normalize).ToList<object?>(),
+        _ => value,
+    };
+
+    private static bool IsInteger(double d) => d == System.Math.Truncate(d) && !double.IsInfinity(d);
 
     private static void EncodeValue(
         CborWriter writer,

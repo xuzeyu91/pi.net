@@ -95,17 +95,16 @@ public static class ProtocolCodec
                 return new ServerMessage.Hello((long)map["version"]!, (string)map["serverId"]!);
             case "hello_error" when map.Count == 2 && map.ContainsKey("error"):
                 return new ServerMessage.HelloError(ParseError(map["error"], what));
-            case "response" when (map.Count == 3 && (map.GetValueOrDefault("ok") is true || map.GetValueOrDefault("ok") is false)):
+            case "response" when map.GetValueOrDefault("ok") is true || map.GetValueOrDefault("ok") is false:
             {
-                if (!IsId(map.GetValueOrDefault("id")))
+                // ok:true → type/id/ok/result?（3 或 4 项）；ok:false → type/id/ok/error（4 项）。
+                if (!IsId(map.GetValueOrDefault("id"))
+                    || (map["ok"] is true && (map.Count is not 3 and not 4))
+                    || (map["ok"] is false && map.Count != 4))
                     throw new ProtocolValidationError($"Invalid {what} protocol message");
                 var id = (string)map["id"]!;
                 if (map["ok"] is true)
-                {
-                    return map.TryGetValue("result", out var result)
-                        ? new ServerMessage.ResponseOk(id, result)
-                        : new ServerMessage.ResponseOk(id, null);
-                }
+                    return new ServerMessage.ResponseOk(id, map.GetValueOrDefault("result"));
                 return map.ContainsKey("error")
                     ? new ServerMessage.ResponseError(id, ParseError(map["error"], what))
                     : throw new ProtocolValidationError($"Invalid {what} protocol message");

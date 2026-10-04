@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <OutputType>Exe</OutputType>
+    <UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>
+    <NoWarn>$(NoWarn);xUnit1051</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="xunit.v3" Version="3.2.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Pi.Server\Pi.Server.csproj" />
+    <ProjectReference Include="..\..\src\Pi.Client\Pi.Client.csproj" />
+    <ProjectReference Include="..\..\src\Pi.Protocol\Pi.Protocol.csproj" />
+  </ItemGroup>
+</Project>
