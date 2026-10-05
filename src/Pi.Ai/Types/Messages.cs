@@ -158,6 +158,10 @@ public sealed record AssistantMessage(
     [JsonPropertyName("endTurn")]
     public bool? EndTurn { get; set; }
 
+    /// <summary>provider 侧实际使用的思考档位（pi-messages 回传）。对应 TS <c>providerThinkingLevel</c>。</summary>
+    [JsonPropertyName("providerThinkingLevel")]
+    public string? ProviderThinkingLevel { get; set; }
+
     /// <summary>本条消息中的全部工具调用块（按出现顺序）。</summary>
     [JsonIgnore]
     public IEnumerable<ToolCallContent> ToolCalls =>

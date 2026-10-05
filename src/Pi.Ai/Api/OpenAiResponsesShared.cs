@@ -521,6 +521,9 @@ public static class OpenAiResponsesShared
         /// <summary>流处理诊断条目（传输降级等）。对应 TS <c>output.diagnostics</c>。</summary>
         public List<Pi.Ai.Utils.AssistantMessageDiagnostic> Diagnostics { get; } = [];
 
+        /// <summary>provider 侧思考档位（pi-messages 回传）。对应 TS <c>providerThinkingLevel</c>。</summary>
+        public string? ProviderThinkingLevel { get; set; }
+
         public MutableAssistantMessage(string model, string api, string provider)
         {
             Model = model;
@@ -535,6 +538,7 @@ public static class OpenAiResponsesShared
                 RawStopReason = RawStopReason,
                 ResponseId = ResponseId,
                 EndTurn = EndTurn,
+                ProviderThinkingLevel = ProviderThinkingLevel,
                 Diagnostics = Diagnostics.Count > 0 ? [.. Diagnostics] : null,
             };
     }
