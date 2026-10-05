@@ -1,4 +1,5 @@
 using System.Text.Json.Nodes;
+using Pi.Ai.Utils;
 
 using Pi.Ai.Models;
 namespace Pi.Ai.Auth.OAuth;

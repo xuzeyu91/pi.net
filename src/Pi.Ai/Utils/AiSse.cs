@@ -54,4 +54,28 @@ public static class AiSse
         }
         Dispatch();
     }
+
+    /// <summary>SSE 事件流（<see cref="ConsumeAsync"/> 的异步枚举包装）。</summary>
+    public static async IAsyncEnumerable<AiSseEvent> EventsAsync(
+        System.IO.Stream stream,
+        [System.Runtime.CompilerServices.EnumeratorCancellation] CancellationToken cancellationToken = default)
+    {
+        var channel = System.Threading.Channels.Channel.CreateUnbounded<AiSseEvent>(
+            new System.Threading.Channels.UnboundedChannelOptions { SingleReader = true });
+        var consume = ConsumeAsync(stream,
+            e => channel.Writer.TryWrite(e),
+            CancellationTokenSource.CreateLinkedTokenSource(cancellationToken).Token);
+        _ = consume.ContinueWith(
+            _ => channel.Writer.TryComplete(),
+            CancellationToken.None, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+        // 消费异常时关闭枚举（异常在 ConsumeAsync 任务上被丢弃——调用方通过 HTTP 层感知失败）。
+        _ = consume.ContinueWith(
+            t => { if (t.IsFaulted) channel.Writer.TryComplete(t.Exception); },
+            CancellationToken.None, TaskContinuationOptions.OnlyOnFaulted, TaskScheduler.Default);
+
+        await foreach (var e in channel.Reader.ReadAllAsync(cancellationToken).ConfigureAwait(false))
+        {
+            yield return e;
+        }
+    }
 }

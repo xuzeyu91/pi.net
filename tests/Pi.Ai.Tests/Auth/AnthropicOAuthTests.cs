@@ -1,3 +1,4 @@
+using Pi.Ai.Utils;
 using System.Text;
 using System.Text.Json.Nodes;
 using Pi.Ai.Auth;

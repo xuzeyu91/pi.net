@@ -1,3 +1,4 @@
+using Pi.Ai.Utils;
 namespace Pi.Ai.Auth.OAuth;
 
 /// <summary>设备码轮询单步结果（判别联合）。对应 TS <c>OAuthDeviceCodePollResult&lt;T&gt;</c>。</summary>

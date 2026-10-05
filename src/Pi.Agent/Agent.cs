@@ -47,7 +47,7 @@ public sealed class Agent
         var systemPrompt = options.SystemPrompt;
         if (_messages.Count == 0 && (systemPrompt is not null || _tools.Count > 0))
             _messages.Add(new SystemMessage(Content: systemPrompt,
-                Tools: _tools.Select(t => t.Definition).ToList()));
+                ToolsAdded: _tools.Select(t => t.Definition).ToList()));
     }
 
     /// <summary>默认消息转换：保留全部四种标准角色消息（对齐 TS defaultConvertToLlm）。</summary>

@@ -56,7 +56,7 @@ public static class Faux
                 var exhausted = new AssistantMessageEventStream();
                 var msg = new AssistantMessage([], StopReason.Error,
                     ErrorMessage: "Faux script exhausted", UsageStats: ZeroUsage);
-                exhausted.Push(new AssistantMessageEvent.Error("Faux script exhausted", msg));
+                exhausted.Push(new AssistantMessageEvent.Error(msg.StopReason, "Faux script exhausted", msg));
                 exhausted.End(msg);
                 return Task.FromResult<IAssistantMessageEventStream>(exhausted);
             }
@@ -90,23 +90,23 @@ public static class Faux
                     var chunks = Enumerable.Range(0, (int)Math.Ceiling(text.Text.Length / (double)chunkSize))
                         .Select(i => text.Text.Substring(i * chunkSize, Math.Min(chunkSize, text.Text.Length - i * chunkSize)))
                         .ToList();
-                    stream.Push(new AssistantMessageEvent.TextStart(partial));
+                    stream.Push(new AssistantMessageEvent.TextStart(0, partial));
                     var accumulated = string.Empty;
                     foreach (var chunk in chunks)
                     {
                         accumulated += chunk;
                         sequence++;
                         partial = ReplaceOrAppendText(partial, accumulated);
-                        stream.Push(new AssistantMessageEvent.TextDelta(chunk, sequence, partial));
+                        stream.Push(new AssistantMessageEvent.TextDelta(0, chunk, sequence, partial));
                     }
-                    stream.Push(new AssistantMessageEvent.TextEnd(partial));
+                    stream.Push(new AssistantMessageEvent.TextEnd(0, partial.Content.OfType<TextContent>().LastOrDefault()?.Text ?? "", partial));
                     break;
                 }
                 case ThinkingContent thinking:
                 {
                     sequence++;
                     partial = AppendBlock(partial, new ThinkingContent(thinking.Thinking, thinking.Signature));
-                    stream.Push(new AssistantMessageEvent.ThinkingDelta(thinking.Thinking, sequence, thinking.Signature, partial));
+                    stream.Push(new AssistantMessageEvent.ThinkingDelta(0, thinking.Thinking, sequence, thinking.Signature, partial));
                     break;
                 }
                 case ToolCallContent toolCall:
@@ -114,6 +114,7 @@ public static class Faux
                     // 工具调用一次性给出（参数增量解析留待真实 provider 移植时实现）。
                     partial = AppendBlock(partial, toolCall);
                     stream.Push(new AssistantMessageEvent.ToolCallDelta(
+                        partial.Content.OfType<ToolCallContent>().ToList().IndexOf(toolCall),
                         partial.Content.OfType<ToolCallContent>().ToList().IndexOf(toolCall), "", partial));
                     break;
                 }
@@ -133,8 +134,8 @@ public static class Faux
         };
 
         if (response.StopReason is StopReason.Error)
-            stream.Push(new AssistantMessageEvent.Error(response.ErrorMessage ?? "unknown", final));
-        stream.Push(new AssistantMessageEvent.Done(final));
+            stream.Push(new AssistantMessageEvent.Error(final.StopReason, response.ErrorMessage ?? "unknown", final));
+        stream.Push(new AssistantMessageEvent.Done(final.StopReason, final));
         stream.End(final);
     }
 

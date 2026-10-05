@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.Json.Nodes;
+using Pi.Ai.Utils;
 
 namespace Pi.Ai.Auth.OAuth;
 
@@ -93,44 +94,4 @@ internal static class OAuthHttp
             return "";
         }
     }
-}
-
-/// <summary>JSON 对象取值辅助（对齐 TS 的 typeof 检查语义）。</summary>
-internal static class OAuthJsonExtensions
-{
-    public static string? Str(this JsonObject obj, string key)
-        => obj.TryGetPropertyValue(key, out var value)
-            && value is JsonValue { } primitive
-            && primitive.TryGetValue<string>(out var text)
-            ? text
-            : null;
-
-    public static double? Num(this JsonObject obj, string key)
-        => obj.TryGetPropertyValue(key, out var value)
-            && value is JsonValue { } primitive
-            && primitive.TryGetValue<double>(out var number)
-            ? number
-            : null;
-
-    public static bool? Bool(this JsonObject obj, string key)
-        => obj.TryGetPropertyValue(key, out var value)
-            && value is JsonValue { } primitive
-            && primitive.TryGetValue<bool>(out var flag)
-            ? flag
-            : null;
-
-    /// <summary>键存在且非 null（对齐 TS <c>value !== undefined</c>）。</summary>
-    public static bool Has(this JsonObject obj, string key)
-        => obj.TryGetPropertyValue(key, out var value)
-            && value is not null
-            && value.GetValueKind() != System.Text.Json.JsonValueKind.Null;
-
-    public static JsonObject? Obj(this JsonObject obj, string key)
-        => obj.TryGetPropertyValue(key, out var value) ? value as JsonObject : null;
-
-    /// <summary>正有限数（对齐 TS positiveNumber）。</summary>
-    public static int? PositiveInt(this JsonObject obj, string key)
-        => obj.Num(key) is { } number && !double.IsNaN(number) && !double.IsInfinity(number) && number > 0
-            ? (int)number
-            : null;
 }

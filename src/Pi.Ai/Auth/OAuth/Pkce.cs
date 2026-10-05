@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using System.Text;
+using Pi.Ai.Utils;
 
 namespace Pi.Ai.Auth.OAuth;
 

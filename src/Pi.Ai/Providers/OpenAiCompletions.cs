@@ -222,7 +222,7 @@ public static class OpenAiCompletions
                             }
                             else blocks.Add(new TextContent(textDelta));
                             partial = partial with { Content = blocks };
-                            stream.Push(new AssistantMessageEvent.TextDelta(textDelta, sequence, partial));
+                            stream.Push(new AssistantMessageEvent.TextDelta(0, textDelta, sequence, partial));
                         }
 
                         // 思维链增量（reasoning_content / reasoning 兼容字段）。
@@ -239,7 +239,7 @@ public static class OpenAiCompletions
                             }
                             else blocks.Add(new ThinkingContent(reasoningDelta));
                             partial = partial with { Content = blocks };
-                            stream.Push(new AssistantMessageEvent.ThinkingDelta(reasoningDelta, sequence, null, partial));
+                            stream.Push(new AssistantMessageEvent.ThinkingDelta(0, reasoningDelta, sequence, null, partial));
                         }
 
                         // 工具调用增量（按 index 聚合参数片段）。
@@ -310,7 +310,7 @@ public static class OpenAiCompletions
             Model = partial.Model,
             Timestamp = timestamp,
         };
-        stream.Push(new AssistantMessageEvent.Done(final));
+        stream.Push(new AssistantMessageEvent.Done(final.StopReason, final));
         stream.End(final);
     }
 

@@ -2,8 +2,15 @@ using System.Text.Json.Serialization;
 
 namespace Pi.Ai.Types;
 
-/// <summary>文本内容块，对应 TS <c>TextContent</c>。</summary>
-public sealed record TextContent(string Text) : ContentBlock;
+/// <summary>
+/// 文本内容块，对应 TS <c>TextContent</c>；<c>TextSignature</c> 持 provider 的
+/// 文本回执签名（openai-responses 的 TextSignatureV1 JSON）用于同模型重放。
+/// </summary>
+public sealed record TextContent(string Text) : ContentBlock
+{
+    [JsonPropertyName("textSignature")]
+    public string? TextSignature { get; set; }
+}
 
 /// <summary>图片内容块（base64 数据），对应 TS <c>ImageContent</c>。</summary>
 public sealed record ImageContent(string Data, string? MimeType = null) : ContentBlock;
@@ -23,6 +30,10 @@ public sealed record ToolCallContent(string Id, string Name, object? Arguments) 
     /// <summary>Google 系模型的 thought signature（跨模型回放时须剥离）。对应 TS <c>thoughtSignature</c>。</summary>
     [JsonPropertyName("thoughtSignature")]
     public string? ThoughtSignature { get; set; }
+
+    /// <summary>工具命名空间（openai-responses custom tool）。对应 TS <c>namespace</c>。</summary>
+    [JsonPropertyName("namespace")]
+    public string? Namespace { get; set; }
 }
 
 /// <summary>
@@ -43,6 +54,9 @@ public abstract record ContentBlock
 [JsonConverter(typeof(JsonStringEnumConverter<StopReason>))]
 public enum StopReason
 {
+    /// <summary>流处理中（尚未到达停止原因）。对应 TS <c>pending</c>。</summary>
+    Pending,
+
     /// <summary>自然结束。</summary>
     Stop,
 
@@ -78,7 +92,8 @@ public sealed record Usage(
     long Output,
     long CacheRead = 0,
     long CacheWrite = 0,
-    double? Cost = null)
+    double? Cost = null,
+    long Reasoning = 0)
 {
     /// <summary>输入 + 输出 token 合计（不含缓存读写）。</summary>
     [JsonIgnore]
@@ -100,14 +115,16 @@ public abstract record ChatMessage
 }
 
 /// <summary>
-/// 系统消息。对应 TS <c>SystemMessage</c>：承载 system prompt 与工具声明回放，
-/// <c>Sections</c> 非空时与 <c>Content</c> 按顺序拼接；
-/// <c>Tools</c> 声明"模型当前可调用的工具集"（由 agent 循环维护增量）。
+/// 系统消息。对应 TS <c>SystemMessage</c>：transcript 的工具/prompt 增量载体。
+/// 首条 system 消息是系统提示；后续的 <c>Content</c> 追加提示、<c>Sections</c>
+/// 按名修补（value 为 null 表示删除该段）、<c>ToolsAdded</c>/<c>ToolsRemoved</c>
+/// 增量变更工具集。按序回放全部 system 消息得到当前 prompt 与工具。
 /// </summary>
 public sealed record SystemMessage(
     string? Content = null,
-    IReadOnlyList<string>? Sections = null,
-    IReadOnlyList<ToolDefinition>? Tools = null,
+    IReadOnlyDictionary<string, string?>? Sections = null,
+    IReadOnlyList<ToolDefinition>? ToolsAdded = null,
+    IReadOnlyList<string>? ToolsRemoved = null,
     long? Timestamp = null) : ChatMessage;
 
 /// <summary>用户消息。对应 TS <c>UserMessage</c>。</summary>
@@ -125,6 +142,14 @@ public sealed record AssistantMessage(
     ThinkingLevel? ThinkingLevel = null,
     long? Timestamp = null) : ChatMessage
 {
+    /// <summary>provider 原始停止原因（如 "incomplete.max_output_tokens"）。对应 TS <c>rawStopReason</c>。</summary>
+    [JsonPropertyName("rawStopReason")]
+    public string? RawStopReason { get; set; }
+
+    /// <summary>响应 id（openai-responses 等）。对应 TS <c>responseId</c>。</summary>
+    [JsonPropertyName("responseId")]
+    public string? ResponseId { get; set; }
+
     /// <summary>本条消息中的全部工具调用块（按出现顺序）。</summary>
     [JsonIgnore]
     public IEnumerable<ToolCallContent> ToolCalls =>

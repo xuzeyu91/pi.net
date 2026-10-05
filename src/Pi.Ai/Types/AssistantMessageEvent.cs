@@ -10,31 +10,44 @@ public abstract record AssistantMessageEvent
 {
     private AssistantMessageEvent() { }
 
-    /// <summary>流开始（携带首个部分消息快照）。</summary>
+    /// <summary>流开始（携带首个部分消息快照）。对应 TS <c>start</c>。</summary>
     public sealed record Start(AssistantMessage Partial) : AssistantMessageEvent;
 
-    /// <summary>文本块开始。</summary>
-    public sealed record TextStart(AssistantMessage Partial) : AssistantMessageEvent;
+    /// <summary>文本块开始。对应 TS <c>text_start</c>。</summary>
+    public sealed record TextStart(int ContentIndex, AssistantMessage Partial) : AssistantMessageEvent;
 
-    /// <summary>文本增量。</summary>
-    public sealed record TextDelta(string Delta, long Sequence, AssistantMessage Partial) : AssistantMessageEvent;
+    /// <summary>文本增量。对应 TS <c>text_delta</c>。</summary>
+    public sealed record TextDelta(int ContentIndex, string Delta, long Sequence, AssistantMessage Partial) : AssistantMessageEvent;
 
-    /// <summary>文本块结束。</summary>
-    public sealed record TextEnd(AssistantMessage Partial) : AssistantMessageEvent;
+    /// <summary>文本块结束（携带最终文本）。对应 TS <c>text_end</c>。</summary>
+    public sealed record TextEnd(int ContentIndex, string Content, AssistantMessage Partial) : AssistantMessageEvent;
 
-    /// <summary>思维链增量。</summary>
-    public sealed record ThinkingDelta(string Delta, long Sequence, string? Signature, AssistantMessage Partial) : AssistantMessageEvent;
+    /// <summary>思维块开始。对应 TS <c>thinking_start</c>。</summary>
+    public sealed record ThinkingStart(int ContentIndex, AssistantMessage Partial) : AssistantMessageEvent;
 
-    /// <summary>工具调用参数增量。<c>Index</c> 为调用块序号。</summary>
-    public sealed record ToolCallDelta(int Index, string Delta, AssistantMessage Partial) : AssistantMessageEvent;
+    /// <summary>思维链增量。对应 TS <c>thinking_delta</c>。</summary>
+    public sealed record ThinkingDelta(int ContentIndex, string Delta, long Sequence, string? Signature, AssistantMessage Partial) : AssistantMessageEvent;
+
+    /// <summary>思维块结束（携带最终内容）。对应 TS <c>thinking_end</c>。</summary>
+    public sealed record ThinkingEnd(int ContentIndex, string Content, AssistantMessage Partial) : AssistantMessageEvent;
+
+    /// <summary>工具调用块开始。对应 TS <c>toolcall_start</c>。</summary>
+    public sealed record ToolCallStart(int ContentIndex, AssistantMessage Partial) : AssistantMessageEvent;
+
+    /// <summary>工具调用参数增量。<c>Index</c> 为内容块序号。对应 TS <c>toolcall_delta</c>。</summary>
+    public sealed record ToolCallDelta(int ContentIndex, int Index, string Delta, AssistantMessage Partial) : AssistantMessageEvent;
+
+    /// <summary>工具调用块结束（携带最终调用）。对应 TS <c>toolcall_end</c>。</summary>
+    public sealed record ToolCallEnd(int ContentIndex, ToolCallContent ToolCall, AssistantMessage Partial) : AssistantMessageEvent;
 
     /// <summary>
     /// 终态：流正常结束。<c>Message</c> 为最终完整消息（含停止原因与用量）。
+    /// 对应 TS <c>done</c>。
     /// </summary>
-    public sealed record Done(AssistantMessage Message) : AssistantMessageEvent;
+    public sealed record Done(StopReason Reason, AssistantMessage Message) : AssistantMessageEvent;
 
-    /// <summary>终态：失败。错误编码在消息内（StopReason=Error + ErrorMessage），而非抛出异常。</summary>
-    public sealed record Error(string ErrorMessage, AssistantMessage Message) : AssistantMessageEvent;
+    /// <summary>终态：失败。错误编码在消息内。对应 TS <c>error</c>。</summary>
+    public sealed record Error(StopReason Reason, string ErrorMessage, AssistantMessage Message) : AssistantMessageEvent;
 
     /// <summary>流是否已到达终态（done / error）。</summary>
     [JsonIgnore]
@@ -52,7 +65,12 @@ public sealed record ToolSchema(IReadOnlyDictionary<string, object?> JsonSchema)
 public sealed record ToolDefinition(
     string Name,
     string Description,
-    ToolSchema Parameters);
+    ToolSchema Parameters)
+{
+    /// <summary>约束采样配置（wire 形状：{type:"grammar",variants} | {type:"json_schema",strict}）。对应 TS <c>tool.constrainedSampling</c>。</summary>
+    [JsonPropertyName("constrainedSampling")]
+    public System.Text.Json.Nodes.JsonObject? ConstrainedSampling { get; set; }
+}
 
 /// <summary>模型描述。对应 TS <c>Model&lt;Api&gt;</c>。</summary>
 public sealed record Model(

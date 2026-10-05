@@ -187,8 +187,8 @@ public static partial class AgentLoop
         IReadOnlyList<ToolDefinition>? committed = null;
         foreach (var message in context.Messages)
         {
-            if (message is SystemMessage { Tools: not null } system)
-                committed = system.Tools;
+            if (message is SystemMessage { ToolsAdded: not null } system)
+                committed = system.ToolsAdded;
         }
 
         var declared = committed ?? [];
@@ -204,7 +204,7 @@ public static partial class AgentLoop
         for (var i = pendingMessages.Count - 1; i >= 0; i--)
         {
             if (pendingMessages[i] is not SystemMessage pendingSystem) continue;
-            var replacement = pendingSystem with { Tools = newDeclaration };
+            var replacement = pendingSystem with { ToolsAdded = newDeclaration };
             var result = pendingMessages.ToList();
             result[i] = replacement;
             return result;
@@ -218,7 +218,7 @@ public static partial class AgentLoop
         var changeNote = BuildToolChangeNote(added, removed);
         var declaration = new SystemMessage(
             Content: changeNote.Length > 0 ? changeNote : null,
-            Tools: newDeclaration);
+            ToolsAdded: newDeclaration);
         var withInsert = pendingMessages.ToList();
         withInsert.Insert(insertIndex, declaration);
         return withInsert;
@@ -243,7 +243,11 @@ public static partial class AgentLoop
         AssistantMessageEvent.TextDelta { Partial: var p } => p,
         AssistantMessageEvent.TextEnd { Partial: var p } => p,
         AssistantMessageEvent.ThinkingDelta { Partial: var p } => p,
+        AssistantMessageEvent.ThinkingStart { Partial: var p } => p,
+        AssistantMessageEvent.ThinkingEnd { Partial: var p } => p,
+        AssistantMessageEvent.ToolCallStart { Partial: var p } => p,
         AssistantMessageEvent.ToolCallDelta { Partial: var p } => p,
+        AssistantMessageEvent.ToolCallEnd { Partial: var p } => p,
         AssistantMessageEvent.Done done => done.Message,
         AssistantMessageEvent.Error error => error.Message,
         _ => null,

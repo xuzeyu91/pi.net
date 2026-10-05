@@ -42,7 +42,7 @@ public class ModelsTests
                 Provider: model.Provider,
                 Timestamp: System.DateTimeOffset.Now.ToUnixTimeMilliseconds());
             stream.Push(new AssistantMessageEvent.Start(message));
-            stream.Push(new AssistantMessageEvent.Done(message));
+            stream.Push(new AssistantMessageEvent.Done(Types.StopReason.Stop,message));
             stream.End(message);
             return stream;
         }

@@ -266,7 +266,7 @@ public static class AnthropicMessages
                                     texts.TryAdd(index, new StringBuilder());
                                     texts[index].Append(textFragment);
                                     partial = Rebuild(partial, blockTypes, toolIds, toolNames, toolArgs, texts, thinkings);
-                                    stream.Push(new AssistantMessageEvent.TextDelta(textFragment, sequence, partial));
+                                    stream.Push(new AssistantMessageEvent.TextDelta(0, textFragment, sequence, partial));
                                 }
                                 else if (type == "thinking_delta" && delta["thinking"] is JsonValue thinkValue
                                     && thinkValue.TryGetValue<string>(out var thinkFragment))
@@ -275,7 +275,7 @@ public static class AnthropicMessages
                                     thinkings.TryAdd(index, new StringBuilder());
                                     thinkings[index].Append(thinkFragment);
                                     partial = Rebuild(partial, blockTypes, toolIds, toolNames, toolArgs, texts, thinkings);
-                                    stream.Push(new AssistantMessageEvent.ThinkingDelta(thinkFragment, sequence, null, partial));
+                                    stream.Push(new AssistantMessageEvent.ThinkingDelta(0, thinkFragment, sequence, null, partial));
                                 }
                                 else if (type == "input_json_delta" && delta["partial_json"] is JsonValue jsonValue
                                     && jsonValue.TryGetValue<string>(out var jsonFragment))
@@ -362,7 +362,7 @@ public static class AnthropicMessages
             UsageStats = usage ?? partial.UsageStats,
             Timestamp = timestamp,
         };
-        stream.Push(new AssistantMessageEvent.Done(final));
+        stream.Push(new AssistantMessageEvent.Done(final.StopReason, final));
         stream.End(final);
     }
 

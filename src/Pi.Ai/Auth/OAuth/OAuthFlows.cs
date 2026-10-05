@@ -1,3 +1,4 @@
+using Pi.Ai.Utils;
 namespace Pi.Ai.Auth.OAuth;
 
 /// <summary>

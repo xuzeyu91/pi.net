@@ -1,3 +1,4 @@
+using Pi.Ai.Utils;
 namespace Pi.Ai.Auth.OAuth;
 
 /// <summary>provider 环境值解析：作用域覆盖 → 进程环境。对应 TS <c>getProviderEnvValue</c>（utils/provider-env.ts，Bun 沙箱回退不适用）。</summary>

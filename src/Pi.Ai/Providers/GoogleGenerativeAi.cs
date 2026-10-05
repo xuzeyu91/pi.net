@@ -256,7 +256,7 @@ public static class GoogleGenerativeAi
                 {
                     stopReason = MapStopReason(finish);
                 }
-                stream.Push(new AssistantMessageEvent.TextDelta(string.Empty, DateTimeOffset.Now.ToUnixTimeMilliseconds(), partial with { }));
+                stream.Push(new AssistantMessageEvent.TextDelta(0, string.Empty, DateTimeOffset.Now.ToUnixTimeMilliseconds(), partial with { }));
             }
 
             var final = partial with
@@ -264,7 +264,7 @@ public static class GoogleGenerativeAi
                 StopReason = stopReason,
                 UsageStats = new Usage(inputTokens, outputTokens),
             };
-            stream.Push(new AssistantMessageEvent.Done(final));
+            stream.Push(new AssistantMessageEvent.Done(final.StopReason, final));
             stream.End(final);
         }
         catch (Exception error)
@@ -274,7 +274,7 @@ public static class GoogleGenerativeAi
                 ErrorMessage: error.Message,
                 Api: "google-generative-ai", Provider: model.Provider, Model: model.Id,
                 UsageStats: new Usage(0, 0), Timestamp: timestamp);
-            stream.Push(new AssistantMessageEvent.Error("google-error", failed));
+            stream.Push(new AssistantMessageEvent.Error(failed.StopReason, "google-error", failed));
             stream.End(failed);
         }
     }

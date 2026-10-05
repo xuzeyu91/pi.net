@@ -1,6 +1,7 @@
 using System.Net;
 using System.Text;
 using System.Text.Json.Nodes;
+using Pi.Ai.Utils;
 
 namespace Pi.Ai.Auth.OAuth;
 
