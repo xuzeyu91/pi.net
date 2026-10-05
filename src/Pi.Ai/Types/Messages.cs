@@ -8,11 +8,22 @@ public sealed record TextContent(string Text) : ContentBlock;
 /// <summary>图片内容块（base64 数据），对应 TS <c>ImageContent</c>。</summary>
 public sealed record ImageContent(string Data, string? MimeType = null) : ContentBlock;
 
-/// <summary>思维链内容块，对应 TS <c>ThinkingContent</c>；<c>Signature</c> 为 provider 签名。</summary>
-public sealed record ThinkingContent(string Thinking, string? Signature = null) : ContentBlock;
+/// <summary>思维链内容块，对应 TS <c>ThinkingContent</c>；<c>Signature</c> 为 provider 签名，
+/// <c>Redacted</c> 标记加密不可回放的思维块（anthropic redacted thinking）。</summary>
+public sealed record ThinkingContent(string Thinking, string? Signature = null) : ContentBlock
+{
+    /// <summary>加密思维块：内容不透明，仅同模型可回放。对应 TS <c>redacted</c>。</summary>
+    [JsonPropertyName("redacted")]
+    public bool? Redacted { get; set; }
+}
 
 /// <summary>助手发起的工具调用块，对应 TS <c>ToolCall</c>。</summary>
-public sealed record ToolCallContent(string Id, string Name, object? Arguments) : ContentBlock;
+public sealed record ToolCallContent(string Id, string Name, object? Arguments) : ContentBlock
+{
+    /// <summary>Google 系模型的 thought signature（跨模型回放时须剥离）。对应 TS <c>thoughtSignature</c>。</summary>
+    [JsonPropertyName("thoughtSignature")]
+    public string? ThoughtSignature { get; set; }
+}
 
 /// <summary>
 /// 内容块判别基类。对应 TS <c>TextContent | ImageContent | ThinkingContent | ToolCall</c> 联合类型，

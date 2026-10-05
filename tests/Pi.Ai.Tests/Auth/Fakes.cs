@@ -8,11 +8,19 @@ namespace Pi.Ai.Tests.Auth;
 /// <summary>假 HttpMessageHandler：按队列返回预制响应并记录请求。</summary>
 internal sealed class FakeHttpHandler : HttpMessageHandler
 {
-    private readonly Queue<Func<HttpRequestMessage, HttpResponseMessage>> _responses;
+    private readonly Queue<Func<HttpRequestMessage, HttpResponseMessage>> _responses = new();
+    private readonly Func<HttpRequestMessage, string?, HttpResponseMessage>? _responder;
     private int _unserved;
 
+    /// <summary>队列模式：按序消费预制响应。</summary>
     public FakeHttpHandler(params Func<HttpRequestMessage, HttpResponseMessage>[] responses)
-        => _responses = new Queue<Func<HttpRequestMessage, HttpResponseMessage>>(responses);
+    {
+        foreach (var response in responses) _responses.Enqueue(response);
+    }
+
+    /// <summary>分派模式：队列耗尽后按请求内容生成响应（并行请求需要确定性分派时用）。</summary>
+    public FakeHttpHandler(Func<HttpRequestMessage, string?, HttpResponseMessage> responder)
+        => _responder = responder;
 
     public List<FakeRequest> Requests { get; } = [];
 
@@ -35,6 +43,7 @@ internal sealed class FakeHttpHandler : HttpMessageHandler
 
         if (_responses.Count == 0)
         {
+            if (_responder is not null) return _responder(request, body);
             Interlocked.Increment(ref _unserved);
             return new HttpResponseMessage(HttpStatusCode.ServiceUnavailable) { Content = new StringContent("no fake response") };
         }
