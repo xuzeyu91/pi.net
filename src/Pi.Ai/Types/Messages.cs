@@ -71,6 +71,9 @@ public enum StopReason
 
     /// <summary>被用户中止。</summary>
     Aborted,
+
+    /// <summary>请求被延后，<c>deferred</c> 句柄可续取最终结果。对应 TS <c>deferred</c>。</summary>
+    Deferred,
 }
 
 /// <summary>思考/推理档位。对应 TS <c>ThinkingLevel</c>；xhigh/max 仅部分模型家族支持。</summary>
@@ -161,6 +164,10 @@ public sealed record AssistantMessage(
     /// <summary>provider 侧实际使用的思考档位（pi-messages 回传）。对应 TS <c>providerThinkingLevel</c>。</summary>
     [JsonPropertyName("providerThinkingLevel")]
     public string? ProviderThinkingLevel { get; set; }
+
+    /// <summary>延后响应句柄（StopReason=Deferred 时携带）。对应 TS <c>deferred</c>。</summary>
+    [JsonPropertyName("deferred")]
+    public Pi.Ai.Models.DeferredHandle? Deferred { get; set; }
 
     /// <summary>本条消息中的全部工具调用块（按出现顺序）。</summary>
     [JsonIgnore]

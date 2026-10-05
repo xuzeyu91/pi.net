@@ -8,7 +8,8 @@ public sealed record ModelAuth
 {
     public string? ApiKey { get; init; }
 
-    public IReadOnlyDictionary<string, string>? Headers { get; init; }
+    /// <summary>附加认证头；值为 null 表示抑制同名默认头（对齐 TS 的 <c>null</c> 语义）。</summary>
+    public IReadOnlyDictionary<string, string?>? Headers { get; init; }
 
     public string? BaseUrl { get; init; }
 }

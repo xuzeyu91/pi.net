@@ -6,7 +6,7 @@ Pi 的理念是「让 Pi 适配你的工作流，而不是反过来」：库只�
 
 ## 它能做什么
 
-- **统一的多 Provider LLM API**——OpenAI / Anthropic / Google 原生实现 + 10 家兼容商注册表（kimi、xai、meta、radius、github-copilot 等）；流式事件、工具调用、thinking 预算、图片生成（images）与文本分类（classify）；9 家 provider 的 OAuth 登录流（PKCE / RFC 8628 设备码 / loopback 回调 / 刷新编排）。
+- **统一的多 Provider LLM API**——10 个内建 API 实现（openai-completions / openai-responses / openai-codex-responses / azure-openai-responses / anthropic-messages / google-generative-ai / google-vertex / mistral-conversations / bedrock-converse-stream / pi-messages）+ **42 家内建 provider 全家桶**；流式事件、工具调用、thinking 预算、延后响应（deferred）、图片生成（images）与文本分类（classify）；9 家 provider 的 OAuth 登录流（PKCE / RFC 8628 设备码 / loopback 回调 / 刷新编排）。
 - **Agent 运行时**——Agent 状态机与双队列、agent-loop 主循环、顺序 / 并行工具执行、abort / reset。
 - **MCP 客户端**——JSON-RPC 协议层 + in-memory / stdio / streamable-http 三种传输 + 完整 OAuth 层（元数据发现、PKCE 授权码、动态注册、凭据失效重试）。
 - **应用编排运行时（Chord）**——服务与复制状态、delta 引擎、facets 依赖图与拓扑激活、外部服务源绑定。
@@ -33,7 +33,7 @@ Pi 的理念是「让 Pi 适配你的工作流，而不是反过来」：库只�
 
 ```bash
 dotnet build Pi.slnx    # 0 警告 0 错误
-dotnet test  Pi.slnx    # 254 项测试
+dotnet test  Pi.slnx    # 352 项测试
 ```
 
 测试基于 xunit.v3 + Microsoft.Testing.Platform（MTP）。若 `dotnet test` 未触发执行，直接运行测试产物：
@@ -44,11 +44,12 @@ tests/Pi.<Pkg>.Tests/bin/Debug/net10.0/Pi.<Pkg>.Tests.exe
 
 ## 移植状态
 
-8 个运行时项目，构建 0 警告 0 错误，**254 项测试全部通过**（2026-10-05 实测）。
+8 个运行时项目，构建 0 警告 0 错误，**352 项测试全部通过**（2026-10-05 实测）。
 
 - ✅ 完整移植：telemetry / protocol / agent / mcp
 - ✅ 核心完成：server / client
-- 🚧 主体完成：ai（剩 openai-responses / bedrock / vertex 等变体）、chord（剩 node bundler）
+- ✅ ai 主体齐平：10 个内建 API + 42 家 provider 全家桶 + compat 目录（剩 assistant-message-frame / overflow / node-http-proxy / validation / cli 等零散工具）
+- 🚧 chord（剩 node bundler）
 - ⏳ 未开始：coding-agent / tui / codemode / durable / evals
 
 逐包进度、TS → C# 关键设计差异、CBOR 线上兼容要点与路线图，见 **[docs/porting-status.md](docs/porting-status.md)**。

@@ -1,3 +1,4 @@
+using Pi.Ai.Models;
 using Pi.Ai.Stream;
 using Pi.Ai.Types;
 
@@ -66,6 +67,67 @@ public static class Faux
             _ = Task.Run(() => Replay(stream, response, cancellationToken), cancellationToken);
             return Task.FromResult<IAssistantMessageEventStream>(stream);
         };
+    }
+
+    /// <summary>
+    /// 可变脚本的 faux 内核：注册进 api-registry 后按序回放响应，支持追加。
+    /// 对应 TS <c>providers/faux.ts</c> 的 <c>createFauxCore</c> 核心（响应队列 + 状态）。
+    /// </summary>
+    public sealed class FauxCore
+    {
+        private readonly List<Response> _responses = [];
+        private int _cursor;
+
+        public FauxCore(string? api = null)
+            => Api = api ?? $"faux-{Guid.NewGuid():N}"[..12];
+
+        /// <summary>本内核注册的 api id（唯一，避免并发测试互相覆盖）。</summary>
+        public string Api { get; }
+
+        /// <summary>尚未回放的响应数。对应 TS <c>getPendingResponseCount()</c>。</summary>
+        public int PendingResponseCount => Math.Max(0, _responses.Count - _cursor);
+
+        /// <summary>替换全部脚本并重置游标。对应 TS <c>setResponses()</c>。</summary>
+        public void SetResponses(IEnumerable<Response> responses)
+        {
+            _responses.Clear();
+            _responses.AddRange(responses);
+            _cursor = 0;
+        }
+
+        /// <summary>追加脚本（不改动游标）。对应 TS <c>appendResponses()</c>。</summary>
+        public void AppendResponses(IEnumerable<Response> responses) => _responses.AddRange(responses);
+
+        /// <summary>构造该 api 下的模型描述。对应 TS 的 faux 模型表。</summary>
+        public ModelSpec CreateModel(string id = "faux-1", string name = "Faux Model")
+            => new()
+            {
+                Id = id,
+                Name = name,
+                Api = Api,
+                Provider = "faux",
+                BaseUrl = "https://faux.invalid",
+            };
+
+        /// <summary>按序回放一条响应；脚本耗尽以 error 终态终止。</summary>
+        public IAssistantMessageEventStream Stream(ModelSpec model, CancellationToken cancellationToken = default)
+        {
+            var stream = new AssistantMessageEventStream();
+            if (_cursor >= _responses.Count)
+            {
+                var message = new AssistantMessage([], StopReason.Error,
+                    ErrorMessage: "Faux script exhausted", UsageStats: ZeroUsage,
+                    Model: model.Id, Api: Api, Provider: "faux",
+                    Timestamp: DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+                stream.Push(new AssistantMessageEvent.Error(message.StopReason, "Faux script exhausted", message));
+                stream.End(message);
+                return stream;
+            }
+
+            var response = _responses[_cursor++];
+            _ = Task.Run(() => Replay(stream, response, cancellationToken), cancellationToken);
+            return stream;
+        }
     }
 
     private static async Task Replay(AssistantMessageEventStream stream, Response response, CancellationToken ct)

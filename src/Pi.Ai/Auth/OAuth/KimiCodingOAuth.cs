@@ -52,7 +52,7 @@ public sealed class KimiCodingOAuth(HttpClient? httpClient = null) : IOAuthAuth
     public Task<ModelAuth> ToAuthAsync(Credential.OAuth credential, CancellationToken cancellationToken = default)
         => Task.FromResult(new ModelAuth
         {
-            Headers = new Dictionary<string, string> { ["Authorization"] = $"Bearer {credential.Access}" },
+            Headers = new Dictionary<string, string?> { ["Authorization"] = $"Bearer {credential.Access}" },
         });
 
     private static string GetOauthHost()

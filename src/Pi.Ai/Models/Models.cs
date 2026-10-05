@@ -1,3 +1,5 @@
+using Pi.Ai.Api;
+using Pi.Ai.Auth;
 using Pi.Ai.Stream;
 using Pi.Ai.Types;
 using Pi.Ai.Utils;
@@ -22,8 +24,9 @@ public interface IClassifierProvider
 }
 
 /// <summary>
-/// Provider 运行时单元：元数据 + 模型列举 + 操作（流式）。对应 TS <c>Provider</c>
-/// （models.ts）的核心成员；auth/fetchDeferred/images/classify 在后续阶段接入。
+/// Provider 运行时单元：元数据 + 模型列举 + 操作（流式 / 延后 / 图片 / 分类）。
+/// 对应 TS <c>Provider</c>（models.ts）。可选成员以默认实现给出，能力接口
+/// （<see cref="IImagesProvider"/> / <see cref="IClassifierProvider"/>）承载一次性操作。
 /// </summary>
 public interface IProvider
 {
@@ -33,11 +36,20 @@ public interface IProvider
 
     string? BaseUrl { get; }
 
+    /// <summary>认证语义。对应 TS <c>Provider.auth</c>（工厂产出的 provider 才有）。</summary>
+    ProviderAuth? Auth => null;
+
     /// <summary>
     /// 当前已知 chat 模型（同步）。抛错的实现被 <see cref="Models"/> 视为无模型
     /// （best-effort 契约，对齐 TS <c>getModels()</c>）。
     /// </summary>
     IReadOnlyList<ModelSpec> GetModels();
+
+    /// <summary>全部类别的已知模型（chat + image + classifier）。对应 TS <c>getAllModels()</c>。</summary>
+    IReadOnlyList<ModelSpec> GetAllModels() => GetModels();
+
+    /// <summary>按凭据过滤可用 chat 模型。对应 TS <c>Provider.filterModels</c>。</summary>
+    IReadOnlyList<ModelSpec> FilterModels(IReadOnlyList<ModelSpec> models, Credential? credential) => models;
 
     /// <summary>流式：归一化转录分发给 provider。</summary>
     IAssistantMessageEventStream Stream(ModelSpec model, IReadOnlyList<ChatMessage> context,
@@ -46,6 +58,19 @@ public interface IProvider
     /// <summary>简单流式：文本/图片内容直传。</summary>
     IAssistantMessageEventStream StreamSimple(ModelSpec model, IReadOnlyList<ChatMessage> context,
         IReadOnlyDictionary<string, object?>? options = null);
+
+    /// <summary>
+    /// 续取延后响应。不支持时返回 null（<see cref="Models.StreamDeferred"/> 据此报错）。
+    /// 对应 TS 可选 <c>Provider.fetchDeferred</c>。
+    /// </summary>
+    IAssistantMessageEventStream? StreamDeferred(ModelSpec model, DeferredHandle handle,
+        IReadOnlyDictionary<string, object?>? options = null) => null;
+
+    /// <summary>尽力取消延后响应。对应 TS 可选 <c>Provider.cancelDeferred</c>。</summary>
+    Task CancelDeferredAsync(ModelSpec model, DeferredHandle handle,
+        IReadOnlyDictionary<string, object?>? options = null, CancellationToken cancellationToken = default)
+        => throw new ModelsError(ModelsErrorCode.Provider,
+            $"Provider {Id} does not support deferred responses");
 }
 
 /// <summary>
@@ -192,6 +217,46 @@ public sealed class Models
         return await stream.WaitForDoneAsync(cancellationToken).ConfigureAwait(false);
     }
 
+    /// <summary>全部类别的已知模型（可选 provider 过滤）。对应 TS <c>getAllModels()</c>。</summary>
+    public IReadOnlyList<ModelSpec> GetAllModels(string? provider = null)
+    {
+        if (provider is not null)
+        {
+            return !_providers.TryGetValue(provider, out var entry) ? [] : SafeAllModels(entry);
+        }
+        var models = new List<ModelSpec>();
+        foreach (var entry in _providers.Values) models.AddRange(SafeAllModels(entry));
+        return models;
+    }
+
+    /// <summary>
+    /// 续取延后响应：同步返回事件流，认证解析与 provider 分派在其后运行
+    /// （<see cref="LazyStream.Run"/> 的延迟语义）。对应 TS <c>streamDeferred()</c>。
+    /// </summary>
+    public IAssistantMessageEventStream StreamDeferred(ModelSpec model, DeferredHandle handle,
+        IReadOnlyDictionary<string, object?>? options = null)
+        => LazyStream.Run(model, () =>
+        {
+            var provider = RequireChatProvider(model);
+            var stream = provider.StreamDeferred(model, handle, options)
+                ?? throw new ModelsError(ModelsErrorCode.Provider,
+                    $"Provider {model.Provider} does not support deferred responses");
+            return Task.FromResult(stream);
+        });
+
+    /// <summary>续取延后响应并等待终态。对应 TS <c>fetchDeferred()</c>。</summary>
+    public async Task<AssistantMessage> FetchDeferredAsync(ModelSpec model, DeferredHandle handle,
+        IReadOnlyDictionary<string, object?>? options = null, CancellationToken cancellationToken = default)
+        => await StreamDeferred(model, handle, options).WaitForDoneAsync(cancellationToken).ConfigureAwait(false);
+
+    /// <summary>尽力取消延后响应。对应 TS <c>cancelDeferred()</c>。</summary>
+    public async Task CancelDeferredAsync(ModelSpec model, DeferredHandle handle,
+        IReadOnlyDictionary<string, object?>? options = null, CancellationToken cancellationToken = default)
+    {
+        var provider = RequireChatProvider(model);
+        await provider.CancelDeferredAsync(model, handle, options, cancellationToken).ConfigureAwait(false);
+    }
+
     /// <summary>chat 模型必须归属已注册 provider 且在其目录中。对应 TS <c>requireChatProvider</c>。</summary>
     private IProvider RequireChatProvider(ModelSpec model)
     {
@@ -208,6 +273,19 @@ public sealed class Models
         try
         {
             return provider.GetModels();
+        }
+        catch
+        {
+            return [];
+        }
+    }
+
+    /// <summary>best-effort 取全部类别模型（抛错实现产出零模型）。</summary>
+    private static IReadOnlyList<ModelSpec> SafeAllModels(IProvider provider)
+    {
+        try
+        {
+            return provider.GetAllModels();
         }
         catch
         {

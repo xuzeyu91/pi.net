@@ -6,7 +6,7 @@
 
 ## 逐包移植进度
 
-8 个运行时项目，构建 0 警告 0 错误；**254 项测试全部通过**（2026-10-05 实测）。
+8 个运行时项目，构建 0 警告 0 错误；**352 项测试全部通过**（2026-10-05 实测）。
 
 | TS 包（packages/） | .NET 项目（src/） | 源码规模 | 状态 | 测试 |
 |---|---|---|---|---|
@@ -15,12 +15,12 @@
 | agent | Pi.Agent | 2.5k 行 | ✅ 完整移植（除 proxy.ts）：Agent 类（状态机 / 双队列 / 订阅 / abort / reset）+ agent-loop 主循环 + sequential / parallel 工具执行 | 13 ✅ |
 | mcp | Pi.Mcp | 3.2k 行 | ✅ 完整移植：JSON-RPC 协议层 + 传输层全套（in-memory / stdio / streamable-http）+ McpClient 会话 + OAuth 全层（发现 / PKCE 授权码 / 动态注册 / 凭据失效重试 / MemoryStateStore / 本地回调服务器） | 19 ✅ |
 | server / client | Pi.Server / Pi.Client | 3.1k 行 | ✅ 核心完整移植：RpcServer（TCP listener / 会话循环 / hello 握手校验 / 请求分发 / cancel / service_update 推送）+ RpcClient（握手 / 请求超时与取消 / service 订阅 / 关闭清理），端到端验证通过 | 2 ✅ |
-| ai | Pi.Ai | 26.3k 行 | 🚧 主体完成，详见下节 | 151 ✅ |
+| ai | Pi.Ai | 26.3k 行 | ✅ 主体齐平（10 内建 API + 42 provider + compat），详见下节 | 249 ✅ |
 | chord | Pi.Chord | 8.8k 行 | 🚧 delta 引擎全部 + services 核心 + facets（依赖图 / 拓扑激活 / reload / 服务槽接线 / 外部源绑定：目录发现 → offered 去重 → deferred 延迟源 → 按源分组 open → 就绪门 → 门面绑槽；Require / Use 两阶段）+ Context 值链；仅剩 node bundler | 43 ✅ |
 | coding-agent | （未建） | 85k 行 | ⏳ 待 tui / codemode / durable 之后分阶段移植 | — |
 | tui / codemode / durable / evals | （未建） | 41k 行 | ⏳ 后续阶段 | — |
 
-### Pi.Ai 详情（26.3k 行，151 项测试）
+### Pi.Ai 详情（26.3k 行，249 项测试）
 
 已完成：
 
@@ -33,8 +33,13 @@
 - **OAuth 登录交互层（P26）**：AuthPrompt / AuthEvent 判别联合 + IAuthInteraction / ProviderAuthInteraction + PKCE + loopback 回调服务器（complete 先行 / claimed-settled / cancel / close / 超时）+ RFC 8628 设备码轮询（slow_down 增间隔 / 服务器下发优先）+ OAuthFlows 懒加载注册表。
 - **9 家 provider OAuth 流**：anthropic（browser + copy_code）、openai-codex（browser + device + JWT accountId）、openai-chatgpt（动态 client + 专用 1455 回调）、openrouter（永久 key）、kimi-coding（设备码 + 刷新退避）、meta（设备码 + key 铸造）、radius（browser + device + discovery）、xai（设备码 + refresh 保留）、github-copilot（设备流 + 模型目录 + policy 启用 + proxy-ep baseUrl）。
 - **Credential 扩展字段**：accountId / clientId / scopes / enterpriseUrl / availableModelIds / gatewayConfig / scope。
+- **真实 API 齐平（P28–P32）**：10 个内建 API 全部就位——openai-responses（含 codex / azure 变体）、google 家族（shared + generative-ai + vertex）、mistral-conversations、pi-messages、bedrock-converse-stream（SigV4 + AWS event-stream 二进制帧）。ApiRegistry 内建 10 个 API 注册与 TS `BUILTIN_APIS` 齐平。
+- **deferred 全链路（P33）**：`DeferredHandle` + `AssistantMessage.Deferred` + `StopReason.Deferred`；`ProviderStreams.fetchDeferred/cancelDeferred`；`IProvider.StreamDeferred/CancelDeferredAsync`；`Models.StreamDeferred/FetchDeferredAsync/CancelDeferredAsync`；`Api/Lazy.cs`（`LazyStream` / `LazyApi`）。
+- **createProvider 工厂（P33）**：`ProviderFactory.Create` —— 单 api 服务全部 chat 模型、api 映射按 `model.api` 分派（缺条目 → error 流）、`images`/`classifiers` 一次性操作分派（缺条目 → error 结果）、`filterModels` 凭据策略、至少一个实现校验。
+- **provider 全家桶（P33）**：42 家内建 provider（`BuiltinProviders.Create`），含 api 映射家（fireworks / github-copilot / opencode / opencode-go / openrouter / cloudflare-ai-gateway）、纯分类家（typesafe / cloudflare-workers-ai）、动态家（radius）；非标准认证（bedrock AWS 凭据链、vertex ADC、cloudflare 按字段合并、anthropic auth-token/联合身份）；`All`（all.ts）：`getBuiltinModel(s)` / `getBuiltinImageModel(s)` / `getBuiltinClassifierModel(s)` / `getBuiltinProviders` / `getAllBuiltinModels` / `builtinProviders()` / `builtinModels()`。
+- **compat 目录集成（P33）**：`Compat.Stream/CompleteAsync/StreamSimple/CompleteSimpleAsync`（环境密钥注入 + 内建 provider 归属判定 + cloudflare 未认证回退）、`GetModel/GetModels/GetProviders` 别名、`RegisterFauxProvider`；`EnvApiKeys`（env-api-keys.ts：`findEnvKeys`/`getEnvApiKey` + 全 env 映射 + Vertex ADC + Bedrock 多凭据源 + `<authenticated>` 标记）。
 
-剩余：openai-responses / azure / bedrock / vertex / mistral-conversations / cloudflare / pi-messages 等 API；deferred；compat.ts / legacy-api-aliases 兼容层。
+剩余（零散工具，非核心链路）：`assistant-message-frame` / `overflow` / `node-http-proxy` / `validation` / `cli`。
 
 ## 目录约定
 
@@ -57,6 +62,9 @@ pi.net/
 5. **JS Proxy 不可读对象 → 抛异常的派生类**。conformance 的 passivity/原子性用例用"枚举即抛"的 `SpanAttributes` 派生类模拟，行为等价（payload 失败被吞、已有状态不变）。
 6. **扩展系统改 C# 原生插件**（用户决策）：原版 jiti 运行时加载 TS 扩展不可原生等价，改为 AssemblyLoadContext 动态加载，牺牲 TS 扩展生态兼容。
 7. **jstruct 侧的宿主差异**：`unix socket` → Windows 上 named pipe / `UnixDomainSocketEndPoint` 双轨；`cross-spawn` → `System.Diagnostics.Process`；`undici/fetch` → `HttpClient`；`diff` → DiffPlex 或自实现 Myers（待定）；`quickjs-wasi`（codemode）→ Jint/ClearScript（待定，用户已选 C# 插件优先）。
+8. **compat 的 api-dispatch 回退走简单选项桥接**：TS `compat.stream` 把完整选项透传给注册表里的 API 实现；C# 的 `ApiProvider` 完整选项入口是 wire `JsonObject`（api-dispatch 用 JSON 反序列化 provider 专属选项），而 provider 边界统一为 `IReadOnlyDictionary<string, object?>`。compat 因此把字典选项经 `ProviderStreamOptions.FromDictionary` 桥接为 `SimpleStreamOptions` 再派发；apiKey / baseUrl / headers / env / reasoning 等公共字段语义一致。内建 provider 归属判定用引用比较快照（TS 的 `!==`），未注册的内建 api（anthropic-messages / openai-completions）快照为 null，因此「未被覆盖」与「被覆盖」都判定正确。
+9. **Radius 动态目录的持久化**：TS 经 ModelsStore 的 `context.publish` 事务化持久化刷新结果；C# 侧持久化上下文（ModelsStore）尚未移植，`RadiusProvider.RefreshModelsAsync` 只做内存更新，持久化由调用方按需处理。
+10. **ModelAuth.Headers 的 null 抑制**：TS 允许 `Authorization: null` 抑制同名默认头；C# 的 `ModelAuth.Headers` 值类型为 `string?` 以保留该语义（Cloudflare AI Gateway 用 `cf-aig-authorization` 并抑制默认 Authorization / x-api-key）。
 
 ## CBOR 线上兼容要点（已测试锁定）
 
@@ -66,7 +74,7 @@ pi.net/
 
 ## 路线图
 
-1. **ai 包收尾**：openai-responses / azure / bedrock / vertex / mistral-conversations / cloudflare / pi-messages 等 API 与 deferred → compat.ts / legacy-api-aliases 兼容层。
+1. **ai 包收尾**：核心链路已齐平（10 内建 API + 42 provider 全家桶 + deferred + compat）。剩余零散工具：`assistant-message-frame` / `overflow`（上下文溢出策略）/ `node-http-proxy` / `validation` / `cli`。
 2. **chord 包**：仅剩 node bundler（esbuild 打包器的 C# 等价物，非运行时核心）。
 3. **server/client**：chord services 集成（session-router、多服务路由）与 unix socket / named pipe 监听器。
 4. **agent 包**：proxy.ts。
