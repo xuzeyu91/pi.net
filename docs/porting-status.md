@@ -6,13 +6,13 @@
 
 ## 逐包移植进度
 
-9 个运行时项目，构建 0 警告 0 错误；**493 项测试全部通过**（2026-10-05 实测；沙箱环境限制导致的 HttpListener / domain socket / 真实浏览器回调类失败见文末说明）。
+9 个运行时项目，构建 0 警告 0 错误；**498 项测试全部通过**（2026-10-05 实测；沙箱环境限制导致的 HttpListener / domain socket / 真实浏览器回调类失败见文末说明）。
 
 | TS 包（packages/） | .NET 项目（src/） | 源码规模 | 状态 | 测试 |
 |---|---|---|---|---|
 | telemetry | **Pi.Telemetry** | 0.9k 行 | ✅ 完整移植，含 conformance 套件 | 12 ✅ |
 | protocol | **Pi.Protocol** | 0.9k 行 | ✅ 完整移植：CBOR / framing / codec | 14 ✅ |
-| agent | Pi.Agent | 2.5k 行 | ✅ 完整移植（除 proxy.ts）：Agent 类（状态机 / 双队列 / 订阅 / abort / reset）+ agent-loop 主循环 + sequential / parallel 工具执行 | 13 ✅ |
+| agent | Pi.Agent | 2.5k 行 | ✅ 完整移植：Agent 类（状态机 / 双队列 / 订阅 / abort / reset）+ agent-loop 主循环 + sequential / parallel 工具执行 + **proxy.ts**（streamProxy：Bearer 认证 / SSE 重建 partial / EOF 无终态补 error / 取消归一 aborted） | 18 ✅ |
 | mcp | Pi.Mcp | 3.2k 行 | ✅ 完整移植：JSON-RPC 协议层 + 传输层全套（in-memory / stdio / streamable-http）+ McpClient 会话 + OAuth 全层（发现 / PKCE 授权码 / 动态注册 / 凭据失效重试 / MemoryStateStore / 本地回调服务器） | 19 ✅ |
 | server / client | Pi.Server / Pi.Client | 3.1k 行 | ✅ 完整移植：Pi.Server（types / errors / connection / listener / session-router / server.ts / transports/unix/*）+ Pi.Client（types / errors / transport / promise / connection / client.ts / unix.ts，含本地服务器发现）；仅 `testing/*` 假件未做 | 27 ✅ |
 | ai | Pi.Ai | 26.3k 行 | ✅ 完整移植（10 内建 API + 42 provider + compat + models-store + 全部 utils + cli） | 283 ✅ |
@@ -162,7 +162,7 @@ pi.net/
 1. **ai 包**：✅ 已完成（目录结构 1:1 对齐 pi）。
 2. **chord 包**：✅ 已完成（除 `index.ts` 桶文件）。
 3. **server/client**：✅ 已完成（仅 `testing/*` 的 host/client/server 假件未做——真实 Unix 域套接字端到端已覆盖同等链路）。
-4. **agent 包**：proxy.ts。
+4. **agent 包**：✅ 已完成（P44 补齐 proxy.ts：`Proxy.StreamProxy` + `ProxyAssistantMessageEvent` wire 判别联合 + `ProxyStreamOptions`；SSE 复用 `AiSse`，`ProxyEventJson` 宽容解析对齐 TS `as` 语义）。
 5. **codemode**：✅ 已完成（纯逻辑层 + 执行层沙箱编排；仅 QuickJS wasm 的 VM 执行经 `ICodemodeJsEngine` 注入点外置，缺省实现明确拒绝）。
 6. **coding-agent**：85k 行主产品（会话 / 工具系统 / 技能 / 主题 / RPC 模式），最后阶段按"核心命令最小闭环 → 逐步补全"推进。
 7. **tui / durable / evals**：39k 行，最后阶段。
@@ -171,10 +171,11 @@ pi.net/
 
 `dotnet build Pi.slnx` 需加 `-m:1`：并行构建时沙箱内 MSBuild 工作节点会触发 `StackOverflowException`（单线程构建 0 警告 0 错误，2m45s）。
 
-以下测试失败由沙箱环境限制导致，与移植代码无关（2026-10-05 实测）：
+以下测试失败由沙箱环境限制导致，与移植代码无关（2026-10-05 逐片实测）：
 
 - `Pi.Mcp.Tests` 4 项：`HttpListenerException : 句柄无效`（沙箱禁止监听端口）。
 - `Pi.Server.Tests` 1 项：domain socket 路径超出 108 字符上限（沙箱临时目录路径过长）。
-- `Pi.Ai.Tests` 1 项：`RadiusOAuthTests.BrowserLoginReceivesRealLoopbackCallback` 等待真实浏览器 loopback 回调，无法在无头沙箱内完成。
+- `Pi.Ai.Tests` 21 项：测试夹具用 `HttpListener` 起本地假服务器，沙箱禁端口导致构造/启动即失败（OAuthCallbackServer 7、OpenRouter 2、OpenAiChatGpt 2、WaitForCallbackOrManualInput 3、GoogleGenerativeAi 1、AnthropicMessages 3、OpenAiCompletions 3）。
+- `Pi.Ai.Tests` 1 项挂起：`RadiusOAuthTests.BrowserLoginReceivesRealLoopbackCallback` 等待 loopback 回调，`while (authUrl is null)` 在无头环境无限循环（该类其余 3 项随该类整体跳过，未在本次实测）。
 
-其余 8 个运行时项目与 5 个测试程序集（Agent / Ai 除上述 1 项 / Chord / Codemode / Mcp 除上述 4 项 / Protocol / Server 除上述 1 项 / Telemetry）全部通过。
+其余 8 个运行时项目与 5 个测试程序集（Agent 18/18 / Ai 除上述 22 项 / Chord 86/86 / Codemode 39/39 / Mcp 除上述 4 项 / Protocol 14/14 / Server 除上述 1 项 / Telemetry 12/12）全部通过。
