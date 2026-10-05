@@ -73,3 +73,33 @@ public class ProviderRegistryTests
             => Task.FromResult(false);
     }
 }
+
+
+/// <summary>专属 provider（anthropic/google）注册测试。</summary>
+public class DedicatedProviderTests
+{
+    [Fact]
+    public void CreatesDedicatedProvidersWithCatalog()
+    {
+        var anthropic = (AnthropicProvider)DedicatedProviderRegistry.CreateDedicated("anthropic");
+        Assert.Equal("anthropic-messages", anthropic.GetModels().First(m => m.Id == "claude-sonnet-4-5").Api);
+        var google = (GoogleProvider)DedicatedProviderRegistry.CreateDedicated("google");
+        // google 无嵌入数据 → 空目录兜底。
+        Assert.Empty(google.GetModels());
+    }
+
+    [Fact]
+    public void RegisterBuiltinsCoversDedicatedAndCompatible()
+    {
+        var models = new Models();
+        DedicatedProviderRegistry.RegisterBuiltins(models);
+        // 2 专属 + 10 兼容家。
+        Assert.True(models.GetProviders().Count >= 12);
+        Assert.NotNull(models.GetProvider("anthropic"));
+        Assert.NotNull(models.GetProvider("google"));
+        Assert.NotNull(models.GetProvider("deepseek"));
+        // 三家主力都可查到模型。
+        Assert.NotNull(models.GetModel("anthropic", "claude-sonnet-4-5"));
+        Assert.NotNull(models.GetModel("deepseek", "deepseek-chat"));
+    }
+}
