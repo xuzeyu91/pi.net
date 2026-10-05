@@ -4,33 +4,6 @@ using Pi.Chord.Context;
 namespace Pi.Chord.Facets;
 
 /// <summary>
-/// 延迟绑定的单例服务槽：装配前 view 返回的句柄在 bind 前访问会抛错。
-/// 对应 TS <c>ServiceSlot</c>（facets/host.ts 内部类）。
-/// </summary>
-internal sealed class ServiceSlot
-{
-    private readonly string _serviceId;
-    private object? _target;
-
-    public ServiceSlot(string serviceId) => _serviceId = serviceId;
-
-    /// <summary>绑定实现（装配阶段调用）。</summary>
-    public void Bind(object target) => _target = target;
-
-    /// <summary>解除绑定。</summary>
-    public void Unbind() => _target = null;
-
-    /// <summary>取实现；未绑定或访问被拒时抛错（对齐 TS view 的 assertAccess 语义）。</summary>
-    public T View<T>(Action assertAccess)
-    {
-        assertAccess();
-        if (_target is null)
-            throw new InvalidOperationException($"Service {_serviceId} is not bound yet");
-        return (T)_target;
-    }
-}
-
-/// <summary>
 /// host 级服务槽：单例槽 + keyed 源登记。对应 TS <c>HostServiceSlots</c>。
 /// </summary>
 internal sealed class HostServiceSlots
