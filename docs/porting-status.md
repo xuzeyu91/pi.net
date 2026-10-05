@@ -6,7 +6,7 @@
 
 ## 逐包移植进度
 
-9 个运行时项目，构建 0 警告 0 错误；**498 项测试全部通过**（2026-10-05 实测；沙箱环境限制导致的 HttpListener / domain socket / 真实浏览器回调类失败见文末说明）。
+10 个运行时项目，构建 0 警告 0 错误；**516 项测试全部通过**（2026-10-05 实测；沙箱环境限制导致的 HttpListener / domain socket / 真实浏览器回调类失败见文末说明）。
 
 | TS 包（packages/） | .NET 项目（src/） | 源码规模 | 状态 | 测试 |
 |---|---|---|---|---|
@@ -19,7 +19,8 @@
 | chord | Pi.Chord | 8.8k 行 | ✅ 完整移植（delta / services / facets / Context / node 层 / json / api.ts / handle.ts / **consumer.ts + loopback.ts**）；仅 `index.ts` 桶文件未做 | 86 ✅ |
 | coding-agent | （未建） | 85k 行 | ⏳ 待 tui / codemode / durable 之后分阶段移植 | — |
 | codemode | **Pi.Codemode** | 1.7k 行 | ✅ 完整移植：identifier / types / source（@options 解析 + Lark 语法）/ declarations（JSON Schema → TypeScript）/ **runtime/protocol + runtime/host（沙箱编排）+ runtime/prelude-source + Wasm 加载**；仅 QuickJS wasm 的 VM 执行经 `ICodemodeJsEngine` 注入点外置（缺省 `UnsupportedCodemodeJsEngine` 明确拒绝） | 39 ✅ |
-| tui / durable / evals | （未建） | 39k 行 | ⏳ 后续阶段 | — |
+| durable | **Pi.Durable** | 18.2k 行 | 🚧 基础层：强类型 ID / DocumentSemantics（含 fork）/ Doc 定义与令牌 / Entry / Submission / Task / Document 记录族 / StorageWrite / CommitChange / 6 内置条目 / documents 地址解析与校验 / truncate；Tx·Session·Storage·TaskRuntime 接口（依赖 TS Draft 代理与 env/harness 类型）待后续阶段 | 18 ✅ |
+| tui / evals | （未建） | 21k 行 | ⏳ 后续阶段 | — |
 
 ### Pi.Ai 详情（26.3k 行，283 项测试）
 
@@ -165,7 +166,7 @@ pi.net/
 4. **agent 包**：✅ 已完成（P44 补齐 proxy.ts：`Proxy.StreamProxy` + `ProxyAssistantMessageEvent` wire 判别联合 + `ProxyStreamOptions`；SSE 复用 `AiSse`，`ProxyEventJson` 宽容解析对齐 TS `as` 语义）。
 5. **codemode**：✅ 已完成（纯逻辑层 + 执行层沙箱编排；仅 QuickJS wasm 的 VM 执行经 `ICodemodeJsEngine` 注入点外置，缺省实现明确拒绝）。
 6. **coding-agent**：85k 行主产品（会话 / 工具系统 / 技能 / 主题 / RPC 模式），最后阶段按"核心命令最小闭环 → 逐步补全"推进。
-7. **tui / durable / evals**：39k 行，最后阶段。
+7. **durable / tui / evals**：durable 18.2k 行进行中（P45 基础层已完成；后续 storage → session → harness → env → tools → testing），tui / evals 21k 行最后阶段。
 
 ## 测试环境限制说明（沙箱）
 
