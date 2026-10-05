@@ -64,6 +64,9 @@ public record ImagesOptions
     /// <summary>包含进 API 请求的元数据；provider 各取所需，忽略其余。对应 TS <c>metadata</c>。</summary>
     public JsonObject? Metadata { get; init; }
 
+    /// <summary>作用域环境变量覆盖。对应 TS <c>env</c>。</summary>
+    public IReadOnlyDictionary<string, string>? Env { get; init; }
+
     /// <summary>发送前检查/替换请求载荷；返回 null 表示不变。对应 TS <c>onPayload</c>。</summary>
     public Func<JsonObject, ModelSpec, Task<JsonObject?>>? OnPayload { get; init; }
 

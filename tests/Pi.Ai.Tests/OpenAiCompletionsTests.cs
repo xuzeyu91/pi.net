@@ -1,7 +1,7 @@
 using System.Net;
 using System.Text.Json.Nodes;
 using System.Text;
-using Pi.Ai.Providers;
+using Pi.Ai.Api;
 using Pi.Ai.Types;
 using Xunit;
 

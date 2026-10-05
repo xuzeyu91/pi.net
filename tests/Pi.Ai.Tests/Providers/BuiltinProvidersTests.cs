@@ -10,10 +10,13 @@ namespace Pi.Ai.Tests.Providers;
 /// <summary>内建 provider 全家桶（42 家）与 all.ts 目录读取测试。</summary>
 public class BuiltinProvidersTests
 {
+
+    /// <summary>按 id 从内建全集取 provider（对应 TS 各家工厂的调用）。</summary>
+    private static IProvider Create(string id) => All.BuiltinProviders().First(provider => provider.Id == id);
     [Fact]
     public void CatalogHasAllFortyTwoProviders()
     {
-        var ids = BuiltinProviders.ProviderIds;
+        var ids = All.GetBuiltinProviders();
         Assert.Equal(42, ids.Count);
         Assert.Equal(ids.Count, ids.Distinct(StringComparer.Ordinal).Count());
         Assert.Equal(ids, All.GetBuiltinProviders());
@@ -26,9 +29,9 @@ public class BuiltinProvidersTests
     [Fact]
     public void EveryProviderConstructsWithMetadataAndAuth()
     {
-        foreach (var id in BuiltinProviders.ProviderIds)
+        foreach (var id in All.GetBuiltinProviders())
         {
-            var provider = BuiltinProviders.Create(id);
+            var provider = Create(id);
             Assert.Equal(id, provider.Id);
             Assert.False(string.IsNullOrWhiteSpace(provider.Name));
             Assert.NotNull(provider.Auth);
@@ -40,16 +43,16 @@ public class BuiltinProvidersTests
     [Fact]
     public void KnownBaseUrlsMatchUpstreamDefinitions()
     {
-        Assert.Equal("https://api.deepseek.com", BuiltinProviders.Create("deepseek").BaseUrl);
-        Assert.Equal("https://api.anthropic.com", BuiltinProviders.Create("anthropic").BaseUrl);
-        Assert.Equal("https://api.mistral.ai", BuiltinProviders.Create("mistral").BaseUrl);
-        Assert.Equal("https://api.z.ai/api/coding/paas/v4", BuiltinProviders.Create("zai").BaseUrl);
-        Assert.Equal("https://open.bigmodel.cn/api/coding/paas/v4", BuiltinProviders.Create("zai-coding-cn").BaseUrl);
-        Assert.Equal("https://api.individual.githubcopilot.com", BuiltinProviders.Create("github-copilot").BaseUrl);
+        Assert.Equal("https://api.deepseek.com", Create("deepseek").BaseUrl);
+        Assert.Equal("https://api.anthropic.com", Create("anthropic").BaseUrl);
+        Assert.Equal("https://api.mistral.ai", Create("mistral").BaseUrl);
+        Assert.Equal("https://api.z.ai/api/coding/paas/v4", Create("zai").BaseUrl);
+        Assert.Equal("https://open.bigmodel.cn/api/coding/paas/v4", Create("zai-coding-cn").BaseUrl);
+        Assert.Equal("https://api.individual.githubcopilot.com", Create("github-copilot").BaseUrl);
         // 无静态 baseUrl 的家（Bedrock / Vertex / Azure 部署名由模型携带）。
-        Assert.Null(BuiltinProviders.Create("amazon-bedrock").BaseUrl);
-        Assert.Null(BuiltinProviders.Create("google-vertex").BaseUrl);
-        Assert.Null(BuiltinProviders.Create("azure-openai-responses").BaseUrl);
+        Assert.Null(Create("amazon-bedrock").BaseUrl);
+        Assert.Null(Create("google-vertex").BaseUrl);
+        Assert.Null(Create("azure-openai-responses").BaseUrl);
     }
 
     [Fact]
@@ -84,7 +87,7 @@ public class BuiltinProvidersTests
     public async Task ImagesAndClassifierCapabilityDistinguishedByErrorText()
     {
         // deepseek 无 images 映射 → 「does not support image generation」。
-        var deepseek = BuiltinProviders.Create("deepseek");
+        var deepseek = Create("deepseek");
         var deepseekImage = await ((IImagesProvider)deepseek).GenerateImagesAsync(
             new ModelSpec { Id = "i", Name = "i", Api = "openrouter-images", Provider = "deepseek", BaseUrl = "" },
             new ImagesContext { Input = [] }, null, default);
@@ -92,7 +95,7 @@ public class BuiltinProvidersTests
         Assert.Contains("does not support image generation", deepseekImage.ErrorMessage);
 
         // openrouter 有 images 映射但 api 不匹配 → 「has no image generation implementation」。
-        var openrouter = BuiltinProviders.Create("openrouter");
+        var openrouter = Create("openrouter");
         var openrouterImage = await ((IImagesProvider)openrouter).GenerateImagesAsync(
             new ModelSpec { Id = "i", Name = "i", Api = "unknown-images", Provider = "openrouter", BaseUrl = "" },
             new ImagesContext { Input = [] }, null, default);
@@ -100,7 +103,7 @@ public class BuiltinProvidersTests
         Assert.Contains("has no image generation implementation", openrouterImage.ErrorMessage);
 
         // typesafe 只有分类器：chat 流走「无 api 实现」错误路径。
-        var typesafe = BuiltinProviders.Create("typesafe");
+        var typesafe = Create("typesafe");
         var typesafeStream = await typesafe.StreamSimple(
             new ModelSpec { Id = "c", Name = "c", Api = "typesafe-system-one", Provider = "typesafe", BaseUrl = "" },
             [], null).WaitForDoneAsync();
@@ -111,7 +114,7 @@ public class BuiltinProvidersTests
     [Fact]
     public void GitHubCopilotFiltersModelsByCredential()
     {
-        var provider = BuiltinProviders.Create("github-copilot");
+        var provider = Create("github-copilot");
         var models = new List<ModelSpec>
         {
             new() { Id = "gpt-4o", Name = "GPT-4o", Api = "openai-completions", Provider = "github-copilot", BaseUrl = "" },
@@ -167,7 +170,7 @@ public class BuiltinProvidersTests
     public void ModelsGetAllModelsCoversEveryType()
     {
         var models = new Pi.Ai.Models.Models();
-        models.SetProvider(BuiltinProviders.Create("deepseek"));
+        models.SetProvider(Create("deepseek"));
         var chat = models.GetModels("deepseek");
         Assert.Equal(chat.Count, models.GetAllModels("deepseek").Count);
     }

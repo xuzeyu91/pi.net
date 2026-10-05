@@ -39,7 +39,7 @@ public sealed record FauxProviderRegistration
 /// （带环境密钥注入）、api 注册表、生成目录读取（<c>getModel</c>/<c>getModels</c>/<c>getProviders</c>）。
 /// 对应 TS <c>compat.ts</c>——新代码应使用 <c>CreateModels()</c> 与 provider 工厂。
 /// </summary>
-public static class Compat
+public static class CompatApi
 {
     /// <summary>内建 API id（与 TS <c>BUILTIN_APIS</c> 的 10 个内建 API 一致）。</summary>
     public static readonly IReadOnlyList<string> BuiltinApiIds =
@@ -59,7 +59,7 @@ public static class Compat
     private static readonly Dictionary<string, ApiProvider?> BuiltinApiInstances = new(StringComparer.Ordinal);
     private static readonly Pi.Ai.Models.Models CompatModels = All.BuiltinModels();
 
-    static Compat() => RegisterBuiltInApiProviders();
+    static CompatApi() => RegisterBuiltInApiProviders();
 
     /// <summary>
     /// 注册内建 API 实现（不覆盖已有条目：compat 可能晚于测试/扩展加载），

@@ -1,6 +1,7 @@
 using System.Text.Json.Nodes;
 using Pi.Ai.Api;
 using Pi.Ai.Models;
+using Pi.Ai.Providers;
 using Pi.Ai.Types;
 using Pi.Ai.Tests.Auth;
 using Pi.Ai.Utils;

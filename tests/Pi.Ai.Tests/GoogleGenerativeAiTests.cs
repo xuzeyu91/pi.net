@@ -4,8 +4,6 @@ using Pi.Ai.Api;
 using Pi.Ai.Models;
 using Pi.Ai.Types;
 using Pi.Ai.Utils;
-using Pi.Ai.Providers;
-using ProviderHttpException = Pi.Ai.Providers.ProviderHttpException;
 using Xunit;
 
 namespace Pi.Ai.Tests;
@@ -240,22 +238,22 @@ public class GoogleGenerativeAiTests
     public async Task RetryPolicyRetriesRetryableStatuses()
     {
         var attempts = 0;
-        var result = await RetryPolicy.ExecuteAsync(async () =>
+        var result = await ProviderRetry.RetryAsync(async () =>
         {
             attempts++;
             if (attempts < 3) throw new ProviderHttpException(429, "rate limited");
             return "ok";
-        }, maxRetries: 3, maxRetryDelayMs: 10);
+        }, new ProviderRetryOptions { MaxRetries = 3, MaxRetryDelayMs = 10 });
         Assert.Equal("ok", result);
         Assert.Equal(3, attempts);
 
         // 不可重试状态立即抛出。
         attempts = 0;
-        await Assert.ThrowsAsync<ProviderHttpException>(() => RetryPolicy.ExecuteAsync<object?>(async () =>
+        await Assert.ThrowsAsync<ProviderHttpException>(() => ProviderRetry.RetryAsync<object?>(async () =>
         {
             attempts++;
             throw new ProviderHttpException(400, "bad request");
-        }, maxRetries: 3));
+        }, new ProviderRetryOptions { MaxRetries = 3 }));
         Assert.Equal(1, attempts);
     }
 }

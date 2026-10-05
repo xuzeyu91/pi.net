@@ -1,6 +1,6 @@
 using Pi.Ai.Models;
 using Pi.Ai.Api;
-using Pi.Ai.Images;
+using Pi.Ai;
 using Pi.Ai.Types;
 
 namespace Pi.Ai.Providers.Images;

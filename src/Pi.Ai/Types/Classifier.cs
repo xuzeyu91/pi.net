@@ -143,6 +143,9 @@ public record ClassifierOptions
     /// </summary>
     public double? Temperature { get; init; }
 
+    /// <summary>作用域环境变量覆盖。对应 TS <c>env</c>。</summary>
+    public IReadOnlyDictionary<string, string>? Env { get; init; }
+
     public Func<JsonObject, ModelSpec, Task<JsonObject?>>? OnPayload { get; init; }
 
     public Func<ProviderResponse, ModelSpec, Task>? OnResponse { get; init; }

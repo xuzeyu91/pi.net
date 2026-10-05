@@ -33,7 +33,7 @@ Pi 的理念是「让 Pi 适配你的工作流，而不是反过来」：库只�
 
 ```bash
 dotnet build Pi.slnx    # 0 警告 0 错误
-dotnet test  Pi.slnx    # 352 项测试
+dotnet test  Pi.slnx    # 356 项测试
 ```
 
 测试基于 xunit.v3 + Microsoft.Testing.Platform（MTP）。若 `dotnet test` 未触发执行，直接运行测试产物：
@@ -44,7 +44,7 @@ tests/Pi.<Pkg>.Tests/bin/Debug/net10.0/Pi.<Pkg>.Tests.exe
 
 ## 移植状态
 
-8 个运行时项目，构建 0 警告 0 错误，**352 项测试全部通过**（2026-10-05 实测）。
+8 个运行时项目，构建 0 警告 0 错误，**356 项测试全部通过**（2026-10-05 实测）。
 
 - ✅ 完整移植：telemetry / protocol / agent / mcp
 - ✅ 核心完成：server / client

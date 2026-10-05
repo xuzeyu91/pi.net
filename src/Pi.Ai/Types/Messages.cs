@@ -167,7 +167,7 @@ public sealed record AssistantMessage(
 
     /// <summary>延后响应句柄（StopReason=Deferred 时携带）。对应 TS <c>deferred</c>。</summary>
     [JsonPropertyName("deferred")]
-    public Pi.Ai.Models.DeferredHandle? Deferred { get; set; }
+    public DeferredHandle? Deferred { get; set; }
 
     /// <summary>本条消息中的全部工具调用块（按出现顺序）。</summary>
     [JsonIgnore]
