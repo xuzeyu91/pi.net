@@ -135,6 +135,13 @@ public static class ApiRegistry
                 model, context, FromJson<MistralOptions>(options), client, ct),
             StreamSimple = MistralConversations.StreamSimple,
         });
+        yield return ("bedrock-converse-stream", new ApiProvider
+        {
+            Api = "bedrock-converse-stream",
+            Stream = (model, context, options, client, ct) => BedrockConverseStream.Stream(
+                model, context, FromJson<BedrockOptions>(options), client, ct),
+            StreamSimple = BedrockConverseStream.StreamSimple,
+        });
         yield return ("pi-messages", new ApiProvider
         {
             Api = "pi-messages",
