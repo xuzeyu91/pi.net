@@ -5,9 +5,6 @@ using Pi.Protocol;
 
 namespace Pi.Server;
 
-/// <summary>服务端错误。对应 packages/server/src/errors.ts。</summary>
-public sealed class ServerError(string message) : Exception(message);
-
 /// <summary>
 /// 服务器请求处理器：方法名 → 处理函数。参数为 CBOR 解码出的 call 字典
 /// （plain JSON 值模型，对应 TS 里 opaque 的 call 对象）；返回结果值，

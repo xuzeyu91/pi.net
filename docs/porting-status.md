@@ -6,7 +6,7 @@
 
 ## 逐包移植进度
 
-8 个运行时项目，构建 0 警告 0 错误；**429 项测试全部通过**（2026-10-05 实测）。
+8 个运行时项目，构建 0 警告 0 错误；**439 项测试全部通过**（2026-10-05 实测）。
 
 | TS 包（packages/） | .NET 项目（src/） | 源码规模 | 状态 | 测试 |
 |---|---|---|---|---|
@@ -14,7 +14,7 @@
 | protocol | **Pi.Protocol** | 0.9k 行 | ✅ 完整移植：CBOR / framing / codec | 14 ✅ |
 | agent | Pi.Agent | 2.5k 行 | ✅ 完整移植（除 proxy.ts）：Agent 类（状态机 / 双队列 / 订阅 / abort / reset）+ agent-loop 主循环 + sequential / parallel 工具执行 | 13 ✅ |
 | mcp | Pi.Mcp | 3.2k 行 | ✅ 完整移植：JSON-RPC 协议层 + 传输层全套（in-memory / stdio / streamable-http）+ McpClient 会话 + OAuth 全层（发现 / PKCE 授权码 / 动态注册 / 凭据失效重试 / MemoryStateStore / 本地回调服务器） | 19 ✅ |
-| server / client | Pi.Server / Pi.Client | 3.1k 行 | ✅ 核心完整移植：RpcServer（TCP listener / 会话循环 / hello 握手校验 / 请求分发 / cancel / service_update 推送）+ RpcClient（握手 / 请求超时与取消 / service 订阅 / 关闭清理），端到端验证通过 | 2 ✅ |
+| server / client | Pi.Server / Pi.Client | 3.1k 行 | 🚧 Pi.Server：RpcServer 核心（TCP / 会话循环 / hello 校验 / 分发 / cancel / 推送）+ **types.ts / errors.ts / connection.ts / listener.ts / session-router.ts**；Pi.Client：RpcClient 核心。剩 `server.ts` / `transports/unix/*` / `testing/*` 与 client 包剩余文件 | 12 ✅ |
 | ai | Pi.Ai | 26.3k 行 | ✅ 完整移植（10 内建 API + 42 provider + compat + models-store + 全部 utils + cli） | 283 ✅ |
 | chord | Pi.Chord | 8.8k 行 | ✅ 完整移植（delta / services / facets / Context / node 层 / json / api.ts / handle.ts / **consumer.ts + loopback.ts**）；仅 `index.ts` 桶文件未做 | 86 ✅ |
 | coding-agent | （未建） | 85k 行 | ⏳ 待 tui / codemode / durable 之后分阶段移植 | — |
@@ -125,8 +125,9 @@ pi.net/
 11. **chord 打包/加载的两处注入点**：TS 用 esbuild 打包、用 `node:vm` 的 `compileFunction` 执行 bundle；C# 无等价物，故拆成 `IFacetEntryBundler`（单 entry 打包，请求里带全量 esbuild 配置：banner / format cjs / entryNames / outExtension / supported dynamic-import=false / target 缺省）与 `IFacetModuleHost`（CommonJS 模块执行）两个接口。默认模块宿主 `UnsupportedFacetModuleHost` 明确拒绝 JS bundle（扩展已改为 AssemblyLoadContext 插件路线），注入宿主即可运行 JavaScript bundle。
 12. **chord `FacetHost.Services` 的前置条件**：TS 的 `assembleProviders()` 无条件创建 `RemoteServiceProvider`（目录含全部非 local 供给），因此 `kernel.provider` 恒可用；C# 因无法在编译期约束「实现必须是成员字典」，只在存在**可发布供给**（成员字典且成员为 `Func<object?[], object?>` 或 `IReplicatedStateInternals`）时才创建 provider，故 `FacetHost.Services` 在纯本地装配下会抛「not assembled」。另外 TS 在该阶段还会建内部 loopback 绑定（`createLoopbackServiceTransport`），属 `services/consumer.ts` 范畴，C# 待其落地后补齐。
 13. **chord 远程服务门面改显式 API**：TS 的 `MemberSlot`/`ServiceFacade` 用 `Proxy` 让「一个成员」同时是函数与对象（apply + get），消费者写 `svc.echo(args, ctx)` / `svc.doc.value`；C# 无 Proxy，改为：`RemoteServiceFacade.Member(name)` 取 `RemoteServiceMember`，方法用 `CallAsync(args, ctx)` / `AsCallable()`（尾随 `Context` 约定），状态用 `Value` / `Subscribe`；门面本身实现 `IReadOnlyDictionary<string, object?>`（键 = 最近快照的成员名），因此 `UseAs<T>` 只在 `T` 为成员字典视图或 `object` 时可用。另外 TS 的 `use()` 直接返回 `Proxy`，C# 返回门面（`Use<T>`）+ 转型便捷法（`UseAs<T>`）。
-14. **`node.ts` 的门面类名取 `NodeApi`**：C# 无法让类型 `Node` 与 `node/` 目录产生的命名空间 `Pi.Chord.Node` 同名共存（同 `CompatApi`）。
-15. **`ModelAuth.Headers` 的 null 抑制**：TS 允许 `Authorization: null` 抑制同名默认头；C# 的 `ModelAuth.Headers` 值类型为 `string?` 以保留该语义（Cloudflare AI Gateway 用 `cf-aig-authorization` 并抑制默认 Authorization / x-api-key）。
+14. **`MaybePromise<T>` 统一为 `Task<T>`**：TS 的 `ServerOptions`/`RoutedSessionAttachment` 等签名允许「同步值或 Promise」；按本项目既定结论（差异第 1 条），C# 一律用 `Task<T>`，同步实现返回 `Task.FromResult`。
+15. **`node.ts` 的门面类名取 `NodeApi`**：C# 无法让类型 `Node` 与 `node/` 目录产生的命名空间 `Pi.Chord.Node` 同名共存（同 `CompatApi`）。
+16. **`ModelAuth.Headers` 的 null 抑制**：TS 允许 `Authorization: null` 抑制同名默认头；C# 的 `ModelAuth.Headers` 值类型为 `string?` 以保留该语义（Cloudflare AI Gateway 用 `cf-aig-authorization` 并抑制默认 Authorization / x-api-key）。
 
 ## CBOR 线上兼容要点（已测试锁定）
 
@@ -138,7 +139,7 @@ pi.net/
 
 1. **ai 包**：✅ 已完成（目录结构 1:1 对齐 pi）。
 2. **chord 包**：✅ 已完成（除 `index.ts` 桶文件）。
-3. **server/client**：chord services 集成（session-router、多服务路由）与 unix socket / named pipe 监听器。
+3. **server/client**：session-router 已完成；剩 `server.ts`（576 行主循环 + 握手超时 + 目标路由）、`transports/unix/*`（address/listener/preset）、`testing/*`（host/client/server 假件），以及 client 包的 `client.ts`/`unix.ts`/`connection.ts`/`transport.ts`/`promise.ts`。
 4. **agent 包**：proxy.ts。
 5. **coding-agent**：85k 行主产品（会话 / 工具系统 / 技能 / 主题 / RPC 模式），最后阶段按"核心命令最小闭环 → 逐步补全"推进。
 6. **tui / codemode / durable / evals**：41k 行，最后阶段。
