@@ -6,9 +6,8 @@ namespace Pi.Chord;
 /// <summary>
 /// chord 的应用组合 API 入口。对应 TS <c>src/api.ts</c>：
 /// <c>createFacetHost</c> / <c>createStaticFacetLoader</c> / <c>combineFacetLoaders</c> /
-/// <c>defineFacet</c> / <c>defineService</c> / <c>replicatedState</c>。
-/// <para>TS 另有 <c>createRemoteServiceBinding</c>（依赖 services/consumer.ts 的 Proxy 门面）；
-/// C# 侧待 <c>Services/Consumer.cs</c> 落地后补上。</para>
+/// <c>defineFacet</c> / <c>defineService</c> / <c>createRemoteServiceBinding</c> /
+/// <c>replicatedState</c>。
 /// </summary>
 public static class Api
 {
@@ -36,6 +35,12 @@ public static class Api
     /// </summary>
     public static IFacetLoader CombineFacetLoaders(IReadOnlyList<IFacetLoader> loaders)
         => new CombinedFacetLoader([.. loaders]);
+
+    /// <summary>
+    /// 创建远程服务绑定（消费端）。对应 TS <c>createRemoteServiceBinding</c>。
+    /// </summary>
+    public static RemoteServiceBinding CreateRemoteServiceBinding(RemoteServiceBindingOptions options)
+        => new(options);
 
     /// <summary>facet 定义（恒等）。对应 TS <c>defineFacet</c>。</summary>
     public static IFacet DefineFacet(IFacet facet) => facet;
