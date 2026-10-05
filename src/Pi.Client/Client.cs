@@ -1,266 +1,603 @@
-using System.Net.Sockets;
-using System.Text.Json.Nodes;
+using Pi.Chord.Context;
+using Pi.Chord.Services;
 using Pi.Protocol;
 
 namespace Pi.Client;
 
-/// <summary>客户端连接错误。对应 packages/client/src/errors.ts。</summary>
-public sealed class DisconnectedError(string message) : Exception(message);
-
-public sealed class ClientDisposedError(string message) : Exception(message);
-
-/// <summary>服务器回传的业务错误（ResponseOk=false）。对应 TS <c>ServerError</c>。</summary>
-public sealed class ClientServerError(string code, string message) : Exception($"[{code}] {message}")
-{
-    public string Code { get; } = code;
-}
-
 /// <summary>
-/// RPC 客户端。对应 packages/client/src/client.ts 的核心语义：
-/// hello 握手 → request/response 按_id_配对、超时与取消（cancel envelope）、
-/// 服务器主动推送的 service_update 通知、连接状态跟踪。
+/// 客户端门面。对应 TS <c>Client</c>（client.ts）：连接生命周期、请求/响应、
+/// 服务订阅（快照先就绪、更新按序投递）、附加路由变更与释放。
 /// </summary>
-public sealed class RpcClient : IAsyncDisposable
+public sealed class Client : IAsyncDisposable
 {
-    private readonly string _host;
-    private readonly int _port;
-    private readonly TimeSpan _requestTimeout;
-    private readonly object _lock = new();
-
-    private TcpClient? _tcpClient;
-    private NetworkStream? _stream;
-    private ClientState _state = ClientState.Disconnected;
-    private long _nextRequestId = 1;
-    private string? _serverId;
-    private readonly Dictionary<string, PendingRequest> _pending = [];
-    private readonly List<Action<ServerMessage.ServiceEvent>> _serviceEventListeners = [];
-    private CancellationTokenSource? _readCts;
-
-    /// <param name="host">服务器主机。</param>
-    /// <param name="port">服务器端口。</param>
-    /// <param name="requestTimeout">单请求超时（缺省 30s）。</param>
-    public RpcClient(string host, int port, TimeSpan? requestTimeout = null)
+    private sealed class PendingRequest
     {
-        _host = host;
-        _port = port;
-        _requestTimeout = requestTimeout ?? TimeSpan.FromSeconds(30);
+        public required Action<object?> Resolve { get; init; }
+
+        public required Action<Exception> Reject { get; init; }
+
+        public required Action Cleanup { get; init; }
     }
 
-    /// <summary>连接状态。</summary>
-    public ClientState State => _state;
-
-    /// <summary>握手拿到的服务器 id。</summary>
-    public string? ServerId => _serverId;
-
-    /// <summary>订阅 service_update 推送，返回取消订阅委托。</summary>
-    public IDisposable OnServiceEvent(Action<ServerMessage.ServiceEvent> listener)
+    internal sealed class ActiveServiceListener
     {
-        _serviceEventListeners.Add(listener);
-        return new Unsubscriber(() => _serviceEventListeners.Remove(listener));
+        public required RpcTarget Target { get; init; }
+
+        public required Func<ServiceProviderUpdate, Task> Listener { get; init; }
+
+        public required ServiceStateDecoder Decoder { get; init; }
+
+        public List<object?> QueuedWireUpdates { get; } = [];
+
+        public List<ServiceProviderUpdate> Queued { get; } = [];
+
+        public Task DeliveryTail { get; set; } = Task.CompletedTask;
+
+        public bool Hydrated { get; set; }
+
+        public bool Ready { get; set; }
     }
 
-    /// <summary>
-    /// 连接并完成 hello 握手。对应 TS <c>client.connect()</c>；
-    /// hello_error 时抛出 <see cref="ClientServerError"/>。
-    /// </summary>
-    public async Task ConnectAsync(CancellationToken cancellationToken = default)
+    private sealed class Subscription(
+        string id, RpcTarget target, ServiceSubscriptionSnapshot snapshot,
+        ActiveServiceListener active, Client client) : IServiceSubscription
     {
-        if (_state != ClientState.Disconnected)
-            throw new InvalidOperationException($"Cannot connect client in {_state} state");
-        _state = ClientState.Connecting;
+        private bool _disposed;
+
+        public string Id => id;
+
+        public RpcTarget Target => target;
+
+        public ServiceSubscriptionSnapshot Snapshot => snapshot;
+
+        public void Start()
+        {
+            if (_disposed || active.Ready) return;
+            active.Ready = true;
+            while (active.Queued.Count > 0)
+            {
+                var update = active.Queued[0];
+                active.Queued.RemoveAt(0);
+                client.DeliverServiceUpdate(active, update);
+            }
+        }
+
+        public async Task DisposeAsync()
+        {
+            if (_disposed) return;
+            _disposed = true;
+            if (ReferenceEquals(client.ServiceListenerOrNull(id), active)) client.RemoveServiceListener(id);
+            try
+            {
+                if (client.Connected && client.TargetIsCurrent(target))
+                {
+                    await client.RequestAsync(target, ServiceWire.CreateServiceUnsubscribeCall(id))
+                        .ConfigureAwait(false);
+                }
+                await active.DeliveryTail.ConfigureAwait(false);
+            }
+            finally
+            {
+                active.QueuedWireUpdates.Clear();
+                active.Queued.Clear();
+            }
+        }
+    }
+
+    private readonly ClientOptions _options;
+    private readonly Connection _connection;
+    private readonly object _gate = new();
+    private readonly Dictionary<string, PendingRequest> _pendingRequests = new(StringComparer.Ordinal);
+    private readonly List<Action<ConnectionStateChange>> _connectionStateListeners = [];
+    private readonly List<AttachmentChangeListener> _attachmentListeners = [];
+    private readonly Dictionary<string, ActiveServiceListener> _serviceListeners = new(StringComparer.Ordinal);
+    private long _requestSequence;
+    private long _serviceSubscriptionSequence;
+    private ServerMessage.Hello? _hello;
+    private RpcTarget.SessionTarget? _attachment;
+    private bool _disposed;
+    private Task? _disposePromise;
+
+    public Client(ClientOptions options)
+    {
+        if (!ServerIds.IsServerId(options.ServerId))
+        {
+            throw new ArgumentException("serverId must be a canonical lowercase UUIDv4");
+        }
+        _options = options;
+        _connection = new Connection(new ConnectionOptions
+        {
+            TransportFactory = options.TransportFactory,
+            ServerId = options.ServerId,
+            MaxFrameLength = options.MaxFrameLength,
+            OnHandshake = hello => _hello = hello,
+            OnMessage = HandleMessage,
+            OnStateChange = HandleConnectionStateChange,
+        });
+    }
+
+    public bool Disposed => _disposed;
+
+    public ConnectionState ConnectionState => _connection.State;
+
+    public bool Connected => _connection.State == ConnectionState.Connected;
+
+    public string ServerId => _options.ServerId;
+
+    public ServerMessage.Hello? Hello => _hello;
+
+    public RpcTarget.SessionTarget? Attachment => _attachment;
+
+    /// <summary>连接并返回客户端；握手失败则释放后抛出。对应 TS <c>Client.connect(options)</c>。</summary>
+    public static async Task<Client> ConnectAsync(ClientOptions options)
+    {
+        var client = new Client(options);
         try
         {
-            _tcpClient = new TcpClient();
-            await _tcpClient.ConnectAsync(_host, _port, cancellationToken).ConfigureAwait(false);
-            _stream = _tcpClient.GetStream();
-            _readCts = new CancellationTokenSource();
-            _ = PumpIncomingAsync(_readCts.Token);
-
-            var helloId = "hello";
-            var pendingHello = RegisterPending(helloId);
-            await SendAsync(new ClientMessage.Hello(ProtocolVersion.Current)).ConfigureAwait(false);
-            var completed = await Task.WhenAny(pendingHello.Completion.Task,
-                Task.Delay(_requestTimeout, cancellationToken)).ConfigureAwait(false);
-            if (completed != pendingHello.Completion.Task)
-                throw new DisconnectedError("Handshake timed out");
-            var hello = await pendingHello.Completion.Task.ConfigureAwait(false);
-            _serverId = hello switch
-            {
-                ServerMessage.Hello ok => ok.ServerId,
-                ServerMessage.HelloError error => throw new ClientServerError(
-                    error.Error.Code, error.Error.Message),
-                _ => throw new DisconnectedError("Unexpected handshake response"),
-            };
-            _state = ClientState.Connected;
+            await client.ConnectAsync().ConfigureAwait(false);
+            return client;
         }
         catch
         {
-            await CloseAsync().ConfigureAwait(false);
+            await client.DisposeAsync().ConfigureAwait(false);
             throw;
         }
     }
 
-    /// <summary>发起一次调用：{ method, params } 载荷 + 请求 id，等待 Response。对应 TS <c>call()</c>。</summary>
-    public async Task<object?> CallAsync(string method, JsonObject? parameters = null,
-        CancellationToken cancellationToken = default)
+    public Task<ServerMessage.Hello> ConnectAsync()
     {
-        if (_state != ClientState.Connected)
-            throw new DisconnectedError("RPC client is not connected");
-        var id = $"req-{_nextRequestId++}";
-        var pending = RegisterPending(id);
-        var envelope = new ClientMessage.Request(id,
-            new RpcTarget.ServerTarget(_serverId ?? ""),
-            new JsonObject { ["method"] = method, ["params"] = parameters });
-        await SendAsync(envelope).ConfigureAwait(false);
+        if (_disposed) return Task.FromException<ServerMessage.Hello>(new ClientDisposedError());
+        _hello = null;
+        return _connection.ConnectAsync();
+    }
 
-        var completed = await Task.WhenAny(pending.Completion.Task,
-            Task.Delay(_requestTimeout, cancellationToken)).ConfigureAwait(false);
-        if (completed == pending.Completion.Task)
-            return await pending.Completion.Task.ConfigureAwait(false);
-        if (cancellationToken.IsCancellationRequested)
+    public Task<ServerMessage.Hello> ReconnectAsync() => ConnectAsync();
+
+    public void Disconnect(string reason = "Client disconnected") => _connection.Disconnect(reason);
+
+    public Unsubscribe OnConnectionStateChange(Action<ConnectionStateChange> listener)
+    {
+        AssertNotDisposed();
+        lock (_gate) _connectionStateListeners.Add(listener);
+        return () =>
         {
-            // 通知服务器取消。
-            await SendAsync(new ClientMessage.Cancel(id, envelope.Target)).ConfigureAwait(false);
-            throw new OperationCanceledException(cancellationToken);
-        }
-        throw new DisconnectedError($"Request {method} timed out");
+            lock (_gate) _connectionStateListeners.Remove(listener);
+        };
     }
 
-    /// <summary>关闭连接并拒绝全部挂起请求。</summary>
-    public async Task CloseAsync()
+    public Unsubscribe OnAttachmentChange(AttachmentChangeListener listener)
     {
-        _readCts?.Cancel();
-        List<PendingRequest> pending;
-        lock (_lock)
+        AssertNotDisposed();
+        lock (_gate) _attachmentListeners.Add(listener);
+        return () =>
         {
-            pending = [.. _pending.Values];
-            _pending.Clear();
-        }
-        foreach (var request in pending)
-            request.Completion.TrySetException(new DisconnectedError("Connection closed"));
-        _stream?.Dispose();
-        _tcpClient?.Dispose();
-        _stream = null;
-        _tcpClient = null;
-        _state = ClientState.Disconnected;
-        await Task.CompletedTask.ConfigureAwait(false);
+            lock (_gate) _attachmentListeners.Remove(listener);
+        };
     }
 
-    /// <inheritdoc />
-    public async ValueTask DisposeAsync()
-    {
-        await CloseAsync().ConfigureAwait(false);
-        GC.SuppressFinalize(this);
-    }
+    /// <summary>对显式路由目标发起一次底层协议调用。对应 TS <c>request(target, call, signal)</c>。</summary>
+    public Task<object?> RequestAsync(RpcTarget target, ServiceCall call, CancellationToken signal = default)
+        => RequestAsync<object?>(target, call, signal, null);
 
-    // ---------- 内部 ----------
-
-    private PendingRequest RegisterPending(string id)
+    /// <summary>列举目标服务目录。对应 TS <c>serviceCatalogue</c>。</summary>
+    public async Task<IReadOnlyList<ServiceCatalogueEntry>> ServiceCatalogueAsync(RpcTarget target,
+        CancellationToken signal = default)
     {
-        var pending = new PendingRequest();
-        lock (_lock) _pending[id] = pending;
-        return pending;
-    }
-
-    private async Task SendAsync(ClientMessage message)
-    {
-        var stream = _stream ?? throw new DisconnectedError("RPC client is not connected");
-        await stream.WriteAsync(ProtocolCodec.EncodeClientMessage(message)).ConfigureAwait(false);
-        await stream.FlushAsync().ConfigureAwait(false);
-    }
-
-    /// <summary>入站泵：帧解码 → 服务端消息分发（响应配对 / service_update 推送）。</summary>
-    private async Task PumpIncomingAsync(CancellationToken cancellationToken)
-    {
-        // ProtocolCodec 解码器内含帧解码，直接喂原始网络字节。
-        var messageDecoder = new ProtocolCodec.ServerMessageDecoder();
-        var buffer = new byte[8192];
+        var result = await RequestAsync(target, ServiceWire.CreateServiceCatalogueCall(), signal)
+            .ConfigureAwait(false);
         try
         {
-            var stream = _stream!;
-            while (!cancellationToken.IsCancellationRequested)
+            return ServiceWire.ParseServiceCatalogue(result);
+        }
+        catch (Exception error)
+        {
+            var validationError = new ProtocolValidationError(error.Message);
+            _connection.Fail(validationError);
+            throw validationError;
+        }
+    }
+
+    /// <summary>订阅目标服务；快照就绪后由调用方 <c>Start</c> 触发投递。对应 TS <c>subscribeService</c>。</summary>
+    public async Task<IServiceSubscription> SubscribeServiceAsync(RpcTarget target, string serviceId,
+        ServiceMode mode, Func<ServiceProviderUpdate, Task> listener, CancellationToken signal = default)
+    {
+        var subscriptionId = $"service-{++_serviceSubscriptionSequence}";
+        var active = new ActiveServiceListener
+        {
+            Target = target,
+            Listener = listener,
+            Decoder = new ServiceStateDecoder(),
+        };
+        lock (_gate) _serviceListeners[subscriptionId] = active;
+
+        ServiceSubscriptionSnapshot snapshot;
+        try
+        {
+            snapshot = await RequestAsync(target,
+                ServiceWire.CreateServiceSubscribeCall(subscriptionId, serviceId, mode),
+                signal,
+                result =>
+                {
+                    var decoded = active.Decoder.DecodeSnapshot(
+                        ServiceWire.ParseWireServiceSubscriptionSnapshot(result));
+                    active.Hydrated = true;
+                    while (active.QueuedWireUpdates.Count > 0)
+                    {
+                        var update = active.QueuedWireUpdates[0];
+                        active.QueuedWireUpdates.RemoveAt(0);
+                        active.Queued.Add(active.Decoder.DecodeUpdate(
+                            ServiceWire.ParseWireServiceProviderUpdate(update)));
+                    }
+                    return decoded;
+                }).ConfigureAwait(false);
+        }
+        catch
+        {
+            lock (_gate)
             {
-                var read = await stream.ReadAsync(buffer, cancellationToken).ConfigureAwait(false);
-                if (read == 0) break;
-                foreach (var message in messageDecoder.Push(buffer[..read]))
-                    HandleMessage(message);
+                if (ReferenceEquals(ServiceListenerOrNull(subscriptionId), active))
+                {
+                    _serviceListeners.Remove(subscriptionId);
+                }
+            }
+            throw;
+        }
+
+        lock (_gate)
+        {
+            if (!ReferenceEquals(ServiceListenerOrNull(subscriptionId), active)) throw new DisconnectedError();
+        }
+        return new Subscription(subscriptionId, target, snapshot, active, this);
+    }
+
+    private async Task<T> RequestAsync<T>(RpcTarget target, ServiceCall call, CancellationToken signal,
+        Func<object?, T>? transform)
+    {
+        if (_disposed) throw new ClientDisposedError();
+        if (!Connected) throw new DisconnectedError();
+        if (signal.IsCancellationRequested) throw new OperationCanceledException(signal);
+
+        var id = $"request-{++_requestSequence}";
+        var completion = PromiseResolvers.Create<T>();
+        var sent = false;
+        var aborted = false;
+        CancellationTokenRegistration registration = default;
+
+        void SendCancel()
+        {
+            if (!sent || !Connected) return;
+            try
+            {
+                _connection.Send(ProtocolCodec.EncodeClientMessage(
+                    new ClientMessage.Cancel(id, target),
+                    new FrameDecoderOptions(_connection.MaxFrameLength)));
+            }
+            catch (Exception error)
+            {
+                _connection.Fail(error);
             }
         }
-        catch { /* 连接断开：挂起请求由 CloseAsync 兜底拒绝 */ }
-    }
 
-    /// <summary>以结果 resolve 挂起请求（含握手）。</summary>
-    private void ResolvePending(string id, object? result)
-    {
-        PendingRequest? pending;
-        lock (_lock) _pending.TryGetValue(id, out pending);
-        pending?.Completion.TrySetResult(result);
-    }
+        if (signal.CanBeCanceled)
+        {
+            registration = signal.Register(() =>
+            {
+                if (aborted) return;
+                aborted = true;
+                completion.TrySetException(new OperationCanceledException(signal));
+                SendCancel();
+            });
+        }
 
-    /// <summary>以错误 reject 挂起请求。</summary>
-    private void ResolvePendingError(string id, Exception error)
-    {
-        PendingRequest? pending;
-        lock (_lock) _pending.TryGetValue(id, out pending);
-        pending?.Completion.TrySetException(error);
+        lock (_gate)
+        {
+            _pendingRequests[id] = new PendingRequest
+            {
+                Resolve = result =>
+                {
+                    try
+                    {
+                        completion.TrySetResult(transform is null ? (T)result! : transform(result));
+                    }
+                    catch (Exception error)
+                    {
+                        var validationError = new ProtocolValidationError(error.Message);
+                        _connection.Fail(validationError);
+                        completion.TrySetException(validationError);
+                    }
+                },
+                Reject = error => completion.TrySetException(error),
+                Cleanup = () => registration.Dispose(),
+            };
+        }
+
+        byte[] frame;
+        try
+        {
+            frame = ProtocolCodec.EncodeClientMessage(
+                new ClientMessage.Request(id, target, ToWireCall(call)),
+                new FrameDecoderOptions(_connection.MaxFrameLength));
+        }
+        catch (Exception error)
+        {
+            TakePendingRequest(id)?.Reject(error);
+            return await completion.Task.ConfigureAwait(false);
+        }
+        _connection.Send(frame);
+        sent = true;
+        if (aborted) SendCancel();
+        return await completion.Task.ConfigureAwait(false);
     }
 
     private void HandleMessage(ServerMessage message)
     {
         switch (message)
         {
+            case ServerMessage.Attachment attachment:
+                if (attachment.Route is RpcTarget.SessionTarget session
+                    && session.ServerId != _options.ServerId)
+                {
+                    _connection.Fail(new ProtocolValidationError("Attachment update belongs to another server"));
+                    return;
+                }
+                SetAttachment(attachment.Route as RpcTarget.SessionTarget);
+                return;
+
+            case ServerMessage.ServiceEvent serviceEvent:
+            {
+                ActiveServiceListener? active;
+                lock (_gate) active = ServiceListenerOrNull(serviceEvent.SubscriptionId);
+                if (active is null) return;
+                if (!active.Hydrated)
+                {
+                    active.QueuedWireUpdates.Add(serviceEvent.Update);
+                    return;
+                }
+                ServiceProviderUpdate update;
+                try
+                {
+                    update = active.Decoder.DecodeUpdate(
+                        ServiceWire.ParseWireServiceProviderUpdate(serviceEvent.Update));
+                }
+                catch (Exception error)
+                {
+                    _connection.Fail(new ProtocolValidationError(error.Message));
+                    return;
+                }
+                if (active.Ready) DeliverServiceUpdate(active, update);
+                else active.Queued.Add(update);
+                return;
+            }
+
             case ServerMessage.ResponseOk ok:
             {
-                PendingRequest? pending;
-                lock (_lock) _pending.TryGetValue(ok.Id, out pending);
-                pending?.Completion.TrySetResult(ok.Result);
-                break;
+                var pending = TakePendingRequest(ok.Id);
+                if (pending is null)
+                {
+                    _connection.Fail(new ProtocolValidationError("Response has no matching request"));
+                    return;
+                }
+                pending.Resolve(ok.Result);
+                return;
             }
+
             case ServerMessage.ResponseError error:
             {
-                PendingRequest? pending;
-                lock (_lock) _pending.TryGetValue(error.Id, out pending);
-                pending?.Completion.TrySetException(
-                    new ClientServerError(error.Error.Code, error.Error.Message));
-                break;
+                var pending = TakePendingRequest(error.Id);
+                if (pending is null)
+                {
+                    _connection.Fail(new ProtocolValidationError("Response has no matching request"));
+                    return;
+                }
+                pending.Reject(new ServerError(error.Error));
+                return;
             }
-            case ServerMessage.ServiceEvent serviceEvent:
-                foreach (var listener in _serviceEventListeners.ToList()) listener(serviceEvent);
-                break;
-            case ServerMessage.Hello hello:
-                _serverId = hello.ServerId;
-                // 握手响应：resolve 等待中的 hello 请求。
-                ResolvePending("hello", hello);
-                break;
-            case ServerMessage.HelloError helloError:
-                ResolvePendingError("hello",
-                    new ClientServerError(helloError.Error.Code, helloError.Error.Message));
-                break;
         }
     }
 
-    private PendingRequest? FindPending(string id)
+    private void HandleConnectionStateChange(ConnectionStateChange change)
     {
-        lock (_lock) return _pending.GetValueOrDefault(id);
+        if (change.State == ConnectionState.Disconnected)
+        {
+            _hello = null;
+            SetAttachment(null);
+            RejectPendingRequests(change.Error ?? new DisconnectedError());
+            lock (_gate) _serviceListeners.Clear();
+        }
+
+        List<Action<ConnectionStateChange>> listeners;
+        lock (_gate) listeners = _connectionStateListeners.ToList();
+        foreach (var listener in listeners)
+        {
+            try
+            {
+                listener(change);
+            }
+            catch (Exception error)
+            {
+                ReportListenerError(error);
+            }
+        }
     }
 
-    private sealed class PendingRequest
+    private PendingRequest? TakePendingRequest(string id)
     {
-        public TaskCompletionSource<object?> Completion { get; } =
-            new(TaskCreationOptions.RunContinuationsAsynchronously);
+        PendingRequest? request;
+        lock (_gate)
+        {
+            request = _pendingRequests.GetValueOrDefault(id);
+            if (request is not null) _pendingRequests.Remove(id);
+        }
+        request?.Cleanup();
+        return request;
     }
 
-    private sealed class Unsubscriber(Action unsubscribe) : IDisposable
+    private void RejectPendingRequests(Exception error)
     {
-        public void Dispose() => unsubscribe();
+        List<PendingRequest> requests;
+        lock (_gate)
+        {
+            requests = _pendingRequests.Values.ToList();
+            _pendingRequests.Clear();
+        }
+        foreach (var request in requests)
+        {
+            request.Cleanup();
+            request.Reject(error);
+        }
+    }
+
+    public Task DisposeAsync()
+    {
+        lock (_gate)
+        {
+            if (_disposePromise is not null) return _disposePromise;
+            _disposed = true;
+            _disposePromise = Task.CompletedTask;
+        }
+        RejectPendingRequests(new ClientDisposedError());
+        _connection.Disconnect(new ClientDisposedError());
+        _hello = null;
+        SetAttachment(null);
+        lock (_gate)
+        {
+            _connectionStateListeners.Clear();
+            _attachmentListeners.Clear();
+            _serviceListeners.Clear();
+        }
+        return _disposePromise;
+    }
+
+    ValueTask IAsyncDisposable.DisposeAsync() => new(DisposeAsync());
+
+    private void SetAttachment(RpcTarget.SessionTarget? attachment)
+    {
+        var previous = _attachment;
+        if (previous?.ServerId == attachment?.ServerId
+            && previous?.SessionId == attachment?.SessionId
+            && previous?.AttachmentId == attachment?.AttachmentId)
+        {
+            return;
+        }
+        _attachment = attachment;
+        List<AttachmentChangeListener> listeners;
+        lock (_gate) listeners = _attachmentListeners.ToList();
+        foreach (var listener in listeners)
+        {
+            try
+            {
+                listener(attachment);
+            }
+            catch (Exception error)
+            {
+                ReportListenerError(error);
+            }
+        }
+    }
+
+    private void DeliverServiceUpdate(ActiveServiceListener active, ServiceProviderUpdate update)
+        => active.DeliveryTail = active.DeliveryTail
+            .ContinueWith(_ => active.Listener(update), TaskScheduler.Default)
+            .Unwrap()
+            .ContinueWith(task =>
+            {
+                if (task.IsFaulted) ReportListenerError(task.Exception!.GetBaseException());
+            }, TaskScheduler.Default);
+
+    private bool TargetIsCurrent(RpcTarget target)
+    {
+        if (target is not RpcTarget.SessionTarget session) return _hello?.ServerId == ServerId;
+        var attachment = _attachment;
+        return attachment?.ServerId == session.ServerId
+            && attachment.SessionId == session.SessionId
+            && attachment.AttachmentId == session.AttachmentId;
+    }
+
+    private void AssertNotDisposed()
+    {
+        if (_disposed) throw new ClientDisposedError();
+    }
+
+    private void ReportListenerError(Exception error)
+    {
+        if (_options.OnListenerError is null) return;
+        try
+        {
+            _options.OnListenerError(error);
+        }
+        catch
+        {
+            // 诊断不得影响协议或传输状态。
+        }
+    }
+
+    internal ActiveServiceListener? ServiceListenerOrNull(string id)
+        => _serviceListeners.GetValueOrDefault(id);
+
+    internal void RemoveServiceListener(string id) => _serviceListeners.Remove(id);
+
+    /// <summary>
+    /// 把 <see cref="ServiceCall"/> 编码为 wire 形状（<c>{serviceId, member, args, instance?}</c>）。
+    /// 对应 TS 的 <c>parseServiceCall(call) as JsonValue</c>（校验后原样作为 call 载荷）。
+    /// </summary>
+    internal static Dictionary<string, object?> ToWireCall(ServiceCall call)
+    {
+        var map = new Dictionary<string, object?>
+        {
+            ["serviceId"] = call.ServiceId,
+            ["member"] = call.Member,
+            ["args"] = call.Args,
+        };
+        if (call.Instance is not null)
+        {
+            map["instance"] = new Dictionary<string, object?>
+            {
+                ["key"] = call.Instance.Key,
+                ["generation"] = call.Instance.Generation,
+            };
+        }
+        return map;
     }
 }
 
-/// <summary>客户端连接状态。对应 TS <c>ConnectionState</c>。</summary>
-public enum ClientState
+/// <summary>
+/// 把「延迟解析的路由目标」适配成 chord 的服务传输。
+/// 对应 TS <c>createClientServiceTransport</c>（client.ts）。
+/// </summary>
+public static class ClientServiceTransport
 {
-    Disconnected,
-    Connecting,
-    Connected,
-    Closed,
+    public static IRemoteServiceTransport Create(Client client, Func<RpcTarget?> getTarget)
+    {
+        RpcTarget Target() => getTarget() ?? throw new InvalidOperationException(
+            "Remote service target is unavailable");
+
+        return new Adapter(client, Target);
+    }
+
+    private sealed class Adapter(Client client, Func<RpcTarget> target) : IRemoteServiceTransport
+    {
+        public Task<object?> InvokeAsync(ServiceCall call, Context context)
+            => client.RequestAsync(target(), call, AbortSignalOf(context));
+
+        public async Task<IRemoteServiceSubscription> SubscribeAsync(string serviceId, ServiceMode mode,
+            Func<ServiceProviderUpdate, Context, Task?> listener, Context context)
+        {
+            var subscription = await client.SubscribeServiceAsync(target(), serviceId, mode,
+                update => listener(update, Context.Background) ?? Task.CompletedTask,
+                AbortSignalOf(context)).ConfigureAwait(false);
+            return new SubscriptionAdapter(subscription);
+        }
+
+        private static CancellationToken AbortSignalOf(Context context)
+            => context.AbortSignal ?? default;
+    }
+
+    private sealed class SubscriptionAdapter(IServiceSubscription subscription) : IRemoteServiceSubscription
+    {
+        public ServiceSubscriptionSnapshot Snapshot => subscription.Snapshot;
+
+        public void Activate() => subscription.Start();
+
+        public Task CloseAsync(Context context) => subscription.DisposeAsync();
+    }
 }
