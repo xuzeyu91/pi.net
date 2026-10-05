@@ -6,7 +6,7 @@
 
 ## 逐包移植进度
 
-9 个运行时项目，构建 0 警告 0 错误；**470 项测试全部通过**（2026-10-05 实测）。
+9 个运行时项目，构建 0 警告 0 错误；**493 项测试全部通过**（2026-10-05 实测；沙箱环境限制导致的 HttpListener / domain socket / 真实浏览器回调类失败见文末说明）。
 
 | TS 包（packages/） | .NET 项目（src/） | 源码规模 | 状态 | 测试 |
 |---|---|---|---|---|
@@ -18,7 +18,7 @@
 | ai | Pi.Ai | 26.3k 行 | ✅ 完整移植（10 内建 API + 42 provider + compat + models-store + 全部 utils + cli） | 283 ✅ |
 | chord | Pi.Chord | 8.8k 行 | ✅ 完整移植（delta / services / facets / Context / node 层 / json / api.ts / handle.ts / **consumer.ts + loopback.ts**）；仅 `index.ts` 桶文件未做 | 86 ✅ |
 | coding-agent | （未建） | 85k 行 | ⏳ 待 tui / codemode / durable 之后分阶段移植 | — |
-| codemode | **Pi.Codemode** | 1.7k 行 | 🚧 纯逻辑层完成：identifier / types / source（@options 解析 + Lark 语法）/ declarations（JSON Schema → TypeScript 类型与声明）/ runtime/protocol；剩 runtime/host.ts + worker.ts + prelude-source.ts（QuickJS wasm 执行，需 JS 引擎抽象） | 16 ✅ |
+| codemode | **Pi.Codemode** | 1.7k 行 | ✅ 完整移植：identifier / types / source（@options 解析 + Lark 语法）/ declarations（JSON Schema → TypeScript）/ **runtime/protocol + runtime/host（沙箱编排）+ runtime/prelude-source + Wasm 加载**；仅 QuickJS wasm 的 VM 执行经 `ICodemodeJsEngine` 注入点外置（缺省 `UnsupportedCodemodeJsEngine` 明确拒绝） | 39 ✅ |
 | tui / durable / evals | （未建） | 39k 行 | ⏳ 后续阶段 | — |
 
 ### Pi.Ai 详情（26.3k 行，283 项测试）
@@ -73,6 +73,20 @@ ai 包至此与 pi 1:1 齐平（除下表列出的三处刻意归并）。
 - **api.ts 补齐**：`Api.CreateRemoteServiceBinding(options)`。
 
 剩余：`index.ts` 桶文件（C# 无桶文件概念，公开面由各类型可见性决定）、`types.ts` 中少数仅供 TS 类型推导的别名（如 `Draft<T, Depth>`）。
+
+### Pi.Codemode 详情（1.7k 行，39 项测试）
+
+已完成（P42–P43）：
+
+- **纯逻辑层（P42）**：`Identifier.cs`（按 Unicode rune 迭代，`my-tool` → `my_tool`，空名 → `_`）、`Types.cs`（`CodemodeTool` / `CodemodeOutputItem`（Text|Image）/ `CodemodeCall` / `CodemodeError`（4 类）/ `CodemodeStoreWrites` / `CodemodeResult`（Success|Failure）；JSON Schema 用 `JsonNode?` 承载）、`Source.cs`（`@options` 行拆分**不改变代码行号**、仅 `max_output_tokens`/`timeout_ms`、完整取值范围校验、Lark `Grammar` 常量）、`Declarations.cs`（对象属性按名排序、必填/可选、`additionalProperties` 三态、`const`/`enum`/`anyOf`/`oneOf`/`allOf`、`$ref` 本地解析 + 递归与远程引用退化 + 展开上限 32、超长退化 `unknown`、MCP `CallToolResult` 探测 → `CallToolResult<T>`、`RenderDeclarations`）、`Runtime/Protocol.cs`（host↔worker 消息，JSON 字符串跨界）。
+- **执行层（P43）**：
+  - `Runtime/PreludeSource.cs`：JS 前奏文本 1:1（4 个上限常量代入，脚本生成 + 字节级校验）。
+  - `Runtime/Engine.cs`：`ICodemodeJsEngine` / `ICodemodeVm`（`Post` + `StopAsync`）注入点 + `UnsupportedCodemodeJsEngine` 缺省实现。
+  - `Wasm.cs`：`CodemodeWasmModule`（字节 + 路径）+ 加载器；编译/实例化归引擎负责。
+  - `Runtime/Host.cs`：`CodemodeSandbox`（工具表 / 全局校验 / 注册）+ `Execution`（超时 / 中止 / 调用中继 / done / crash / 结果装配），Worker 替换为注入引擎。
+- **测试**：`SandboxTests` 用按 protocol 回放的假引擎覆盖调用中继 / 未知工具 / 输出收集 / done / crash / 超时 / 中止 / close / store 序列化与 writes 解析 / 全局校验 / 注册 / 引擎失败 / prelude 标记 / wasm 缓存（23 项）。
+
+剩余：QuickJS wasm 的 VM 执行（C# 无 `WebAssembly.compile` 与 worker 线程模型，已抽成 `ICodemodeJsEngine` 注入点；缺省实现明确以 `kind: "sandbox"` 拒绝）。
 
 ### Pi.Ai 目录映射（packages/ai/src → src/Pi.Ai，1:1）
 
@@ -133,6 +147,9 @@ pi.net/
 18. **codemode 的 JS 引擎边界**：TS 在 worker 里跑 QuickJS 的 wasm（`quickjs-wasi`），用共享 Int32 做中断轮询、以 `worker.terminate()` 兜底。C# 无 `WebAssembly.compile` 与 worker 线程模型，故 `runtime/host.ts`/`worker.ts` 的 VM 执行将抽成注入点（JS 引擎抽象）；`runtime/protocol.ts` 的消息形状（JSON 字符串跨界）与 `prelude-source.ts` 的前奏文本保持 1:1。
 19. **`node.ts` 的门面类名取 `NodeApi`**：C# 无法让类型 `Node` 与 `node/` 目录产生的命名空间 `Pi.Chord.Node` 同名共存（同 `CompatApi`）。
 20. **`ModelAuth.Headers` 的 null 抑制**：TS 允许 `Authorization: null` 抑制同名默认头；C# 的 `ModelAuth.Headers` 值类型为 `string?` 以保留该语义（Cloudflare AI Gateway 用 `cf-aig-authorization` 并抑制默认 Authorization / x-api-key）。
+21. **codemode：store writes 的「二次解析」语义**。TS `parseStoreWrites` 遍历 `JSON.parse(json)` 得到的 `[key, value]`，其中 `value` **本身是 JSON 字符串**，需 `JSON.parse(value)` 二次解析后才存入 `writes.set[key]`。C# 对应 `JsonNode.Parse(raw.GetValue<string>())`。三种边界与 TS 逐条对齐：数组单元素 `[key]`（TS 解构出 `undefined`）→ 删除；`[key, null]`（JSON null）→ `set[key] = null`（C# 用 `raw is null` 判别，**不能**用 `ContainsKey`——`JsonNode` 无法区分「键缺失」与 JSON null，见差异第 12 条）；`value` 非字符串（JS 侧 `JSON.parse(42)` 会转 `"42"`）→ C# 抛 `InvalidOperationException`，由 `HandleMessageAsync` 的 catch 归一为 `kind: "sandbox"` 失败。
+22. **codemode：`Finish` 的异常安全性与「静默挂起」**。`Execution.Finish` 在持锁状态下置 `finished = true` 后再装配结果（含 `ParseStoreWrites`）；若该区间抛异常，异常经 `HandleMessageAsync` 的 catch 二次调用 `Finish` 时只会 early-return，**promise 永不 resolve**，表现为测试「挂起无输出」而非失败。排查手法：在 catch 与 `Finish` 内打印，比对 `finished` 标志即可定位。凡在 `Finish` 持锁区内新增可能抛错的代码（JSON 解析、集合投影）都必须先做校验或移出锁外。
+23. **codemode：沙箱执行层的引擎注入点已落地**（差异第 18 条的实施方案）。TS 的 `worker.ts` 依赖 `WebAssembly.compile` + Worker 线程模型，C# 两者皆无，故抽为 `ICodemodeJsEngine` / `ICodemodeVm`（`Post` + `StopAsync`）注入点，缺省 `UnsupportedCodemodeJsEngine` 明确以 `kind: "sandbox"` 拒绝（对齐 chord 的 `UnsupportedFacetModuleHost` 先例，见差异第 11 / 18 条）。`Wasm.cs` 只承载字节与路径，编译/实例化由引擎负责。`Host.cs` 为纯编排层 1:1 对齐 `host.ts`；`Execution.Start` 的 `alreadyFinished` 竞态分支（引擎已启动但执行已收尾 → 只停不再 resolve）按 TS 等价语义保留。
 
 ## CBOR 线上兼容要点（已测试锁定）
 
@@ -146,6 +163,18 @@ pi.net/
 2. **chord 包**：✅ 已完成（除 `index.ts` 桶文件）。
 3. **server/client**：✅ 已完成（仅 `testing/*` 的 host/client/server 假件未做——真实 Unix 域套接字端到端已覆盖同等链路）。
 4. **agent 包**：proxy.ts。
-5. **codemode**：纯逻辑层已完成；剩 `runtime/host.ts`（沙箱编排）+ `runtime/worker.ts`（QuickJS VM）+ `prelude-source.ts`（JS 前奏文本），VM 执行抽成注入点。
+5. **codemode**：✅ 已完成（纯逻辑层 + 执行层沙箱编排；仅 QuickJS wasm 的 VM 执行经 `ICodemodeJsEngine` 注入点外置，缺省实现明确拒绝）。
 6. **coding-agent**：85k 行主产品（会话 / 工具系统 / 技能 / 主题 / RPC 模式），最后阶段按"核心命令最小闭环 → 逐步补全"推进。
 7. **tui / durable / evals**：39k 行，最后阶段。
+
+## 测试环境限制说明（沙箱）
+
+`dotnet build Pi.slnx` 需加 `-m:1`：并行构建时沙箱内 MSBuild 工作节点会触发 `StackOverflowException`（单线程构建 0 警告 0 错误，2m45s）。
+
+以下测试失败由沙箱环境限制导致，与移植代码无关（2026-10-05 实测）：
+
+- `Pi.Mcp.Tests` 4 项：`HttpListenerException : 句柄无效`（沙箱禁止监听端口）。
+- `Pi.Server.Tests` 1 项：domain socket 路径超出 108 字符上限（沙箱临时目录路径过长）。
+- `Pi.Ai.Tests` 1 项：`RadiusOAuthTests.BrowserLoginReceivesRealLoopbackCallback` 等待真实浏览器 loopback 回调，无法在无头沙箱内完成。
+
+其余 8 个运行时项目与 5 个测试程序集（Agent / Ai 除上述 1 项 / Chord / Codemode / Mcp 除上述 4 项 / Protocol / Server 除上述 1 项 / Telemetry）全部通过。

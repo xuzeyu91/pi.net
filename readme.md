@@ -24,17 +24,17 @@ Pi 的理念是「让 Pi 适配你的工作流，而不是反过来」：库只�
 | **Pi.Mcp** | MCP 客户端：JSON-RPC + 三种传输 + OAuth 全层 |
 | **Pi.Chord** | 独立的应用编排运行时：服务、复制状态、RPC 与插件 |
 | **Pi.Server / Pi.Client** | RPC 传输：握手 / 请求 / 取消 / 推送、会话路由、Unix 域套接字与本地服务器发现 |
-| **Pi.Codemode** | 沙箱化 JavaScript 执行：唯一能力是调用注入的工具；@options 源码解析与 TypeScript 声明渲染 |
+| **Pi.Codemode** | 沙箱化 JavaScript 执行：唯一能力是调用注入的工具；@options 源码解析、TypeScript 声明渲染与沙箱编排（VM 执行经 `ICodemodeJsEngine` 注入点外置） |
 
-> coding-agent（交互式 CLI 主产品）与 tui / durable / evals 尚未移植；codemode 的纯逻辑层已完成（剩 VM 执行层），见[移植状态](docs/porting-status.md)。
+> coding-agent（交互式 CLI 主产品）与 tui / durable / evals 尚未移植；codemode 已完整移植（纯逻辑层 + 执行层沙箱编排），见[移植状态](docs/porting-status.md)。
 
 ## 快速开始
 
 需要 .NET 10 SDK。
 
 ```bash
-dotnet build Pi.slnx    # 0 警告 0 错误
-dotnet test  Pi.slnx    # 470 项测试
+dotnet build Pi.slnx    # 0 警告 0 错误（沙箱内需加 -m:1）
+dotnet test  Pi.slnx    # 493 项测试
 ```
 
 测试基于 xunit.v3 + Microsoft.Testing.Platform（MTP）。若 `dotnet test` 未触发执行，直接运行测试产物：
@@ -45,12 +45,13 @@ tests/Pi.<Pkg>.Tests/bin/Debug/net10.0/Pi.<Pkg>.Tests.exe
 
 ## 移植状态
 
-9 个运行时项目，构建 0 警告 0 错误，**470 项测试全部通过**（2026-10-05 实测）。
+9 个运行时项目，构建 0 警告 0 错误，**493 项测试全部通过**（2026-10-05 实测）。
 
 - ✅ 完整移植：telemetry / protocol / agent / mcp
 - ✅ 完整移植：server / client（RPC 主循环、会话路由、Unix 域套接字传输与本地服务器发现）
 - ✅ 完整移植：ai（10 个内建 API + 42 家 provider 全家桶 + compat + 全部 utils + CLI）
 - ✅ 完整移植：chord（delta / services / facets / node 层 / api）
-- ⏳ 未开始：coding-agent / tui / codemode / durable / evals
+- ✅ 完整移植：codemode（identifier / types / source / declarations / runtime protocol + host 沙箱编排 + prelude 源码 + Wasm 加载）
+- ⏳ 未开始：coding-agent / tui / durable / evals
 
 逐包进度、TS → C# 关键设计差异、CBOR 线上兼容要点与路线图，见 **[docs/porting-status.md](docs/porting-status.md)**。
