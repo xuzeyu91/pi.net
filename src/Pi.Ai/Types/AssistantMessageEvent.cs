@@ -1,3 +1,4 @@
+using Pi.Ai.Models;
 using System.Text.Json.Serialization;
 
 namespace Pi.Ai.Types;
@@ -81,7 +82,11 @@ public sealed record Model(
     string? Reasoning = null,
     IReadOnlyDictionary<string, object?>? Metadata = null);
 
-/// <summary>各 provider 共享的流式选项。对应 TS <c>SimpleStreamOptions</c>。</summary>
+/// <summary>
+/// 各 provider 共享的流式选项（简单入口）。对应 TS <c>SimpleStreamOptions</c>：
+/// 位置参数保留旧构造兼容，完整字段经 init 属性补齐（headers/samplingParams/
+/// maxRetries/cacheRetention/sessionId/transport/onResponse/onProviderStreamEvent 等）。
+/// </summary>
 public sealed record SimpleStreamOptions(
     string? ApiKey = null,
     string? BaseUrl = null,
@@ -89,7 +94,66 @@ public sealed record SimpleStreamOptions(
     double? Temperature = null,
     IReadOnlyList<string>? StopSequences = null,
     string? SessionId = null,
-    bool? ChainOfThought = null);
+    bool? ChainOfThought = null)
+{
+    /// <summary>附加请求头（调用方值覆盖默认）。</summary>
+    public IReadOnlyDictionary<string, string?>? Headers { get; init; }
+
+    /// <summary>任意采样参数（原样并入请求体；OpenAI 兼容适配器生效）。对应 TS <c>samplingParams</c>。</summary>
+    public System.Text.Json.Nodes.JsonObject? SamplingParams { get; init; }
+
+    public int? MaxRetries { get; init; }
+
+    public int? MaxRetryDelayMs { get; init; }
+
+    public int? TimeoutMs { get; init; }
+
+    /// <summary>WebSocket 连接握手超时（多传输 provider）。</summary>
+    public int? WebsocketConnectTimeoutMs { get; init; }
+
+    /// <summary>首选传输（auto/sse/websocket/websocket-cached）。</summary>
+    public string? Transport { get; init; }
+
+    /// <summary>提示缓存保留偏好（short/long/none；缺省 short）。</summary>
+    public string? CacheRetention { get; init; }
+
+    /// <summary>请求元数据（provider 自取所需字段）。</summary>
+    public System.Text.Json.Nodes.JsonObject? Metadata { get; init; }
+
+    /// <summary>作用域环境变量覆盖。</summary>
+    public IReadOnlyDictionary<string, string>? Env { get; init; }
+
+    /// <summary>请求取消令牌。对应 TS <c>signal</c>。</summary>
+    public CancellationToken Signal { get; init; }
+
+    /// <summary>请求体替换钩子（返回 null 保持原体）。对应 TS <c>onPayload</c>。</summary>
+    public Func<System.Text.Json.Nodes.JsonObject, ModelSpec, Task<System.Text.Json.Nodes.JsonObject?>>? OnPayload { get; init; }
+
+    /// <summary>HTTP 响应到达回调。对应 TS <c>onResponse</c>。</summary>
+    public Func<ProviderResponse, ModelSpec, Task>? OnResponse { get; init; }
+
+    /// <summary>provider 流事件观察回调（Pi 归一化前）。对应 TS <c>onProviderStreamEvent</c>。</summary>
+    public Func<System.Text.Json.Nodes.JsonObject, ModelSpec, Task>? OnProviderStreamEvent { get; init; }
+
+    /// <summary>provider 无关的工具选择。对应 TS <c>toolChoice</c>。</summary>
+    public System.Text.Json.Nodes.JsonNode? ToolChoice { get; init; }
+
+    /// <summary>推理档位（off/minimal/low/medium/high/xhigh/max）。对应 TS <c>reasoning</c>。</summary>
+    public string? Reasoning { get; init; }
+
+    /// <summary>请求延后句柄。对应 TS <c>deferred</c>（P31 落地，先占位）。</summary>
+    public bool Deferred { get; init; }
+
+    /// <summary>token 型 provider 的思考预算覆盖。对应 TS <c>thinkingBudgets</c>。</summary>
+    public ThinkingBudgets? ThinkingBudgets { get; init; }
+}
+
+/// <summary>思考档位 token 预算。对应 TS <c>ThinkingBudgets</c>。</summary>
+public sealed record ThinkingBudgets(
+    long? Minimal = null,
+    long? Low = null,
+    long? Medium = null,
+    long? High = null);
 
 /// <summary>
 /// Provider 流上下文。对应 TS <c>TranscriptContext</c>：system prompt 与工具声明

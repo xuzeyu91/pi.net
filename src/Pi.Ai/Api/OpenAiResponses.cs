@@ -48,6 +48,12 @@ public record OpenAiResponsesOptions
     /// <summary>请求元数据（保留扩展位）。</summary>
     public System.Text.Json.Nodes.JsonObject? Metadata { get; init; }
 
+    /// <summary>任意采样参数（最后合并进请求体）。对应 TS <c>samplingParams</c>。</summary>
+    public System.Text.Json.Nodes.JsonObject? SamplingParams { get; init; }
+
+    /// <summary>作用域环境变量覆盖。对应 TS <c>env</c>。</summary>
+    public IReadOnlyDictionary<string, string>? Env { get; init; }
+
     public Func<JsonObject, ModelSpec, Task<JsonObject?>>? OnPayload { get; init; }
 
     public Func<ProviderResponse, ModelSpec, Task>? OnResponse { get; init; }
@@ -104,7 +110,7 @@ public static class OpenAiResponses
     /// <summary>缓存保留偏好解析。对应 TS <c>resolveCacheRetention</c>。</summary>
     private static string ResolveCacheRetention(string? cacheRetention, IReadOnlyDictionary<string, string>? env)
         => cacheRetention
-           ?? (ProviderEnv.GetValue("PI_CACHE_RETENTION", env) == "long" ? "long" : "short");
+           ?? (ProviderEnvValue.Get("PI_CACHE_RETENTION", env) == "long" ? "long" : "short");
 
     /// <summary>Responses compat 缺省值解析（compat 形状存于目录 Extra）。对应 TS <c>getCompat</c>。</summary>
     public static JsonObject GetCompat(ModelSpec model)
@@ -178,7 +184,7 @@ public static class OpenAiResponses
                 },
             });
 
-        var cacheRetention = ResolveCacheRetention(options?.CacheRetention, null);
+        var cacheRetention = ResolveCacheRetention(options?.CacheRetention, options?.Env);
         var cacheSessionId = cacheRetention == "none" ? null : options?.SessionId;
         // Sign in with ChatGPT 拒绝这些请求字段。
         var omitUnsupportedFields = IsChatGptSignIn(model, options?.ApiKey);
@@ -193,7 +199,7 @@ public static class OpenAiResponses
             ["store"] = false,
         };
 
-        if (options?.MaxTokens is { } maxTokens && CompatBool(compat, "supportsMaxOutputTokens") && !omitUnsupportedFields)
+        if (options?.MaxTokens is { } maxTokens && maxTokens > 0 && CompatBool(compat, "supportsMaxOutputTokens") && !omitUnsupportedFields)
         {
             requestParams["max_output_tokens"] = Math.Max(maxTokens, MinOutputTokens);
         }
@@ -230,9 +236,8 @@ public static class OpenAiResponses
         {
             if (reasoningEffort is not null)
             {
-                var thinkingLevelMap = model.Extra?["thinkingLevelMap"] as JsonObject;
                 var effort = options?.ReasoningEffort is not null
-                    ? thinkingLevelMap?.Str(options.ReasoningEffort) ?? options.ReasoningEffort
+                    ? model.ThinkingLevelMap?[options.ReasoningEffort] ?? options.ReasoningEffort
                     : reasoningEffort;
                 requestParams["reasoning"] = new JsonObject
                 {
@@ -242,17 +247,24 @@ public static class OpenAiResponses
                 requestParams["include"] = new JsonArray("reasoning.encrypted_content");
             }
             else if (model.Provider != "github-copilot"
-                && (model.Extra?["thinkingLevelMap"] as JsonObject)?.Has("off") != true)
+                && !(model.ThinkingLevelMap is { } levelMap && levelMap.Has("off") && levelMap["off"] is null))
             {
+                // TS：thinkingLevelMap?.off !== null → 设置 effort（map 缺失 / off 缺省 / off 非 null 均成立）。
                 requestParams["reasoning"] = new JsonObject
                 {
-                    ["effort"] = (model.Extra?["thinkingLevelMap"] as JsonObject)?.Str("off") ?? "none",
+                    ["effort"] = model.ThinkingLevelMap?["off"] ?? "none",
                 };
             }
             if (model.Provider == "xai")
             {
                 requestParams["include"] = new JsonArray("reasoning.encrypted_content");
             }
+        }
+
+        // 最后合并采样参数，让模型级/档位级/请求级字段覆盖上面的命名字段。对应 TS 末尾的 resolveSamplingParams。
+        if (SimpleOptions.ResolveSamplingParams(model, reasoningEffort ?? "off", options?.SamplingParams) is { } sampling)
+        {
+            foreach (var (key, value) in sampling) requestParams[key] = value?.DeepClone();
         }
 
         return requestParams;
@@ -283,7 +295,7 @@ public static class OpenAiResponses
             try
             {
                 var apiKey = GetClientApiKey(model.Provider, options?.ApiKey, options?.Headers);
-                var cacheRetention = ResolveCacheRetention(options?.CacheRetention, null);
+                var cacheRetention = ResolveCacheRetention(options?.CacheRetention, options?.Env);
                 var cacheSessionId = cacheRetention == "none" ? null : options?.SessionId;
                 var grammarToolInputProperties = ConstrainedSampling.CreateGrammarToolInputProperties(
                     Transcript.GetDeclaredTools(normalizedContext.Messages),
@@ -416,6 +428,74 @@ public static class OpenAiResponses
         var multiplier = GetServiceTierCostMultiplier(model, serviceTier);
         if (multiplier == 1) return usage;
         return usage with { Cost = (usage.Cost ?? 0) * multiplier };
+    }
+
+    /// <summary>
+    /// 由 <see cref="SimpleStreamOptions"/> 装配 Responses 专属选项的公共字段。
+    /// 对应 TS <c>buildBaseOptions</c>（simple-options.ts）——samplingParams 按模型级/
+    /// 档位级/请求级合并；maxTokens 按上下文窗口收敛（缺省取 model.maxTokens，0 视为未设置）。
+    /// </summary>
+    public static OpenAiResponsesOptions FromSimple(
+        ModelSpec model, TranscriptContext context, SimpleStreamOptions? options)
+    {
+        var samplingParams = SimpleOptions.ResolveSamplingParams(
+            model, options?.Reasoning ?? "off", options?.SamplingParams);
+        int? maxTokens;
+        if (options?.MaxTokens is { } requestedMaxTokens)
+        {
+            maxTokens = SimpleOptions.ClampMaxTokensToContext(model, context, requestedMaxTokens);
+        }
+        else
+        {
+            maxTokens = model.MaxTokens > 0
+                ? SimpleOptions.ClampMaxTokensToContext(model, context, (int)model.MaxTokens)
+                : null;
+        }
+        return new OpenAiResponsesOptions
+        {
+            ApiKey = options?.ApiKey,
+            Headers = options?.Headers,
+            Signal = options?.Signal ?? default,
+            TimeoutMs = options?.TimeoutMs,
+            MaxRetries = options?.MaxRetries,
+            MaxRetryDelayMs = options?.MaxRetryDelayMs,
+            SessionId = options?.SessionId,
+            CacheRetention = options?.CacheRetention,
+            Metadata = options?.Metadata,
+            Env = options?.Env,
+            OnPayload = options?.OnPayload,
+            OnResponse = options?.OnResponse,
+            OnProviderStreamEvent = options?.OnProviderStreamEvent,
+            ToolChoice = options?.ToolChoice,
+            SamplingParams = samplingParams,
+            MaxTokens = maxTokens,
+            Temperature = options?.Temperature,
+        };
+    }
+
+    /// <summary>
+    /// 简单入口流式生成。对应 TS <c>streamSimple</c>：reasoning 档位经模型收敛
+    /// （off → 不发 reasoning），toolChoice 透传。
+    /// </summary>
+    public static IAssistantMessageEventStream StreamSimple(
+        ModelSpec model,
+        TranscriptContext context,
+        SimpleStreamOptions? options = null,
+        HttpClient? httpClient = null,
+        CancellationToken cancellationToken = default)
+    {
+        GetClientApiKey(model.Provider, options?.ApiKey, options?.Headers);
+
+        var clampedReasoning = options?.Reasoning is not null
+            ? ThinkingLevels.Clamp(model, options.Reasoning)
+            : null;
+        var reasoningEffort = clampedReasoning == "off" ? null : clampedReasoning;
+
+        var baseOptions = FromSimple(model, context, options);
+        return Stream(model, context, baseOptions with
+        {
+            ReasoningEffort = reasoningEffort,
+        }, httpClient, cancellationToken);
     }
 
     /// <summary>默认请求头（UA / copilot 动态头 / session 亲和）。对应 TS <c>createClient</c> 头部逻辑。</summary>

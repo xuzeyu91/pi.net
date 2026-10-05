@@ -215,3 +215,66 @@ public sealed class Models
         }
     }
 }
+
+
+/// <summary>
+/// 思考档位工具。对应 TS <c>models.ts</c> 的 <c>getSupportedThinkingLevels</c> 与
+/// <c>clampThinkingLevel</c>：档位顺序 off &lt; minimal &lt; low &lt; medium &lt; high &lt; xhigh &lt; max，
+/// clamp 向上找不到就向下找最近可用档位。
+/// </summary>
+public static class ThinkingLevels
+{
+    /// <summary>档位全序。对应 TS <c>EXTENDED_THINKING_LEVELS</c>。</summary>
+    public static readonly IReadOnlyList<string> ExtendedThinkingLevels =
+        ["off", "minimal", "low", "medium", "high", "xhigh", "max"];
+
+    /// <summary>模型支持的思考档位列表。对应 TS <c>getSupportedThinkingLevels</c>。</summary>
+    public static IReadOnlyList<string> GetSupported(ModelSpec model)
+    {
+        if (!model.Reasoning) return ["off"];
+
+        var levelMap = model.ThinkingLevelMap;
+        var supported = new List<string>();
+        foreach (var level in ExtendedThinkingLevels)
+        {
+            // TS：mapped === null → 禁用；xhigh/max 仅在映射存在（非 undefined）时可用；
+            // 其余档位缺失视为可用（provider 接受缺省 effort 字符串）。
+            if (levelMap is not null && levelMap.Has(level) && levelMap[level] is null) continue;
+            if ((level == "xhigh" || level == "max")
+                && (levelMap is null || !levelMap.Has(level))) continue;
+            supported.Add(level);
+        }
+        return supported;
+    }
+
+    /// <summary>把请求档位收敛到模型支持范围。对应 TS <c>clampThinkingLevel</c>。</summary>
+    public static string Clamp(ModelSpec model, string level)
+    {
+        var available = GetSupported(model);
+        if (available.Contains(level)) return level;
+
+        var requestedIndex = IndexOf(ExtendedThinkingLevels, level);
+        if (requestedIndex < 0) return available.Count > 0 ? available[0] : "off";
+
+        for (var index = requestedIndex; index < ExtendedThinkingLevels.Count; index++)
+        {
+            var candidate = ExtendedThinkingLevels[index];
+            if (available.Contains(candidate)) return candidate;
+        }
+        for (var index = requestedIndex - 1; index >= 0; index--)
+        {
+            var candidate = ExtendedThinkingLevels[index];
+            if (available.Contains(candidate)) return candidate;
+        }
+        return available.Count > 0 ? available[0] : "off";
+    }
+
+    private static int IndexOf(IReadOnlyList<string> list, string value)
+    {
+        for (var index = 0; index < list.Count; index++)
+        {
+            if (list[index] == value) return index;
+        }
+        return -1;
+    }
+}

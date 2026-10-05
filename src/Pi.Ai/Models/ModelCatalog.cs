@@ -22,6 +22,36 @@ public static class ModelInput
 }
 
 /// <summary>
+/// 思考档位 → provider effort 字符串映射（null 表示该档位禁用）。
+/// 对应 TS <c>ThinkingLevelMap = Partial&lt;Record&lt;ModelThinkingLevel, string | null&gt;&gt;</c>。
+/// </summary>
+public sealed record ThinkingLevelMap
+{
+    // 保留原始条目以区分 TS 的「显式 null（禁用）」与「缺失（undefined）」。
+    private readonly Dictionary<string, string?> _levels = new();
+
+    /// <summary>按档位名取映射值（缺失或 null 均返回 null）。</summary>
+    public string? this[string level]
+        => _levels.TryGetValue(level, out var value) ? value : null;
+
+    /// <summary>档位是否在映射表中显式存在（含 null 值）。</summary>
+    public bool Has(string level) => _levels.ContainsKey(level);
+
+    public static ThinkingLevelMap FromJsonObject(JsonObject obj)
+    {
+        var map = new ThinkingLevelMap();
+        foreach (var (key, value) in obj)
+        {
+            map._levels[key] = value is JsonValue { } primitive
+                ? (primitive.TryGetValue<string>(out var text) ? text
+                    : primitive.TryGetValue<bool>(out var flag) && !flag ? null : null)
+                : null;
+        }
+        return map;
+    }
+}
+
+/// <summary>
 /// 模型规格：目录里的完整模型条目（含未识别扩展字段保留在 <see cref="Extra"/>）。
 /// 对应 TS <c>BaseModel</c> + <c>Model</c>/<c>ImageModel</c>/<c>ClassifierModel</c> 的公共形状。
 /// </summary>
@@ -52,6 +82,21 @@ public sealed record ModelSpec
     public long ContextWindow { get; init; }
 
     public long MaxTokens { get; init; }
+
+    /// <summary>模型级默认请求头。对应 TS <c>Model.headers</c>。</summary>
+    public IReadOnlyDictionary<string, string>? Headers { get; init; }
+
+    /// <summary>思考档位映射。对应 TS <c>thinkingLevelMap</c>。</summary>
+    public ThinkingLevelMap? ThinkingLevelMap { get; init; }
+
+    /// <summary>模型级采样参数（原样并入请求）。对应 TS <c>samplingParams</c>。</summary>
+    public JsonObject? SamplingParams { get; init; }
+
+    /// <summary>按思考档位的采样参数覆盖。对应 TS <c>samplingParamsByThinkingLevel</c>。</summary>
+    public IReadOnlyDictionary<string, JsonObject>? SamplingParamsByThinkingLevel { get; init; }
+
+    /// <summary>API 兼容设置（原样保留；各 API 用扩展方法取强类型视图）。对应 TS <c>compat</c>。</summary>
+    public JsonObject? Compat { get; init; }
 
     /// <summary>未识别字段原样保留（前向兼容）。</summary>
     public JsonObject? Extra { get; init; }
@@ -162,11 +207,46 @@ public sealed class ModelCatalog
         }
 
         var consumed = new HashSet<string>
-        { "id", "name", "api", "provider", "baseUrl", "input", "cost", "type", "reasoning", "contextWindow", "maxTokens" };
+        {
+            "id", "name", "api", "provider", "baseUrl", "input", "cost", "type", "reasoning",
+            "contextWindow", "maxTokens", "headers", "thinkingLevelMap", "samplingParams",
+            "samplingParamsByThinkingLevel", "compat",
+        };
         var extra = new JsonObject();
         foreach (var (key, value) in spec)
         {
             if (!consumed.Contains(key)) extra[key] = value?.DeepClone();
+        }
+
+        IReadOnlyDictionary<string, string>? headers = null;
+        if (spec["headers"] is JsonObject headersObject)
+        {
+            var map = new Dictionary<string, string>();
+            foreach (var (key, value) in headersObject)
+            {
+                if (value is JsonValue { } headerValue && headerValue.TryGetValue<string>(out var headerText))
+                {
+                    map[key] = headerText;
+                }
+            }
+            headers = map;
+        }
+
+        ThinkingLevelMap? thinkingLevelMap = spec["thinkingLevelMap"] is JsonObject levelMapObject
+            ? ThinkingLevelMap.FromJsonObject(levelMapObject)
+            : null;
+
+        JsonObject? samplingParams = spec["samplingParams"] as JsonObject;
+
+        IReadOnlyDictionary<string, JsonObject>? samplingByLevel = null;
+        if (spec["samplingParamsByThinkingLevel"] is JsonObject byLevelObject)
+        {
+            var map = new Dictionary<string, JsonObject>();
+            foreach (var (key, value) in byLevelObject)
+            {
+                if (value is JsonObject levelParams) map[key] = levelParams;
+            }
+            samplingByLevel = map;
         }
 
         return new ModelSpec
@@ -178,6 +258,11 @@ public sealed class ModelCatalog
             BaseUrl = GetString("baseUrl") ?? "",
             Input = input,
             Cost = cost,
+            Headers = headers,
+            ThinkingLevelMap = thinkingLevelMap,
+            SamplingParams = samplingParams,
+            SamplingParamsByThinkingLevel = samplingByLevel,
+            Compat = spec["compat"] as JsonObject,
             Type = type,
             Reasoning = spec["reasoning"] is JsonValue { } reasoning && reasoning.TryGetValue<bool>(out var flag) && flag,
             ContextWindow = GetLong("contextWindow"),

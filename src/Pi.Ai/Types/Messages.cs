@@ -150,6 +150,14 @@ public sealed record AssistantMessage(
     [JsonPropertyName("responseId")]
     public string? ResponseId { get; set; }
 
+    /// <summary>流处理附加的诊断条目（传输降级等）。对应 TS <c>diagnostics</c>。</summary>
+    [JsonPropertyName("diagnostics")]
+    public List<Utils.AssistantMessageDiagnostic>? Diagnostics { get; set; }
+
+    /// <summary>模型是否自然说完（codex end_turn）。对应 TS <c>endTurn</c>。</summary>
+    [JsonPropertyName("endTurn")]
+    public bool? EndTurn { get; set; }
+
     /// <summary>本条消息中的全部工具调用块（按出现顺序）。</summary>
     [JsonIgnore]
     public IEnumerable<ToolCallContent> ToolCalls =>

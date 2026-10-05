@@ -17,6 +17,9 @@ public sealed record ResponsesStreamOptions
     /// <summary>请求的 service tier（flex/priority/fast/default/auto）。</summary>
     public string? ServiceTier { get; init; }
 
+    /// <summary>service tier 解析（响应 tier vs 请求 tier）。对应 TS <c>resolveServiceTier</c>。</summary>
+    public Func<string?, string?, string?>? ResolveServiceTier { get; init; }
+
     /// <summary>工具名 → grammar 输入属性名（custom tool call 的流式输入缓冲）。</summary>
     public IReadOnlyDictionary<string, string>? GrammarToolInputProperties { get; init; }
 
@@ -512,6 +515,12 @@ public static class OpenAiResponsesShared
 
         public string? RawStopReason { get; set; }
 
+        /// <summary>模型是否自然说完（codex end_turn）。对应 TS <c>output.endTurn</c>。</summary>
+        public bool? EndTurn { get; set; }
+
+        /// <summary>流处理诊断条目（传输降级等）。对应 TS <c>output.diagnostics</c>。</summary>
+        public List<Pi.Ai.Utils.AssistantMessageDiagnostic> Diagnostics { get; } = [];
+
         public MutableAssistantMessage(string model, string api, string provider)
         {
             Model = model;
@@ -525,6 +534,8 @@ public static class OpenAiResponsesShared
             {
                 RawStopReason = RawStopReason,
                 ResponseId = ResponseId,
+                EndTurn = EndTurn,
+                Diagnostics = Diagnostics.Count > 0 ? [.. Diagnostics] : null,
             };
     }
 
@@ -754,7 +765,11 @@ public static class OpenAiResponsesShared
                 stats = ModelOperations.CalculateCost(model, stats);
                 if (options?.ApplyServiceTierPricing is { } applyPricing)
                 {
-                    stats = applyPricing(stats, options.ServiceTier);
+                    var responseTier = response.Str("service_tier");
+                    var serviceTier = options.ResolveServiceTier is { } resolveTier
+                        ? resolveTier(responseTier, options.ServiceTier)
+                        : responseTier ?? options.ServiceTier;
+                    stats = applyPricing(stats, serviceTier);
                 }
                 state.Owner.Usage = stats;
             }
