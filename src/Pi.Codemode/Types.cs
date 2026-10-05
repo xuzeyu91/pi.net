@@ -1,4 +1,5 @@
 using System.Text.Json.Nodes;
+using Pi.Codemode.Runtime;
 
 namespace Pi.Codemode;
 
@@ -133,11 +134,19 @@ public sealed record CodemodeSandboxOptions
     /// <summary>QuickJS VM 可分配的最大内存；超出后脚本内报 <c>InternalError: out of memory</c>。</summary>
     public long? MemoryLimitBytes { get; init; }
 
-    /// <summary>已编译的 QuickJS wasm 模块；缺省由宿主加载。</summary>
+    /// <summary>
+    /// 引擎特定的 VM 载荷（如 <see cref="CodemodeWasmModule"/>），经 <c>CodemodeWorkerData.Wasm</c>
+    /// 透传给引擎；缺省由引擎自行加载。对应 TS 的 <c>wasm</c> 选项（host 侧 <c>loadQuickJSWasm</c>
+    /// 提供的已编译 quickjs-wasi 模块）。
+    /// </summary>
     public object? Wasm { get; init; }
 
-    /// <summary>worker 入口（默认本包的 worker 文件）。</summary>
-    public string? WorkerUrl { get; init; }
+    /// <summary>
+    /// JS 引擎注入点；缺省 <see cref="UnsupportedCodemodeJsEngine"/>（执行以 <c>kind: "sandbox"</c>
+    /// 失败并提示注入引擎）。对应 TS 的 worker + quickjs-wasi VM——C# 无
+    /// <c>WebAssembly.compile</c> 与 worker 线程模型，故 VM 执行抽成该注入点（设计差异第 18 条）。
+    /// </summary>
+    public ICodemodeJsEngine? Engine { get; init; }
 }
 
 /// <summary>单次执行选项。对应 TS <c>CodemodeExecuteOptions</c>。</summary>

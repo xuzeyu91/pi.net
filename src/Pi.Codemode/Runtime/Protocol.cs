@@ -16,19 +16,16 @@ public sealed record CodemodeWorkerData
 
     public required IReadOnlyList<CodemodeWorkerGlobal> Globals { get; init; }
 
-    /// <summary>已编译的 <c>quickjs-wasi</c> 模块（C# 侧由 JS 引擎抽象承载）。</summary>
-    public required object Wasm { get; init; }
+    /// <summary>
+    /// host 透传的引擎特定载荷（如 <see cref="CodemodeWasmModule"/>）；<c>null</c> 表示未提供，
+    /// 由引擎按需加载（TS 是 host 编译后经 structured clone 分享给 worker 的 quickjs-wasi 模块）。
+    /// </summary>
+    public object? Wasm { get; init; }
 
     public long? MemoryLimitBytes { get; init; }
 
     /// <summary><c>load()</c> 的快照：键 → JSON 文本。</summary>
     public required IReadOnlyDictionary<string, string> Store { get; init; }
-
-    /// <summary>
-    /// host 在终止 worker 前置为非零的一个 Int32。VM 的中断处理轮询它，
-    /// 因为 <c>worker.terminate()</c> 无法停下正在 wasm 里自旋的线程。
-    /// </summary>
-    public required object Interrupt { get; init; }
 }
 
 /// <summary>worker 数据里的工具描述。对应 TS <c>WorkerData.tools</c> 元素。</summary>
@@ -54,8 +51,8 @@ public abstract record WorkerToHostMessage
 
     public sealed record Output(CodemodeOutputItem Item) : WorkerToHostMessage;
 
-    /// <summary><c>Writes</c> 是 <c>store()</c> 的 JSON 数组（<c>[key, json]</c>）与删除（<c>[key]</c>）。</summary>
-    public sealed record Done(bool Ok, string? Value, string Writes, CodemodeScriptError? Error) : WorkerToHostMessage;
+    /// <summary><c>Writes</c> 是 <c>store()</c> 的 JSON 数组（<c>[key, json]</c>）与删除（<c>[key]</c>）；失败时不上报。</summary>
+    public sealed record Done(bool Ok, string? Value, string? Writes, CodemodeScriptError? Error) : WorkerToHostMessage;
 
     /// <summary>VM 在脚本控制之外失败（例如 wasm trap）。</summary>
     public sealed record Crash(string Message) : WorkerToHostMessage;
