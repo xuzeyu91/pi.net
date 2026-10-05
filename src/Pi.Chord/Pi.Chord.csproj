@@ -1,3 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <!-- Port of packages/chord: application-composition runtime (services, replicated state, RPC, facets). -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="Pi.Chord.Tests" />
+  </ItemGroup>
 </Project>

@@ -1,62 +1,16 @@
 // ============================================================================
-// PORT SKELETON - packages/chord (8.8k lines TS): application-composition
-// runtime (services, replicated state deltas, RPC, facets, plugins).
+// packages/chord (8.8k lines TS): application-composition runtime
+// (services, replicated state deltas, RPC, facets, plugins).
 // esbuild-based bundling is redesigned as C# AssemblyLoadContext plugins.
-// This file carries the JSON value contract that Pi.Protocol depends on.
+//
+// 本文件承载 chord 的零散公共契约（types.ts / api.ts / delta 侧句柄）；
+// JSON 值契约见 Json.cs（json.ts），其余类型按关注点落在 Facets/、Services/、Delta/。
 // ============================================================================
 
 namespace Pi.Chord;
 
 /// <summary>
-/// JSON value contract shared across the monorepo. Mirrors TS <c>isJsonValue</c>
-/// and <c>copyJson</c> from packages/chord/src/json.ts.
-/// </summary>
-public static class Json
-{
-    /// <summary>True when the value tree contains only JSON-compatible primitives.</summary>
-    public static bool IsJsonValue(object? value) => value switch
-    {
-        null or bool or long or int or short or byte or sbyte or ushort or uint or double or float or string => true,
-        decimal => true,
-        List<object?> list => list.All(IsJsonValue),
-        IReadOnlyList<object?> list => list.All(IsJsonValue),
-        Dictionary<string, object?> map => map.Values.All(IsJsonValue),
-        IReadOnlyDictionary<string, object?> map => map.Values.All(IsJsonValue),
-        _ => false,
-    };
-
-    /// <summary>
-    /// Deep-copies a JSON value tree. Mirrors TS <c>copyJson</c>: by default objects
-    /// are fully rebuilt (no shared references); <paramref name="copyPrototypeBuiltinObjects"/>
-    /// has no C# equivalent and is kept for API parity documentation only.
-    /// </summary>
-    public static object? CopyJson(object? value, bool copyPrototypeBuiltinObjects = true) => value switch
-    {
-        null or bool or long or int or short or byte or sbyte or ushort or uint or double or float or decimal or string => value,
-        List<object?> list => list.Select(v => CopyJson(v)).ToList<object?>(),
-        IReadOnlyList<object?> list => list.Select(v => CopyJson(v)).ToList<object?>(),
-        IEnumerable<object?> list => list.Select(v => CopyJson(v)).ToList<object?>(),
-        Dictionary<string, object?> map => map.ToDictionary(kv => kv.Key, kv => CopyJson(kv.Value)),
-        IReadOnlyDictionary<string, object?> map => map.ToDictionary(kv => kv.Key, kv => CopyJson(kv.Value)),
-        IEnumerable<KeyValuePair<string, object?>> map => map.ToDictionary(kv => kv.Key, kv => CopyJson(kv.Value)),
-        _ => throw new ArgumentException($"Unsupported JSON value type: {value.GetType().Name}", nameof(value)),
-    };
-
-    /// <summary>结构化拷贝别名（对齐 delta 侧的 deep-clone 命名）。</summary>
-    public static object? DeepClone(object? value) => CopyJson(value);
-
-    public static Dictionary<string, object?> EmptyObject() => [];
-
-    public static List<object?> EmptyArray() => [];
-}
-
-/// <summary>
-
-
-/// <summary>
-/// Immutable draft handle over replicated state. Mirrors TS <c>Draft</c> from
-/// packages/chord/src/delta/draft.ts; the full delta engine (diff/draft/tracker/
-/// revision-validator) lands next session.
+/// 复制状态的不可变草稿句柄。对应 TS <c>Draft</c>（delta/draft.ts，经 delta/index.ts 导出）。
 /// </summary>
 public interface IDraft<TState>
 {
@@ -66,9 +20,9 @@ public interface IDraft<TState>
 }
 
 /// <summary>
-/// Service/facet composition API. Mirrors TS <c>defineService / defineFacet /
-/// createFacetHost / replicatedState</c> from packages/chord/src/api.ts - the
-/// provider/consumer/instances service machinery is scheduled next session.
+/// Service/facet 组合 API 的骨架入口。对应 TS <c>api.ts</c> 的 <c>defineService</c>；
+/// 其余成员（createFacetHost / createStaticFacetLoader / combineFacetLoaders /
+/// createRemoteServiceBinding / replicatedState）待 consumer.ts 与 api.ts 完整迁移时补齐。
 /// </summary>
 public static class ChordApi
 {

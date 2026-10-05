@@ -6,7 +6,7 @@
 
 ## 逐包移植进度
 
-8 个运行时项目，构建 0 警告 0 错误；**386 项测试全部通过**（2026-10-05 实测）。
+8 个运行时项目，构建 0 警告 0 错误；**407 项测试全部通过**（2026-10-05 实测）。
 
 | TS 包（packages/） | .NET 项目（src/） | 源码规模 | 状态 | 测试 |
 |---|---|---|---|---|
@@ -16,7 +16,7 @@
 | mcp | Pi.Mcp | 3.2k 行 | ✅ 完整移植：JSON-RPC 协议层 + 传输层全套（in-memory / stdio / streamable-http）+ McpClient 会话 + OAuth 全层（发现 / PKCE 授权码 / 动态注册 / 凭据失效重试 / MemoryStateStore / 本地回调服务器） | 19 ✅ |
 | server / client | Pi.Server / Pi.Client | 3.1k 行 | ✅ 核心完整移植：RpcServer（TCP listener / 会话循环 / hello 握手校验 / 请求分发 / cancel / service_update 推送）+ RpcClient（握手 / 请求超时与取消 / service 订阅 / 关闭清理），端到端验证通过 | 2 ✅ |
 | ai | Pi.Ai | 26.3k 行 | ✅ 完整移植（10 内建 API + 42 provider + compat + models-store + 全部 utils + cli） | 283 ✅ |
-| chord | Pi.Chord | 8.8k 行 | 🚧 delta 引擎全部 + services 核心 + facets（依赖图 / 拓扑激活 / reload / 服务槽接线 / 外部源绑定：目录发现 → offered 去重 → deferred 延迟源 → 按源分组 open → 就绪门 → 门面绑槽；Require / Use 两阶段）+ Context 值链；仅剩 node bundler | 43 ✅ |
+| chord | Pi.Chord | 8.8k 行 | 🚧 delta 引擎全部 + services 核心 + facets（依赖图 / 拓扑激活 / reload / 服务槽接线 / 外部源绑定）+ Context 值链 + **node 层（manifest / bundle / bundle-loader / package）+ json.ts**；剩 consumer.ts 与 api.ts 完整面 | 64 ✅ |
 | coding-agent | （未建） | 85k 行 | ⏳ 待 tui / codemode / durable 之后分阶段移植 | — |
 | tui / codemode / durable / evals | （未建） | 41k 行 | ⏳ 后续阶段 | — |
 
@@ -52,6 +52,19 @@
   - `Types/Messages.cs` 补 `AssistantMessage.ResponseModel`（types.ts 的 <c>responseModel</c>）。
 
 ai 包至此与 pi 1:1 齐平（除下表列出的三处刻意归并）。
+
+### Pi.Chord 详情（8.8k 行，64 项测试）
+
+已完成：
+
+- **delta 引擎**：wire 编解码、diff/apply、revision 校验、Tracker 显式动词 API。
+- **services**：ReplicatedState（发布者/副本/附加源）、RemoteServiceProvider、Endpoint、StateCodec、ServiceWire、Instances。
+- **facets**：FacetKernel（依赖图 / Kahn 拓扑 / reload / 原子激活与回滚）、FacetLifecycle、外部服务源绑定（Require / Use 两阶段）。
+- **Context 值链**。
+- **node 层（P36）**：`Node/Manifest.cs`（格式常量 + 条目/清单/artifact 记录）、`Node/Bundle.cs`（`bundleFacets`：逐 entry 内容寻址打包 → 清单落盘 → 「临时目录 + 原子替换」，含输出路径/多余产物/选项校验与 SHA-256 integrity）、`Node/BundleLoader.cs`（清单与 artifact 校验、完整性校验、相对文件名解析、包 specifier 校验、`createFacetBundleLoader` / `createFacetBundleArtifactLoader`）、`Node/Package.cs`（package.json 元数据 + 约定/配置 entry 解析 + 目录逃逸防护 + peerDependencies/chord.external 展开）、`Bundler.cs` / `Node.cs`（bundler.ts / node.ts 的入口表面）、`Json.cs`（json.ts：严格 JSON 契约 + 无别名深拷贝 + 环检测）。
+- **类型补齐**：`IFacetLoader` / `LoadedFacets`（拆卸后 facets 清空）/ `FacetHost`。
+
+剩余：`services/consumer.ts`（RemoteServiceBinding）、`api.ts` 完整面（createFacetHost / createStaticFacetLoader / combineFacetLoaders / defineFacet / replicatedState）、`types.ts` 的其余导出、`index.ts` 桶文件。
 
 ### Pi.Ai 目录映射（packages/ai/src → src/Pi.Ai，1:1）
 
@@ -102,7 +115,9 @@ pi.net/
 8. **compat 的 api-dispatch 回退走简单选项桥接**：TS `compat.stream` 把完整选项透传给注册表里的 API 实现；C# 的 `ApiProvider` 完整选项入口是 wire `JsonObject`（api-dispatch 用 JSON 反序列化 provider 专属选项），而 provider 边界统一为 `IReadOnlyDictionary<string, object?>`。compat 因此把字典选项经 `ProviderStreamOptions.FromDictionary` 桥接为 `SimpleStreamOptions` 再派发；apiKey / baseUrl / headers / env / reasoning 等公共字段语义一致。内建 provider 归属判定用引用比较快照（TS 的 `!==`），未注册的内建 api（anthropic-messages / openai-completions）快照为 null，因此「未被覆盖」与「被覆盖」都判定正确。
 9. **Radius 动态目录的持久化**：TS 经 ModelsStore 的 `context.publish` 事务化持久化刷新结果；C# 侧持久化上下文（ModelsStore）尚未移植，`RadiusProvider.RefreshModelsAsync` 只做内存更新，持久化由调用方按需处理。
 10. **`compat.ts` 的静态门面类名取 `CompatApi`**：C# 无法让类型 `Compat` 与命名空间 `Pi.Ai.Compat`（来自 `compat/` 目录）同名共存，故模块类名加 `Api` 后缀（`compat/extension-oauth-types.ts` 仍落在 `Pi.Ai.Compat`）。
-11. **`ModelAuth.Headers` 的 null 抑制**：TS 允许 `Authorization: null` 抑制同名默认头；C# 的 `ModelAuth.Headers` 值类型为 `string?` 以保留该语义（Cloudflare AI Gateway 用 `cf-aig-authorization` 并抑制默认 Authorization / x-api-key）。
+11. **chord 打包/加载的两处注入点**：TS 用 esbuild 打包、用 `node:vm` 的 `compileFunction` 执行 bundle；C# 无等价物，故拆成 `IFacetEntryBundler`（单 entry 打包，请求里带全量 esbuild 配置：banner / format cjs / entryNames / outExtension / supported dynamic-import=false / target 缺省）与 `IFacetModuleHost`（CommonJS 模块执行）两个接口。默认模块宿主 `UnsupportedFacetModuleHost` 明确拒绝 JS bundle（扩展已改为 AssemblyLoadContext 插件路线），注入宿主即可运行 JavaScript bundle。
+12. **`node.ts` 的门面类名取 `NodeApi`**：C# 无法让类型 `Node` 与 `node/` 目录产生的命名空间 `Pi.Chord.Node` 同名共存（同 `CompatApi`）。
+13. **`ModelAuth.Headers` 的 null 抑制**：TS 允许 `Authorization: null` 抑制同名默认头；C# 的 `ModelAuth.Headers` 值类型为 `string?` 以保留该语义（Cloudflare AI Gateway 用 `cf-aig-authorization` 并抑制默认 Authorization / x-api-key）。
 
 ## CBOR 线上兼容要点（已测试锁定）
 
@@ -113,7 +128,7 @@ pi.net/
 ## 路线图
 
 1. **ai 包**：✅ 已完成（目录结构 1:1 对齐 pi）。
-2. **chord 包**：仅剩 node bundler（esbuild 打包器的 C# 等价物，非运行时核心）。
+2. **chord 包**：node 层已完成；剩 `services/consumer.ts`（RemoteServiceBinding）与 `api.ts` 完整面。
 3. **server/client**：chord services 集成（session-router、多服务路由）与 unix socket / named pipe 监听器。
 4. **agent 包**：proxy.ts。
 5. **coding-agent**：85k 行主产品（会话 / 工具系统 / 技能 / 主题 / RPC 模式），最后阶段按"核心命令最小闭环 → 逐步补全"推进。

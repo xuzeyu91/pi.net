@@ -162,3 +162,52 @@ internal sealed class FacetLifecycle
         return errors;
     }
 }
+
+/// <summary>
+/// 加载完毕的 facets（可拆卸）。对应 TS <c>LoadedFacets</c>（types.ts）。
+/// </summary>
+public sealed class LoadedFacets
+{
+    private IReadOnlyList<IFacet> _facets = [];
+
+    /// <summary>加载出的 facets；拆卸后清空（对齐 TS 的 <c>get facets()</c>）。</summary>
+    public required IReadOnlyList<IFacet> Facets
+    {
+        get => _facets;
+        init => _facets = value;
+    }
+
+    /// <summary>拆卸回调（幂等由实现保证）。对应 TS <c>dispose()</c>。</summary>
+    public required Func<Task> Dispose { get; init; }
+
+    public Task DisposeAsync() => Dispose();
+
+    /// <summary>拆卸后清空 facets（由加载器调用）。</summary>
+    internal void ClearFacets() => _facets = [];
+}
+
+/// <summary>
+/// facet 加载器：把外部来源（静态列表 / bundle / 组合加载器）变成
+/// <see cref="LoadedFacets"/>。对应 TS <c>FacetLoader</c>（types.ts）。
+/// </summary>
+public interface IFacetLoader
+{
+    Task<LoadedFacets> LoadAsync(CancellationToken cancellationToken = default);
+}
+
+/// <summary>
+/// 已激活的 facet 宿主。对应 TS <c>FacetHost</c>（types.ts）。
+/// </summary>
+public sealed class FacetHost
+{
+    public required RemoteServiceProvider Services { get; init; }
+
+    /// <summary>激活并替换同 id 的 facets，不断开消费者服务句柄。对应 TS <c>reload()</c>。</summary>
+    public required Func<IReadOnlyList<IFacet>, Task> Reload { get; init; }
+
+    public required Func<Task> Dispose { get; init; }
+
+    public Task ReloadAsync(IReadOnlyList<IFacet> facets) => Reload(facets);
+
+    public Task DisposeAsync() => Dispose();
+}
