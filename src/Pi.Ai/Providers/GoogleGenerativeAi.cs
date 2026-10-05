@@ -135,9 +135,9 @@ public static class GoogleGenerativeAi
         return (systemInstruction, contents);
     }
 
-    /// <summary>构造 generateContent 参数。对应 TS <c>buildParams</c>。</summary>
+    /// <summary>构造 generateContent 参数。对应 TS <c>buildParams</c>（含 thinkingConfig）。</summary>
     public static JsonObject BuildParams(IReadOnlyList<ChatMessage> context,
-        IReadOnlyList<ToolDefinition>? tools = null)
+        IReadOnlyList<ToolDefinition>? tools = null, bool thinkingEnabled = false)
     {
         var (systemInstruction, contents) = ConvertMessages(context);
         var parameters = new JsonObject();
@@ -149,6 +149,7 @@ public static class GoogleGenerativeAi
             };
         }
         parameters["contents"] = contents;
+        parameters["generationConfig"] = GoogleThinking.BuildConfig("gemini-2.5-flash", thinkingEnabled);
         if (tools is { Count: > 0 })
         {
             var declarations = new JsonArray();

@@ -107,4 +107,56 @@ public class GoogleGenerativeAiTests
         Assert.Equal(5, done.Message.UsageStats!.Input);
         Assert.Equal(3, done.Message.UsageStats.Output);
     }
+
+    [Fact]
+    public void ThinkingBudgetsFollowModelFamilies()
+    {
+        // 2.5-pro 预算表。
+        Assert.Equal(128, GoogleThinking.GetBudget("gemini-2.5-pro", GoogleThinkingLevel.Minimal));
+        Assert.Equal(32768, GoogleThinking.GetBudget("gemini-2.5-pro", GoogleThinkingLevel.High));
+        // 2.5-flash-lite。
+        Assert.Equal(512, GoogleThinking.GetBudget("gemini-2.5-flash-lite", GoogleThinkingLevel.Minimal));
+        // 2.5-flash。
+        Assert.Equal(24576, GoogleThinking.GetBudget("gemini-2.5-flash", GoogleThinkingLevel.High));
+        // 自定义预算优先。
+        Assert.Equal(999, GoogleThinking.GetBudget("gemini-2.5-pro", GoogleThinkingLevel.Low,
+            new Dictionary<string, int> { ["low"] = 999 }));
+        // 其余模型 = 动态（-1）。
+        Assert.Equal(-1, GoogleThinking.GetBudget("gemini-1.5-pro", GoogleThinkingLevel.Medium));
+    }
+
+    [Fact]
+    public void BuildConfigEncodesWireFormat()
+    {
+        // 禁用 → thinkingBudget 0。
+        var disabled = GoogleThinking.BuildConfig("gemini-2.5-flash", enabled: false);
+        Assert.Equal(0, disabled["thinkingConfig"]!["thinkingBudget"]!.GetValue<int>());
+        // 启用 → 模型预算。
+        var enabled = GoogleThinking.BuildConfig("gemini-2.5-pro", enabled: true, GoogleThinkingLevel.High);
+        Assert.Equal(32768, enabled["thinkingConfig"]!["thinkingBudget"]!.GetValue<int>());
+    }
+
+    [Fact]
+    public async Task RetryPolicyRetriesRetryableStatuses()
+    {
+        var attempts = 0;
+        var result = await RetryPolicy.ExecuteAsync(async () =>
+        {
+            attempts++;
+            if (attempts < 3) throw new ProviderHttpException(429, "rate limited");
+            return "ok";
+        }, maxRetries: 3, maxRetryDelayMs: 10);
+        Assert.Equal("ok", result);
+        Assert.Equal(3, attempts);
+
+        // 不可重试状态立即抛出。
+        attempts = 0;
+        await Assert.ThrowsAsync<ProviderHttpException>(() => RetryPolicy.ExecuteAsync<object?>(async () =>
+        {
+            attempts++;
+            throw new ProviderHttpException(400, "bad request");
+        }, maxRetries: 3));
+        Assert.Equal(1, attempts);
+    }
 }
+
