@@ -1,6 +1,6 @@
 using System.Text;
 using System.Text.Json.Nodes;
-using Pi.Chord.Models;
+using Pi.Ai.Models;
 using Pi.Ai.Stream;
 using Pi.Ai.Types;
 using Xunit;
@@ -52,7 +52,7 @@ public class ModelsTests
     public async Task RegistersDispatchesAndCompletes()
     {
         var catalog = ModelCatalog.LoadFromResource("openai");
-        var models = new Models();
+        var models = new Pi.Ai.Models.Models();
         models.SetProvider(new CatalogProvider("openai", catalog));
 
         // 查询。
@@ -74,7 +74,7 @@ public class ModelsTests
     public void UnknownProviderAndUnlistedModelRejected()
     {
         var catalog = ModelCatalog.LoadFromResource("openai");
-        var models = new Models();
+        var models = new Pi.Ai.Models.Models();
         models.SetProvider(new CatalogProvider("openai", catalog));
 
         var foreign = catalog.ChatModels["gpt-4o"] with { Provider = "anthropic" };
@@ -90,7 +90,7 @@ public class ModelsTests
     public void IllBehavedProviderYieldsNoModels()
     {
         var catalog = ModelCatalog.LoadFromResource("deepseek");
-        var models = new Models();
+        var models = new Pi.Ai.Models.Models();
         models.SetProvider(new CatalogProvider("good", catalog));
         models.SetProvider(new CatalogProvider("bad", catalog, throwOnGetModels: true));
 
@@ -102,7 +102,7 @@ public class ModelsTests
     [Fact]
     public void DeleteAndClearProviders()
     {
-        var models = new Models();
+        var models = new Pi.Ai.Models.Models();
         models.SetProvider(new CatalogProvider("openai", ModelCatalog.LoadFromResource("openai")));
         models.SetProvider(new CatalogProvider("anthropic", ModelCatalog.LoadFromResource("anthropic")));
         Assert.Equal(2, models.GetProviders().Count);

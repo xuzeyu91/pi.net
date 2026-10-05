@@ -2,7 +2,7 @@ using Pi.Ai.Stream;
 using Pi.Ai.Types;
 using Pi.Ai.Utils;
 
-namespace Pi.Chord.Models;
+namespace Pi.Ai.Models;
 
 /// <summary>
 /// Provider 运行时单元：元数据 + 模型列举 + 操作（流式）。对应 TS <c>Provider</c>

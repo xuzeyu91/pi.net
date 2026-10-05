@@ -1,6 +1,6 @@
 using Pi.Ai.Auth;
 using Pi.Ai.Providers;
-using Pi.Chord.Models;
+using Pi.Ai.Models;
 using Xunit;
 
 namespace Pi.Ai.Tests;
@@ -57,7 +57,7 @@ public class ProviderRegistryTests
     [Fact]
     public void RegisterAllPopulatesModels()
     {
-        var models = new Models();
+        var models = new Pi.Ai.Models.Models();
         ProviderRegistry.RegisterAll(models);
         Assert.True(models.GetProviders().Count >= 10);
         // deepseek 目录可用。
@@ -91,7 +91,7 @@ public class DedicatedProviderTests
     [Fact]
     public void RegisterBuiltinsCoversDedicatedAndCompatible()
     {
-        var models = new Models();
+        var models = new Pi.Ai.Models.Models();
         DedicatedProviderRegistry.RegisterBuiltins(models);
         // 2 专属 + 10 兼容家。
         Assert.True(models.GetProviders().Count >= 12);

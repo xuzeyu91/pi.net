@@ -1,7 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
-namespace Pi.Chord.Models;
+namespace Pi.Ai.Models;
 
 /// <summary>模型类别。对应 TS <c>ModelType</c>（chat 为缺省类型）。</summary>
 public enum ModelType

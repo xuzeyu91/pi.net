@@ -1,7 +1,7 @@
 using Pi.Ai.Auth;
 using Pi.Ai.Stream;
 using Pi.Ai.Types;
-using Pi.Chord.Models;
+using Pi.Ai.Models;
 
 namespace Pi.Ai.Providers;
 
@@ -138,7 +138,7 @@ public static class DedicatedProviderRegistry
     }
 
     /// <summary>注册专属家 + 全部兼容家。</summary>
-    public static void RegisterBuiltins(Models models)
+    public static void RegisterBuiltins(Pi.Ai.Models.Models models)
     {
         foreach (var definition in DedicatedProviders)
         {

@@ -1,7 +1,7 @@
 using Pi.Ai.Auth;
 using Pi.Ai.Stream;
 using Pi.Ai.Types;
-using Pi.Chord.Models;
+using Pi.Ai.Models;
 
 namespace Pi.Ai.Providers;
 

@@ -8,7 +8,7 @@
 |---|---|---|---|
 | telemetry | **Pi.Telemetry** | 0.9k 行 | ✅ 完整移植 + conformance 测试 12/12 通过 |
 | protocol | **Pi.Protocol** | 0.9k 行 | ✅ 完整移植（CBOR/framing/codec）+ 测试 14/14 通过 |
-| ai | Pi.Ai | 26.3k 行 | 🚧 核心类型层 + EventStream + faux + **三个真实 API 样板**（openai-completions delta 模型 / anthropic-messages content_block / **google-generative-ai parts 模型**：systemInstruction 独立、thought part、functionCall/Response、finishReason 映射、REST SSE 直调）+ ModelCatalog + Models 门面 + Auth 层 + ProviderRegistry（10 家兼容家）+ GoogleThinking（2.5-pro/flash-lite/flash 预算表/自定义优先/动态 -1）+ RetryPolicy（408/409/429/5xx 退避/retry-after）+ **OAuthAuth 刷新编排**（IOAuthAuth refresh/toAuth 拆分 + OAuthRefreshCoordinator：过期判断/store 锁内刷新/轮换 refresh token/并发单一刷新防护）+ 专属 provider 注册（2 专属 + 10 兼容家）+ 测试 37/37 通过；thoughtSignature 回传与 login 交互/deferred/images/classify 待移植 |
+| ai | Pi.Ai | 26.3k 行 | 🚧 核心类型层 + EventStream + faux + **三个真实 API 样板**（openai-completions / anthropic-messages / google-generative-ai）+ ModelCatalog + Models 门面 + Auth 层 + ProviderRegistry（10 家兼容家）+ GoogleThinking + RetryPolicy + OAuthAuth 刷新编排 + **OAuth 登录交互层（P26）**：AuthPrompt/AuthEvent 判别联合 + IAuthInteraction/ProviderAuthInteraction + PKCE + loopback 回调服务器（complete 先行/claimed-settled/cancel/close/超时）+ RFC 8628 设备码轮询（slow_down 增间隔/服务器下发优先）+ **9 家 provider OAuth 流**（anthropic browser+copy_code / openai-codex browser+device+JWT accountId / openai-chatgpt 动态 client+专用 1455 回调 / openrouter 永久 key / kimi-coding 设备码+刷新退避 / meta 设备码+key 铸造 / radius browser+device+discovery / xai 设备码+refresh 保留 / github-copilot 设备流+模型目录+policy 启用+proxy-ep baseUrl）+ OAuthFlows 懒加载注册表 + AuthResolve 双检锁认证解析（stored credential 拥有 provider、15s 刷新超时、ModelsError 包装）+ Credential 扩展字段（accountId/clientId/scopes/enterpriseUrl/availableModelIds/gatewayConfig/scope）；测试 104/104 通过；剩余：thoughtSignature 回传/deferred/images/classify/兼容层、bedrock/vertex 变体、openai-responses 等其余 API |
 | agent | Pi.Agent | 2.5k 行 | ✅ 完整移植（除 proxy.ts）：Agent 类（状态机/双队列/订阅/abort/reset）+ agent-loop 主循环 + sequential/parallel 工具执行；测试 13/13 通过 |
 | mcp | Pi.Mcp | 3.2k 行 | ✅ **完整移植**：JSON-RPC 协议层 + 传输层全套（in-memory / stdio / streamable-http）+ McpClient 会话 + OAuth 全层（解析/发现/PKCE 授权码流程/动态注册/凭据失效重试/MemoryStateStore/本地回调服务器）；测试 19/19 通过 |
 | chord | Pi.Chord | 8.8k 行 | 🚧 delta 引擎全部 + services 核心 + facets（依赖图/拓扑激活/reload/服务槽接线/**外部源绑定**：IRemoteServiceSource 目录发现→重复 offered 拒绝→deferred 延迟源→按源分组 open→就绪门→门面绑槽；Require 声明与 Use 解析两阶段拆分）+ Context 值链；测试 43/43 通过；仅剩 node bundler（打包器，chord 侧非核心运行时） |
@@ -16,7 +16,7 @@
 | coding-agent | （未建） | 85k 行 | ⏳ 待 tui/codemode/durable 之后分阶段移植 |
 | tui / codemode / durable / evals | （未建） | 41k 行 | ⏳ 后续会话 |
 
-测试项目共 7 个：Pi.Telemetry(12) / Pi.Protocol(14) / Pi.Agent(13) / Pi.Mcp(19) / Pi.Chord(43) / Pi.Ai(37) / Pi.Server(2)，合计 **140 项全部通过**。
+测试项目共 7 个：Pi.Telemetry(12) / Pi.Protocol(14) / Pi.Agent(13) / Pi.Mcp(19) / Pi.Chord(43) / Pi.Ai(104) / Pi.Server(2)，合计 **207 项全部通过**。
 构建：`dotnet build Pi.slnx`（当前 0 警告 0 错误）。
 
 ## 目录约定
@@ -47,7 +47,7 @@ pi.net/
 
 ## 后续会话路线图
 
-1. **ai 包**：Models 门面 + Auth + 刷新编排完成 → OAuth 登录交互（prompt/notify/callback）→ bedrock/vertex 变体 → deferred/images/classify → 兼容层。
+1. **ai 包**：✅ OAuth 登录交互层完成 → 剩余 thoughtSignature 回传/deferred/images/classify/兼容层 → bedrock/vertex 变体 → openai-responses/azure/mistral-conversations/cloudflare 等其余 API。
 2. **agent 包**：agent.ts（Agent 类：状态机/队列/subscribe API）+ proxy.ts；agent-loop 主循环与工具执行已完成。
 3. **chord 包**：核心全面完成（delta/services/facets/外部源绑定）；仅剩 node bundler（esbuild 打包器的 C# 等价物，非运行时核心）。（json.ts/context 已完成）
 4. **mcp 包**：✅ 全部完成。

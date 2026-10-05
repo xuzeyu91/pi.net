@@ -1,4 +1,4 @@
-using Pi.Chord.Models;
+using Pi.Ai.Models;
 using Xunit;
 
 namespace Pi.Ai.Tests;

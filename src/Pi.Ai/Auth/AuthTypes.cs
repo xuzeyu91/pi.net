@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Pi.Ai.Auth.OAuth;
 
 namespace Pi.Ai.Auth;
 
@@ -36,13 +37,46 @@ public abstract record Credential
         public override CredentialKind Kind => CredentialKind.ApiKey;
     }
 
-    /// <summary>规范 OAuth 凭据。对应 TS <c>OAuthCredential</c>（expires 为 epoch 毫秒）。</summary>
+    /// <summary>
+    /// 规范 OAuth 凭据。对应 TS <c>OAuthCredential</c>（expires 为 epoch 毫秒）。
+    /// TS 的开放字段（各家流程写入的扩展）在这里落为具名可空属性：
+    /// codex 的 accountId、ChatGPT 的 clientId/scopes、Copilot 的
+    /// enterpriseUrl/availableModelIds、radius 的 gatewayConfig。
+    /// </summary>
     public sealed record OAuth(
         string Refresh,
         string Access,
         long Expires) : Credential
     {
         public override CredentialKind Kind => CredentialKind.OAuth;
+
+        /// <summary>OpenAI Codex：从 access token JWT 提取的 ChatGPT 账户 id。</summary>
+        [JsonPropertyName("accountId")]
+        public string? AccountId { get; set; }
+
+        /// <summary>OpenAI ChatGPT（Sign in with ChatGPT）：回调签发的动态 client id。</summary>
+        [JsonPropertyName("clientId")]
+        public string? ClientId { get; set; }
+
+        /// <summary>OpenAI ChatGPT：授权范围。</summary>
+        [JsonPropertyName("scopes")]
+        public IReadOnlyList<string>? Scopes { get; set; }
+
+        /// <summary>GitHub Copilot：企业域（如 company.ghe.com）。</summary>
+        [JsonPropertyName("enterpriseUrl")]
+        public string? EnterpriseUrl { get; set; }
+
+        /// <summary>GitHub Copilot：登录/刷新后确定的可用模型 id 集。</summary>
+        [JsonPropertyName("availableModelIds")]
+        public IReadOnlyList<string>? AvailableModelIds { get; set; }
+
+        /// <summary>Radius：网关下发的模型目录配置。</summary>
+        [JsonPropertyName("gatewayConfig")]
+        public RadiusGatewayConfig? GatewayConfig { get; set; }
+
+        /// <summary>Radius：授权范围字符串（原始 scope）。</summary>
+        [JsonPropertyName("scope")]
+        public string? Scope { get; set; }
     }
 }
 

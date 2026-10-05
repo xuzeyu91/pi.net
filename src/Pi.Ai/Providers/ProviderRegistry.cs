@@ -1,4 +1,4 @@
-using Pi.Chord.Models;
+using Pi.Ai.Models;
 
 namespace Pi.Ai.Providers;
 
@@ -43,7 +43,7 @@ public static class ProviderRegistry
     }
 
     /// <summary>把全部兼容家注册进 Models 门面。</summary>
-    public static void RegisterAll(Models models)
+    public static void RegisterAll(Pi.Ai.Models.Models models)
     {
         foreach (var definition in OpenAiCompatibleProviders)
         {

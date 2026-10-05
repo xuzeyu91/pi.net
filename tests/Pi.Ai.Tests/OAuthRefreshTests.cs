@@ -17,6 +17,10 @@ public class OAuthRefreshTests
 
         public bool IsSubscription => true;
 
+        public Task<Credential.OAuth> LoginAsync(ProviderAuthInteraction interaction,
+            LoginOptions? options = null, CancellationToken cancellationToken = default)
+            => Task.FromResult(new Credential.OAuth("login-refresh", "login-access", long.MaxValue));
+
         public Task<Credential.OAuth> RefreshAsync(Credential.OAuth credential,
             CancellationToken cancellationToken = default)
         {
