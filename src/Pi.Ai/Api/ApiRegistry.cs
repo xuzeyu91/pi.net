@@ -114,6 +114,20 @@ public static class ApiRegistry
                 model, context, FromJson<OpenAiCodexResponsesOptions>(options), client, ct),
             StreamSimple = OpenAiCodexResponses.StreamSimple,
         });
+        yield return ("google-generative-ai", new ApiProvider
+        {
+            Api = "google-generative-ai",
+            Stream = (model, context, options, client, ct) => GoogleGenerativeAi.Stream(
+                model, context, FromJson<GoogleOptions>(options), client, ct),
+            StreamSimple = GoogleGenerativeAi.StreamSimple,
+        });
+        yield return ("google-vertex", new ApiProvider
+        {
+            Api = "google-vertex",
+            Stream = (model, context, options, client, ct) => GoogleVertex.Stream(
+                model, context, FromJson<GoogleVertexOptions>(options), client, ct),
+            StreamSimple = GoogleVertex.StreamSimple,
+        });
         yield return ("mistral-conversations", new ApiProvider
         {
             Api = "mistral-conversations",

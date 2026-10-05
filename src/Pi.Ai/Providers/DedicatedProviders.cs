@@ -88,9 +88,9 @@ public sealed class GoogleProvider(
     public override IAssistantMessageEventStream StreamSimple(ModelSpec model,
         IReadOnlyList<ChatMessage> context, IReadOnlyDictionary<string, object?>? options = null)
     {
-        var runtimeModel = new Types.Model(model.Id, model.Name, model.Api, model.Provider);
-        return GoogleGenerativeAi.StreamSimple(runtimeModel,
-            new TranscriptContext(context), ToStreamOptions(options));
+        // 迁移到 Api/GoogleGenerativeAi（P31 全事件族实现）。
+        return Pi.Ai.Api.GoogleGenerativeAi.StreamSimple(
+            model, new TranscriptContext(context), ToStreamOptions(options));
     }
 
     private static SimpleStreamOptions? ToStreamOptions(IReadOnlyDictionary<string, object?>? options)
