@@ -149,6 +149,10 @@ public sealed record AssistantMessage(
     [JsonPropertyName("rawStopReason")]
     public string? RawStopReason { get; set; }
 
+    /// <summary>provider 报告的实际模型（与请求的 <c>model</c> 不同时）。对应 TS <c>responseModel</c>。</summary>
+    [JsonPropertyName("responseModel")]
+    public string? ResponseModel { get; set; }
+
     /// <summary>响应 id（openai-responses 等）。对应 TS <c>responseId</c>。</summary>
     [JsonPropertyName("responseId")]
     public string? ResponseId { get; set; }

@@ -6,7 +6,7 @@
 
 ## 逐包移植进度
 
-8 个运行时项目，构建 0 警告 0 错误；**356 项测试全部通过**（2026-10-05 实测）。
+8 个运行时项目，构建 0 警告 0 错误；**386 项测试全部通过**（2026-10-05 实测）。
 
 | TS 包（packages/） | .NET 项目（src/） | 源码规模 | 状态 | 测试 |
 |---|---|---|---|---|
@@ -15,12 +15,12 @@
 | agent | Pi.Agent | 2.5k 行 | ✅ 完整移植（除 proxy.ts）：Agent 类（状态机 / 双队列 / 订阅 / abort / reset）+ agent-loop 主循环 + sequential / parallel 工具执行 | 13 ✅ |
 | mcp | Pi.Mcp | 3.2k 行 | ✅ 完整移植：JSON-RPC 协议层 + 传输层全套（in-memory / stdio / streamable-http）+ McpClient 会话 + OAuth 全层（发现 / PKCE 授权码 / 动态注册 / 凭据失效重试 / MemoryStateStore / 本地回调服务器） | 19 ✅ |
 | server / client | Pi.Server / Pi.Client | 3.1k 行 | ✅ 核心完整移植：RpcServer（TCP listener / 会话循环 / hello 握手校验 / 请求分发 / cancel / service_update 推送）+ RpcClient（握手 / 请求超时与取消 / service 订阅 / 关闭清理），端到端验证通过 | 2 ✅ |
-| ai | Pi.Ai | 26.3k 行 | ✅ 主体齐平（10 内建 API + 42 provider + compat + models-store），详见下节 | 253 ✅ |
+| ai | Pi.Ai | 26.3k 行 | ✅ 完整移植（10 内建 API + 42 provider + compat + models-store + 全部 utils + cli） | 283 ✅ |
 | chord | Pi.Chord | 8.8k 行 | 🚧 delta 引擎全部 + services 核心 + facets（依赖图 / 拓扑激活 / reload / 服务槽接线 / 外部源绑定：目录发现 → offered 去重 → deferred 延迟源 → 按源分组 open → 就绪门 → 门面绑槽；Require / Use 两阶段）+ Context 值链；仅剩 node bundler | 43 ✅ |
 | coding-agent | （未建） | 85k 行 | ⏳ 待 tui / codemode / durable 之后分阶段移植 | — |
 | tui / codemode / durable / evals | （未建） | 41k 行 | ⏳ 后续阶段 | — |
 
-### Pi.Ai 详情（26.3k 行，253 项测试）
+### Pi.Ai 详情（26.3k 行，283 项测试）
 
 已完成：
 
@@ -41,8 +41,17 @@
 
 - **目录结构 1:1 对齐 pi（P34）**：见下节「Pi.Ai 目录映射」。
 - **根级模块补齐（P34）**：`ModelsStore.cs`（models-store.ts：`ModelsStoreEntry` / `IModelsStore` / `InMemoryModelsStore`）、`ImageModels.cs`（image-models.ts 兼容读取）、`Compat/ExtensionOAuthTypes.cs`（compat/extension-oauth-types.ts）、`OAuth.cs`（oauth.ts 类型入口）。
+- **utils 与 cli 收尾（P35）**：
+  - `Utils/Retry.cs`（retry.ts）：assistant-turn 重试策略——`RetryPolicy`（enabled/maxRetries/baseDelayMs/maxAgentDelayMs）、`RetryDelayMs`（指数退避 + safe-integer 处理 + 60s 默认上限）、`IsRetryableAssistantError`（可重试/不可重试两套错误文案正则，含订阅限额与网络/WS/流提前结束）、`AssistantCallAsync`（中止永不重试、退避期中止归一为 Aborted 消息、三个回调）。
+  - `Utils/Overflow.cs`（overflow.ts）：25 条各 provider 超窗文案 + Cerebras 无 body 特例 + 三条非溢出排除（限流）；`IsContextOverflow` 三形态（错误文案 / 静默溢出 / length 截断溢出）、`IsRecoverableLength`。
+  - `Utils/Validation.cs`（validation.ts）：typebox `Compile`/`Value.Convert` 在 C# 侧以手写 JSON Schema 校验器复刻（同 Pi.Protocol 路线）——可选 null 归一、按 schema 强制类型转换（allOf/anyOf/oneOf 联合、对象/数组递归、additionalProperties）、校验与 `路径: 文案` 错误格式化。
+  - `Utils/AssistantMessageFrame.cs`（assistant-message-frame.ts）：紧凑可回放帧——11 种帧类型、`AssistantMessageFrameEncoder`（逐块偏移避免重放已覆盖增量、toolcall catch-up + JSON 前缀判定、终态不出帧）、`AssistantMessageFrameReducer`（回放为消息、gap/重复 start/块类型不符全部报错）。
+  - `Utils/NodeHttpProxy.cs`（node-http-proxy.ts）：`<scheme>_proxy`/`all_proxy` 取值、`no_proxy` 规则（`*`、`*.domain`、`.domain`、`host:port`、裸 IPv6）、SOCKS/PAC 拒绝。
+  - `Utils/TypeboxHelpers.cs`（typebox-helpers.ts）：`StringEnum` → JSON Schema 节点。
+  - `Cli.cs`（cli.ts）：`login [provider]` / `list` / `help`，交互注入 TextReader/TextWriter 便于测试，凭据写入 `auth.json`。
+  - `Types/Messages.cs` 补 `AssistantMessage.ResponseModel`（types.ts 的 <c>responseModel</c>）。
 
-剩余（零散工具，非核心链路）：`utils/assistant-message-frame` / `utils/overflow` / `utils/node-http-proxy` / `utils/validation` / `utils/retry`（assistant-turn 重试策略，与 `utils/provider-retry` 的 HTTP 重试不同）/ `cli.ts`。
+ai 包至此与 pi 1:1 齐平（除下表列出的三处刻意归并）。
 
 ### Pi.Ai 目录映射（packages/ai/src → src/Pi.Ai，1:1）
 
@@ -103,7 +112,7 @@ pi.net/
 
 ## 路线图
 
-1. **ai 包收尾**：核心链路已齐平（10 内建 API + 42 provider 全家桶 + deferred + compat）。剩余零散工具：`assistant-message-frame` / `overflow`（上下文溢出策略）/ `node-http-proxy` / `validation` / `cli`。
+1. **ai 包**：✅ 已完成（目录结构 1:1 对齐 pi）。
 2. **chord 包**：仅剩 node bundler（esbuild 打包器的 C# 等价物，非运行时核心）。
 3. **server/client**：chord services 集成（session-router、多服务路由）与 unix socket / named pipe 监听器。
 4. **agent 包**：proxy.ts。
