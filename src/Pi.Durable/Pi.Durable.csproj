@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Port of packages/durable: durable conversation, task, and document runtime. -->
+  <ItemGroup>
+    <ProjectReference Include="..\Pi.Ai\Pi.Ai.csproj" />
+    <ProjectReference Include="..\Pi.Chord\Pi.Chord.csproj" />
+  </ItemGroup>
+</Project>
