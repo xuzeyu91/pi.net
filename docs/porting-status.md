@@ -6,7 +6,7 @@
 
 ## 逐包移植进度
 
-8 个运行时项目，构建 0 警告 0 错误；**454 项测试全部通过**（2026-10-05 实测）。
+9 个运行时项目，构建 0 警告 0 错误；**470 项测试全部通过**（2026-10-05 实测）。
 
 | TS 包（packages/） | .NET 项目（src/） | 源码规模 | 状态 | 测试 |
 |---|---|---|---|---|
@@ -18,7 +18,8 @@
 | ai | Pi.Ai | 26.3k 行 | ✅ 完整移植（10 内建 API + 42 provider + compat + models-store + 全部 utils + cli） | 283 ✅ |
 | chord | Pi.Chord | 8.8k 行 | ✅ 完整移植（delta / services / facets / Context / node 层 / json / api.ts / handle.ts / **consumer.ts + loopback.ts**）；仅 `index.ts` 桶文件未做 | 86 ✅ |
 | coding-agent | （未建） | 85k 行 | ⏳ 待 tui / codemode / durable 之后分阶段移植 | — |
-| tui / codemode / durable / evals | （未建） | 41k 行 | ⏳ 后续阶段 | — |
+| codemode | **Pi.Codemode** | 1.7k 行 | 🚧 纯逻辑层完成：identifier / types / source（@options 解析 + Lark 语法）/ declarations（JSON Schema → TypeScript 类型与声明）/ runtime/protocol；剩 runtime/host.ts + worker.ts + prelude-source.ts（QuickJS wasm 执行，需 JS 引擎抽象） | 16 ✅ |
+| tui / durable / evals | （未建） | 39k 行 | ⏳ 后续阶段 | — |
 
 ### Pi.Ai 详情（26.3k 行，283 项测试）
 
@@ -129,8 +130,9 @@ pi.net/
 15. **unix 传输的三处 BCL 限制**：①TS 先绑私有路径（`bind-<hash>`）再硬链接发布到公开路径以保证原子出现，C# BCL 无硬链接 API，改为直接绑定公开路径；②TS 用 `lstat` 的 dev/ino 做文件身份校验（避免误删他人替换的 socket），C# 无 inode API，改为「存在性 + 连通性探测」；③TS 拒绝删除非 socket 路径，C# 无法判别文件类型（`File.GetUnixFileMode` 不含 socket 位），改为「探测不通即视为陈旧并删除」。监听器生命周期、陈旧 socket 清理、优雅关闭超时、排队字节上限、写串行化均 1:1。
 16. **client 的 unix 传输不设平台限制**：TS 在 `win32` 上直接抛「Unix transport is not supported on Windows」；C# 用 `UnixDomainSocketEndPoint`（Windows 10 1803+ 可用），与 Pi.Server 的 `UnixListener` 保持一致，故不设限制。
 17. **P8 的简化核心已删除**：`RpcServer.cs`（`{method, params}` 信封、无目标路由）与 `RpcClient` 连同其 `EndToEndTests.cs` 在 P41 由 `server.ts`/`client.ts` 的完整实现替换；端到端覆盖改由真实 Unix 域套接字上的「握手 → 服务端域调用 → 发现」测试承担。
-18. **`node.ts` 的门面类名取 `NodeApi`**：C# 无法让类型 `Node` 与 `node/` 目录产生的命名空间 `Pi.Chord.Node` 同名共存（同 `CompatApi`）。
-19. **`ModelAuth.Headers` 的 null 抑制**：TS 允许 `Authorization: null` 抑制同名默认头；C# 的 `ModelAuth.Headers` 值类型为 `string?` 以保留该语义（Cloudflare AI Gateway 用 `cf-aig-authorization` 并抑制默认 Authorization / x-api-key）。
+18. **codemode 的 JS 引擎边界**：TS 在 worker 里跑 QuickJS 的 wasm（`quickjs-wasi`），用共享 Int32 做中断轮询、以 `worker.terminate()` 兜底。C# 无 `WebAssembly.compile` 与 worker 线程模型，故 `runtime/host.ts`/`worker.ts` 的 VM 执行将抽成注入点（JS 引擎抽象）；`runtime/protocol.ts` 的消息形状（JSON 字符串跨界）与 `prelude-source.ts` 的前奏文本保持 1:1。
+19. **`node.ts` 的门面类名取 `NodeApi`**：C# 无法让类型 `Node` 与 `node/` 目录产生的命名空间 `Pi.Chord.Node` 同名共存（同 `CompatApi`）。
+20. **`ModelAuth.Headers` 的 null 抑制**：TS 允许 `Authorization: null` 抑制同名默认头；C# 的 `ModelAuth.Headers` 值类型为 `string?` 以保留该语义（Cloudflare AI Gateway 用 `cf-aig-authorization` 并抑制默认 Authorization / x-api-key）。
 
 ## CBOR 线上兼容要点（已测试锁定）
 
@@ -144,5 +146,6 @@ pi.net/
 2. **chord 包**：✅ 已完成（除 `index.ts` 桶文件）。
 3. **server/client**：✅ 已完成（仅 `testing/*` 的 host/client/server 假件未做——真实 Unix 域套接字端到端已覆盖同等链路）。
 4. **agent 包**：proxy.ts。
-5. **coding-agent**：85k 行主产品（会话 / 工具系统 / 技能 / 主题 / RPC 模式），最后阶段按"核心命令最小闭环 → 逐步补全"推进。
-6. **tui / codemode / durable / evals**：41k 行，最后阶段。
+5. **codemode**：纯逻辑层已完成；剩 `runtime/host.ts`（沙箱编排）+ `runtime/worker.ts`（QuickJS VM）+ `prelude-source.ts`（JS 前奏文本），VM 执行抽成注入点。
+6. **coding-agent**：85k 行主产品（会话 / 工具系统 / 技能 / 主题 / RPC 模式），最后阶段按"核心命令最小闭环 → 逐步补全"推进。
+7. **tui / durable / evals**：39k 行，最后阶段。
