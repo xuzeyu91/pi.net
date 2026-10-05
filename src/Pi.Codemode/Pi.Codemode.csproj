@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Port of packages/codemode: sandboxed JavaScript execution where the only capability is calling injected tools. -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="Pi.Codemode.Tests" />
+  </ItemGroup>
+</Project>
