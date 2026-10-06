@@ -83,6 +83,18 @@ public sealed record TaskDefinition<TInput, TState, TResult>
 
     /// <summary>新建任务的第一个持久化 checkpoint。</summary>
     public required Func<TInput?, TState> Initial { get; init; }
+
+    /// <summary>阶段名 → 擦除处理器（Harness 阶段填充；C# 无 JS 对象字面量，以字典承载）。</summary>
+    public IReadOnlyDictionary<string, object?>? Phases { get; init; }
+
+    /// <summary>擦除的 abort 处理器（Harness 阶段填充）。</summary>
+    public object? Abort { get; init; }
+
+    /// <summary>擦除的迁移委托（Harness 阶段填充）。</summary>
+    public object? Migrate { get; init; }
+
+    /// <summary>声明的钩子处理器映射（Harness 阶段填充）。</summary>
+    public object? Hooks { get; init; }
 }
 
 /// <summary>类型化可执行任务。对应 TS <c>Task&lt;I, S, R, H&gt;</c>（<c>defineTask</c> 的产物）。</summary>
@@ -230,8 +242,7 @@ public interface ITx
 /// 一条变更线、其记录与被跟踪文档的所有者。对应 TS <c>Session</c>。
 /// 只有已提交状态可观察；监听器在提交采纳之后异步运行。
 /// </summary>
-public interface ISession
-{
+public interface ISession : IDocumentReader, IDocumentObserver{
     /// <summary>在 Session 变更线上运行一次原子事务。</summary>
     Task<TResult> CommitAsync<TResult>(Func<ITx, Task<TResult>> change, Context context);
 
@@ -249,99 +260,4 @@ public interface ISession
 
     /// <summary>在 close 开始时同步观察。监听器不得抛出、阻塞或调用 Session API。</summary>
     IDisposable SubscribeClose(Action listener);
-
-    /// <summary>读会话级文档的已提交快照；不存在为 undefined。</summary>
-    Task<IReadOnlyDictionary<string, object?>?> SnapshotAsync<T>(DocToken<T> token, Context context)
-        where T : class, IReadOnlyDictionary<string, object?>;
-
-    /// <summary>读对话级文档的已提交快照。</summary>
-    Task<IReadOnlyDictionary<string, object?>?> SnapshotAsync<T>(
-        DocToken<T> token, ConversationId conversationId, Context context)
-        where T : class, IReadOnlyDictionary<string, object?>;
-
-    /// <summary>读任务级文档的已提交快照。</summary>
-    Task<IReadOnlyDictionary<string, object?>?> SnapshotAsync<T>(
-        DocToken<T> token, TaskId<object?> taskId, Context context)
-        where T : class, IReadOnlyDictionary<string, object?>;
-
-    /// <summary>读会话级文档族成员的已提交快照。</summary>
-    Task<IReadOnlyDictionary<string, object?>?> SnapshotAsync<T, TSeed>(
-        DocFamilyToken<T, TSeed> token, string key, Context context)
-        where T : class, IReadOnlyDictionary<string, object?>;
-
-    /// <summary>读对话级文档族成员的已提交快照。</summary>
-    Task<IReadOnlyDictionary<string, object?>?> SnapshotAsync<T, TSeed>(
-        DocFamilyToken<T, TSeed> token, ConversationId conversationId, string key, Context context)
-        where T : class, IReadOnlyDictionary<string, object?>;
-
-    /// <summary>读任务级文档族成员的已提交快照。</summary>
-    Task<IReadOnlyDictionary<string, object?>?> SnapshotAsync<T, TSeed>(
-        DocFamilyToken<T, TSeed> token, TaskId<object?> taskId, string key, Context context)
-        where T : class, IReadOnlyDictionary<string, object?>;
-
-    /// <summary>取得绑定到已提交会话级文档化身的可释放只读状态。</summary>
-    Task<DocumentState<T>?> DocumentStateAsync<T>(DocToken<T> token, Context context)
-        where T : class, IReadOnlyDictionary<string, object?>;
-
-    /// <summary>取得绑定到已提交对话级文档化身的可释放只读状态。</summary>
-    Task<DocumentState<T>?> DocumentStateAsync<T>(
-        DocToken<T> token, ConversationId conversationId, Context context)
-        where T : class, IReadOnlyDictionary<string, object?>;
-
-    /// <summary>取得绑定到已提交任务级文档化身的可释放只读状态。</summary>
-    Task<DocumentState<T>?> DocumentStateAsync<T>(DocToken<T> token, TaskId<object?> taskId, Context context)
-        where T : class, IReadOnlyDictionary<string, object?>;
-
-    /// <summary>取得绑定到已提交会话级文档族成员的可释放只读状态。</summary>
-    Task<DocumentState<T>?> DocumentStateAsync<T, TSeed>(
-        DocFamilyToken<T, TSeed> token, string key, Context context)
-        where T : class, IReadOnlyDictionary<string, object?>;
-
-    /// <summary>取得绑定到已提交对话级文档族成员的可释放只读状态。</summary>
-    Task<DocumentState<T>?> DocumentStateAsync<T, TSeed>(
-        DocFamilyToken<T, TSeed> token, ConversationId conversationId, string key, Context context)
-        where T : class, IReadOnlyDictionary<string, object?>;
-
-    /// <summary>取得绑定到已提交任务级文档族成员的可释放只读状态。</summary>
-    Task<DocumentState<T>?> DocumentStateAsync<T, TSeed>(
-        DocFamilyToken<T, TSeed> token, TaskId<object?> taskId, string key, Context context)
-        where T : class, IReadOnlyDictionary<string, object?>;
-
-    /// <summary>观察会话级文档的精确帧 watch；文档不存在为 undefined。</summary>
-    Task<IDocumentWatch<T>?> WatchDocAsync<T>(DocToken<T> token, Context context)
-        where T : class, IReadOnlyDictionary<string, object?>;
-
-    /// <summary>观察对话级文档的精确帧 watch。</summary>
-    Task<IDocumentWatch<T>?> WatchDocAsync<T>(
-        DocToken<T> token, ConversationId conversationId, Context context)
-        where T : class, IReadOnlyDictionary<string, object?>;
-
-    /// <summary>观察任务级文档的精确帧 watch。</summary>
-    Task<IDocumentWatch<T>?> WatchDocAsync<T>(DocToken<T> token, TaskId<object?> taskId, Context context)
-        where T : class, IReadOnlyDictionary<string, object?>;
-
-    /// <summary>观察会话级文档族成员的精确帧 watch。</summary>
-    Task<IDocumentWatch<T>?> WatchDocAsync<T, TSeed>(
-        DocFamilyToken<T, TSeed> token, string key, Context context)
-        where T : class, IReadOnlyDictionary<string, object?>;
-
-    /// <summary>观察对话级文档族成员的精确帧 watch。</summary>
-    Task<IDocumentWatch<T>?> WatchDocAsync<T, TSeed>(
-        DocFamilyToken<T, TSeed> token, ConversationId conversationId, string key, Context context)
-        where T : class, IReadOnlyDictionary<string, object?>;
-
-    /// <summary>观察任务级文档族成员的精确帧 watch。</summary>
-    Task<IDocumentWatch<T>?> WatchDocAsync<T, TSeed>(
-        DocFamilyToken<T, TSeed> token, TaskId<object?> taskId, string key, Context context)
-        where T : class, IReadOnlyDictionary<string, object?>;
-
-    /// <summary>读 rewindable 对话文档在某条目提交处的历史快照。</summary>
-    Task<IReadOnlyDictionary<string, object?>?> SnapshotAsOfAsync<T>(
-        DocToken<T> token, ConversationId conversationId, EntryId at, Context context)
-        where T : class, IReadOnlyDictionary<string, object?>;
-
-    /// <summary>读 rewindable 对话文档族成员在某条目提交处的历史快照。</summary>
-    Task<IReadOnlyDictionary<string, object?>?> SnapshotAsOfAsync<T, TSeed>(
-        DocFamilyToken<T, TSeed> token, ConversationId conversationId, string key, EntryId at, Context context)
-        where T : class, IReadOnlyDictionary<string, object?>;
 }
