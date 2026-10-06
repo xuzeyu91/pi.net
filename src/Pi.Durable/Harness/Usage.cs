@@ -54,18 +54,36 @@ public static class Usage
 
     /// <summary>
     /// 在记录响应的提交里，把 usage 加进对话 pi.usage 的一个桶。对应 TS <c>recordUsage</c>。
+    /// 变更必须经 Tracker 动词（Set）记录：直接改草稿嵌套字典不会产生 ops，
+    /// 已加载化身上的变更会被 <c>Prepare</c> 丢弃且不发布（P53 修正）。
     /// </summary>
     public static async Task RecordUsageAsync(
         Transaction tx, ConversationId conversationId, string bucket, string key, Pi.Ai.Types.Usage usage)
     {
         var change = await tx.DocAsync(UsageDoc, conversationId).ConfigureAwait(false);
-        if (change.Draft[bucket] is not Dictionary<string, object?> totals)
+        if (!change.Draft.TryGetValue(bucket, out var bucketValue)
+            || bucketValue is not IReadOnlyDictionary<string, object?> totals)
+        {
             throw new InvalidOperationException($"pi.usage bucket {bucket} is missing");
-        // 只认自己的键：工具可能叫任何名字。
-        if (totals.TryGetValue(key, out var total) && total is Dictionary<string, object?> totalMap)
-            AddUsage(totalMap, usage);
+        }
+
+        // 只认自己的键：工具可能叫任何名字。合并结果以整体 Set 写回（等价 TS 的 totals[key] = …）。
+        var updated = new Dictionary<string, object?>(StringComparer.Ordinal);
+        foreach (var (name, value) in totals) updated[name] = value;
+        if (updated.TryGetValue(key, out var existing) && existing is IReadOnlyDictionary<string, object?> totalMap)
+        {
+            var merged = new Dictionary<string, object?>(totalMap);
+            AddUsage(merged, usage);
+            updated[key] = merged;
+        }
         else
-            totals[key] = ToJson(usage);
+        {
+            updated[key] = ToJson(usage);
+        }
+
+        // updated 是整个桶字典（拷贝自现有 totals 并合并本键）；在桶根整体 Set，
+        // 等价 TS 的 totals[key] = …（Proxy 记录的叶子替换值即合并后的字典）。
+        change.Set(Pi.Chord.Delta.Path.Root.Append(Pi.Chord.Delta.Seg.Key(bucket)), updated);
     }
 
     /// <summary>把 usage 的每个计数加到 total。对应 TS <c>addUsage</c>。</summary>
