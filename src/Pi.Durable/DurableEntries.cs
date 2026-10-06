@@ -27,9 +27,11 @@ public static class DurableEntries
 
     /// <summary>
     /// 工具结果：<c>Model</c> 为 <c>[ToolResultMessage]</c>（内容以渲染的诊断块结尾）；
-    /// <c>Data</c> 持结构化诊断（可无）。由工具任务与 generation 写入。
+    /// <c>Data</c> 持 <c>{ diagnostics: [...] }</c> JSON 字典（存储要求严格 JSON；
+    /// 诊断经 <see cref="ToolResultDiagnostics"/> 读取）。由工具任务与 generation 写入。
     /// </summary>
-    public static readonly Entry<ToolResultData> ToolResultEntry = DefineEntry<ToolResultData>("pi.tool-result");
+    public static readonly Entry<IReadOnlyDictionary<string, object?>> ToolResultEntry =
+        DefineEntry<IReadOnlyDictionary<string, object?>>("pi.tool-result");
 
     /// <summary>新上下文起点：始终 <c>HeadIsSelf</c>；<c>Model</c> 缺省为普通重置，或携带交接文本的 <c>[UserMessage]</c>。</summary>
     public static readonly Entry<object?> ResetEntry = DefineEntry<object?>("pi.reset");
@@ -37,31 +39,27 @@ public static class DurableEntries
     /// <summary>压缩摘要：<c>Model</c> 为包裹摘要的 <c>[UserMessage]</c>，<c>Head</c> 为首个保留条目。</summary>
     public static readonly Entry<CompactionData> CompactionEntry = DefineEntry<CompactionData>("pi.compaction");
 
-    /// <summary><c>pi.tool-result</c> 条目的 data 形状。对应 TS <c>{ diagnostics: ToolDiagnostic[] }</c>。</summary>
-    public sealed record ToolResultData(IReadOnlyList<ToolDiagnostic> Diagnostics);
-
     /// <summary><c>pi.compaction</c> 条目的 data 形状。对应 TS <c>{ reason: CompactionReason }</c>。</summary>
     public sealed record CompactionData(CompactionReason Reason);
-}
 
-/// <summary>工具调用备注（面向模型与 UI，如截断或溢出路径）；绝不进入工具数据。对应 TS <c>ToolDiagnostic</c>。</summary>
-public sealed record ToolDiagnostic
-{
-    public required DiagnosticSeverity Severity { get; init; }
+    /// <summary>读 pi.tool-result 条目 data 里的结构化诊断（wire 形状 { diagnostics: [...] }）。</summary>
+    public static IReadOnlyList<Pi.Durable.Harness.ToolDiagnostic> ToolResultDiagnostics(
+        IReadOnlyDictionary<string, object?> data)
+    {
+        if (!data.TryGetValue("diagnostics", out var value) || value is not IReadOnlyList<object?> items)
+        {
+            return [];
+        }
 
-    public required string Message { get; init; }
-
-    public string? Code { get; init; }
-}
-
-/// <summary>诊断严重级。对应 TS <c>ToolDiagnostic["severity"]</c>。</summary>
-public enum DiagnosticSeverity
-{
-    Info,
-
-    Warn,
-
-    Error,
+        return items.OfType<IReadOnlyDictionary<string, object?>>()
+            .Select(item => new Pi.Durable.Harness.ToolDiagnostic
+            {
+                Severity = item.TryGetValue("severity", out var severity) ? severity as string ?? "error" : "error",
+                Message = item.TryGetValue("message", out var message) ? message as string ?? "" : "",
+                Code = item.TryGetValue("code", out var code) ? code as string : null,
+            })
+            .ToList();
+    }
 }
 
 /// <summary>压缩触发原因。对应 TS <c>CompactionReason</c>。</summary>

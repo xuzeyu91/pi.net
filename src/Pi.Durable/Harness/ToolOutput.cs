@@ -377,8 +377,11 @@ public static class ToolOutput
             return waiter.Task;
         }
 
-        /// <summary>停止提交并等待在途提交；返回最终提交要结算的等待者。对应 TS <c>stop()</c>。</summary>
-        public async Task<IReadOnlyList<Task>> Stop()
+        /// <summary>
+        /// 停止提交并等待在途提交；返回最终提交要结算的等待者（调用方以 TrySetResult / TrySetException 结算，
+        /// 对齐 TS 的 waiter.resolve / reject）。对应 TS <c>stop()</c>。
+        /// </summary>
+        public async Task<IReadOnlyList<TaskCompletionSource<object?>>> Stop()
         {
             Task? inFlight;
             TaskCompletionSource<object?>[] waiters;
@@ -392,7 +395,7 @@ public static class ToolOutput
                 _waiters.Clear();
             }
             if (inFlight is not null) await inFlight.ConfigureAwait(false);
-            return waiters.Select(w => w.Task).ToList();
+            return waiters;
         }
 
         private void Schedule()

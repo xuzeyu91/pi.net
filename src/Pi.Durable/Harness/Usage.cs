@@ -58,7 +58,7 @@ public static class Usage
     /// 已加载化身上的变更会被 <c>Prepare</c> 丢弃且不发布（P53 修正）。
     /// </summary>
     public static async Task RecordUsageAsync(
-        Transaction tx, ConversationId conversationId, string bucket, string key, Pi.Ai.Types.Usage usage)
+        ITx tx, ConversationId conversationId, string bucket, string key, Pi.Ai.Types.Usage usage)
     {
         var change = await tx.DocAsync(UsageDoc, conversationId).ConfigureAwait(false);
         if (!change.Draft.TryGetValue(bucket, out var bucketValue)

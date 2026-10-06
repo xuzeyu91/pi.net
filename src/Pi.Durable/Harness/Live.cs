@@ -265,6 +265,20 @@ public static class Live
     public static ToolSlot? ToolSlotOf(TxDocChange live, TaskId<object?> taskId)
         => ToolSlots(live).FirstOrDefault(slot => slot.TaskId == taskId);
 
+    /// <summary>槽 <paramref name="slot"/> 在 <c>pi.live.tools</c> 列表中的下标（按 CallId + TaskId 匹配）。</summary>
+    public static bool TrySlotIndex(TxDocChange live, ToolSlot slot, out int index)
+        => TryFindSlotIndex(live, slot, out index);
+
+    /// <summary><c>pi.live.tools</c> 列表中下标 <paramref name="index"/> 的槽路径（供逐叶 Set 使用）。</summary>
+    public static Path SlotPath(int index) => ToolsPath.Append(Seg.Index(index));
+
+    /// <summary>以整体 Set 写回槽（TS 的槽字段原地变异在 C# 用显式写回表达）。</summary>
+    public static void ReplaceSlot(TxDocChange live, ToolSlot slot)
+    {
+        if (!TryFindSlotIndex(live, slot, out var index)) return;
+        live.Set(ToolsPath.Append(Seg.Index(index)), slot.ToJson());
+    }
+
     /// <summary>
     /// 标记槽完成：结果条目（若有）此刻携带其运行输出、details 与诊断。
     /// 对应 TS <c>finishSlot()</c>（C# record 不可变：以整体 Set 写回槽）。

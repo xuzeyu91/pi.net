@@ -119,3 +119,68 @@ public class DeltaTests
         Assert.Empty(DeltaDiff.DiffRevisions(value, value));
     }
 }
+
+/// <summary>overlap：a 的最长后缀同时是 b 的前缀（对应 TS chord delta 的 overlap）。</summary>
+public class DeltaTextTests
+{
+    [Fact]
+    public void EmptyInputsReturnZero()
+    {
+        Assert.Equal(0, DeltaText.Overlap("", "abc", 65_536));
+        Assert.Equal(0, DeltaText.Overlap("abc", "", 65_536));
+        Assert.Equal(0, DeltaText.Overlap("abc", "abc", 0));
+    }
+
+    [Fact]
+    public void PlainSuffixPrefixOverlap()
+    {
+        Assert.Equal(3, DeltaText.Overlap("hello wor", "world", 65_536));
+        Assert.Equal(0, DeltaText.Overlap("hello", "world", 65_536));
+        Assert.Equal(5, DeltaText.Overlap("abcde", "abcde", 65_536));
+    }
+
+    [Fact]
+    public void WholeATailInsideB()
+    {
+        // a 的整个尾部（= a 本身）是 b 的前缀；长头探针（"abcdef"）不命中时由单字符回退找到。
+        Assert.Equal(3, DeltaText.Overlap("abc", "abcdef", 65_536));
+    }
+
+    [Fact]
+    public void OverlapLongerThanBIsRejected()
+    {
+        // b 比 a 短时，重叠不能超过 b 的长度。
+        Assert.Equal(2, DeltaText.Overlap("xxab", "ab", 65_536));
+    }
+
+    [Fact]
+    public void ScanLimitsTheSearchedTail()
+    {
+        // 只在 a 的最后 scan 个字符里找：重叠 3 但扫描窗只有 4 → 仍能找到；窗口够大时找到完整 4。
+        Assert.Equal(3, DeltaText.Overlap("abcdef", "def", 4));
+        Assert.Equal(4, DeltaText.Overlap("abcdef", "cdef", 65_536));
+    }
+
+    [Fact]
+    public void RepetitiveOutputGivesUpWithZero()
+    {
+        // 单字符长跑：候选被 maxCandidates 封顶，找不到验证过的重叠就放弃返回 0——
+        // 调用方发整体 set：更大，但绝不出错（TS 同款）。
+        var a = "aaaa" + new string('a', 40);
+        Assert.Equal(0, DeltaText.Overlap(a, "aaaaaaaa", 65_536));
+        // 但短重复仍能命中：b 恰好出现在候选预算内的位置。
+        Assert.Equal(4, DeltaText.Overlap("xxaaaa", "aaaa", 65_536));
+    }
+
+    [Fact]
+    public void NoFalsePositives()
+    {
+        // 返回值必须满足 a[^n..] == b[..n]。
+        const string a = "the quick brown fox jumps";
+        const string b = "brown fox jumps over";
+        var n = DeltaText.Overlap(a, b, 65_536);
+        Assert.True(a.EndsWith(a[^n..], StringComparison.Ordinal) || n == 0);
+        Assert.Equal("brown fox jumps".Length, n);
+        Assert.Equal(a[^n..], b[..n]);
+    }
+}
