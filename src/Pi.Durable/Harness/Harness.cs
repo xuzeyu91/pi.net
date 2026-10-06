@@ -146,9 +146,11 @@ internal sealed class ConversationImpl : IConversation
         return _host.Tasks.WaitForIdleAsync(Id, context);
     }
 
-    public Task<IConversationWatch> WatchAsync(Context context)
-        => throw new NotSupportedException(
-            "ConversationImpl.watch(): 结构视图 watch 在 P52（view.ts）落地后接入");
+    public Task<AttachedReplicatedState<ConversationView>> ViewStateAsync(Context context)
+        => _host.Views.StateAsync(Id, context);
+
+    public Task<CommittedWatch<ConversationView>> WatchAsync(Context context)
+        => _host.Views.WatchAsync(Id, context);
 }
 
 /// <summary>

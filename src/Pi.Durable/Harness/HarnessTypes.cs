@@ -856,18 +856,14 @@ public interface IConversation
     /// </summary>
     Task WaitForIdleAsync(Context context);
 
-    /// <summary>
-    /// 结构视图（spec §9.3）作为可释放只读 Chord 状态；以及有界待发帧的序列化精确帧 watch。
-    /// 对应 TS <c>viewState()</c> / <c>watch()</c> —— 视图文档定义在 P52（view.ts）落地后接入。
-    /// </summary>
-    Task<IConversationWatch> WatchAsync(Context context);
-}
+    /// <summary>结构视图（spec §9.3）作为可释放只读 Chord 状态。对应 TS <c>viewState()</c>。</summary>
+    Task<AttachedReplicatedState<ConversationView>> ViewStateAsync(Context context);
 
-/// <summary>结构视图的有界待发帧 watch（泛型载荷在 P52 view.ts 落地时具体化）。对应 TS <c>ConversationWatch</c>。</summary>
-public interface IConversationWatch : IDisposable
-{
-    /// <summary>本帧的已提交视图快照帧数（诊断用）。</summary>
-    long Frames { get; }
+    /// <summary>
+    /// 结构视图作为有界待发帧的序列化精确帧 watch；取消 <paramref name="context"/> 使其停止。
+    /// 对应 TS <c>watch()</c> / <c>ConversationWatch = WatchHandle&lt;ConversationView&gt;</c>。
+    /// </summary>
+    Task<CommittedWatch<ConversationView>> WatchAsync(Context context);
 }
 
 /// <summary>一个 Session 上的持久 agent harness。对应 TS <c>Harness</c>。</summary>
