@@ -20,10 +20,16 @@ internal sealed class FakeProvider : IProvider
 {
     private readonly Func<IReadOnlyList<ChatMessage>, AssistantMessage> _respond;
 
-    public FakeProvider(string id, Func<IReadOnlyList<ChatMessage>, AssistantMessage> respond)
+    /// <summary>为 true 时流不结束，直到取消令牌触发（模拟未应答的 provider）。</summary>
+    private readonly bool _block;
+
+    private readonly TaskCompletionSource _reached = new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+    public FakeProvider(string id, Func<IReadOnlyList<ChatMessage>, AssistantMessage> respond, bool block = false)
     {
         Id = id;
         _respond = respond;
+        _block = block;
         Models = [new ModelSpec
         {
             Id = "fake-1",
@@ -35,6 +41,9 @@ internal sealed class FakeProvider : IProvider
             MaxTokens = 4_096,
         }];
     }
+
+    /// <summary>未应答模式下：请求已发出的信号。对应 TS <c>unanswered().reached</c>。</summary>
+    public Task Reached => _reached.Task;
 
     public string Id { get; }
 
@@ -48,27 +57,43 @@ internal sealed class FakeProvider : IProvider
 
     public IAssistantMessageEventStream Stream(
         ModelSpec model, IReadOnlyList<ChatMessage> context, JsonDict? options = null)
-        => new FakeStream(_respond(context));
+        => new FakeStream(_respond(context), _block, _reached);
 
     public IAssistantMessageEventStream StreamSimple(
         ModelSpec model, IReadOnlyList<ChatMessage> context, JsonDict? options = null)
-        => new FakeStream(_respond(context));
+        => new FakeStream(_respond(context), _block, _reached);
 
-    /// <summary>一次请求的确定性流：start → text_delta… → done。</summary>
-    private sealed class FakeStream(AssistantMessage final) : IAssistantMessageEventStream
+    /// <summary>一次请求的确定性流：start → text_delta… → done；<c>block</c> 时不发 done 直到取消。</summary>
+    private sealed class FakeStream(AssistantMessage final, bool block, TaskCompletionSource reached)
+        : IAssistantMessageEventStream
     {
         public AssistantMessage? Partial { get; private set; }
 
         public IAsyncEnumerator<AssistantMessageEvent> GetAsyncEnumerator(CancellationToken cancellationToken = default)
             => IterateAsync(cancellationToken).GetAsyncEnumerator(cancellationToken);
 
-        public Task<AssistantMessage> WaitForDoneAsync(CancellationToken cancellationToken = default)
-            => Task.FromResult(final);
+        public async Task<AssistantMessage> WaitForDoneAsync(CancellationToken cancellationToken = default)
+        {
+            var enumerator = IterateAsync(cancellationToken).GetAsyncEnumerator(cancellationToken);
+            try
+            {
+                while (await enumerator.MoveNextAsync().ConfigureAwait(false))
+                {
+                    if (enumerator.Current is AssistantMessageEvent.Done) break;
+                }
+            }
+            finally
+            {
+                await enumerator.DisposeAsync().ConfigureAwait(false);
+            }
+
+            return final;
+        }
 
         private async IAsyncEnumerable<AssistantMessageEvent> IterateAsync(
             [EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            var text = string.Concat(final.Content.OfType<TextContent>().Select(block => block.Text));
+            var text = string.Concat(final.Content.OfType<TextContent>().Select(block2 => block2.Text));
             var empty = final with { Content = [] };
             yield return new AssistantMessageEvent.Start(empty);
             var built = "";
@@ -80,6 +105,13 @@ internal sealed class FakeProvider : IProvider
                 Partial = partial;
                 yield return new AssistantMessageEvent.TextDelta(0, text[index].ToString(), index, partial);
                 await Task.Yield();
+            }
+
+            if (block)
+            {
+                // 请求已发送；阻塞直到取消（模拟未应答）。
+                reached.TrySetResult();
+                await Task.Delay(Timeout.Infinite, cancellationToken).ConfigureAwait(false);
             }
 
             Partial = final;
