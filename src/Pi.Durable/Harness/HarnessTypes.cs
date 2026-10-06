@@ -735,6 +735,12 @@ public sealed record HarnessOptions
     public HarnessSettings? Settings { get; init; }
 
     /// <summary>
+    /// 活的设置来源（每次解析时调用）；给定时优先于 <see cref="Settings"/>。对应 TS 中
+    /// <c>options.settings</c> 被宿主原地改动后每次决策重新读取的语义。
+    /// </summary>
+    public Func<HarnessSettings?>? SettingsSource { get; init; }
+
+    /// <summary>
     /// 每次使用时构建对话环境。从不在 Session 线上调用；可为异步。
     /// 对应 TS <c>env?: (target, context) => ExecutionEnv | undefined | Promise&lt;…&gt;</c>。
     /// </summary>

@@ -176,7 +176,8 @@ public sealed class HarnessImpl : DurableSession, IHarness
         _report = options.OnReport ?? (_ => { });
         var now = options.Now ?? (() => DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
         var reportException = new Action<Exception>(error => _report(error));
-        Settings Settings() => AgentDocs.ResolveSettings(options.Settings);
+        Settings Settings() => AgentDocs.ResolveSettings(
+            options.SettingsSource is { } source ? source() : options.Settings);
         // 调度器的 Conversation 委托在运行时才被调用（此时 _submissions/_tasks 已赋值），
         // 但字段初始化顺序使闭包捕获它们会触发可空警告；以本地持有者桥接。
         Submissions? submissionsRef = null;

@@ -243,13 +243,13 @@ public class HarnessSubmissionsTests
     [Fact]
     public async Task ReacquiresASubmissionAfterReopenAndSettlesItDurably()
     {
-        var setup = HarnessTestSupport.NewChatSetup(
-            HarnessTestSupport.AssistantReply("after reopen"), block: true);
+        var provider = new FakeProvider("faux", _ => HarnessTestSupport.AssistantReply("after reopen"), block: true);
+        var setup = HarnessTestSupport.NewChatSetup(provider);
         var first = new MemoryStorage();
         var opened = await HarnessTestSupport.OpenChatAsync(first, setup);
         var id = (await opened.Root.SubmitAsync(
             new SubmissionDraft.Input { Content = [new TextContent("hi")], RequestId = "print" }, Ctx)).Id;
-        await setup.Provider.Reached;
+        await provider.Reached;
         await opened.Harness.CloseAsync(Ctx);
 
         // 重开同一后备态：进行中的提交被再获取并最终结算。

@@ -179,9 +179,11 @@ public static class Admission
         {
             var created = await tx.CreateSubmissionAsync(CreateFor(draft, conversationId, SubmissionStatus.Queued))
                 .ConfigureAwait(false);
+            // 忙碌路径无边界，需读取收件箱文档作为草稿目标（TS：boundary?.inbox ?? await tx.doc(InboxDoc, …)）。
+            var inbox = boundary?.Inbox ?? await tx.DocAsync(Inbox.InboxDoc, conversationId).ConfigureAwait(false);
             if (draft is SubmissionDraft.Write write)
             {
-                Inbox.AppendItem(boundary?.Inbox ?? live, new Dictionary<string, object?>
+                Inbox.AppendItem(inbox, new Dictionary<string, object?>
                 {
                     ["id"] = created.Id.Value,
                     ["mode"] = "write",
@@ -191,7 +193,7 @@ public static class Admission
             else
             {
                 var input = (SubmissionDraft.Input)draft;
-                Inbox.AppendItem(boundary?.Inbox ?? live, new Dictionary<string, object?>
+                Inbox.AppendItem(inbox, new Dictionary<string, object?>
                 {
                     ["id"] = created.Id.Value,
                     ["mode"] = input.WhenBusy == "steer" ? "steer" : "followUp",

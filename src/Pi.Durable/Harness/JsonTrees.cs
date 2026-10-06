@@ -44,7 +44,29 @@ internal static class JsonTrees
     };
 
     /// <summary>C# 值 → 严格 JSON 值树（经 wire 序列化；ChatMessage / ContentBlock 用其多态形状）。</summary>
-    public static object? ToTree(object? value) => FromElement(JsonSerializer.SerializeToElement(value, Options));
+    public static object? ToTree(object? value)
+        => value is EntryDraft draft
+            ? ToEntryTree(draft)
+            : FromElement(JsonSerializer.SerializeToElement(value, Options));
+
+    /// <summary>
+    /// <see cref="EntryDraft"/> → 严格 JSON 值树。TS 的条目草稿以 <c>head: EntryId | "self"</c> 表达活动范围，
+    /// 因此 <see cref="EntryDraft.HeadIsSelf"/> 必须投影回字面量 <c>"self"</c>（并省略 <c>headIsSelf</c>），
+    /// 与 <see cref="ToEntryDraft"/> 的读取相互可逆。
+    /// </summary>
+    public static Dictionary<string, object?> ToEntryTree(EntryDraft draft)
+    {
+        var tree = new Dictionary<string, object?>(StringComparer.Ordinal)
+        {
+            ["kind"] = draft.Kind,
+        };
+        if (draft.Model is not null) tree["model"] = ToTree(draft.Model);
+        if (draft.Data is not null) tree["data"] = ToTree(draft.Data);
+        if (draft.HeadIsSelf) tree["head"] = "self";
+        else if (draft.Head is { } head) tree["head"] = head.Value;
+        if (draft.Edits is not null) tree["edits"] = EditsToJson(draft.Edits);
+        return tree;
+    }
 
     /// <summary>JSON 树 → 内容块列表。对应 TS <c>JsonRepresentation&lt;UserInput&gt;</c> 的还原。</summary>
     public static IReadOnlyList<Pi.Ai.Types.ContentBlock> ToContent(object? tree)
