@@ -673,14 +673,21 @@ public sealed class LocalExecutionEnv : IExecutionEnv
                 if (entry is { Kind: FileStat.EntryKind.Symlink }) return Result<IBinaryReader, FileError>.Err(
                     SymlinkRefused(resolved));
             }
+            // 目录先于打开判定：Windows 对目录 FileStream(Open) 抛 UnauthorizedAccessException（会被误映射为
+            // permission_denied），而 TS/POSIX 语义是 is_directory。先按 stat 判定，保证跨平台一致的错误码。
+            if (FileStat.Follow(resolved) is { Kind: FileStat.EntryKind.Directory })
+            {
+                return Result<IBinaryReader, FileError>.Err(new FileError(
+                    FileErrorCode.IsDirectory, "EISDIR: illegal operation on a directory, read", resolved));
+            }
+
             file = new FileStream(resolved, new FileStreamOptions
             {
                 Mode = FileMode.Open,
                 Access = FileAccess.Read,
                 Share = FileShare.ReadWrite | FileShare.Delete,
             });
-            var statEntry = FileStat.Follow(resolved);
-            if (statEntry is { Kind: not FileStat.EntryKind.File })
+            var statEntry = FileStat.Follow(resolved);            if (statEntry is { Kind: not FileStat.EntryKind.File })
             {
                 await file.DisposeAsync().ConfigureAwait(false);
                 file = null;
@@ -867,6 +874,22 @@ public sealed class LocalExecutionEnv : IExecutionEnv
     {
         var resolved = ResolvePath(Cwd, path);
         if (AbortResult<IDirReader>(context, resolved) is { } aborted) return Task.FromResult(aborted);
+        // 对齐 TS NodeExecutionEnv.openDirReader：opendir 对缺失路径报 ENOENT（not_found）、对普通文件报
+        // ENOTDIR（not_directory）。.NET 的 Directory.EnumerateFileSystemEntries 对普通文件返回空序列而不报错，
+        // 因此这里先按 stat 判定类型，保证跨平台一致的错误码。
+        if (FileStat.Follow(resolved) is { } stat)
+        {
+            if (stat.Kind != FileStat.EntryKind.Directory)
+            {
+                return Task.FromResult(Result<IDirReader, FileError>.Err(new FileError(
+                    FileErrorCode.NotDirectory, $"ENOTDIR: not a directory, scandir '{resolved}'", resolved)));
+            }
+        }
+        else
+        {
+            return Task.FromResult(Result<IDirReader, FileError>.Err(new FileError(
+                FileErrorCode.NotFound, $"ENOENT: no such file or directory, scandir '{resolved}'", resolved)));
+        }
         return Task.FromResult(LocalDirReader.Open(resolved));
     }
 
