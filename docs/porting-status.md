@@ -6,7 +6,7 @@
 
 ## 逐包移植进度
 
-10 个运行时项目，构建 0 警告 0 错误；**516 项测试全部通过**（2026-10-05 实测；沙箱环境限制导致的 HttpListener / domain socket / 真实浏览器回调类失败见文末说明）。
+10 个运行时项目，构建 0 警告 0 错误；**567 项测试全部通过**（2026-10-06 P48 实测，readme 计数为准；沙箱环境限制导致的 HttpListener / domain socket / 真实浏览器回调类失败见文末说明）。
 
 | TS 包（packages/） | .NET 项目（src/） | 源码规模 | 状态 | 测试 |
 |---|---|---|---|---|
@@ -19,7 +19,7 @@
 | chord | Pi.Chord | 8.8k 行 | ✅ 完整移植（delta / services / facets / Context / node 层 / json / api.ts / handle.ts / **consumer.ts + loopback.ts**）；仅 `index.ts` 桶文件未做 | 86 ✅ |
 | coding-agent | （未建） | 85k 行 | ⏳ 待 tui / codemode / durable 之后分阶段移植 | — |
 | codemode | **Pi.Codemode** | 1.7k 行 | ✅ 完整移植：identifier / types / source（@options 解析 + Lark 语法）/ declarations（JSON Schema → TypeScript）/ **runtime/protocol + runtime/host（沙箱编排）+ runtime/prelude-source + Wasm 加载**；仅 QuickJS wasm 的 VM 执行经 `ICodemodeJsEngine` 注入点外置（缺省 `UnsupportedCodemodeJsEngine` 明确拒绝） | 39 ✅ |
-| durable | **Pi.Durable** | 18.2k 行 | 🚧 基础层 + storage 层：强类型 ID / DocumentSemantics（含 fork）/ Doc 定义与令牌 / Entry / Submission / Task / Document 记录族 / StorageWrite / CommitChange / 6 内置条目 / documents 地址解析与校验 / truncate / **IStorage（对齐 TS Storage：mintId + entry/commitSeq + 可见性 + headMarker + findDocument/document(at) + scan 分页 + submissionByRequest）+ MemoryStorage（TS revisions 模型）**；Tx·Session 接口与 harness / env / tools / testing 待后续阶段 | 50 ✅ |
+| durable | **Pi.Durable** | 18.2k 行 | 🚧 基础层 + storage 层 + **session 层（P48）**：强类型 ID / DocumentSemantics（含 fork）/ Doc 定义与令牌 / Entry / Submission / Task / Document 记录族 / StorageWrite / CommitChange / 6 内置条目 / documents 地址解析与校验 / truncate / **IStorage（对齐 TS Storage：mintId + entry/commitSeq + 可见性 + headMarker + findDocument/document(at) + scan 分页 + submissionByRequest）+ MemoryStorage（TS revisions 模型）**；P48 新增 **session 内核**：`Session/Forks.cs`（fork 文档拷贝准备：asOf + current 双趟扫描 / 重复拷贝拒绝）+ `Session/Observation.cs`（CommittedStateSource / SessionSourceAttachment / CommittedWatch：帧队列 / 微任务近似投递 / 溢出折叠 / 退休与取消终态）+ `Session/Transaction.cs`（Tx 全表面：表读写 / ReadAfterWrite / createTask / createSubmission / settle / place / setTask / doc / retireDoc / forkConversation / 终态任务文档级联退役 / checkpoint 谓词 / fork 源写拒绝 / 属主校验 / adopt 发布）+ `Session/Session.cs`（DurableSession：变更线串行化 / 快照 / documentState / watchDoc / snapshotAsOf / 提交发布 / 毒化 / close）；`ContextSignals`（chord context 的 withoutAbortSignal / awaitWithContext 等）；类型层补 `SubmissionCreate` / `TypedEntryDraft<T>` / `TaskDefinition` / `DurableTask` / `TransactionScope` / `ISession` / `ITx` / `DocumentWatch<T>`；Tx·Session 接口与 harness / env / tools / testing 中 harness 侧（registry / generation / scheduler 等）待后续阶段 | 69 ✅ |
 | tui / evals | （未建） | 21k 行 | ⏳ 后续阶段 | — |
 
 ### Pi.Ai 详情（26.3k 行，283 项测试）
@@ -151,6 +151,13 @@ pi.net/
 21. **codemode：store writes 的「二次解析」语义**。TS `parseStoreWrites` 遍历 `JSON.parse(json)` 得到的 `[key, value]`，其中 `value` **本身是 JSON 字符串**，需 `JSON.parse(value)` 二次解析后才存入 `writes.set[key]`。C# 对应 `JsonNode.Parse(raw.GetValue<string>())`。三种边界与 TS 逐条对齐：数组单元素 `[key]`（TS 解构出 `undefined`）→ 删除；`[key, null]`（JSON null）→ `set[key] = null`（C# 用 `raw is null` 判别，**不能**用 `ContainsKey`——`JsonNode` 无法区分「键缺失」与 JSON null，见差异第 12 条）；`value` 非字符串（JS 侧 `JSON.parse(42)` 会转 `"42"`）→ C# 抛 `InvalidOperationException`，由 `HandleMessageAsync` 的 catch 归一为 `kind: "sandbox"` 失败。
 22. **codemode：`Finish` 的异常安全性与「静默挂起」**。`Execution.Finish` 在持锁状态下置 `finished = true` 后再装配结果（含 `ParseStoreWrites`）；若该区间抛异常，异常经 `HandleMessageAsync` 的 catch 二次调用 `Finish` 时只会 early-return，**promise 永不 resolve**，表现为测试「挂起无输出」而非失败。排查手法：在 catch 与 `Finish` 内打印，比对 `finished` 标志即可定位。凡在 `Finish` 持锁区内新增可能抛错的代码（JSON 解析、集合投影）都必须先做校验或移出锁外。
 23. **codemode：沙箱执行层的引擎注入点已落地**（差异第 18 条的实施方案）。TS 的 `worker.ts` 依赖 `WebAssembly.compile` + Worker 线程模型，C# 两者皆无，故抽为 `ICodemodeJsEngine` / `ICodemodeVm`（`Post` + `StopAsync`）注入点，缺省 `UnsupportedCodemodeJsEngine` 明确以 `kind: "sandbox"` 拒绝（对齐 chord 的 `UnsupportedFacetModuleHost` 先例，见差异第 11 / 18 条）。`Wasm.cs` 只承载字节与路径，编译/实例化由引擎负责。`Host.cs` 为纯编排层 1:1 对齐 `host.ts`；`Execution.Start` 的 `alreadyFinished` 竞态分支（引擎已启动但执行已收尾 → 只停不再 resolve）按 TS 等价语义保留。
+24. **durable session：Draft 由 Tracker 显式动词承载**。TS 的 `tx.doc()` 返回 JS Proxy 草稿（属性赋值即记录 op）；C# 返回 `Tracker<T>.Change`，草稿经 `Change.Draft` 读取、变更必须用显式动词（`Set` / `Delete` / `Append` / `Splice` / `Move` / `Replace`），直接改 `Draft` 字典不会记录 op。TS `Draft<T>` 与 `Tracker.Change` 的对应关系沿用 MutableReplicatedState 的既定模式。
+25. **durable session：观察投递的微任务近似**。`SessionSourceAttachment.publish` 与 `CommittedWatch` 的投递调度在 TS 用 `queueMicrotask`（当前同步栈结束后、I/O 前运行）；C# 无微任务概念，用线程池任务（`Task.Run`）近似：投递仍严格晚于当前同步段、帧序与串行化语义不变，仅时序粒度不同。测试据此用轮询等待而非同步断言。
+26. **durable session：TS varargs 重载 → C# 显式参数**。TS 的 `snapshot/doc/retireDoc` 等 6 组重载靠「token + 动态 args」实现；C# 展开为显式类型化方法（按 scope 传 owner ID、族传 key/seed）。地址解析复用 `DurableDocuments.ResolveAddress`（args 数组内传 `ownerId.Value`（long），因隐式转换不作用于 object 装箱）。
+27. **durable session：mintId 的泛型分派**。TS 的 `TaskId<R>` 品牌参数仅类型层面；C# `MintIdAsync<TaskId<bool>>` 与 `TaskId<object?>` 是不同闭合类型。MemoryStorage 增加 `TaskId<>` 开放泛型分派（反射 `From`），Transaction 侧统一用 `TaskId<object?>` 铸造后转 `TaskId<TResult>`。
+28. **durable session：watch 的包装类型**。TS 的 `DocumentWatch<T>` 是接口别名（`WatchHandle<Readonly<T> | null>`），取消方法（`cancel` / `observeCancellation`）在具体类 `CommittedWatch` 上；C# 新增 `DocumentWatch<T>` 包装（同 `DocumentState<T>` 模式）实现 `IDocumentWatch<T>` 并暴露 `Cancel` / `ObserveCancellation`。
+29. **durable session：无返回回调的重载**。TS `commit(change)` 的回调可隐式返回 undefined；C# 的泛型推断无法从无返回 async lambda 统一到 `Task<TResult>`，故 ISession/DurableSession 增加非泛型 `CommitAsync(Func<ITx, Task>, Context)` 重载（`Task.Run` + `Task<T>` 双重载的既定模式）。
+30. **durable session：`DocumentPlan.Retire` 必须来自 `document.RetireOnCommit`**。TS `planDocument` 用 `retire: document.retireOnCommit` 构建计划；C# 首版漏掉该字段导致退役提交不产生 `document.retire` 写、watch 不终止、快照不失效——四个 plan 分支（created / fork-copy / retire-only / loaded）都必须带上。
 
 ## CBOR 线上兼容要点（已测试锁定）
 
@@ -166,7 +173,7 @@ pi.net/
 4. **agent 包**：✅ 已完成（P44 补齐 proxy.ts：`Proxy.StreamProxy` + `ProxyAssistantMessageEvent` wire 判别联合 + `ProxyStreamOptions`；SSE 复用 `AiSse`，`ProxyEventJson` 宽容解析对齐 TS `as` 语义）。
 5. **codemode**：✅ 已完成（纯逻辑层 + 执行层沙箱编排；仅 QuickJS wasm 的 VM 执行经 `ICodemodeJsEngine` 注入点外置，缺省实现明确拒绝）。
 6. **coding-agent**：85k 行主产品（会话 / 工具系统 / 技能 / 主题 / RPC 模式），最后阶段按"核心命令最小闭环 → 逐步补全"推进。
-7. **durable / tui / evals**：durable 18.2k 行进行中（P45 基础层 + P47 storage 层已完成：IStorage 对齐 TS Storage 签名，MemoryStorage 按 TS revisions 模型重写——地址/作用域索引、isAliveAt、materializeDocument 重放、checkGlobalIds/prepareDocumentActions/checkDocumentActions 验证、close 后拒绝；后续 session → harness → env → tools → testing），tui / evals 21k 行最后阶段。
+7. **durable / tui / evals**：durable 18.2k 行进行中（P45 基础层 + P47 storage 层 + **P48 session 层**已完成：Tx 全表面 + DurableSession 变更线 / 快照 / 文档状态 / watch / as-of 读 / fork / 提交发布 / 毒化；后续 env → tools → harness → testing），tui / evals 21k 行最后阶段。
 
 ## 测试环境限制说明（沙箱）
 

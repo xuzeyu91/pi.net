@@ -756,3 +756,36 @@ public sealed class DocumentState<T> : IDisposable where T : class
     /// <inheritdoc />
     public void Dispose() => _inner.Dispose();
 }
+
+/// <summary>
+/// 绑定到一个已提交文档化身的精确帧 watch。对应 TS
+/// <c>DocumentWatch&lt;T&gt; = WatchHandle&lt;Readonly&lt;T&gt; | null&gt;</c>。
+/// C# 无结构化类型，TS 的接口与具体类之分由本包装承载（Cancel / ObserveCancellation
+/// 位于具体类型，对齐 TS <c>CommittedWatch</c> 的公开面）。
+/// </summary>
+public sealed class DocumentWatch<T> : IDocumentWatch<T> where T : class
+{
+    private readonly Session.CommittedWatch<IReadOnlyDictionary<string, object?>?> _inner;
+
+    internal DocumentWatch(Session.CommittedWatch<IReadOnlyDictionary<string, object?>?> inner)
+        => _inner = inner;
+
+    /// <summary>获取时的修订；最新交付的不可变修订。</summary>
+    public IReadOnlyDictionary<string, object?>? Value => _inner.Value;
+
+    /// <inheritdoc />
+    public void Start(Func<IReadOnlyDictionary<string, object?>?, IReadOnlyList<Pi.Chord.Delta.DeltaOp>,
+        Pi.Chord.Context.Context, Task> listener) => _inner.Start(listener);
+
+    /// <inheritdoc />
+    public Task<WatchEnd> Stop() => _inner.Stop();
+
+    /// <inheritdoc />
+    public Task<WatchEnd> Closed => _inner.Closed;
+
+    /// <summary>以 cancelled 终态终止。对应 TS <c>CommittedWatch.cancel()</c>。</summary>
+    public void Cancel() => _inner.Cancel();
+
+    /// <summary>安装取消信号观察。对应 TS <c>CommittedWatch.observeCancellation()</c>。</summary>
+    public void ObserveCancellation(CancellationToken signal) => _inner.ObserveCancellation(signal);
+}

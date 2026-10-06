@@ -281,6 +281,13 @@ public sealed class MemoryStorage : IStorage
             if (typeof(TId) == typeof(ConversationId)) return Task.FromResult((TId)(object)ConversationId.From(id));
             if (typeof(TId) == typeof(EntryId)) return Task.FromResult((TId)(object)EntryId.From(id));
             if (typeof(TId) == typeof(TaskId<object?>)) return Task.FromResult((TId)(object)TaskId<object?>.From(id));
+            // 开放泛型分派：TaskId<TResult> 的任意闭合类型（TS 品牌参数仅类型层面）。
+            if (typeof(TId).IsGenericType && typeof(TId).GetGenericTypeDefinition() == typeof(TaskId<>))
+            {
+                var from = typeof(TaskId<>).MakeGenericType(typeof(TId).GetGenericArguments()[0])
+                    .GetMethod("From", new[] { typeof(long) })!;
+                return Task.FromResult((TId)from.Invoke(null, new object[] { id })!);
+            }
             if (typeof(TId) == typeof(SubmissionId)) return Task.FromResult((TId)(object)SubmissionId.From(id));
             if (typeof(TId) == typeof(DocumentId)) return Task.FromResult((TId)(object)DocumentId.From(id));
             throw new NotSupportedException($"MemoryStorage cannot mint IDs of type {typeof(TId).Name}");

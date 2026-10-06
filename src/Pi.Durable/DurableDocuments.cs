@@ -90,19 +90,27 @@ public static class DurableDocuments
     };
 
     /// <summary>一个逻辑地址的稳定字符串身份。对应 TS <c>addressId</c>。</summary>
-    public static string AddressId(DocumentAddress address)
+    public static string AddressId(DocumentAddress address) => AddressIdCore(address.Kind, address.Scope, address.Key);
+
+    /// <summary>一个创建记录（新化身）的稳定字符串身份。对应 TS 对 <c>DocumentCreate</c> 调用 <c>addressId</c>。</summary>
+    public static string AddressId(DocumentCreate create) => AddressIdCore(create.Kind, create.Scope, create.Key);
+
+    /// <summary>一个记录的稳定字符串身份。对应 TS 对 <c>DocumentRecord</c> 调用 <c>addressId</c>。</summary>
+    public static string AddressId(DocumentRecord record) => AddressIdCore(record.Kind, record.Scope, record.Key);
+
+    private static string AddressIdCore(string kind, DocumentScope scope, string? key)
     {
-        var owner = address.Scope switch
+        var owner = scope switch
         {
             DocumentScope.SessionScope => null,
             DocumentScope.ConversationScope conversation => (object?)conversation.ConversationId.Value,
             DocumentScope.TaskScope task => task.TaskId.Value,
-            _ => throw new ArgumentOutOfRangeException(nameof(address)),
+            _ => throw new ArgumentOutOfRangeException(nameof(scope)),
         };
         // 对齐 TS JSON.stringify([kind, scopeKind, owner, key ?? null]) 的稳定键。
         var ownerText = owner is null ? "null" : System.Text.Json.JsonSerializer.Serialize(owner);
-        var keyText = address.Key is null ? "null" : System.Text.Json.JsonSerializer.Serialize(address.Key);
-        return $"[{System.Text.Json.JsonSerializer.Serialize(address.Kind)},{System.Text.Json.JsonSerializer.Serialize(ScopeName(address.Scope))},{ownerText},{keyText}]";
+        var keyText = key is null ? "null" : System.Text.Json.JsonSerializer.Serialize(key);
+        return $"[{System.Text.Json.JsonSerializer.Serialize(kind)},{System.Text.Json.JsonSerializer.Serialize(ScopeName(scope))},{ownerText},{keyText}]";
     }
 
     private static string ScopeName(DocumentScope scope) => scope switch
