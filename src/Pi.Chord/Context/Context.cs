@@ -48,7 +48,12 @@ public abstract class Context
         public ValueContext(Context parent, ContextKey<TValue> key, TValue value)
             => (_parent, _key, _value) = (parent, key, value);
 
-        public override CancellationToken? AbortSignal => _parent.AbortSignal;
+        // 信号约定键是 AbortSignal 的唯一事实来源：WithAbortSignal/WithoutAbortSignal 经由它生效。
+        // 存 null（WithoutAbortSignal）表示显式剥掉父链上的信号。
+        public override CancellationToken? AbortSignal
+            => ReferenceEquals(_key, Context.AbortSignalKey)
+                ? _value is CancellationToken token ? token : null
+                : _parent.AbortSignal;
 
         [return: MaybeNull]
         public override TOther Value<TOther>(ContextKey<TOther> key)

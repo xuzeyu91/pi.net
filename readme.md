@@ -34,7 +34,7 @@ Pi 的理念是「让 Pi 适配你的工作流，而不是反过来」：库只�
 
 ```bash
 dotnet build Pi.slnx    # 0 警告 0 错误（沙箱内需加 -m:1）
-dotnet test  Pi.slnx    # 548 项测试
+dotnet test  Pi.slnx    # 589 项测试
 ```
 
 测试基于 xunit.v3 + Microsoft.Testing.Platform（MTP）。若 `dotnet test` 未触发执行，直接运行测试产物：
@@ -45,14 +45,14 @@ tests/Pi.<Pkg>.Tests/bin/Debug/net10.0/Pi.<Pkg>.Tests.exe
 
 ## 移植状态
 
-10 个运行时项目，构建 0 警告 0 错误，**567 项测试全部通过**（2026-10-06 实测，P48 复测更新）。
+10 个运行时项目，构建 0 警告 0 错误，**589 项测试全部通过**（2026-10-06 实测，P49 复测更新）。
 
 - ✅ 完整移植：telemetry / protocol / agent（含 proxy.ts）/ mcp
 - ✅ 完整移植：server / client（RPC 主循环、会话路由、Unix 域套接字传输与本地服务器发现）
 - ✅ 完整移植：ai（10 个内建 API + 42 家 provider 全家桶 + compat + 全部 utils + CLI）
 - ✅ 完整移植：chord（delta / services / facets / node 层 / api）
 - ✅ 完整移植：codemode（identifier / types / source / declarations / runtime protocol + host 沙箱编排 + prelude 源码 + Wasm 加载）
-- 🚧 durable：基础层 + storage 层已完成（ID / 记录 / 条目 / 文档 / 截断 / IStorage + MemoryStorage revisions 模型，50 项测试），session / harness 推进中
+- 🚧 durable：基础层 + storage + session + env 层已完成（storage/session 内核/env 全表面），tools / harness / testing 推进中
 - ⏳ 未开始：coding-agent / tui / evals
 
 逐包进度、TS → C# 关键设计差异、CBOR 线上兼容要点与路线图，见 **[docs/porting-status.md](docs/porting-status.md)**。
