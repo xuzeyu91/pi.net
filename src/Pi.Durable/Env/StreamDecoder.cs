@@ -8,8 +8,12 @@ namespace Pi.Durable.Env;
 /// </summary>
 public static class Decoding
 {
-    /// <summary>字节区间的流式解码器；从文件头开始的调用者自行跳过起始标记。</summary>
-    public static Decoder RangeDecoder() => Encoding.UTF8.GetDecoder();
+    /// <summary>
+    /// 字节区间的流式解码器；从文件头开始的调用者自行跳过起始标记。
+    /// 等价 TS <c>new TextDecoder("utf-8", { ignoreBOM: true })</c>：<b>不</b>剥离 BOM，非法字节替换为 U+FFFD。
+    /// .NET 的 <see cref="Encoding.UTF8"/>.GetDecoder() 是 BOM 感知的（会吞掉起始 BOM），因此这里显式关闭 BOM 检测。
+    /// </summary>
+    public static Decoder RangeDecoder() => new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: false).GetDecoder();
 
     /// <summary>整体解码时输入的头三个字节是否会被当作字节序标记丢弃。</summary>
     public static bool StartsWithBom(ReadOnlySpan<byte> firstBytes) =>

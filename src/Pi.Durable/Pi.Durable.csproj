@@ -4,4 +4,7 @@
     <ProjectReference Include="..\Pi.Ai\Pi.Ai.csproj" />
     <ProjectReference Include="..\Pi.Chord\Pi.Chord.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="DiffPlex" Version="1.9.0" />
+  </ItemGroup>
 </Project>

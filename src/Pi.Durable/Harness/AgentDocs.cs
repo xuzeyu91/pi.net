@@ -55,6 +55,9 @@ public static class AgentDocs
 
     // ─── 设置解析 ───────────────────────────────────────────────────────────
 
+    /// <summary>agent 文档的初值（<c>{}</c>）；事件与快照的退役文档回退。对应 TS <c>AgentDoc.definition.initial()</c>。</summary>
+    public static Dictionary<string, object?> InitialAgent() => new();
+
     /// <summary>解析宿主设置：每个字段取其内建默认值，对象字段合并。对应 TS <c>resolveSettings</c>。</summary>
     /// <remarks>
     /// TS 的对象展开允许宿主提供部分策略对象（未提供字段回落默认）；C# 策略 record 的

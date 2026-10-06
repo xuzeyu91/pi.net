@@ -29,6 +29,13 @@ public static class Usage
             Semantics = new DocumentSemantics.LatestConversationScope(ConversationFork.Initial),
         });
 
+    /// <summary>usage 文档的初值（两个空桶）；事件与快照的退役文档回退。对应 TS <c>UsageDoc.definition.initial()</c>。</summary>
+    public static Dictionary<string, object?> InitialUsage() => new()
+    {
+        [ModelsBucket] = new Dictionary<string, object?>(),
+        [ToolsBucket] = new Dictionary<string, object?>(),
+    };
+
     /// <summary>Usage 的 JSON 表示（与 <see cref="Pi.Ai.Types.Usage"/> 的序列化形状一致，省略 null 开销）。</summary>
     public static Dictionary<string, object?> ToJson(Pi.Ai.Types.Usage usage)
     {

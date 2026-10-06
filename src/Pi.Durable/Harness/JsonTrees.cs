@@ -60,6 +60,21 @@ internal static class JsonTrees
             : JsonSerializer.Deserialize<IReadOnlyList<Pi.Ai.Types.ChatMessage>>(
                   JsonSerializer.SerializeToElement(tree, Options), Options) ?? [];
 
+    /// <summary>JSON 树 → 助手消息（进行中 partial 的形状）。缺省或形状不符为 null。</summary>
+    public static Pi.Ai.Types.AssistantMessage? ToAssistantMessage(IReadOnlyDictionary<string, object?>? tree)
+    {
+        if (tree is null) return null;
+        try
+        {
+            return JsonSerializer.Deserialize<Pi.Ai.Types.AssistantMessage>(
+                JsonSerializer.SerializeToElement(tree, Options), Options);
+        }
+        catch (JsonException)
+        {
+            return null;
+        }
+    }
+
     /// <summary>消息列表 → JSON 树。</summary>
     public static object? MessagesToJson(IReadOnlyList<Pi.Ai.Types.ChatMessage>? messages)
         => messages is null ? null : ToTree(messages);

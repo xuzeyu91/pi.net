@@ -97,6 +97,14 @@ public class DurableSession : ISession
     }
 
     /// <summary>
+    /// 内部：在变更线上分页扫描任务。供已在变更线上运行的作业使用（见 <see cref="ReadOnLineAsync"/>）。
+    /// 对应 TS <c>storage.scanTasks</c>（线上读取）。
+    /// </summary>
+    public Task<Page<TaskRecord>> ScanTasksOnLineAsync(
+        TaskQuery? query, int limit, IReadOnlyDictionary<string, object?>? cursor = null)
+        => _storage.ScanTasksAsync(query, limit, cursor);
+
+    /// <summary>
     /// 内部：一个对话文档的当前化身与值，供已在变更线上运行的作业使用（见 <see cref="ReadOnLineAsync"/>）。
     /// 缺失文档为 undefined。对应 TS <c>conversationDocumentOnLine</c>。
     /// </summary>

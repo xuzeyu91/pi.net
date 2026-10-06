@@ -167,6 +167,17 @@ public sealed class ConversationViews
     public Task<(T Observer, Action Detach)> AttachAsync<T>(
         ConversationId id, Func<ConversationView, Action, T> create, Context context)
         where T : notnull
+        => AttachCoreAsync(id, async (value, release) => create(value, release), context);
+
+    /// <summary>异步创建回调的重载（回调仍运行在 Session 线上，可读已提交 Storage）。</summary>
+    public Task<(T Observer, Action Detach)> AttachAsync<T>(
+        ConversationId id, Func<ConversationView, Action, Task<T>> create, Context context)
+        where T : notnull
+        => AttachCoreAsync(id, create, context);
+
+    private Task<(T Observer, Action Detach)> AttachCoreAsync<T>(
+        ConversationId id, Func<ConversationView, Action, Task<T>> create, Context context)
+        where T : notnull
         => _session.ReadOnLineAsync(async () =>
         {
             Mount? mount;
@@ -180,7 +191,7 @@ public sealed class ConversationViews
                 }
             }
 
-            var (observer, detach) = AttachTo(mount, create);
+            var (observer, detach) = await AttachToAsync(mount, create).ConfigureAwait(false);
             // 挂载水合期间 close 或取消可能已开始；此后不再注册。
             lock (_gate)
             {
@@ -210,6 +221,23 @@ public sealed class ConversationViews
             }
         };
         observer = create(mount.Value, detach);
+        return (observer, detach);
+    }
+
+    private async Task<(T Observer, Action Detach)> AttachToAsync<T>(
+        Mount mount, Func<ConversationView, Action, Task<T>> create)
+        where T : notnull
+    {
+        T? observer = default;
+        Action detach = () =>
+        {
+            lock (mount.Observers)
+            {
+                mount.Observers.Remove(observer!);
+                if (mount.Observers.Count == 0) RemoveIfCurrent(mount);
+            }
+        };
+        observer = await create(mount.Value, detach).ConfigureAwait(false);
         return (observer, detach);
     }
 

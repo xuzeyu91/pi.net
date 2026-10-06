@@ -206,7 +206,8 @@ public static class Live
         => live.Set(RunPath, new Dictionary<string, object?>
         {
             ["taskId"] = taskId.Value,
-            ["inputs"] = inputs.Select(input => input.Value).ToList(),
+            // 必须显式构造 List<object?>：List<long> 因泛型不变性不被严格 JSON 容器判定接受（P56 修正）。
+            ["inputs"] = inputs.Select(input => (object?)input.Value).ToList(),
         });
 
     /// <summary>当前持有 <c>run</c> 的任务（若存在）。对应 TS <c>live.run?.taskId</c>。</summary>
