@@ -504,13 +504,9 @@ internal static class HarnessTestSupport
                     await Task.Yield();
                 }
 
-                if (final.StopReason is StopReason.Error or StopReason.Aborted)
-                {
-                    yield return new AssistantMessageEvent.Error(
-                        final.StopReason, final.ErrorMessage ?? "error", final);
-                    yield break;
-                }
-
+                // 终态消息（含 error/aborted 停止原因）经 Done 事件交付，由 generation 的 classify() 分类；
+                // 对应 TS faux 始终以 done 交付终态消息（stopReason:"error" 也走 done，而非流级 Error 事件）。
+                // Error 事件仅保留给脚本耗尽等意外流失败。
                 Partial = final;
                 yield return new AssistantMessageEvent.Done(final.StopReason, final);
             }
