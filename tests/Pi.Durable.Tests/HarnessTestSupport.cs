@@ -73,6 +73,19 @@ internal static class HarnessTestSupport
     internal static async Task WaitForAsync(Func<bool> check, int timeoutMs = 5000)
         => await WaitForAsync(() => Task.FromResult(check()), timeoutMs).ConfigureAwait(false);
 
+    /// <summary>冲刷后 <paramref name="task"/> 是否已 settle（无论成功/失败）。对应 TS <c>settled()</c>。</summary>
+    internal static async Task<bool> SettledAsync(Task task)
+    {
+        var done = 0;
+        _ = task.ContinueWith(
+            _ => Volatile.Write(ref done, 1),
+            CancellationToken.None,
+            TaskContinuationOptions.ExecuteSynchronously,
+            System.Threading.Tasks.TaskScheduler.Default);
+        await FlushAsync().ConfigureAwait(false);
+        return Volatile.Read(ref done) == 1;
+    }
+
     /// <summary>下一个完成任务的持久化状态。对应 TS <c>completed()</c>。</summary>
     internal static TaskState Completed(object? result) => new()
     {
@@ -594,6 +607,41 @@ internal static class HarnessTestSupport
             ToolCallContent call, ToolExecutionResult result, IHookApi api, Context context)
             => Task.FromResult(afterTool?.Invoke(call, result));
     }
+
+    /// <summary>计数活跃订阅的注册表读侧包装。对应 TS <c>countingReader()</c>。</summary>
+    internal sealed class CountingReader(IRegistryReader inner) : IRegistryReader
+    {
+        private int _count;
+
+        public int Subscriptions => Volatile.Read(ref _count);
+
+        public IRegistrySnapshot Snapshot() => inner.Snapshot();
+
+        public IDisposable Subscribe(Action listener)
+        {
+            Interlocked.Increment(ref _count);
+            var unsubscribe = inner.Subscribe(listener);
+            var active = true;
+            return new DisposableAction(() =>
+            {
+                if (!active) return;
+                active = false;
+                Interlocked.Decrement(ref _count);
+                unsubscribe.Dispose();
+            });
+        }
+    }
+
+    /// <summary>把 <see cref="Action"/> 包成 <see cref="IDisposable"/>（仅首次 dispose 生效）。</summary>
+    internal sealed class DisposableAction(Action dispose) : IDisposable
+    {
+        private int _disposed;
+
+        public void Dispose()
+        {
+            if (Interlocked.Exchange(ref _disposed, 1) == 0) dispose();
+        }
+    }
 }
 
 /// <summary>
@@ -611,6 +659,10 @@ internal sealed class ControlledHarnessStorage(IStorage inner) : IStorage
     private HarnessTestSupport.Deferred<Unit>? _submissionGate;
     private HarnessTestSupport.Deferred<Unit>? _commitGate;
     private HarnessTestSupport.Deferred<Unit>? _commitEntered;
+    private HarnessTestSupport.Deferred<Unit>? _findGate;
+    private HarnessTestSupport.Deferred<Unit>? _findEntered;
+    private Exception? _commitFailure;
+    private Exception? _closeFailure;
 
     /// <summary>让下一次 <c>GetSubmissionAsync</c> 阻塞，直到释放；返回进入信号与释放动作。</summary>
     public (Task Entered, Action Release) HoldSubmissionReads()
@@ -632,6 +684,22 @@ internal sealed class ControlledHarnessStorage(IStorage inner) : IStorage
         return (entered.Task, () => gate.Resolve(default));
     }
 
+    /// <summary>让下一次 <c>FindDocumentAsync</c> 阻塞，直到释放；返回进入信号与释放动作。对应 TS <c>holdFindDocument()</c>。</summary>
+    public (Task Entered, Action Release) HoldFindDocument()
+    {
+        var gate = new HarnessTestSupport.Deferred<Unit>();
+        _findGate = gate;
+        var entered = new HarnessTestSupport.Deferred<Unit>();
+        _findEntered = entered;
+        return (entered.Task, () => gate.Resolve(default));
+    }
+
+    /// <summary>令下一次提交在抵达存储前抛错（一次性）；模拟崩溃，后续提交照常。对应 TS <c>failNextCommit()</c>。</summary>
+    public void FailNextCommit(Exception error) => _commitFailure = error;
+
+    /// <summary>令下一次 <c>CloseAsync</c> 在关闭存储后抛错（一次性）。对应 TS <c>FailingClose</c>。</summary>
+    public void FailNextClose(Exception error) => _closeFailure = error;
+
     private HarnessTestSupport.Deferred<Unit>? EnteredSignal { get; set; }
 
     public async Task<Seq> CommitAsync(IReadOnlyList<StorageWrite> writes, CancellationToken signal = default)
@@ -643,6 +711,12 @@ internal sealed class ControlledHarnessStorage(IStorage inner) : IStorage
             _commitGate = null;
             _commitEntered?.Resolve(default);
             await gate.Task.ConfigureAwait(false);
+        }
+
+        if (_commitFailure is { } failure)
+        {
+            _commitFailure = null;
+            throw failure;
         }
 
         return await inner.CommitAsync(writes, signal).ConfigureAwait(false);
@@ -693,8 +767,17 @@ internal sealed class ControlledHarnessStorage(IStorage inner) : IStorage
     public Task<SubmissionRecord?> GetSubmissionByRequestAsync(ConversationId conversationId, string requestId)
         => inner.GetSubmissionByRequestAsync(conversationId, requestId);
 
-    public Task<DocumentRecord?> FindDocumentAsync(DocumentAddress address, DocumentPoint at)
-        => inner.FindDocumentAsync(address, at);
+    public async Task<DocumentRecord?> FindDocumentAsync(DocumentAddress address, DocumentPoint at)
+    {
+        if (_findGate is { } gate)
+        {
+            _findGate = null;
+            _findEntered?.Resolve(default);
+            await gate.Task.ConfigureAwait(false);
+        }
+
+        return await inner.FindDocumentAsync(address, at).ConfigureAwait(false);
+    }
 
     public Task<StoredDocument?> GetDocumentAsync(DocumentId id, DocumentPoint at)
         => inner.GetDocumentAsync(id, at);
@@ -703,7 +786,15 @@ internal sealed class ControlledHarnessStorage(IStorage inner) : IStorage
         DocumentQuery query, int limit, IReadOnlyDictionary<string, object?>? cursor = null)
         => inner.ScanDocumentsAsync(query, limit, cursor);
 
-    public Task CloseAsync() => inner.CloseAsync();
+    public async Task CloseAsync()
+    {
+        await inner.CloseAsync().ConfigureAwait(false);
+        if (_closeFailure is { } failure)
+        {
+            _closeFailure = null;
+            throw failure;
+        }
+    }
 
     public Task SubscribeAsync(Func<CommitPublication, Task> listener, CancellationToken signal = default)
         => inner.SubscribeAsync(listener, signal);
