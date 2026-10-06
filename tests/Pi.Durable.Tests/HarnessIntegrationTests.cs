@@ -30,9 +30,10 @@ internal sealed class FakeProvider : IProvider
         Id = id;
         _respond = respond;
         _block = block;
+        ModelId = $"{id}-1";
         Models = [new ModelSpec
         {
-            Id = "fake-1",
+            Id = ModelId,
             Name = "Fake One",
             Api = "openai-completions",
             Provider = id,
@@ -46,6 +47,9 @@ internal sealed class FakeProvider : IProvider
     public Task Reached => _reached.Task;
 
     public string Id { get; }
+
+    /// <summary>该 provider 暴露的模型 ID（<c>&lt;id&gt;-1</c>）。</summary>
+    public string ModelId { get; }
 
     public string Name => Id;
 

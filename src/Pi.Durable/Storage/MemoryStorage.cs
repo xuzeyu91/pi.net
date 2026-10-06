@@ -642,6 +642,45 @@ public sealed class MemoryStorage : IStorage
         return Task.CompletedTask;
     }
 
+    /// <summary>
+    /// 以同一份持久化表重开一个句柄（重新封闭标志、共享全部表与 ID 计数器）。
+    /// 这是对文件后端「关闭后再打开同一文件」语义的进程内等价物，供 reopen / recovery 测试使用；
+    /// 仅在实例已经 <see cref="CloseAsync"/> 且不再被使用时调用。
+    /// </summary>
+    public MemoryStorage Reopen()
+    {
+        lock (_gate)
+        {
+            var reopened = new MemoryStorage();
+            reopened._conversations.Clear();
+            foreach (var pair in _conversations) reopened._conversations[pair.Key] = pair.Value;
+            reopened._entries.Clear();
+            foreach (var pair in _entries) reopened._entries[pair.Key] = pair.Value;
+            reopened._tasks.Clear();
+            foreach (var pair in _tasks) reopened._tasks[pair.Key] = pair.Value;
+            reopened._submissions.Clear();
+            foreach (var pair in _submissions) reopened._submissions[pair.Key] = pair.Value;
+            reopened._documents.Clear();
+            foreach (var pair in _documents)
+            {
+                // 文档化身：保留修订历史，丢弃已 dispose 的附加状态（attach 时惰性重建）。
+                pair.Value.State = null;
+                reopened._documents[pair.Key] = pair.Value;
+            }
+
+            foreach (var pair in _recordTypes) reopened._recordTypes[pair.Key] = pair.Value;
+            foreach (var pair in _entryIdsByConversation) reopened._entryIdsByConversation[pair.Key] = pair.Value;
+            foreach (var pair in _headEntryIdsByConversation) reopened._headEntryIdsByConversation[pair.Key] = pair.Value;
+            foreach (var pair in _entryCommitSeqs) reopened._entryCommitSeqs[pair.Key] = pair.Value;
+            foreach (var pair in _submissionIdsByRequest) reopened._submissionIdsByRequest[pair.Key] = pair.Value;
+            foreach (var pair in _documentAddresses) reopened._documentAddresses[pair.Key] = pair.Value;
+            foreach (var pair in _documentIdsByScope) reopened._documentIdsByScope[pair.Key] = pair.Value;
+            reopened._nextId = _nextId;
+            reopened._nextSeq = _nextSeq;
+            return reopened;
+        }
+    }
+
     /// <inheritdoc />
     public Task SubscribeAsync(Func<CommitPublication, Task> listener, CancellationToken signal = default)
     {

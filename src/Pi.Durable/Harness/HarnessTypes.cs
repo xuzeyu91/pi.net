@@ -3,11 +3,14 @@ using Pi.Ai.Types;
 using Pi.Chord.Context;
 using Pi.Chord.Services;
 using Pi.Durable.Env;
+using Pi.Durable.Session;
 using Pi.Durable.Types;
 
 namespace Pi.Durable.Harness;
 
 using System.Text.Json.Serialization;
+
+using JsonDict = System.Collections.Generic.IReadOnlyDictionary<string, object?>;
 
 /// <summary>经 pi-ai <see cref="Models"/> 解析的 provider 与模型 ID。对应 TS <c>ModelRef</c>。</summary>
 public sealed record ModelRef(string Provider, string ModelId);
@@ -910,17 +913,9 @@ public interface IHarness : ISession
     Task<UsageState> UsageAsync(Context context);
 
     /// <summary>
-    /// 任务图（spec §9.5）作为可释放 Chord 状态；对应 TS <c>taskGraph()</c> / <c>watchTaskGraph()</c>
-    /// —— 图文档定义在 P52（task-graph.ts）落地后接入。
+    /// 任务图（spec §9.5）的精确帧 watch（JSON 形状）。对应 TS <c>watchTaskGraph()</c>。
     /// </summary>
-    Task<ITaskGraphWatch> WatchTaskGraphAsync(Context context);
-}
-
-/// <summary>任务图的有界待发帧 watch（泛型载荷在 P52 task-graph.ts 落地时具体化）。对应 TS <c>TaskGraphWatch</c>。</summary>
-public interface ITaskGraphWatch : IDisposable
-{
-    /// <summary>已投递的帧数（诊断用）。</summary>
-    long Frames { get; }
+    Task<CommittedWatch<JsonDict>> WatchTaskGraphAsync(Context context);
 }
 
 /// <summary>

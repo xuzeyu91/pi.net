@@ -36,6 +36,13 @@ internal static class HarnessTestSupport
 
     internal static Deferred<T> NewDeferred<T>() => new();
 
+    /// <summary>冲刷待定微任务与一个宏任务轮次。对应 TS <c>flush()</c>（<c>setTimeout(0)</c>）。</summary>
+    internal static async Task FlushAsync()
+    {
+        await Task.Yield();
+        await Task.Delay(1).ConfigureAwait(false);
+    }
+
     /// <summary>按次数冲刷宏任务轮次，直到 <paramref name="check"/> 成立。对应 TS <c>eventually()</c>。</summary>
     internal static async Task EventuallyAsync(Func<Task<bool>> check)
     {
@@ -179,4 +186,218 @@ internal static class HarnessTestSupport
             // 测试收尾不抛。
         }
     }
+
+    /// <summary>
+    /// 跨 close/reopen 幸存的 models 与 registry（如同宿主进程自己的对象）。
+    /// 对应 TS <c>ChatSetup</c>（chat-support.ts）。
+    /// </summary>
+    internal sealed class ChatSetup
+    {
+        public required FakeProvider Provider { get; init; }
+
+        public required Models Models { get; init; }
+
+        public required IRegistry Registry { get; init; }
+
+        public required List<object> Reports { get; init; }
+
+        /// <summary>活的 Harness 设置；测试在决策之间赋值以改变它们。</summary>
+        public required HarnessSettings Settings { get; init; }
+
+        /// <summary>宿主时钟；默认单调递增的固定值。</summary>
+        public Func<long> Now { get; set; } = () => 1;
+    }
+
+    /// <summary>按给定的应答构造一个 chat 夹具。对应 TS <c>chatSetup()</c>。</summary>
+    internal static ChatSetup NewChatSetup(AssistantMessage response, bool block = false)
+        => NewChatSetup(new FakeProvider("faux", _ => response, block));
+
+    internal static ChatSetup NewChatSetup(FakeProvider provider)
+    {
+        var models = new Models();
+        models.SetProvider(provider);
+        return new ChatSetup
+        {
+            Provider = provider,
+            Models = models,
+            Registry = Registry.CreateRegistry(),
+            Reports = [],
+            Settings = new HarnessSettings
+            {
+                Extensions = [],
+                Retry = new ConversationRetryPolicy { Enabled = false, MaxRetries = 0, BaseDelayMs = 0 },
+            },
+        };
+    }
+
+    /// <summary>在 <paramref name="storage"/> 上打开 Harness 并返回其 root。对应 TS <c>openChat()</c>。</summary>
+    internal static async Task<(HarnessImpl Harness, IConversation Root)> OpenChatAsync(
+        IStorage storage, ChatSetup setup)
+    {
+        var harness = await DurableHarness.OpenAsync(storage, new HarnessOptions
+        {
+            Models = setup.Models,
+            Registry = setup.Registry,
+            Settings = setup.Settings,
+            Now = () => setup.Now(),
+            OnReport = error => setup.Reports.Add(error),
+        }, Ctx).ConfigureAwait(false);
+        var root = await harness.RootAsync(
+            Ctx, new AgentChange { Model = new ModelRef(setup.Provider.Id, setup.Provider.ModelId) })
+            .ConfigureAwait(false);
+        return (harness, root);
+    }
+
+    /// <summary>一个对话的全部原始条目，最旧在前。对应 TS <c>allEntries()</c>。</summary>
+    internal static async Task<IReadOnlyList<EntryRecord>> AllEntriesAsync(
+        IConversation conversation, Context? context = null)
+    {
+        var page = await conversation.EntriesAsync(
+            new EntryQuery { ConversationId = conversation.Id }, 1000, null, context ?? Ctx)
+            .ConfigureAwait(false);
+        return [.. page.Items.Reverse()];
+    }
+
+    /// <summary>等待 <paramref name="gate"/> 或取消（取消时抛出）。对应 TS <c>Promise.race([gate, aborted(signal)])</c>。</summary>
+    internal static async Task RaceAsync(Task gate, CancellationToken signal)
+    {
+        var aborted = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        using var registration = signal.Register(() => aborted.TrySetCanceled());
+        var completed = await Task.WhenAny(gate, aborted.Task).ConfigureAwait(false);
+        if (completed == aborted.Task) signal.ThrowIfCancellationRequested();
+        await gate.ConfigureAwait(false);
+    }
+
+    /// <summary>一个 assistant 应答消息（provider 为 <c>faux</c>）。对应 TS <c>fauxAssistantMessage(text)</c>。</summary>
+    internal static AssistantMessage AssistantReply(string text) => AssistantReply("faux", text);
+
+    internal static AssistantMessage AssistantReply(string providerId, string text)
+        => new([new TextContent(text)])
+        {
+            StopReason = StopReason.Stop,
+            Model = $"{providerId}-1",
+            Provider = providerId,
+            UsageStats = new Pi.Ai.Types.Usage(5, 7),
+        };
 }
+
+/// <summary>
+/// 记录提交批次并对指定读取加门闩的存储装饰器。对应 TS <c>ControlledStorage</c>
+/// （session-support.ts 的子集：commits 记录 + submission 读门闩）。
+/// </summary>
+internal sealed class ControlledHarnessStorage(IStorage inner) : IStorage
+{
+    /// <summary>已受理的提交批次（借用视图）。</summary>
+    public readonly List<IReadOnlyList<StorageWrite>> AdmittedCommits = [];
+
+    /// <summary>为值断言而解耦的提交批次。</summary>
+    public readonly List<IReadOnlyList<StorageWrite>> Commits = [];
+
+    private HarnessTestSupport.Deferred<Unit>? _submissionGate;
+    private HarnessTestSupport.Deferred<Unit>? _commitGate;
+    private HarnessTestSupport.Deferred<Unit>? _commitEntered;
+
+    /// <summary>让下一次 <c>GetSubmissionAsync</c> 阻塞，直到释放；返回进入信号与释放动作。</summary>
+    public (Task Entered, Action Release) HoldSubmissionReads()
+    {
+        var gate = new HarnessTestSupport.Deferred<Unit>();
+        _submissionGate = gate;
+        var entered = new HarnessTestSupport.Deferred<Unit>();
+        EnteredSignal = entered;
+        return (entered.Task, () => gate.Resolve(default));
+    }
+
+    /// <summary>让下一次 <c>CommitAsync</c> 阻塞，直到释放；返回进入信号与释放动作。对应 TS <c>holdCommits()</c>。</summary>
+    public (Task Entered, Action Release) HoldCommits()
+    {
+        var gate = new HarnessTestSupport.Deferred<Unit>();
+        _commitGate = gate;
+        var entered = new HarnessTestSupport.Deferred<Unit>();
+        _commitEntered = entered;
+        return (entered.Task, () => gate.Resolve(default));
+    }
+
+    private HarnessTestSupport.Deferred<Unit>? EnteredSignal { get; set; }
+
+    public async Task<Seq> CommitAsync(IReadOnlyList<StorageWrite> writes, CancellationToken signal = default)
+    {
+        AdmittedCommits.Add(writes);
+        Commits.Add([.. writes]);
+        if (_commitGate is { } gate)
+        {
+            _commitGate = null;
+            _commitEntered?.Resolve(default);
+            await gate.Task.ConfigureAwait(false);
+        }
+
+        return await inner.CommitAsync(writes, signal).ConfigureAwait(false);
+    }
+
+    public Task<TId> MintIdAsync<TId>() where TId : struct => inner.MintIdAsync<TId>();
+
+    public Task<ConversationRecord?> GetConversationAsync(ConversationId id) => inner.GetConversationAsync(id);
+
+    public Task<Page<ConversationRecord>> ScanConversationsAsync(
+        ConversationQuery? query, int limit, IReadOnlyDictionary<string, object?>? cursor = null)
+        => inner.ScanConversationsAsync(query, limit, cursor);
+
+    public Task<StoredEntry?> GetEntryAsync(EntryId id) => inner.GetEntryAsync(id);
+
+    public Task<StoredEntry?> GetEntryAsync(ConversationId conversationId, EntryId id)
+        => inner.GetEntryAsync(conversationId, id);
+
+    public Task<EntryRecord?> FindLatestHeadMarkerAsync(ConversationId conversationId, EntryId? atOrBeforeEntryId)
+        => inner.FindLatestHeadMarkerAsync(conversationId, atOrBeforeEntryId);
+
+    public Task<Page<EntryRecord>> ScanEntriesAsync(
+        EntryQuery query, int limit, IReadOnlyDictionary<string, object?>? cursor = null)
+        => inner.ScanEntriesAsync(query, limit, cursor);
+
+    public Task<TaskRecord?> GetTaskAsync(TaskId<object?> id) => inner.GetTaskAsync(id);
+
+    public Task<Page<TaskRecord>> ScanTasksAsync(
+        TaskQuery? query, int limit, IReadOnlyDictionary<string, object?>? cursor = null)
+        => inner.ScanTasksAsync(query, limit, cursor);
+
+    public async Task<SubmissionRecord?> GetSubmissionAsync(SubmissionId id)
+    {
+        if (_submissionGate is { } gate)
+        {
+            _submissionGate = null;
+            EnteredSignal?.Resolve(default);
+            await gate.Task.ConfigureAwait(false);
+        }
+
+        return await inner.GetSubmissionAsync(id).ConfigureAwait(false);
+    }
+
+    public Task<Page<SubmissionRecord>> ScanSubmissionsAsync(
+        SubmissionQuery? query, int limit, IReadOnlyDictionary<string, object?>? cursor = null)
+        => inner.ScanSubmissionsAsync(query, limit, cursor);
+
+    public Task<SubmissionRecord?> GetSubmissionByRequestAsync(ConversationId conversationId, string requestId)
+        => inner.GetSubmissionByRequestAsync(conversationId, requestId);
+
+    public Task<DocumentRecord?> FindDocumentAsync(DocumentAddress address, DocumentPoint at)
+        => inner.FindDocumentAsync(address, at);
+
+    public Task<StoredDocument?> GetDocumentAsync(DocumentId id, DocumentPoint at)
+        => inner.GetDocumentAsync(id, at);
+
+    public Task<Page<DocumentRecord>> ScanDocumentsAsync(
+        DocumentQuery query, int limit, IReadOnlyDictionary<string, object?>? cursor = null)
+        => inner.ScanDocumentsAsync(query, limit, cursor);
+
+    public Task CloseAsync() => inner.CloseAsync();
+
+    public Task SubscribeAsync(Func<CommitPublication, Task> listener, CancellationToken signal = default)
+        => inner.SubscribeAsync(listener, signal);
+
+    public Task UnsubscribeAsync(Func<CommitPublication, Task> listener) => inner.UnsubscribeAsync(listener);
+
+    public Task<MemoryState?> AttachDocumentAsync(DocumentId id, Func<Context, Task>? listener = null)
+        => inner.AttachDocumentAsync(id, listener);
+}
+
+/// <summary>无载荷的占位值类型。</summary>
+internal readonly record struct Unit;

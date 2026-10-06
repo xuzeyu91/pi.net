@@ -230,7 +230,14 @@ public sealed class TaskGraphView
                 }
             }
 
-            var (observer, detach) = AttachTo(mount!, create);
+            var (observer, detach) = AttachTo(mount!, create, () =>
+            {
+                // 最后一个观察者离开即丢弃挂载：新观察者将构建新修订（对齐 TS detach）。
+                lock (_gate)
+                {
+                    if (mount!.Observers.Count == 0 && ReferenceEquals(_mount, mount)) _mount = null;
+                }
+            });
             // 挂载构建期间 close 或取消可能已开始；此后不再注册。
             lock (_gate)
             {
@@ -249,7 +256,7 @@ public sealed class TaskGraphView
     }
 
     private static (T Observer, Action Detach) AttachTo<T>(
-        Mount mount, Func<IReadOnlyDictionary<string, object?>, Action, T> create)
+        Mount mount, Func<IReadOnlyDictionary<string, object?>, Action, T> create, Action onEmpty)
     {
         T? observer = default;
         Action detach = () =>
@@ -258,6 +265,8 @@ public sealed class TaskGraphView
             {
                 mount.Observers.Remove(observer!);
             }
+
+            onEmpty();
         };
         observer = create(mount.Value, detach);
         return (observer, detach);

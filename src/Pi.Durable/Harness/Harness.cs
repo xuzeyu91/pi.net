@@ -163,7 +163,6 @@ public sealed class HarnessImpl : DurableSession, IHarness
     private readonly TaskScheduler _tasks;
     private readonly Submissions _submissions;
     private readonly TaskGraphView _taskGraph;
-    private readonly TaskGraphWatchHost _taskGraphHost;
     private readonly ConversationViews _views;
     private bool _closed;
 
@@ -210,7 +209,6 @@ public sealed class HarnessImpl : DurableSession, IHarness
         submissionsRef = _submissions;
         tasksRef = _tasks;
         _taskGraph = new TaskGraphView(this, storage);
-        _taskGraphHost = new TaskGraphWatchHost(_taskGraph);
         // 视图挂载必须在 ConversationHost 之前创建：其构造函数把自身注册进 Harness→Views 表
         // （对应 TS 的 conversationViews() 惰性检索）。
         _views = new ConversationViews(this, storage);
@@ -333,7 +331,7 @@ public sealed class HarnessImpl : DurableSession, IHarness
         };
     }
 
-    public Task<ITaskGraphWatch> WatchTaskGraphAsync(Context context) => _taskGraphHost.WatchAsync(context);
+    public Task<CommittedWatch<JsonDict>> WatchTaskGraphAsync(Context context) => _taskGraph.WatchAsync(context);
 
     /// <summary>任务图的图状态快照（spec §9.5）。对应 TS <c>taskGraph()</c>。</summary>
     public Task<AttachedReplicatedState<JsonDict>> TaskGraphAsync(Context context) => _taskGraph.StateAsync(context);
@@ -437,24 +435,6 @@ public sealed class HarnessImpl : DurableSession, IHarness
         }
 
         return result;
-    }
-}
-
-/// <summary>任务图 watch 的宿主包装（<see cref="ITaskGraphWatch"/> 的适配）。</summary>
-internal sealed class TaskGraphWatchHost(TaskGraphView view)
-{
-    public async Task<ITaskGraphWatch> WatchAsync(Context context)
-    {
-        var watch = await view.WatchAsync(context).ConfigureAwait(false);
-        return new TaskGraphWatchAdapter(watch);
-    }
-
-    private sealed class TaskGraphWatchAdapter(CommittedWatch<JsonDict> watch) : ITaskGraphWatch
-    {
-        // TS TaskGraphWatch 的帧计数在 C# CommittedWatch 内为私有；此适配器只暴露终止能力。
-        public long Frames => 0;
-
-        public void Dispose() => _ = watch.Stop();
     }
 }
 
