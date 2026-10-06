@@ -273,6 +273,49 @@ public sealed record ToolOutputLimits
     public string? Retain { get; init; }
 }
 
+/// <summary>
+/// 一次调用所绑定的对话句柄可用的中止信号与结束检查。对应 TS <c>InvocationBinding</c>
+///（<c>{ signal, check() }</c>）：<c>Check</c> 在调用结束后抛出。
+/// </summary>
+public sealed record InvocationBinding
+{
+    public required CancellationToken Signal { get; init; }
+
+    public required Action Check { get; init; }
+}
+
+/// <summary>
+/// 调度器不经任务代码写入的终局结果（faulted / orphaned）。对应 TS <c>SchedulerOutcome</c>。
+/// </summary>
+public sealed record SchedulerOutcome
+{
+    /// <summary>仅 <see cref="TaskOutcomeStatus.Faulted"/> 或 <see cref="TaskOutcomeStatus.Orphaned"/>。</summary>
+    public required TaskOutcomeStatus Status { get; init; }
+
+    public TaskOutcomeError? Error { get; init; }
+
+    public string? Reason { get; init; }
+
+    /// <summary>转换为持久化终局记录。</summary>
+    public TaskOutcome ToOutcome() => new() { Status = Status, Error = Error, Reason = Reason };
+
+    public static SchedulerOutcome Orphaned(string reason)
+        => new() { Status = TaskOutcomeStatus.Orphaned, Reason = reason };
+
+    public static SchedulerOutcome Faulted(string message)
+        => new() { Status = TaskOutcomeStatus.Faulted, Error = new TaskOutcomeError { Message = message } };
+
+    public static SchedulerOutcome From(TaskOutcome outcome)
+        => new() { Status = outcome.Status, Error = outcome.Error, Reason = outcome.Reason };
+}
+
+/// <summary>
+/// 擦除的任务迁移委托：把活动输入与 checkpoint 迁移到更新版本。对应 TS <c>migrate</c>。
+/// 擦除定义的 <see cref="AnyDurableTask.Migrate"/> 必须以此形状承载。
+/// </summary>
+public delegate (object? Input, object? Checkpoint) ErasedMigrate(
+    object? input, object? checkpoint, int fromVersion);
+
 /// <summary>已擦除的可执行任务定义（存于注册表）。对应 TS <c>AnyTask</c>。</summary>
 public sealed record AnyDurableTask
 {
@@ -280,8 +323,8 @@ public sealed record AnyDurableTask
 
     public required int Version { get; init; }
 
-    /// <summary>擦除的初值工厂（无参委托）。</summary>
-    public required Func<object?> Initial { get; init; }
+    /// <summary>擦除的初值工厂（入参为任务输入）。</summary>
+    public required Func<object?, object?> Initial { get; init; }
 
     /// <summary>阶段名 → 擦除的处理器对象。</summary>
     public required IReadOnlyDictionary<string, object?> Phases { get; init; }
@@ -304,9 +347,10 @@ public sealed record AnyDurableTask
         {
             Name = d.Name,
             Version = d.Version,
-            Initial = () => d.Initial(default!),
+            Initial = input => d.Initial(input is TInput typed ? typed : default),
             Phases = (IReadOnlyDictionary<string, object?>?)d.Phases ?? new Dictionary<string, object?>(),
             Abort = d.Abort,
+            // 擦除的迁移委托必须以 <see cref="ErasedMigrate"/> 形状承载（无迁移为 null）。
             Migrate = d.Migrate,
             Hooks = d.Hooks,
         };

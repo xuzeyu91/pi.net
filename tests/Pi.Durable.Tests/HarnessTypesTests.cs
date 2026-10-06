@@ -50,7 +50,7 @@ public class HarnessTypesTests
         var erased = AnyDurableTask.From(task);
         Assert.Equal("pi.demo", erased.Name);
         Assert.Equal(2, erased.Version);
-        Assert.True(erased.Initial() is Dictionary<string, object?> initial && string.Equals(initial["phase"] as string, "call", System.StringComparison.Ordinal));
+        Assert.True(erased.Initial("hello") is Dictionary<string, object?> initial && string.Equals(initial["phase"] as string, "call", System.StringComparison.Ordinal));
         Assert.Single(erased.Phases);
         Assert.NotNull(erased.Abort);
         Assert.Null(erased.Migrate);

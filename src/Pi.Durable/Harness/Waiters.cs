@@ -3,6 +3,8 @@ using Pi.Durable.Types;
 
 namespace Pi.Durable.Harness;
 
+using BclTaskScheduler = System.Threading.Tasks.TaskScheduler;
+
 /// <summary>
 /// 按键组织的待完成等待。每个只结算一次：经 resolve、rejectAll 或其 context 的取消。
 /// 对应 TS <c>harness/util.ts</c> 的 <c>Waiters</c>。
@@ -51,7 +53,7 @@ public sealed class Waiters<K, T> where K : notnull
             // 已结算（含正常 resolve）时摘除取消注册。
             _ = waiter.Task.ContinueWith(
                 _ => registration.Dispose(), CancellationToken.None,
-                TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+                TaskContinuationOptions.ExecuteSynchronously, BclTaskScheduler.Default);
         }
         return waiter.Task;
     }

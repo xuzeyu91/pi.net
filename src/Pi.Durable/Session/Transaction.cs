@@ -1,10 +1,13 @@
 using Pi.Chord;
 using Pi.Chord.Context;
 using Pi.Chord.Delta;
+using Pi.Durable.Harness;
 using Pi.Durable.Storage;
 using Pi.Durable.Types;
 
 namespace Pi.Durable.Session;
+
+using BclTaskScheduler = System.Threading.Tasks.TaskScheduler;
 
 /// <summary>暂存的提交变更：结算，或把排队提交放置到其条目。对应 TS <c>SubmissionChange</c>。</summary>
 internal abstract record SubmissionChange
@@ -459,9 +462,24 @@ public sealed class Transaction : ITx
     }
 
     /// <inheritdoc />
-    public Task<TaskId<TResult>> CreateTaskAsync<TInput, TState, TResult>(
+    public async Task<TaskId<TResult>> CreateTaskAsync<TInput, TState, TResult>(
         DurableTask<TInput, TState, TResult> task, TInput? input, TaskOptions options)
-        => WriteAsync(async () =>
+    {
+        var id = await CoreCreateTaskAsync(
+            task.Definition.Name, task.Definition.Version, () => task.Definition.Initial(input), input, options)
+            .ConfigureAwait(false);
+        return TaskId<TResult>.From(id.Value);
+    }
+
+    /// <summary>内部：以擦除定义创建任务（运行时便捷入口）；行为与类型化重载一致。</summary>
+    internal Task<TaskId<object?>> CreateTaskErasedAsync(AnyDurableTask task, object? input, TaskOptions options)
+        => CoreCreateTaskAsync(task.Name, task.Version, () => task.Initial(input), input, options);
+
+    /// <summary>创建任务的核心：所有权校验、对话解析、初值 checkpoint 与记录暂存。</summary>
+    private async Task<TaskId<object?>> CoreCreateTaskAsync(
+        string name, int version, Func<object?> initial, object? input, TaskOptions options)
+    {
+        return await WriteAsync(async () =>
         {
             var ownership = options.Ownership;
             TaskRecord? owner = null;
@@ -484,18 +502,17 @@ public sealed class Transaction : ITx
                 throw new ArgumentException("Tx.createTask() requires options.conversationId");
             await RequireConversationAsync(conversationId.Value).ConfigureAwait(false);
             AssertOpen();
-            var definition = task.Definition;
-            var checkpoint = definition.Initial(input);
+            var checkpoint = initial();
             // mint 统一用擦除键（TS 的 TaskId 品牌参数仅类型层面）。
             var minted = await _host.Storage.MintIdAsync<TaskId<object?>>().ConfigureAwait(false);
-            var id = TaskId<TResult>.From(minted.Value);
+            var id = TaskId<object?>.From(minted.Value);
             AssertOpen();
             var record = new TaskRecord
             {
-                Id = TaskId<object?>.From(id.Value),
+                Id = id,
                 ConversationId = conversationId.Value,
-                Kind = definition.Name,
-                Version = definition.Version,
+                Kind = name,
+                Version = version,
                 Input = input,
                 Owner = owner?.Id,
                 Background = options.Background,
@@ -504,7 +521,8 @@ public sealed class Transaction : ITx
             };
             _tasksById[record.Id] = new TransactionTask { Write = new StagedTaskWrite("create", record) };
             return id;
-        });
+        }).ConfigureAwait(false);
+    }
 
     /// <inheritdoc />
     public Task<SubmissionRecord> CreateSubmissionAsync(SubmissionCreate create)
@@ -1151,7 +1169,7 @@ public sealed class Transaction : ITx
             _pendingOperations,
             CancellationToken.None,
             TaskContinuationOptions.ExecuteSynchronously,
-            TaskScheduler.Default);
+            BclTaskScheduler.Default);
         return operation;
     }
 
@@ -1167,7 +1185,7 @@ public sealed class Transaction : ITx
             _pendingOperations,
             CancellationToken.None,
             TaskContinuationOptions.ExecuteSynchronously,
-            TaskScheduler.Default);
+            BclTaskScheduler.Default);
         return operation;
     }
 

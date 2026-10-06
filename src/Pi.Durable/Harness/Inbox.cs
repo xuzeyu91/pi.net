@@ -166,6 +166,10 @@ public static class Inbox
         if (index >= 0) inbox.Splice(ItemsPath, index, 1, []);
     }
 
+    /// <summary>把一个排队项追加到收件箱草稿（以动词记录，直接改 Draft 列表不产生 op）。对应 TS <c>items.push(…)</c>。</summary>
+    internal static void AppendItem(TxDocChange inbox, IReadOnlyDictionary<string, object?> item)
+        => inbox.Splice(ItemsPath, Items(inbox.Draft).Count, 0, [item]);
+
     /// <summary>
     /// 撤回一个对话的每个排队输入，如 <c>Conversation.abort()</c> 与中止级联：
     /// 每个以 <c>aborted</c> 结算为 <c>unanswered</c> 并离开收件箱；排队写入保留待后续放置。

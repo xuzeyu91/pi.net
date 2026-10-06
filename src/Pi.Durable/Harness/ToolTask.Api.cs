@@ -6,6 +6,8 @@ using Pi.Durable.Types;
 
 namespace Pi.Durable.Harness;
 
+using BclTaskScheduler = System.Threading.Tasks.TaskScheduler;
+
 /// <summary>ToolTask 的 api 适配器（partial 补充）。</summary>
 public static partial class ToolTask
 {
@@ -72,7 +74,7 @@ public static partial class ToolTask
             reported.Details = Json.CopyJson(value, new CopyJsonOptions { OmitUndefinedProperties = true });
             var committed = progress.MarkAndWait();
             // 取消该等待时更新原地保留；提交自身的结局仍被观察（对齐 TS committed.catch(() => {})）。
-            _ = committed.ContinueWith(static task => _ = task.Exception, TaskScheduler.Default);
+            _ = committed.ContinueWith(static task => _ = task.Exception, BclTaskScheduler.Default);
             await ContextSignals.AwaitWithContext(committed, context).ConfigureAwait(false);
         }
 

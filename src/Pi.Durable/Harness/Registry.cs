@@ -5,14 +5,15 @@ namespace Pi.Durable.Harness;
 
 /// <summary>
 /// 每个注册表都持有的内建任务定义；它们不是扩展，不能被移除或替换。
-/// 对应 TS <c>harness/registry.ts</c> 的 <c>BUILTIN_TASKS</c>
-/// （C# 暂只含 pi.tool——GenerationTask / CompactionTask 随其文件落地追加）。
+/// 对应 TS <c>harness/registry.ts</c> 的 <c>BUILTIN_TASKS</c>（顺序一致：Generation、Tool、Compaction）。
 /// </summary>
 public static class Registry
 {
     public static IReadOnlyList<AnyDurableTask> BuiltinTasks { get; } =
     [
+        AnyDurableTask.From(Generation.Instance),
         AnyDurableTask.From(ToolTask.Instance),
+        AnyDurableTask.From(Compaction.Instance),
     ];
 
     private static readonly Regex SectionKey = new("^[a-z][a-z0-9_-]*$", RegexOptions.None, TimeSpan.FromSeconds(1));

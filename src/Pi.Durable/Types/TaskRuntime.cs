@@ -1,6 +1,7 @@
 using Pi.Chord.Context;
 using Pi.Durable.Env;
 using Pi.Durable.Harness;
+using Pi.Durable.Session;
 using Pi.Durable.Types;
 
 namespace Pi.Durable.Types;
@@ -58,9 +59,10 @@ public interface ITaskRuntime : IDocumentObserver, IDocumentReader, IHookApi
     /// <summary>
     /// 在重读任务之后的 Session 变更线上提交。任务已终态、调用已结束、Harness 正在关闭或 run 任务
     /// 带中止标记时拒绝。返回的状态在同一提交里替换任务状态；返回 null 则保持不变。
-    /// <c>tx.createTask()</c> 缺省为该任务的对话。
+    /// <c>tx.createTask()</c> 缺省为该任务的对话。（C# 以具体 <see cref="Transaction"/> 承载回调，
+    /// 因文档面辅助（边界、任务创建）需要事务级方法。）
     /// </summary>
-    Task CommitAsync(Func<ITx, TaskRecord, Task<TaskState?>> change, Context context);
+    Task CommitAsync(Func<Transaction, TaskRecord, Task<TaskState?>> change, Context context);
 
     /// <summary>以任务对话为缺省属主创建子任务（调用内便捷入口）。</summary>
     Task<TaskId<object?>> CreateTaskAsync(AnyDurableTask task, object? input, TaskOptions options, Context context);

@@ -13,11 +13,20 @@ internal static class JsonTrees
 {
     // camelCase 命名策略对齐 TS wire 形状（"text"/"role"/"stopReason"…）；大小写不敏感使
     // PascalCase（STJ 默认形状）与 camelCase 树均可反序列化。显式 [JsonPropertyName] 不受影响。
-    private static readonly JsonSerializerOptions Options = new()
+    internal static readonly JsonSerializerOptions WireOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         PropertyNameCaseInsensitive = true,
     };
+
+    private static readonly JsonSerializerOptions Options = WireOptions;
+
+    /// <summary>JSON 树 → 类型化记录（camelCase wire 形状）。</summary>
+    public static T Deserialize<T>(object? tree) where T : class
+        => tree is null
+            ? throw new InvalidOperationException("cannot deserialize null")
+            : JsonSerializer.Deserialize<T>(JsonSerializer.SerializeToElement(tree, Options), Options)
+              ?? throw new InvalidOperationException("deserialization produced null");
 
     /// <summary>JsonElement → 严格 JSON 值树（整数取 long，其余数字取 double）。</summary>
     public static object? FromElement(JsonElement element) => element.ValueKind switch

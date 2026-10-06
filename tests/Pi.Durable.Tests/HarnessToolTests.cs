@@ -21,7 +21,7 @@ public class RegistryTests
     {
         Name = name,
         Version = 1,
-        Initial = () => new Dictionary<string, object?>(),
+        Initial = _ => new Dictionary<string, object?>(),
         Phases = new Dictionary<string, object?>(),
     };
 
@@ -78,9 +78,12 @@ public class RegistryTests
         Assert.Empty(snapshot.Installed());
         Assert.Empty(snapshot.Tools());
         Assert.Empty(snapshot.Sections());
-        Assert.Single(snapshot.Tasks());
+        // BUILTIN_TASKS 顺序与 TS 一致：Generation、Tool、Compaction。
+        Assert.Equal(3, snapshot.Tasks().Count);
+        Assert.Equal(["pi.generation", "pi.tool", "pi.compaction"], snapshot.Tasks().Select(task => task.Name));
         Assert.NotNull(snapshot.Task("pi.tool"));
-        Assert.Null(snapshot.Task("pi.generation"));
+        Assert.NotNull(snapshot.Task("pi.generation"));
+        Assert.NotNull(snapshot.Task("pi.compaction"));
     }
 
     [Fact]
@@ -281,13 +284,13 @@ public class ToolTaskTests
 
         public Task<IExecutionEnv?> EnvAsync(Context context) => Task.FromResult<IExecutionEnv?>(null);
 
-        public Task CommitAsync(Func<ITx, TaskRecord, Task<TaskState?>> change, Context context)
-            => _session.CommitAsync(async tx =>
+        public Task CommitAsync(Func<Transaction, TaskRecord, Task<TaskState?>> change, Context context)
+            => _session.CommitWithAsync(async tx =>
             {
                 var current = await tx.GetTaskAsync(TaskId).ConfigureAwait(false)
                     ?? throw new InvalidOperationException($"Task {TaskId.Value} is missing");
                 var next = await change(tx, current).ConfigureAwait(false);
-                if (next is not null) ((Transaction)tx).SetTask(current with { State = next });
+                if (next is not null) tx.SetTask(current with { State = next });
                 return next;
             }, context);
 

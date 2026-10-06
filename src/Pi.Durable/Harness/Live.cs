@@ -201,6 +201,69 @@ public static class Live
 
     // ─── 运行控制 ───────────────────────────────────────────────────────────
 
+    /// <summary>把 <c>run</c> 设为 <paramref name="taskId"/> 持有 <paramref name="inputs"/>。对应 TS <c>live.run = {…}</c>。</summary>
+    public static void SetRun(TxDocChange live, TaskId<object?> taskId, IReadOnlyList<SubmissionId> inputs)
+        => live.Set(RunPath, new Dictionary<string, object?>
+        {
+            ["taskId"] = taskId.Value,
+            ["inputs"] = inputs.Select(input => input.Value).ToList(),
+        });
+
+    /// <summary>当前持有 <c>run</c> 的任务（若存在）。对应 TS <c>live.run?.taskId</c>。</summary>
+    public static TaskId<object?>? RunTaskId(TxDocChange live)
+        => live.Draft.TryGetValue("run", out var value)
+            && value is IReadOnlyDictionary<string, object?> run
+            && run.TryGetValue("taskId", out var taskId)
+            ? TaskId<object?>.From(Convert.ToInt64(taskId))
+            : null;
+
+    /// <summary>运行控制从 <paramref name="from"/> 移交 <paramref name="to"/>；输入随运行。对应 TS <c>handOver()</c>。</summary>
+    public static void HandOver(TxDocChange live, TaskId<object?> from, TaskId<object?> to)
+    {
+        if (RunTaskId(live) != from) return;
+        if (live.Draft.TryGetValue("run", out var value) && value is IReadOnlyDictionary<string, object?> run)
+        {
+            live.Set(RunPath, new Dictionary<string, object?>(run) { ["taskId"] = to.Value });
+        }
+    }
+
+    /// <summary>把输入提交并入运行的 <c>inputs</c>（一次 Splice）。对应 TS <c>live.run.inputs.push(…)</c>。</summary>
+    public static void PushRunInputs(TxDocChange live, IEnumerable<SubmissionId> inputs)
+    {
+        if (live.Draft.TryGetValue("run", out var value) && value is IReadOnlyDictionary<string, object?> run
+            && run.TryGetValue("inputs", out var inputsValue) && inputsValue is IReadOnlyList<object?> list)
+        {
+            live.Splice(
+                RunPath.Append(Seg.Key("inputs")), list.Count, 0,
+                inputs.Select(input => (object?)input.Value).ToList());
+        }
+    }
+
+    /// <summary>设置 <c>generation</c>（整体 Set；TS 的字段变异由调用方以整值替换表达）。</summary>
+    public static void SetGeneration(TxDocChange live, IReadOnlyDictionary<string, object?> generation)
+        => live.Set(GenerationPath, generation);
+
+    public static void DeleteGeneration(TxDocChange live) => live.Delete(GenerationPath);
+
+    public static void DeleteTools(TxDocChange live) => live.Delete(ToolsPath);
+
+    /// <summary>读取 <c>generation</c> 草稿（若有）。</summary>
+    public static IReadOnlyDictionary<string, object?>? GenerationOf(TxDocChange live)
+        => live.Draft.TryGetValue("generation", out var value)
+            && value is IReadOnlyDictionary<string, object?> generation
+            ? generation
+            : null;
+
+    /// <summary>读取当前工具槽列表（若列出）。对应 TS <c>live.tools</c>。</summary>
+    public static IReadOnlyList<ToolSlot> ToolSlotsOf(TxDocChange live)
+        => live.Draft.TryGetValue("tools", out var value) && value is IReadOnlyList<object?> list
+            ? [.. list.OfType<IReadOnlyDictionary<string, object?>>().Select(ToolSlot.FromJson)]
+            : [];
+
+    /// <summary>整体写入工具槽列表。对应 TS <c>live.tools = slots</c>。</summary>
+    public static void SetTools(TxDocChange live, IReadOnlyList<ToolSlot> slots)
+        => live.Set(ToolsPath, slots.Select(slot => (object?)slot.ToJson()).ToList());
+
     /// <summary>
     /// 结束 <paramref name="taskId"/> 拥有的运行：结算其每个输入并移除 <c>run</code>。
     /// 总是移除 <c>generation</c> 与 <c>tools</c>——它们的呈现属于结束的运行。
@@ -257,6 +320,16 @@ public static class Live
         if (index < 0) return;
         if (list.Count == 1) live.Delete(CompactionsPath);
         else live.Splice(CompactionsPath, index, 1, []);
+    }
+
+    /// <summary>以整体 Set 写回压缩状态（TS 的字段原地变异在 C# 用显式写回表达）。</summary>
+    public static void ReplaceCompactionStatus(TxDocChange live, CompactionStatus status)
+    {
+        if (!live.Draft.TryGetValue("compactions", out var value) || value is not IReadOnlyList<object?> list) return;
+        var index = list.OfType<IReadOnlyDictionary<string, object?>>()
+            .ToList()
+            .FindIndex(entry => Convert.ToInt64(entry["taskId"]!) == status.TaskId.Value);
+        if (index >= 0) live.Set(CompactionsPath.Append(Seg.Index(index)), status.ToJson());
     }
 
     // ─── 工具槽 ─────────────────────────────────────────────────────────────
