@@ -17,18 +17,19 @@ public static class Prompt
 
     /// <summary>
     /// 按顺序重放系统消息后的生效段：就地设置、<c>null</c> 删除、重加即追加。
+    /// 返回插入有序映射——删除后再重加的键会移到末尾，与 TS <c>Map</c> 语义一致。
     /// 对应 TS <c>replaySections()</c>。
     /// </summary>
-    public static Dictionary<string, string> ReplaySections(IReadOnlyList<ChatMessage> messages)
+    public static OrderedStringMap<string> ReplaySections(IReadOnlyList<ChatMessage> messages)
     {
-        var shown = new Dictionary<string, string>(StringComparer.Ordinal);
+        var shown = new OrderedStringMap<string>();
         foreach (var message in messages)
         {
             if (message is not SystemMessage system || system.Sections is null) continue;
             foreach (var (key, value) in system.Sections)
             {
                 if (value is null) shown.Remove(key);
-                else shown[key] = value;
+                else shown.Set(key, value);
             }
         }
 
@@ -38,13 +39,13 @@ public static class Prompt
     /// <summary>
     /// 按序渲染 agent 的段。<c>null</c> 渲染省略该段；带标记文本包裹为 <c>&lt;key&gt;\n…\n&lt;/key&gt;</c>。
     /// 抛错的段保留其已显示文本（若有）并上报；<paramref name="context"/> 中止后的错误向上传播。
-    /// 对应 TS <c>renderSections()</c>。
+    /// 返回插入有序映射（顺序即段声明顺序）。对应 TS <c>renderSections()</c>。
     /// </summary>
-    public static async Task<Dictionary<string, string>> RenderSections(
+    public static async Task<OrderedStringMap<string>> RenderSections(
         IReadOnlyList<IPromptSection> sections, PromptInput input, IReadOnlyDictionary<string, string> shown,
         Action<Exception> report, Context context)
     {
-        var desired = new Dictionary<string, string>(StringComparer.Ordinal);
+        var desired = new OrderedStringMap<string>();
         foreach (var section in sections)
         {
             string? text;
@@ -56,14 +57,14 @@ public static class Prompt
             {
                 if (context.AbortSignal is { IsCancellationRequested: true }) throw;
                 report(error);
-                if (shown.TryGetValue(section.Key, out var kept)) desired[section.Key] = kept;
+                if (shown.TryGetValue(section.Key, out var kept)) desired.Set(section.Key, kept);
                 continue;
             }
 
             if (text is null) continue;
-            desired[section.Key] = section.Tag ?? true
+            desired.Set(section.Key, section.Tag ?? true
                 ? $"<{section.Key}>\n{text}\n</{section.Key}>"
-                : text;
+                : text);
         }
 
         return desired;
@@ -76,7 +77,7 @@ public static class Prompt
     /// 对应 TS <c>planSystemEntries()</c>。
     /// </summary>
     public static List<TypedEntryDraft<object?>> PlanSystemEntries(
-        ContextView view, IReadOnlyDictionary<string, string> desired,
+        ContextView view, OrderedStringMap<string> desired,
         IReadOnlyList<ToolDefinition> tools, long timestamp)
     {
         var head = view.Head;
@@ -153,7 +154,7 @@ public static class Prompt
 
     /// <summary>段补丁：无、最小补丁，或顺序将变时的「移除全部 / 重加全部」对。对应 TS <c>planSections()</c>。</summary>
     private static List<Dictionary<string, string?>> PlanSections(
-        IReadOnlyDictionary<string, string> shown, IReadOnlyDictionary<string, string> desired)
+        OrderedStringMap<string> shown, OrderedStringMap<string> desired)
     {
         var patchedOrder = shown.Keys.Where(desired.ContainsKey)
             .Concat(desired.Keys.Where(key => !shown.ContainsKey(key)))
