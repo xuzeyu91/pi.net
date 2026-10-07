@@ -18,5 +18,7 @@
     <None Include="autocomplete-corpus.json" CopyToOutputDirectory="PreserveNewest" />
     <!-- Differential test vectors captured from the TypeScript Input component reference implementation. -->
     <None Include="input-corpus.json" CopyToOutputDirectory="PreserveNewest" />
+    <!-- Differential test vectors captured from the TypeScript SelectList component reference implementation. -->
+    <None Include="select-list-corpus.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

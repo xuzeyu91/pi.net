@@ -1,9 +1,12 @@
+using System.Text;
+
 namespace Pi.Tui;
 
 /// <summary>
 /// Helpers that reproduce JavaScript string semantics. .NET differs from JS in a few places that
-/// matter for the ported modules (see T15 in <c>docs/tui-porting-status.md</c>): the whitespace set
-/// used by <c>trim</c>/<c>\s</c>, and the clamping rules of <c>slice</c>.
+/// matter for the ported modules (see T15 and T23 in <c>docs/tui-porting-status.md</c>): the
+/// whitespace set used by <c>trim</c>/<c>\s</c>, the clamping rules of <c>slice</c>, and the
+/// Unicode full case mapping used by <c>toLowerCase</c>.
 /// </summary>
 internal static class JsString
 {
@@ -75,5 +78,131 @@ internal static class JsString
         }
 
         return count;
+    }
+
+    /// <summary>
+    /// JavaScript <c>String.prototype.toLowerCase</c>, which applies Unicode <em>full</em> case
+    /// mapping. <see cref="string.ToLowerInvariant"/> applies <em>simple</em> case mapping, so this
+    /// patches the two differences (see <see cref="JsCaseData"/>):
+    /// <list type="bullet">
+    /// <item>56 code points .NET has no mapping for at all, most notably U+0130 (İ), which expands
+    /// to two code points.</item>
+    /// <item>U+03A3 (Σ), which takes the word-final form U+03C2 (ς) per the Final_Sigma rule.</item>
+    /// </list>
+    /// Every other code point matches <c>Rune.ToLowerInvariant</c> exactly.
+    /// </summary>
+    public static string ToLowerCase(string value)
+    {
+        if (value.Length == 0)
+        {
+            return value;
+        }
+
+        // Fast path: a string that is pure ASCII without upper-case letters cannot change, and
+        // cannot contain U+03A3 or any of the override code points.
+        var plain = true;
+        foreach (var c in value)
+        {
+            if (c >= '\u0080' || (c >= 'A' && c <= 'Z'))
+            {
+                plain = false;
+                break;
+            }
+        }
+
+        if (plain)
+        {
+            return value;
+        }
+
+        var runes = value.EnumerateRunes().ToArray();
+        var builder = new StringBuilder(value.Length + 4);
+        for (var i = 0; i < runes.Length; i++)
+        {
+            var rune = runes[i];
+            var codePoint = rune.Value;
+            if (codePoint == Sigma)
+            {
+                builder.Append(IsFinalSigma(runes, i) ? '\u03c2' : '\u03c3');
+                continue;
+            }
+
+            builder.Append(
+                JsCaseData.LowerOverrides.TryGetValue(codePoint, out var mapped)
+                    ? mapped
+                    : Rune.ToLowerInvariant(rune).ToString());
+        }
+
+        return builder.ToString();
+    }
+
+    /// <summary>Whether a code point has the Unicode <c>Cased</c> property (V8's view of it).</summary>
+    public static bool IsCased(int codePoint) => InRanges(JsCaseData.CasedRanges, codePoint);
+
+    /// <summary>Whether a code point has the Unicode <c>Case_Ignorable</c> property (V8's view).</summary>
+    public static bool IsCaseIgnorable(int codePoint) => InRanges(JsCaseData.CaseIgnorableRanges, codePoint);
+
+    private const int Sigma = 0x03a3;
+
+    /// <summary>
+    /// The Unicode Final_Sigma condition: <paramref name="index"/> points at U+03A3, which is
+    /// word-final when it is preceded by a cased letter and not followed by one, ignoring
+    /// case-ignorable characters on both sides.
+    /// </summary>
+    private static bool IsFinalSigma(Rune[] runes, int index)
+    {
+        var precededByCased = false;
+        for (var i = index - 1; i >= 0; i--)
+        {
+            if (IsCaseIgnorable(runes[i].Value))
+            {
+                continue;
+            }
+
+            precededByCased = IsCased(runes[i].Value);
+            break;
+        }
+
+        if (!precededByCased)
+        {
+            return false;
+        }
+
+        for (var i = index + 1; i < runes.Length; i++)
+        {
+            if (IsCaseIgnorable(runes[i].Value))
+            {
+                continue;
+            }
+
+            return !IsCased(runes[i].Value);
+        }
+
+        return true;
+    }
+
+    /// <summary>Binary search over a flat table of inclusive (start, end) code point pairs.</summary>
+    private static bool InRanges(ReadOnlySpan<int> ranges, int codePoint)
+    {
+        var low = 0;
+        var high = (ranges.Length / 2) - 1;
+        while (low <= high)
+        {
+            var mid = (low + high) / 2;
+            if (codePoint < ranges[mid * 2])
+            {
+                high = mid - 1;
+            }
+            else if (codePoint > ranges[(mid * 2) + 1])
+            {
+                low = mid + 1;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

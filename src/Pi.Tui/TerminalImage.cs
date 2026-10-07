@@ -217,10 +217,10 @@ public static partial class TerminalImage
 
     private static TerminalCapabilities DetectCapabilitiesFromEnvironment(Func<bool> tmuxForwardsHyperlink)
     {
-        var termProgram = Env("TERM_PROGRAM").ToLowerInvariant();
-        var terminalEmulator = Env("TERMINAL_EMULATOR").ToLowerInvariant();
-        var term = Env("TERM").ToLowerInvariant();
-        var colorTerm = Env("COLORTERM").ToLowerInvariant();
+        var termProgram = JsString.ToLowerCase(Env("TERM_PROGRAM"));
+        var terminalEmulator = JsString.ToLowerCase(Env("TERMINAL_EMULATOR"));
+        var term = JsString.ToLowerCase(Env("TERM"));
+        var colorTerm = JsString.ToLowerCase(Env("COLORTERM"));
         var hasTrueColorHint = colorTerm is "truecolor" or "24bit" || term.EndsWith("-direct", StringComparison.Ordinal);
         var isWindowsConsole = OperatingSystem.IsWindows();
 
@@ -308,7 +308,7 @@ public static partial class TerminalImage
         var detected = DetectCapabilitiesFromEnvironment(
             hyperlinks is null ? tmuxForwardsHyperlink : () => hyperlinks.Value);
 
-        var imageProtocol = Env("PI_IMAGE_PROTOCOL").ToLowerInvariant();
+        var imageProtocol = JsString.ToLowerCase(Env("PI_IMAGE_PROTOCOL"));
         ImageProtocol? images = imageProtocol switch
         {
             "kitty" => ImageProtocol.Kitty,

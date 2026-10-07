@@ -10,10 +10,10 @@
 | 指标 | 数值 |
 |---|---|
 | TS 源码（不含 `*.test.ts`） | 45 个文件 / 19,293 行 |
-| 已移植 | 34 个文件 / 12,567 行（65.1%） |
-| 待移植 | 11 个文件 / 6,726 行 |
-| .NET 产出 | 39 个 `.cs` / 15,261 行 |
-| 测试 | `Pi.Tui.Tests` 13,756 项全部通过 |
+| 已移植 | 35 个文件 / 12,840 行（66.6%） |
+| 待移植 | 10 个文件 / 6,453 行 |
+| .NET 产出 | 41 个 `.cs` / 15,489 行 |
+| 测试 | `Pi.Tui.Tests` 16,484 项全部通过 |
 | 构建 | 0 警告 0 错误（`dotnet build Pi.slnx -m:1`） |
 
 ## 逐文件清单
@@ -54,15 +54,15 @@
 | `terminal-image.ts` | 757 | `TerminalImage.cs` | 协议探测与能力缓存、Kitty/iTerm2 编码器、图像元数据注册与查询（1000 条 FIFO 淘汰）、分块传输下的放置重建、`cropKittyImageLine`、`calculateImageCellSize/Rows`、PNG/JPEG/GIF/WebP 尺寸解析、`renderImage`、`imageFallback`、OSC 8 超链接 |
 | `autocomplete.ts` | 861 | `Autocomplete.cs` + `AutocompleteData.cs` + `NodePath.cs` + `JsString.cs` | 斜杠命令补全（含 `skill:` 裸名模糊匹配的两段过滤）、`@` 模糊文件搜索（`fd` 子进程 + 打分/去重/排序）、readdir 路径补全（`~` 展开、`./` 保留、包裹符剥离、引号路径）、CJK 标点/空白分隔符判定、`applyCompletion` 光标换算。**行为由 5,244 条差分用例对照 TS 参考实现锁定**（见下），其中 769 条同时钉住了 `node:path` win32 语义 |
 | `components/input.ts` | 494 | `Components/Input.cs` + `MouseEvents.cs` | 单行输入组件：括号粘贴缓冲（分块/尾随数据/结束标记跨块）、kill ring（Ctrl+W/U/K/Y、Alt+Y 轮转与累积语义）、撤销栈（按字合并、移动/粘贴断链）、字素级光标移动与删除、Home/End/词级导航、Kitty CSI-u 可打印字符、控制字符拒收、水平滚动窗口渲染（光标居中/贴边/末尾留列）、占位符与反显光标、`CURSOR_MARKER` 注入、鼠标点击定位光标。顺带把 `tui.ts` 的鼠标事件类型与派发辅助（`MouseDispatch`、`Container.HandleMouse`）一并落地。**行为由 5,450 条差分用例对照 TS 参考实现锁定**（见下） |
+| `components/select-list.ts` | 273 | `Components/SelectList.cs` + `JsCaseData.cs` | 选择列表：前缀过滤（按 JS `toLowerCase` 的全量大小写映射，见 T23）、选中项与滚动窗口（`maxVisible` 居中、越界选择索引、`maxVisible` 为 0）、主列宽度上下界与自定义截断回调、描述列单行化（`/[\r\n]+/` → 空格 + trim）与宽度不足时的降级、无匹配提示、上下键环绕、确认/取消、鼠标悬停不选中、press→click 配对、滚轮换行。**行为由 2,598 条差分用例 + 9,109 条大小写映射向量对照 TS 参考实现锁定**（见下） |
 
 ### ⏳ 待移植
 
 | TS 文件 | 行数 | 依赖 | 备注 |
 |---|---|---|---|
-| `components/editor.ts` | 2472 | input / kill-ring / undo-stack / word-navigation / autocomplete / latex | 多行编辑器（最大单文件） |
+| `components/editor.ts` | 2472 | input / kill-ring / undo-stack / word-navigation / autocomplete / latex / select-list | 多行编辑器（最大单文件） |
 | `editor-component.ts` | 74 | editor | 编辑器包装组件 |
 | `components/markdown.ts` | 1025 | latex / colors | Markdown → ANSI 渲染 |
-| `components/select-list.ts` | 273 | fuzzy | 选择列表 |
 | `components/settings-list.ts` | 328 | select-list | 设置列表 |
 | `components/image.ts` | 167 | terminal-image | 图像组件 |
 | `components/mouse-region.ts` | 33 | — | 鼠标区域标记 |
@@ -75,8 +75,8 @@
 
 依赖关系决定了下面的顺序；每批都以「构建 0 警告 0 错误 + 测试全绿」收口。
 
-1. **`components/editor.ts` + `editor-component.ts`** —— 依赖 input / kill-ring / undo-stack / word-navigation / autocomplete / latex（全部已完成）。
-2. **`components/markdown.ts` / `select-list.ts` / `settings-list.ts` / `image.ts` / `mouse-region.ts` / `alt-screen-flash.ts`** —— 其余叶子组件。
+1. **`components/editor.ts` + `editor-component.ts`** —— 依赖 input / kill-ring / undo-stack / word-navigation / autocomplete / latex / **select-list**（全部已完成）。
+2. **`components/markdown.ts` / `settings-list.ts` / `image.ts` / `mouse-region.ts` / `alt-screen-flash.ts`** —— 其余叶子组件。
 3. **`alt-screen-search.ts` → `tui-alt-screen.ts`** —— 最后收口，依赖上面几乎所有内容（含 `layout.ts` 的布局帧与命中测试），并负责把 `tui.ts` 里剩下的屏幕级鼠标路由（`dispatchMouseToOverlay` / `resolveMouseFocusTarget` / `renderedOverlayLayouts`）与 SGR 鼠标解码接上。
 4. **`index.ts`** —— 公开面清单，随各文件落地自然完成。
 
@@ -106,6 +106,7 @@
 | T20 | **排序必须稳定，`localeCompare` 需与 Node 对齐** | JS `Array.prototype.sort` 稳定，`List<T>.Sort` 不稳定，而 `autocomplete.ts` 的比较器（先目录后文件、分数/深度/长度多级并列）会打平，故 C# 侧统一走 `StableSort`（`OrderBy` + `Comparer<T>.Create`）。`localeCompare` 用 `CultureInfo.CurrentCulture.CompareInfo`（Node 与 .NET 5+ 都走 ICU），并用 **1,225 条** `collate` 向量验证符号一致。 |
 | T21 | **鼠标事件类型与派发辅助已落地，屏幕级路由留给备用屏** | `components/input.ts` 需要 `TuiMouseEvent` / `TuiMouseEventResult`，因此把 `tui.ts` 的鼠标类型、`dispatchMouseEvent` / `retargetMouseEvent`（→ `MouseDispatch.Dispatch` / `Retarget`）以及 `Container.handleMouse`（含 `mouseLayout` 子项高度缓存）一并移植。TS 用 `"target" in result` 判别「已转发到子组件」，C# 用 `is TuiMouseDispatchResult`；TS 用 `component.handleInput` 的真值判断「这个容器自己会路由按键」，C# 里该方法恒存在（接口默认实现），故改为反射检查组件是否**覆写**了它（`TuiComponents.HasHandleInput`）。仍留在 `tui.ts` 未移植的是屏幕级路由：`TuiBase.dispatchMouseToOverlay` / `resolveMouseFocusTarget` / `renderedOverlayLayouts` 与 `tui-alt-screen.ts` 的 `parseSgrMouseEvent`——它们只被备用屏渲染器使用，随 `tui-alt-screen.ts` 一起落地。 |
 | T22 | **CJK 词切分只能是近似（ICU 词典）** | TS 的 `findWordBackward` / `findWordForward` 用 `Intl.Segmenter(..., { granularity: "word" })`，对汉字/假名/泰文等走 ICU 的**词典**分词：`"你好世界。你好，世界"` 被切成 `你好\|世界\|。\|你好\|，\|世界`。.NET 没有等价 API（`StringInfo` 只有字素簇），C# 侧改为「同字符类连续 rune 归组」，因此整段汉字串被当作一个词。ASCII 行为不受影响——两侧都会在词内标点处断开（上游 Ctrl+W / Alt+D 的标点边界用例全绿）。偏差只出现在「一段汉字串超过 2 字」时：`Ctrl+W` / `Alt+D` / 词级光标一次跨越整段而不是一个词。差分语料里 **7 条**受影响的按键用例被标为 `icuFrom`，测试只验证到分歧发生前的那一步（`CorpusIsFullyCovered` 断言这个数字恒为 7，不许静默增长），另有 `WordNavigation_ApproximatesIcuDictionarySegmentation` 显式钉住近似行为与参考值的差异。 |
+| T23 | **`toLowerCase` 需要打补丁才能等于 JS（`ToUpperCase` 尚未处理）** | JS 的 `String.prototype.toLowerCase` 用的是 Unicode **完整**大小写映射，.NET 的 `Rune.ToLowerInvariant` 是**简单**映射，两者在 56 个码点上不同（全部是 .NET 缺映射、Unicode 版本差异：U+0130、Latin Extended-D、Garay、Beria Erfe；**不存在双方都有映射却给出不同结果的码点**），另有 U+03A3 的上下文相关 Final_Sigma 规则。因此新增 `JsString.ToLowerCase` = 简单映射 + 56 条覆盖表（`JsCaseData.LowerOverrides`）+ Final_Sigma；Final_Sigma 依赖的 `Cased` / `Case_Ignorable` 谓词按 V8 实测的集合固化成区间表（131 + 464 个区间）——注意 V8 用的是**旧版** `Case_Ignorable` 推导（含 U+0027 U+002E U+003A U+00B7 U+0387 U+055F U+05F4 U+2018 U+2019 U+2024 U+2027 U+FE13 U+FE52 U+FE55 U+FF07 U+FF0E U+FF1A 这 17 个非 Mn/Me/Cf/Lm/Sk 码点），且在扫描时**先判 case-ignorable 再判 cased**（U+02B0 同时属于两类，按可忽略处理）。`JsString.ToLowerCase` 已接入 `Fuzzy` / `Autocomplete` / `TerminalImage` / `Keys` 的全部字符串级小写调用点（这些模块原先直接用 `ToLowerInvariant`，属潜在偏差；语料本身不含分歧码点，故改造后测试仍全绿）。仍未处理的是 **`toUpperCase`**：`keys.ts` 的 `data === key.toUpperCase()` 与 `alt-screen-search.ts` 的 `charAt(0).toUpperCase()` 仍用 .NET 简单映射，等 `alt-screen-search.ts` 那一批再补对称的表。 |
 
 ## 差分验证（latex.ts）
 
@@ -211,9 +212,55 @@ node --experimental-strip-types --no-warnings gen.mjs > input-corpus.json
 `input-proxy.ts` 的关键点：TS 的 `private` 在运行时只是普通属性，所以 `inst.cursor` 可读；但 `onSubmit` 是**实例字段**
 （值为 `undefined`），会遮蔽原型上的访问器，因此必须在子类构造里用 `Object.defineProperty(this, ...)` 重新定义。
 
+## 差分验证（select-list.ts）
+
+`components/select-list.ts` 是纯函数式组件（无内部缓存、无计时器），差分同样取「操作序列 + 每一步之后的可观测量」。
+`tests/Pi.Tui.Tests/select-list-corpus.json` 保存 **2,598 条**组件向量 + **9,109 条**大小写映射向量，全部由**原始 TypeScript
+实现**实跑得到：
+
+| 区段 | 条数 | 内容 |
+|---|---|---|
+| `render` | 1,492 | `render(width)` 的输出行与 `getSelectedItem()`。16 个条目集（空 / 单项 / 三项 / 无描述 / 上游长名 / 十二项 / 中文 / 全角 / 超长描述 / 多行描述 / 空描述 / 空标签 / 大小写混合过滤 / 三个上游专用集）× 3 个主题 × 9 种列布局 × 15 个宽度；另含选中位置 −1/0/1/2/5/6/11/99 × `maxVisible` 0/1/2/3/5/10/20 的滚动窗口扫描，以及 9 个过滤串（含匹配不到任何条目的 `zzz` / `中`） |
+| `upstream` | 5 | 上游 `test/select-list.test.ts` 五个场景的渲染行，用来在 C# 侧重推它的对齐断言（`visibleIndexOf` 相等、`indexOf === 14` / `22`、含 `…`） |
+| `keys` | 570 | 操作序列与每一步之后的 `(selectedIndex, getSelectedItem(), 事件)`。19 个按键序列 × 5 个条目集 × 3 个 `maxVisible` × 2 个过滤串，覆盖上下键环绕、确认、Esc / Ctrl+C 取消、未绑定按键（`x`、PageUp/PageDown）、Kitty CSI-u 形式上下键 |
+| `mouse` | 656 | 先可选地发一次 press、再发一次事件，记录 `(pressResult, pressEvents, result, selectedIndex, item, newEvents)`。6 种事件类型 × 4 个按钮 × 行号 −1..6 的逐行扫描、press→click 跨行配对、5 档滚轮增量（含 0）、以及选中项在滚动窗口之外时的点击 |
+| `case.map` | 1,488 | 每个「`toLowerCase` 结果与自身不同」的码点及其 JS 结果（其中 U+0130 展开成两个码点） |
+| `case.contexts` | 7,621 | 把 U+03A3 / U+0130 的判定边界钉死的上下文串（前后缀各 22 种 × 12 个被测串 + 希腊词 + 土耳其语/德语特例 + 4,000 条随机混排），其中 2,721 条含 Σ |
+| `case.casedRanges` / `case.caseIgnorableRanges` | 131 / 464 | Final_Sigma 依赖的两个谓词集合（V8 实测），C# 侧据此对 U+0000–U+10FFFF 全码点逐一比对 |
+
+沙盒一致性校验（必做）：用同一份真实 `utils.ts` 直接跑上游 `test/select-list.test.ts`（只改 import 路径），
+**5/5 全部通过**。
+
+这一批踩到的两个坑：
+
+- **第一版语料里 390/450 条按键向量是空转的。** 序列里写的是字面量 `"down"` / `"up"` / `"enter"` / `"escape"`，
+  而 `matches` 的入参是**原始终端输入**，只有 `"\x03"`（Ctrl+C）能命中绑定，于是导航/确认/Esc 全都没被验证。
+  改成真实转义序列（`\x1b[A` / `\x1b[B` / `\r` / `\x1b`）并补上未绑定按键与 CSI-u 形式后，
+  570 条里有 435 条产生事件、336 条真的移动了选择。
+- **`theme.selectedPrefix` 在 TS 原实现里是死代码。** `renderItem` 的前缀是字面量 `"→ "`，从不调用该回调，
+  所以语料里 `[P]` 出现 **0 次**。C# 侧照抄这个行为（`SelectedPrefix` 作为公开接口保留但未被调用），
+  并由 `CorpusCoversTheInterestingOutcomes` 断言它恒为 0——将来若上游把它接上，这条守卫会失败并提醒。
+
+重新生成（需要 Node 22.6+）：
+
+```bash
+mkdir /tmp/slcheck && cd /tmp/slcheck
+cp <pi>/packages/tui/src/{utils.ts,keys.ts,keybindings.ts} .
+sed 's|from "\.\./|from "./|g' <pi>/packages/tui/src/components/select-list.ts > select-list.ts
+cp <pi>/packages/tui/test/select-list.test.ts upstream-select-list.test.ts
+# 只把 import 改成 ./select-list.ts 与 ./utils.ts，用来做沙盒一致性校验
+node --experimental-strip-types --no-warnings gen.mjs > select-list-corpus.json   # 组件向量
+node gen-lower.mjs                                                                # toLowerCase 参考表
+node merge-case.mjs                                                               # 合并为 case 段
+```
+
+生成 `src/Pi.Tui/JsCaseData.cs` 时注意：C# 的 `\uXXXX` **只吃四位**十六进制，`"\u10D70"` 会被解析成
+U+10D7 后面跟一个字面量 `0`。星平面码点必须用八位的 `\UXXXXXXXX`——第一轮 47 条 U+10000 以上的映射向量
+就是因为这个失败的。
+
 ## 测试覆盖
 
-`tests/Pi.Tui.Tests`（13,756 项，已禁用并行化——多个用例共享进程级全局状态：能力缓存、Kitty 元数据注册表、环境变量探测、全局键位注册表、native helper）：
+`tests/Pi.Tui.Tests`（16,484 项，已禁用并行化——多个用例共享进程级全局状态：能力缓存、Kitty 元数据注册表、环境变量探测、全局键位注册表、native helper）：
 
 | 测试文件 | 项数 | 覆盖 |
 |---|---|---|
@@ -228,3 +275,4 @@ node --experimental-strip-types --no-warnings gen.mjs > input-corpus.json
 | `TerminalImageTests.cs` | 46 | Kitty/iTerm2 编码与 base64 长度、单元格尺寸与宽高比优化、行数换算、PNG/JPEG/GIF/WebP 尺寸解析、Kitty 元数据注册/查询/FIFO 淘汰、跨块放置重建、`cropKittyImageLine`、`renderImage` 的 Kitty/iTerm2/降级分支、`imageFallback` 与 OSC 8 超链接、能力探测（Kitty/Ghostty/WezTerm/iTerm2/tmux 转发） |
 | `AutocompleteTests.cs` | 5,259 | 5,244 条差分向量逐条对照 TS 参考实现（2,051 条路径补全/`applyCompletion`、290 条斜杠命令、597 条私有纯函数、234 条打分、769 条 `node:path`、28 条 `fd` 模糊搜索、45 条 Tab 触发、1,225 条 `localeCompare`），另 15 项守卫（语料条数与覆盖分布、分隔符区间表逐条边界、CJK 字母不参与分隔、`JsString` 的 trim/slice 语义） |
 | `InputCorpusTests.cs` | 5,453 | 5,450 条差分向量逐条对照 TS 参考实现（3,329 条 `render`、476 条按键序列逐步重放——含上游 36 个用例的 84 条断言、1,642 条 `handleMouse`、1 条 `/\s/` 码点全表），另 3 项：覆盖分布守卫（滚动窗口、提示符超宽早返回、两种焦点态、6 种鼠标事件类型与 4 个按钮都被取到）、语料规模守卫（含「`icuFrom` 标记恒为 7 条」） |
+| `SelectListCorpusTests.cs` | 2,728 | 2,598 条差分向量逐条对照 TS 参考实现（1,492 条 `render`、5 条上游场景复刻、570 条按键序列逐步重放、656 条 `handleMouse`），加 3 项大小写映射向量（1,488 条单码点映射、7,621 条 Final_Sigma 上下文串、U+0000–U+10FFFF 全码点比对 `Cased` / `Case_Ignorable` 两个谓词），另 2 项守卫：语料规模与覆盖分布（无匹配行、滚动提示、四种样式回调、`selectedPrefix` 恒为 0、按键三类事件与鼠标三类事件都被取到、两个大小写结构特例都在语料里） |

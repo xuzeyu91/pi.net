@@ -26,8 +26,8 @@ public static partial class Fuzzy
 
     public static FuzzyMatch Match(string query, string text)
     {
-        var queryLower = query.ToLowerInvariant();
-        var textLower = text.ToLowerInvariant();
+        var queryLower = JsString.ToLowerCase(query);
+        var textLower = JsString.ToLowerCase(text);
 
         FuzzyMatch MatchQuery(string normalizedQuery)
         {

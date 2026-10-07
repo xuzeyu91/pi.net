@@ -666,7 +666,7 @@ public sealed class CombinedAutocompleteProvider
             foreach (var fullPath in Directory.EnumerateFileSystemEntries(searchDir))
             {
                 var name = Path.GetFileName(fullPath);
-                if (!name.ToLowerInvariant().StartsWith(searchPrefix.ToLowerInvariant(), StringComparison.Ordinal))
+                if (!JsString.ToLowerCase(name).StartsWith(JsString.ToLowerCase(searchPrefix), StringComparison.Ordinal))
                 {
                     continue;
                 }
@@ -752,8 +752,8 @@ public sealed class CombinedAutocompleteProvider
     internal static int ScoreEntry(string filePath, string query, bool isDirectory)
     {
         var fileName = NodePath.Basename(filePath);
-        var lowerFileName = fileName.ToLowerInvariant();
-        var lowerQuery = query.ToLowerInvariant();
+        var lowerFileName = JsString.ToLowerCase(fileName);
+        var lowerQuery = JsString.ToLowerCase(query);
 
         int score;
         if (lowerFileName == lowerQuery)
@@ -768,7 +768,7 @@ public sealed class CombinedAutocompleteProvider
         {
             score = 50;
         }
-        else if (filePath.ToLowerInvariant().Contains(lowerQuery, StringComparison.Ordinal))
+        else if (JsString.ToLowerCase(filePath).Contains(lowerQuery, StringComparison.Ordinal))
         {
             score = 30;
         }

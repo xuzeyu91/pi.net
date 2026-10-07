@@ -338,13 +338,15 @@ public static partial class Keys
 
     private static string? RawCtrlChar(string key)
     {
-        var ch = char.ToLowerInvariant(key[0]);
-        var code = (int)ch;
-        if ((code >= 97 && code <= 122) || ch is '[' or '\\' or ']' or '_')
+        // JS lowercases the whole key and then reads UTF-16 code unit 0, so a code point that
+        // lowercases to several code points (U+0130) still contributes its first unit.
+        var lower = JsString.ToLowerCase(key);
+        var code = lower.Length > 0 ? lower[0] : -1;
+        if ((code >= 97 && code <= 122) || lower is "[" or "\\" or "]" or "_")
         {
             return ((char)(code & 0x1f)).ToString();
         }
-        if (ch == '-')
+        if (lower == "-")
         {
             return ((char)31).ToString();
         }
@@ -388,7 +390,7 @@ public static partial class Keys
 
     private static ParsedKeyId? ParseKeyId(string keyId)
     {
-        var parts = keyId.ToLowerInvariant().Split('+');
+        var parts = JsString.ToLowerCase(keyId).Split('+');
         var key = parts[^1];
         if (key.Length == 0)
         {
