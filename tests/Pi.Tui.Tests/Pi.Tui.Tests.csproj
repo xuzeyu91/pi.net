@@ -14,5 +14,7 @@
   <ItemGroup>
     <!-- Differential test vectors captured from the TypeScript renderLatex reference implementation. -->
     <None Include="latex-corpus.json" CopyToOutputDirectory="PreserveNewest" />
+    <!-- Differential test vectors captured from the TypeScript autocomplete reference implementation. -->
+    <None Include="autocomplete-corpus.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

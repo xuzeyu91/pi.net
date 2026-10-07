@@ -10,10 +10,10 @@
 | 指标 | 数值 |
 |---|---|
 | TS 源码（不含 `*.test.ts`） | 45 个文件 / 19,293 行 |
-| 已移植 | 32 个文件 / 11,212 行（58.1%） |
-| 待移植 | 13 个文件 / 8,081 行 |
-| .NET 产出 | 33 个 `.cs` / 12,226 行 |
-| 测试 | `Pi.Tui.Tests` 3,045 项全部通过 |
+| 已移植 | 33 个文件 / 12,073 行（62.6%） |
+| 待移植 | 12 个文件 / 7,220 行 |
+| .NET 产出 | 37 个 `.cs` / 13,868 行 |
+| 测试 | `Pi.Tui.Tests` 8,304 项全部通过 |
 | 构建 | 0 警告 0 错误（`dotnet build Pi.slnx -m:1`） |
 
 ## 逐文件清单
@@ -52,6 +52,7 @@
 | `layout.ts` | 449 | `Layout.cs` | 布局引擎：栈/滚动解算、盒子裁剪、kitty 图像行裁剪、滚动条几何与绘制、命中测试（`getLayoutBoxesAt` / `getScrollViewBox` / `getScrollViewsAt`） |
 | `latex.ts` | 1506 | `Latex.cs` + `LatexData.cs` | LaTeX → Unicode/ANSI 渲染：符号/运算符/关系/重音/花体等 16 张查表（拆到 `LatexData.cs`）、命令与分组解析、上下标（Unicode 上下标优先，否则线性 `^`/`_`）、分数/根式/`\not`/`\operatorname`/`\overset` 等、`matrix`/`cases`/`aligned`/`array` 等环境、display 模式下的垂直堆叠布局（分数线与运算符上下限）、输出归一化。**行为由 2,822 条差分用例对照 TS 参考实现锁定**（见下） |
 | `terminal-image.ts` | 757 | `TerminalImage.cs` | 协议探测与能力缓存、Kitty/iTerm2 编码器、图像元数据注册与查询（1000 条 FIFO 淘汰）、分块传输下的放置重建、`cropKittyImageLine`、`calculateImageCellSize/Rows`、PNG/JPEG/GIF/WebP 尺寸解析、`renderImage`、`imageFallback`、OSC 8 超链接 |
+| `autocomplete.ts` | 861 | `Autocomplete.cs` + `AutocompleteData.cs` + `NodePath.cs` + `JsString.cs` | 斜杠命令补全（含 `skill:` 裸名模糊匹配的两段过滤）、`@` 模糊文件搜索（`fd` 子进程 + 打分/去重/排序）、readdir 路径补全（`~` 展开、`./` 保留、包裹符剥离、引号路径）、CJK 标点/空白分隔符判定、`applyCompletion` 光标换算。**行为由 5,244 条差分用例对照 TS 参考实现锁定**（见下），其中 769 条同时钉住了 `node:path` win32 语义 |
 
 ### ⏳ 待移植
 
@@ -66,7 +67,6 @@
 | `components/image.ts` | 167 | terminal-image | 图像组件 |
 | `components/mouse-region.ts` | 33 | — | 鼠标区域标记 |
 | `components/alt-screen-flash.ts` | 51 | — | 备用屏闪烁提示 |
-| `autocomplete.ts` | 861 | fuzzy | 自动补全引擎与 provider |
 | `alt-screen-search.ts` | 327 | — | 备用屏搜索 |
 | `tui-alt-screen.ts` | 1784 | 上述多数 | 备用屏渲染器（全屏模式） |
 | `index.ts` | 192 | — | 桶文件（C# 无对应概念，公开面由类型可见性决定） |
@@ -75,12 +75,11 @@
 
 依赖关系决定了下面的顺序；每批都以「构建 0 警告 0 错误 + 测试全绿」收口。
 
-1. **`autocomplete.ts`** —— 依赖已完成的 `fuzzy.ts`。
-2. **`components/input.ts`** —— 依赖 keys / keybindings / stdin-buffer（均已完成），是 `editor.ts` 的前置。
-3. **`components/editor.ts` + `editor-component.ts`** —— 依赖 input / kill-ring / undo-stack / word-navigation / autocomplete / latex。
-4. **`components/markdown.ts` / `select-list.ts` / `settings-list.ts` / `image.ts` / `mouse-region.ts` / `alt-screen-flash.ts`** —— 其余叶子组件。
-5. **`alt-screen-search.ts` → `tui-alt-screen.ts`** —— 最后收口，依赖上面几乎所有内容（含 `layout.ts` 的布局帧与命中测试）。
-6. **`index.ts`** —— 公开面清单，随各文件落地自然完成。
+1. **`components/input.ts`** —— 依赖 keys / keybindings / stdin-buffer（均已完成），是 `editor.ts` 的前置。
+2. **`components/editor.ts` + `editor-component.ts`** —— 依赖 input / kill-ring / undo-stack / word-navigation / autocomplete / latex。
+3. **`components/markdown.ts` / `select-list.ts` / `settings-list.ts` / `image.ts` / `mouse-region.ts` / `alt-screen-flash.ts`** —— 其余叶子组件。
+4. **`alt-screen-search.ts` → `tui-alt-screen.ts`** —— 最后收口，依赖上面几乎所有内容（含 `layout.ts` 的布局帧与命中测试）。
+5. **`index.ts`** —— 公开面清单，随各文件落地自然完成。
 
 ## 关键设计差异（TS → C#）
 
@@ -102,6 +101,10 @@
 | T15 | **JS 的 `\s` / `trim` 与 .NET 不是同一字符集** | JS `\s` 包含 U+FEFF、不含 U+0085；.NET `\s` 与 `char.IsWhiteSpace` 恰好相反。`latex.ts` 大量依赖 `\s` 判断（命令后的空白、`trimEnd`、`\operatorname*` 的修饰符跳过），故 `Latex` 显式实现 `IsJsWhitespace` / `JsTrim` / `JsTrimStart` / `JsTrimEnd`，并用显式字符类替换正则里的 `\s`。 |
 | T16 | **星平面私有区哨兵按代理对处理** | TS 用 U+F0000–U+F0005 作内部哨兵（标记、保护空格、具名运算符边界）。这些码点在 UTF-16 里是代理对，.NET 的 `\uXXXX` 只吃 4 位十六进制，正则字符类也按码元工作。C# 侧写 `\uDB80\uDC0x`，并把带后行断言的字符类改写成「单码元字符类 \| 显式代理对」的择一形式，以免误匹配低代理相同的其他星平面字符。 |
 | T14 | **`ScrollView` 的瞬态滚动条计时器** | 同 T13：`setTimeout` → `System.Threading.Timer`。Node 的 `unref()` 无 .NET 对应物，但 `System.Threading.Timer` 同样不会阻止进程退出。 |
+| T17 | **`AbortSignal` → `CancellationToken`；`fd` 子进程改为可注入** | `autocomplete.ts` 的 `getSuggestions(lines, line, col, { signal, force })` 在 C# 侧是 `GetSuggestionsAsync(lines, line, col, AutocompleteRequest(Signal, Force))`，`Promise` → `Task`。`walkDirectoryWithFd` 仍用 `Process` 启动 `fd`（`ProcessStartInfo.ArgumentList`、UTF-8 stdout、`CancellationToken.Register` 时 `Kill(entireProcessTree: true)`），但多了一个 `internal static FdProcessOverride` 测试缝，用于在未安装 `fd` 的机器上驱动 fuzzy 分支（与 TS 侧替换 `child_process` 的沙盒 shim 等价）。`os.homedir()` → `Environment.SpecialFolder.UserProfile`。 |
+| T18 | **`autocompleteSeparatorRegex` / `autocompleteBoundaryRegex` 改为码点表 + 谓词** | TS 用 `(?:\s|CJK 标点)` 正则做字符分类，其中 `\p{Script_Extensions=Han}` 等在 .NET 里没有对应写法，且集合含星平面码点（U+16FE2），而 .NET 字符类按 UTF-16 码元工作。因此 `AutocompleteData.SeparatorRanges` / `CjkPunctuationRanges` 由脚本从 Node 实跑枚举生成，分类改为 `IsSeparator(int codePoint)` 谓词；`(?:^\|sep)$` 这种「以分隔符结尾或为空」的用法写成 `IsTokenBoundary(string)`。顺带修掉了 `Fuzzy.Filter` 里 `.NET \s`/`trim` 与 JS 的字符集差异（T15 的同类问题）。 |
+| T19 | **`node:path` win32 语义按 1:1 转写** | `autocomplete.ts` 用 `join` / `dirname` / `basename` 生成**用户可见**的补全串，而 `System.IO.Path` 归一化规则不同（`Path.Join(".", "x")` 是 `".\x"`，Node 返回 `"x"`）。`NodePath.cs` 因此逐行转写 Node v22.22.2 的 `path.win32`（含 UNC / 设备根 / 保留设备名 / CVE-2024-36139 的冒号守卫），并用 **769 条** 从 `node:path` 实跑捕获的向量钉住。 |
+| T20 | **排序必须稳定，`localeCompare` 需与 Node 对齐** | JS `Array.prototype.sort` 稳定，`List<T>.Sort` 不稳定，而 `autocomplete.ts` 的比较器（先目录后文件、分数/深度/长度多级并列）会打平，故 C# 侧统一走 `StableSort`（`OrderBy` + `Comparer<T>.Create`）。`localeCompare` 用 `CultureInfo.CurrentCulture.CompareInfo`（Node 与 .NET 5+ 都走 ICU），并用 **1,225 条** `collate` 向量验证符号一致。 |
 
 ## 差分验证（latex.ts）
 
@@ -133,9 +136,46 @@ node --experimental-strip-types --no-warnings gen.mjs > synthetic.json   # 系�
 `assert-shim` 的关键点：`assert.strictEqual(renderLatex(x), y)` 的参数自左向右求值，因此断言被调用时
 「最近一次 `renderLatex` 调用」就是被测输入——无需解析表达式即可把输入与期望配对。
 
+## 差分验证（autocomplete.ts）
+
+`autocomplete.ts` 依赖文件系统与 `fd` 子进程，因此除了纯函数，还把**可确定性驱动的整条链路**都纳入了差分。
+`tests/Pi.Tui.Tests/autocomplete-corpus.json` 保存 **5,244 条**向量，全部由**原始 TypeScript 实现**实跑得到：
+
+| 区段 | 条数 | 内容 |
+|---|---|---|
+| `api` | 2,051 | 7 个夹具目录树 ×（前缀扫描 / 分隔符上下文 / 包裹符 / 引号路径 / `@` 前缀 / 越界光标）的 `getSuggestions` 与 `applyCompletion` 结果；其中 504 条返回非空建议 |
+| `slash` | 290 | 10 组命令表 × 查询串 / 前导空白 / 参数补全（同步、`null`、`[]`、异步）；基准目录为**空目录**，使「未命中命令而落到文件补全」的分支也确定 |
+| `helpers` | 597 | 模块私有纯函数：`toDisplayPath` / `escapeRegex` / `buildFdPathQuery` / `findLastDelimiter` / `stripLeadingWrappers` / `findUnclosedQuoteStart` / `isTokenStart` / `extractQuotedPrefix` / `parsePathPrefix` / `buildCompletionValue` |
+| `scores` | 234 | 私有 `scoreEntry` 的完整打分矩阵（精确 / 前缀 / 子串 / 全路径 / 目录加成 / 零分） |
+| `paths` | 769 | **`node:path` win32 自身**的 `dirname` / `basename` / `join`（含 UNC、设备根、保留设备名、冒号守卫）——用于钉住 `NodePath.cs` |
+| `fd` | 28 | `@` 模糊搜索：分块 stdout、去重、打分/深度/长度排序、作用域解析（`src/ma`、`../outside/a`、不存在目录）、`.git` 过滤、反斜杠输出、非零退出码、spawn 失败、已取消、截断到 20 条 |
+| `trigger` | 45 | `shouldTriggerFileCompletion` |
+| `collate` | 1,225 | `String.prototype.localeCompare` 在补全标签集合上的符号 |
+
+`fd` 区段的驱动方式：沙盒里把 `autocomplete.ts` 的 `import { spawn } from "child_process"` 改指到一个
+`child_process` shim（按队列吐预设 stdout），C# 侧对应 `FdProcessOverride`——**两边喂同一份语料里的
+`responses`**，因此被测的是 `walkDirectoryWithFd` 的解析、去重、打分与排序，而不是 `fd` 本身。
+
+沙盒一致性校验（必做）：用同一份精简 `utils.ts` 跑上游 `test/autocomplete.test.ts` 与
+`test/autocomplete-skill-slash.test.ts`，**17/17 + 7/7 全部通过**（`fd` 相关套件因本机无 `fd` 自动跳过）。
+
+重新生成（需要 Node 22.6+）：
+
+```bash
+mkdir /tmp/accheck && cd /tmp/accheck
+cp <pi>/packages/tui/src/{autocomplete.ts,fuzzy.ts} .
+# 手工写一份只含 autocompleteSeparatorRegex/autocompleteBoundaryRegex 的 utils.ts（去掉 get-east-asian-width）
+cp autocomplete.ts autocomplete-probe.ts   # 追加 export { toDisplayPath, escapeRegex, ... }
+sed 's|from "child_process"|from "./child_process-shim.mjs"|' autocomplete-probe.ts > autocomplete-fd.ts
+node --experimental-strip-types --no-warnings gen.mjs   > autocomplete-corpus.json   # api/slash/helpers/scores/cjk
+node --experimental-strip-types --no-warnings genpath.mjs > path-corpus.json        # node:path 扫描
+node --experimental-strip-types --no-warnings genfd.mjs   > fd-corpus.json          # fd 区段
+node --experimental-strip-types --no-warnings merge.mjs                             # 合并 + 生成 cjk 区间
+```
+
 ## 测试覆盖
 
-`tests/Pi.Tui.Tests`（3,045 项，已禁用并行化——多个用例共享进程级全局状态：能力缓存、Kitty 元数据注册表、环境变量探测、全局键位注册表、native helper）：
+`tests/Pi.Tui.Tests`（8,304 项，已禁用并行化——多个用例共享进程级全局状态：能力缓存、Kitty 元数据注册表、环境变量探测、全局键位注册表、native helper）：
 
 | 测试文件 | 项数 | 覆盖 |
 |---|---|---|
@@ -148,3 +188,4 @@ node --experimental-strip-types --no-warnings gen.mjs > synthetic.json   # 系�
 | `LoaderTests.cs` | 21 | Loader 默认帧与着色函数、`setIndicator` 的 verbatim/空帧/自定义帧、`setMessage`、`invalidate` 刷新、单帧不动画、多帧动画与 `stop` 冻结、重复 `start` 不叠加计时器、render 前置空行与宽度填充；CancellableLoader 的 Esc/Ctrl-C 取消、`OnAbort` 回调、其他按键不取消、`dispose` 停表且 token 仍可用 |
 | `LayoutTests.cs` | 48 | 叶子盒的固有高度与裁剪、仅绘制有源行、光标标记行滚动入视、vstack 纵向堆叠/间距/`grow` 填充/隐藏条目不留空隙、hstack 并排/center/end/stretch 对齐/零宽子项、布局节点暴露；ScrollView 的视口裁剪、滚动平移、`scrollBy` 边界与未消费余量、follow-end、`disableFollow`、`scrollToStart/End`、内容收缩时的钳制、子项变异拒绝、非 vertical 轴拒绝、always/auto/hidden 滚动条与延迟隐藏；滚动条几何与绘制、`replaceScrollbarCell`；命中测试的深度排序与嵌套滚动视图；OSC 133 区域前缀剥离 |
 | `TerminalImageTests.cs` | 46 | Kitty/iTerm2 编码与 base64 长度、单元格尺寸与宽高比优化、行数换算、PNG/JPEG/GIF/WebP 尺寸解析、Kitty 元数据注册/查询/FIFO 淘汰、跨块放置重建、`cropKittyImageLine`、`renderImage` 的 Kitty/iTerm2/降级分支、`imageFallback` 与 OSC 8 超链接、能力探测（Kitty/Ghostty/WezTerm/iTerm2/tmux 转发） |
+| `AutocompleteTests.cs` | 5,259 | 5,244 条差分向量逐条对照 TS 参考实现（2,051 条路径补全/`applyCompletion`、290 条斜杠命令、597 条私有纯函数、234 条打分、769 条 `node:path`、28 条 `fd` 模糊搜索、45 条 Tab 触发、1,225 条 `localeCompare`），另 15 项守卫（语料条数与覆盖分布、分隔符区间表逐条边界、CJK 字母不参与分隔、`JsString` 的 trim/slice 语义） |

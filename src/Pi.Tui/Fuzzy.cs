@@ -17,6 +17,13 @@ public static partial class Fuzzy
     [GeneratedRegex(@"[\s\-_./:]")]
     private static partial Regex WordBoundaryRegex();
 
+    /// <summary>
+    /// JS <c>/[\s/]+/</c>. The character class is spelled out because .NET's <c>\s</c> is a
+    /// different set from JavaScript's (it includes U+0085 and excludes U+FEFF).
+    /// </summary>
+    [GeneratedRegex("[\\f\\n\\r\\t\\v\\u0020\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff/]+")]
+    private static partial Regex TokenSplitRegex();
+
     public static FuzzyMatch Match(string query, string text)
     {
         var queryLower = query.ToLowerInvariant();
@@ -126,12 +133,13 @@ public static partial class Fuzzy
     public static List<T> Filter<T>(IEnumerable<T> items, string query, Func<T, string> getText)
     {
         var itemList = items.ToList();
-        if (string.IsNullOrWhiteSpace(query))
+        var trimmed = JsString.Trim(query);
+        if (trimmed.Length == 0)
         {
             return itemList;
         }
 
-        var tokens = Regex.Split(query.Trim(), @"[\s/]+").Where(t => t.Length > 0).ToList();
+        var tokens = TokenSplitRegex().Split(trimmed).Where(t => t.Length > 0).ToList();
         if (tokens.Count == 0)
         {
             return itemList;

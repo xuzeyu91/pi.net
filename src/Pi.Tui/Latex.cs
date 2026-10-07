@@ -97,51 +97,6 @@ public static class Latex
 
     private sealed record LatexLayout(string[] Lines, int Width, int Baseline);
 
-    // ------------------------------------------------------------------
-    // JS string semantics helpers
-    // ------------------------------------------------------------------
-
-    /// <summary>JS <c>String.prototype.trim</c> whitespace set.</summary>
-    private static bool IsJsWhitespace(char c) => c switch
-    {
-        ' ' or '\t' or '\n' or '\v' or '\f' or '\r' or '\u00a0' or '\u1680' or '\u2028' or '\u2029'
-            or '\u202f' or '\u205f' or '\u3000' or '\ufeff' => true,
-        _ => c >= '\u2000' && c <= '\u200a',
-    };
-
-    private static string JsTrimStart(string value)
-    {
-        var index = 0;
-        while (index < value.Length && IsJsWhitespace(value[index]))
-        {
-            index++;
-        }
-        return index == 0 ? value : value.Substring(index);
-    }
-
-    private static string JsTrimEnd(string value)
-    {
-        var index = value.Length;
-        while (index > 0 && IsJsWhitespace(value[index - 1]))
-        {
-            index--;
-        }
-        return index == value.Length ? value : value.Substring(0, index);
-    }
-
-    private static string JsTrim(string value) => JsTrimEnd(JsTrimStart(value));
-
-    /// <summary>Number of code points, matching JS <c>Array.from(value).length</c>.</summary>
-    private static int CodePointLength(string value)
-    {
-        var count = 0;
-        foreach (var _ in value.EnumerateRunes())
-        {
-            count++;
-        }
-        return count;
-    }
-
     private static List<string> CodePoints(string value)
     {
         var result = new List<string>();
@@ -168,7 +123,7 @@ public static class Latex
     }
 
     private static string NormalizeScriptValue(string value) =>
-        ScriptSpacingPattern.Replace(JsTrim(value), "$1");
+        ScriptSpacingPattern.Replace(JsString.Trim(value), "$1");
 
     private static string? FormatUnicodeScript(string value, bool sub) =>
         ReplaceCharacters(NormalizeScriptValue(value), sub ? LatexData.Subscripts : LatexData.Superscripts);
@@ -183,7 +138,7 @@ public static class Latex
         }
 
         var prefix = sub ? "_" : "^";
-        if (CodePointLength(value) == 1 || (sub && AsciiLettersPattern.IsMatch(value)))
+        if (JsString.CodePointLength(value) == 1 || (sub && AsciiLettersPattern.IsMatch(value)))
         {
             return prefix + value;
         }
@@ -192,16 +147,16 @@ public static class Latex
 
     private static string FormatFraction(string numerator, string denominator)
     {
-        numerator = JsTrim(numerator);
-        denominator = JsTrim(denominator);
+        numerator = JsString.Trim(numerator);
+        denominator = JsString.Trim(denominator);
         var simpleNumerator = SimpleNamePattern.IsMatch(numerator);
-        var simpleDenominator = SimpleNumberPattern.IsMatch(denominator) || CodePointLength(denominator) == 1;
+        var simpleDenominator = SimpleNumberPattern.IsMatch(denominator) || JsString.CodePointLength(denominator) == 1;
         return $"{(simpleNumerator ? numerator : $"({numerator})")}/{(simpleDenominator ? denominator : $"({denominator})")}";
     }
 
     private static string FormatRoot(string value, string symbol = "√")
     {
-        value = JsTrim(value);
+        value = JsString.Trim(value);
         return SimpleNamePattern.IsMatch(value) ? $"{symbol}{value}" : $"{symbol}({value})";
     }
 
@@ -214,7 +169,7 @@ public static class Latex
 
         var mapped = text
             .Split('\n')
-            .Select(line => JsTrim(WhitespaceCollapsePattern.Replace(line, " ")))
+            .Select(line => JsString.Trim(WhitespaceCollapsePattern.Replace(line, " ")))
             .ToList();
 
         var kept = new List<string>(mapped.Count);
@@ -227,7 +182,7 @@ public static class Latex
             }
         }
 
-        return JsTrim(string.Join("\n", kept));
+        return JsString.Trim(string.Join("\n", kept));
     }
 
     // ------------------------------------------------------------------
@@ -261,7 +216,7 @@ public static class Latex
                     ? PadLayoutLine(layout.Lines[sourceRow], layout.Width)
                     : new string(' ', layout.Width));
             }
-            lines.Add(JsTrimEnd(builder.ToString()));
+            lines.Add(JsString.TrimEnd(builder.ToString()));
         }
 
         return new LatexLayout(lines.ToArray(), layouts.Sum(layout => layout.Width), baseline);
@@ -292,9 +247,9 @@ public static class Latex
                 if (index > position)
                 {
                     var sliced = sourceLine.Substring(position, index - position);
-                    var trimmed = JsTrimEnd(previousNode is not null ? JsTrimStart(sliced) : sliced);
-                    var preserveLeadingSpace = previousNode is MatrixNode && sliced.Length > 0 && IsJsWhitespace(sliced[0]);
-                    var preserveTrailingSpace = node is MatrixNode && sliced.Length > 0 && IsJsWhitespace(sliced[^1]);
+                    var trimmed = JsString.TrimEnd(previousNode is not null ? JsString.TrimStart(sliced) : sliced);
+                    var preserveLeadingSpace = previousNode is MatrixNode && sliced.Length > 0 && JsString.IsWhitespace(sliced[0]);
+                    var preserveTrailingSpace = node is MatrixNode && sliced.Length > 0 && JsString.IsWhitespace(sliced[^1]);
                     var text = trimmed.Length > 0
                         ? $"{(preserveLeadingSpace ? " " : "")}{trimmed}{(preserveTrailingSpace ? " " : "")}"
                         : preserveLeadingSpace || preserveTrailingSpace ? " " : "";
@@ -366,8 +321,8 @@ public static class Latex
             if (position < sourceLine.Length)
             {
                 var sliced = sourceLine.Substring(position);
-                var trimmed = previousNode is not null ? JsTrimStart(sliced) : sliced;
-                var text = previousNode is MatrixNode && sliced.Length > 0 && IsJsWhitespace(sliced[0])
+                var trimmed = previousNode is not null ? JsString.TrimStart(sliced) : sliced;
+                var text = previousNode is MatrixNode && sliced.Length > 0 && JsString.IsWhitespace(sliced[0])
                     ? $" {trimmed}"
                     : trimmed;
                 layouts.Add(new LatexLayout([text], UnicodeWidth.VisibleWidth(text), 0));
@@ -417,7 +372,7 @@ public static class Latex
             {
                 continue;
             }
-            var indent = line.Length - JsTrimStart(line).Length;
+            var indent = line.Length - JsString.TrimStart(line).Length;
             indentation = Math.Min(indentation, indent);
         }
 
@@ -428,10 +383,10 @@ public static class Latex
             {
                 builder.Append('\n');
             }
-            builder.Append(JsTrimEnd(lines[index].Substring(Math.Min(indentation, lines[index].Length))));
+            builder.Append(JsString.TrimEnd(lines[index].Substring(Math.Min(indentation, lines[index].Length))));
         }
 
-        return JsTrimEnd(builder.ToString()).Replace(ProtectedSpace, " ");
+        return JsString.TrimEnd(builder.ToString()).Replace(ProtectedSpace, " ");
     }
 
     // ------------------------------------------------------------------
@@ -497,7 +452,7 @@ public static class Latex
                     var command = ParseCommand();
                     if (command == NegativeSpace)
                     {
-                        result = JsTrimEnd(result);
+                        result = JsString.TrimEnd(result);
                         if (result.EndsWith(NamedOperatorEnd, StringComparison.Ordinal))
                         {
                             result = result.Substring(0, result.Length - NamedOperatorEnd.Length);
@@ -513,7 +468,7 @@ public static class Latex
                 if (character is '^' or '_')
                 {
                     _position++;
-                    result = JsTrimEnd(result);
+                    result = JsString.TrimEnd(result);
                     var script = ParseScripts(character);
                     if (result.EndsWith(NamedOperatorEnd, StringComparison.Ordinal))
                     {
@@ -529,7 +484,7 @@ public static class Latex
                     continue;
                 }
 
-                if (IsJsWhitespace(character))
+                if (JsString.IsWhitespace(character))
                 {
                     result += ParseWhitespace();
                     continue;
@@ -537,7 +492,7 @@ public static class Latex
 
                 if (character is '=' or '<' or '>')
                 {
-                    result = $"{JsTrimEnd(result)} {character} ";
+                    result = $"{JsString.TrimEnd(result)} {character} ";
                     _position++;
                     continue;
                 }
@@ -614,7 +569,7 @@ public static class Latex
             Parse(initialMarker);
 
             var nextPosition = _position;
-            while (nextPosition < _source.Length && IsJsWhitespace(_source[nextPosition]))
+            while (nextPosition < _source.Length && JsString.IsWhitespace(_source[nextPosition]))
             {
                 nextPosition++;
             }
@@ -637,7 +592,7 @@ public static class Latex
                 }
                 if (value.Contains('/')
                     || (!value.Contains(LayoutMarkerStart, StringComparison.Ordinal)
-                        && CodePointLength(value) > 1
+                        && JsString.CodePointLength(value) > 1
                         && !LayoutMarkerFlagPattern.IsMatch(value)))
                 {
                     canUseLayout = false;
@@ -671,7 +626,7 @@ public static class Latex
 
         private string ParseWhitespace()
         {
-            while (_position < _source.Length && IsJsWhitespace(_source[_position]))
+            while (_position < _source.Length && JsString.IsWhitespace(_source[_position]))
             {
                 _position++;
             }
@@ -728,7 +683,7 @@ public static class Latex
             }
             if (LatexData.FontSwitchCommands.Contains(command))
             {
-                while (_position < _source.Length && IsJsWhitespace(_source[_position]))
+                while (_position < _source.Length && JsString.IsWhitespace(_source[_position]))
                 {
                     _position++;
                 }
@@ -748,7 +703,7 @@ public static class Latex
             }
             if (command == "not")
             {
-                var value = JsTrim(ParseRequiredArgument(false));
+                var value = JsString.Trim(ParseRequiredArgument(false));
                 if (LatexData.NegatedSymbols.TryGetValue(value, out var negated))
                 {
                     return $" {negated} ";
@@ -806,7 +761,7 @@ public static class Latex
             }
             if (command == "sqrt")
             {
-                var degree = ParseOptionalArgument() is { } rawDegree ? JsTrim(rawDegree) : null;
+                var degree = ParseOptionalArgument() is { } rawDegree ? JsString.Trim(rawDegree) : null;
                 var value = ParseRequiredArgument();
                 if (degree is null || degree == "2")
                 {
@@ -824,7 +779,7 @@ public static class Latex
             }
             if (command is "boxed" or "fbox")
             {
-                return $"[{JsTrim(ParseRequiredArgument())}]";
+                return $"[{JsString.Trim(ParseRequiredArgument())}]";
             }
             if (command is "binom" or "dbinom" or "tbinom")
             {
@@ -833,7 +788,7 @@ public static class Latex
             if (LatexData.Accents.TryGetValue(command, out var accent))
             {
                 var value = ParseRequiredArgument();
-                return CodePointLength(value) == 1 ? $"{value}{accent}" : $"{command}({value})";
+                return JsString.CodePointLength(value) == 1 ? $"{value}{accent}" : $"{command}({value})";
             }
             if (command == "mathbb")
             {
@@ -852,7 +807,7 @@ public static class Latex
                 {
                     _position++;
                 }
-                var op = JsTrim(NormalizeOutput(ParseRequiredArgument()));
+                var op = JsString.Trim(NormalizeOutput(ParseRequiredArgument()));
                 return ParseOperator(op, "bracket", starred, true);
             }
             if (command is "mod" or "bmod")
@@ -861,25 +816,25 @@ public static class Latex
             }
             if (command is "pmod" or "pod")
             {
-                var value = JsTrim(ParseRequiredArgument());
+                var value = JsString.Trim(ParseRequiredArgument());
                 return command == "pmod" ? $" (mod {value})" : $" ({value})";
             }
             if (command is "overset" or "stackrel")
             {
                 var upper = ParseRequiredArgument();
-                var value = JsTrim(ParseRequiredArgument());
+                var value = JsString.Trim(ParseRequiredArgument());
                 return $"{value}{FormatScript(upper, false)}";
             }
             if (command == "underset")
             {
                 var lower = ParseRequiredArgument();
-                var value = JsTrim(ParseRequiredArgument());
+                var value = JsString.Trim(ParseRequiredArgument());
                 return $"{value}{FormatScript(lower, true)}";
             }
             if (LatexData.PlainWrappers.Contains(command))
             {
                 var value = ParseRequiredArgument();
-                return command.StartsWith("text", StringComparison.Ordinal) || command == "mbox" ? value : JsTrim(value);
+                return command.StartsWith("text", StringComparison.Ordinal) || command == "mbox" ? value : JsString.Trim(value);
             }
             if (command == "begin")
             {
@@ -973,7 +928,7 @@ public static class Latex
 
         private string ParseRequiredArgumentValue()
         {
-            while (_position < _source.Length && IsJsWhitespace(_source[_position]))
+            while (_position < _source.Length && JsString.IsWhitespace(_source[_position]))
             {
                 _position++;
             }
@@ -1083,7 +1038,7 @@ public static class Latex
 
             if (environment is "equation" or "equation*" or "displaymath")
             {
-                return JsTrim(RenderNested(body));
+                return JsString.Trim(RenderNested(body));
             }
 
             if (environment is "aligned" or "align" or "align*" or "alignedat" or "alignat" or "alignat*"
@@ -1109,7 +1064,7 @@ public static class Latex
                     {
                         source = string.Concat(cells);
                     }
-                    var rendered = JsTrim(RenderNested(source));
+                    var rendered = JsString.Trim(RenderNested(source));
                     if (rendered.Length > 0)
                     {
                         rows.Add(rendered);
@@ -1139,7 +1094,7 @@ public static class Latex
             var rows = new List<List<string>>();
             foreach (var row in SplitEnvironmentRows(body))
             {
-                var cells = row.Split('&').Select(cell => JsTrim(RenderNested(cell, false))).ToList();
+                var cells = row.Split('&').Select(cell => JsString.Trim(RenderNested(cell, false))).ToList();
                 if (cells.Any(cell => cell.Length > 0))
                 {
                     rows.Add(cells);
@@ -1197,7 +1152,7 @@ public static class Latex
             var matrix = new List<List<string>>();
             foreach (var row in SplitEnvironmentRows(body))
             {
-                var cells = row.Split('&').Select(cell => JsTrim(RenderNested(cell, false))).ToList();
+                var cells = row.Split('&').Select(cell => JsString.Trim(RenderNested(cell, false))).ToList();
                 if (cells.Any(cell => cell.Length > 0))
                 {
                     matrix.Add(cells);
