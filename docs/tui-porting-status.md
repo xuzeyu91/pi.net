@@ -10,10 +10,10 @@
 | 指标 | 数值 |
 |---|---|
 | TS 源码（不含 `*.test.ts`） | 45 个文件 / 19,293 行 |
-| 已移植 | 31 个文件 / 9,706 行（50.3%） |
-| 待移植 | 14 个文件 / 9,587 行 |
-| .NET 产出 | 31 个 `.cs` / 10,276 行 |
-| 测试 | `Pi.Tui.Tests` 221 项全部通过 |
+| 已移植 | 32 个文件 / 11,212 行（58.1%） |
+| 待移植 | 13 个文件 / 8,081 行 |
+| .NET 产出 | 33 个 `.cs` / 12,226 行 |
+| 测试 | `Pi.Tui.Tests` 3,045 项全部通过 |
 | 构建 | 0 警告 0 错误（`dotnet build Pi.slnx -m:1`） |
 
 ## 逐文件清单
@@ -50,6 +50,7 @@
 | `components/cancellable-loader.ts` | 40 | `Components/CancellableLoader.cs` | Esc 取消的加载指示器，暴露 `CancellationToken` 与 `OnAbort` |
 | `components/scroll-view.ts` | 224 | `Components/ScrollView.cs` | 单子项滚动视口：follow-end、overscroll、scrollbar（hidden/auto/always）、瞬态滚动条延迟隐藏、`IScrollLayoutState` |
 | `layout.ts` | 449 | `Layout.cs` | 布局引擎：栈/滚动解算、盒子裁剪、kitty 图像行裁剪、滚动条几何与绘制、命中测试（`getLayoutBoxesAt` / `getScrollViewBox` / `getScrollViewsAt`） |
+| `latex.ts` | 1506 | `Latex.cs` + `LatexData.cs` | LaTeX → Unicode/ANSI 渲染：符号/运算符/关系/重音/花体等 16 张查表（拆到 `LatexData.cs`）、命令与分组解析、上下标（Unicode 上下标优先，否则线性 `^`/`_`）、分数/根式/`\not`/`\operatorname`/`\overset` 等、`matrix`/`cases`/`aligned`/`array` 等环境、display 模式下的垂直堆叠布局（分数线与运算符上下限）、输出归一化。**行为由 2,822 条差分用例对照 TS 参考实现锁定**（见下） |
 | `terminal-image.ts` | 757 | `TerminalImage.cs` | 协议探测与能力缓存、Kitty/iTerm2 编码器、图像元数据注册与查询（1000 条 FIFO 淘汰）、分块传输下的放置重建、`cropKittyImageLine`、`calculateImageCellSize/Rows`、PNG/JPEG/GIF/WebP 尺寸解析、`renderImage`、`imageFallback`、OSC 8 超链接 |
 
 ### ⏳ 待移植
@@ -66,7 +67,6 @@
 | `components/mouse-region.ts` | 33 | — | 鼠标区域标记 |
 | `components/alt-screen-flash.ts` | 51 | — | 备用屏闪烁提示 |
 | `autocomplete.ts` | 861 | fuzzy | 自动补全引擎与 provider |
-| `latex.ts` | 1506 | — | LaTeX → Unicode/ANSI 渲染 |
 | `alt-screen-search.ts` | 327 | — | 备用屏搜索 |
 | `tui-alt-screen.ts` | 1784 | 上述多数 | 备用屏渲染器（全屏模式） |
 | `index.ts` | 192 | — | 桶文件（C# 无对应概念，公开面由类型可见性决定） |
@@ -75,13 +75,12 @@
 
 依赖关系决定了下面的顺序；每批都以「构建 0 警告 0 错误 + 测试全绿」收口。
 
-1. **`latex.ts`** —— 纯函数式转换，无前置依赖；`markdown.ts` 依赖它。
-2. **`autocomplete.ts`** —— 依赖已完成的 `fuzzy.ts`。
-3. **`components/input.ts`** —— 依赖 keys / keybindings / stdin-buffer（均已完成），是 `editor.ts` 的前置。
-4. **`components/editor.ts` + `editor-component.ts`** —— 依赖 input / kill-ring / undo-stack / word-navigation / autocomplete / latex。
-5. **`components/markdown.ts` / `select-list.ts` / `settings-list.ts` / `image.ts` / `mouse-region.ts` / `alt-screen-flash.ts`** —— 其余叶子组件。
-6. **`alt-screen-search.ts` → `tui-alt-screen.ts`** —— 最后收口，依赖上面几乎所有内容（含 `layout.ts` 的布局帧与命中测试）。
-7. **`index.ts`** —— 公开面清单，随各文件落地自然完成。
+1. **`autocomplete.ts`** —— 依赖已完成的 `fuzzy.ts`。
+2. **`components/input.ts`** —— 依赖 keys / keybindings / stdin-buffer（均已完成），是 `editor.ts` 的前置。
+3. **`components/editor.ts` + `editor-component.ts`** —— 依赖 input / kill-ring / undo-stack / word-navigation / autocomplete / latex。
+4. **`components/markdown.ts` / `select-list.ts` / `settings-list.ts` / `image.ts` / `mouse-region.ts` / `alt-screen-flash.ts`** —— 其余叶子组件。
+5. **`alt-screen-search.ts` → `tui-alt-screen.ts`** —— 最后收口，依赖上面几乎所有内容（含 `layout.ts` 的布局帧与命中测试）。
+6. **`index.ts`** —— 公开面清单，随各文件落地自然完成。
 
 ## 关键设计差异（TS → C#）
 
@@ -100,11 +99,43 @@
 | T11 | **文件型调试日志未移植** | `tui-main-screen.ts` 的 `PI_TUI_DEBUG` / `PI_TUI_DEBUG_REDRAW` 会把整屏内容与崩溃信息写到 `/tmp/tui/*.log` 和 `pi-tui-crash.log`。C# 侧未移植文件日志，但**超宽行守卫仍然抛异常**（并先停止终端以复原状态）。 |
 | T12 | **`ProcessTerminal` 无 `drainInput` 的 stdin 排空** | TS 的 `drainInput` 从 stdin 真读并丢弃残余字节，避免退出后按键泄漏到父 shell。.NET 侧因输入读取在 `Console.ReadKey` 上，改为「解除回调 + 等待 idle 窗口」的近似实现。 |
 | T13 | **`setInterval` 动画计时器 → `System.Threading.Timer`** | `Loader` 的帧推进在 TS 里由单线程 `setInterval` 驱动；C# 用 `System.Threading.Timer`，回调可能在线程池线程上运行，与渲染线程并发访问组件状态。tick 体内用 `lock` 保护，且 `ITui.RequestRender` 本身已是线程安全的。`ScrollView` 的瞬态滚动条延迟隐藏同理（T14）。 |
+| T15 | **JS 的 `\s` / `trim` 与 .NET 不是同一字符集** | JS `\s` 包含 U+FEFF、不含 U+0085；.NET `\s` 与 `char.IsWhiteSpace` 恰好相反。`latex.ts` 大量依赖 `\s` 判断（命令后的空白、`trimEnd`、`\operatorname*` 的修饰符跳过），故 `Latex` 显式实现 `IsJsWhitespace` / `JsTrim` / `JsTrimStart` / `JsTrimEnd`，并用显式字符类替换正则里的 `\s`。 |
+| T16 | **星平面私有区哨兵按代理对处理** | TS 用 U+F0000–U+F0005 作内部哨兵（标记、保护空格、具名运算符边界）。这些码点在 UTF-16 里是代理对，.NET 的 `\uXXXX` 只吃 4 位十六进制，正则字符类也按码元工作。C# 侧写 `\uDB80\uDC0x`，并把带后行断言的字符类改写成「单码元字符类 \| 显式代理对」的择一形式，以免误匹配低代理相同的其他星平面字符。 |
 | T14 | **`ScrollView` 的瞬态滚动条计时器** | 同 T13：`setTimeout` → `System.Threading.Timer`。Node 的 `unref()` 无 .NET 对应物，但 `System.Threading.Timer` 同样不会阻止进程退出。 |
+
+## 差分验证（latex.ts）
+
+`latex.ts` 是纯函数，适合做逐用例差分。`tests/Pi.Tui.Tests/latex-corpus.json` 保存 **2,822 条**
+`(source, display, expected)` 向量，其中 `expected` 由**原始 TypeScript 实现**实跑得到，`LatexTests`
+逐条比对；`expected` 为 `null` 表示 TS 返回 `undefined`（语法不支持）。语料由两部分合成：
+
+1. 上游 `packages/tui/test/latex.test.ts` 的全部用例（149 条去重后）；
+2. 系统性扫描：每张查表的每个条目（全部符号 / 具名运算符 / 上下限运算符 / 关系 / 取反 / 花体字母 /
+   重音 / 间距 / 字号 / 包裹命令）、全部环境、各种上下标与根式/分数形态、以及畸形输入（2,686 条）。
+
+覆盖分布：display 模式 1,361 条、多行布局输出 255 条、返回 `undefined` 58 条。
+
+重新生成（需要 Node 22.6+ 的类型擦除与 `get-east-asian-width`）：
+
+```bash
+# 1. 取一份 latex.ts 与 utils.ts 到临时目录，装好唯一的 npm 依赖
+mkdir /tmp/latexcheck && cd /tmp/latexcheck && npm init -y && npm install get-east-asian-width
+cp <pi>/packages/tui/src/{latex.ts,utils.ts} .
+
+# 2. 把上游测试的断言改接到记录器上，让整套用例「跑一遍但不 assert」
+#    （替换 node:assert → ./assert-shim.mjs、node:test → ./test-shim.mjs、
+#      ../src/index.ts → ./latex-proxy.ts；代理在每次 renderLatex 调用时记录入参）
+# 3. 执行并导出语料
+node --experimental-strip-types --no-warnings dump.mjs   # 上游用例
+node --experimental-strip-types --no-warnings gen.mjs > synthetic.json   # 系统扫描
+```
+
+`assert-shim` 的关键点：`assert.strictEqual(renderLatex(x), y)` 的参数自左向右求值，因此断言被调用时
+「最近一次 `renderLatex` 调用」就是被测输入——无需解析表达式即可把输入与期望配对。
 
 ## 测试覆盖
 
-`tests/Pi.Tui.Tests`（152 项，已禁用并行化——多个用例共享进程级全局状态：能力缓存、Kitty 元数据注册表、环境变量探测、全局键位注册表、native helper）：
+`tests/Pi.Tui.Tests`（3,045 项，已禁用并行化——多个用例共享进程级全局状态：能力缓存、Kitty 元数据注册表、环境变量探测、全局键位注册表、native helper）：
 
 | 测试文件 | 项数 | 覆盖 |
 |---|---|---|
@@ -113,6 +144,7 @@
 | `ComponentTests.cs` | 17 | Text/Spacer/Box/TruncatedText/VStack/HStack 渲染、栈可见性、`TuiMainScreen` 差分渲染与同步输出、宽度变更全量重绘、超宽行守卫、overlay 合成 |
 | `ColorAndUtilTests.cs` | 25 | 颜色解析（hex/oklch/okhsl）、调色板索引、JS 舍入、OKLCH/OKHSL 转换与往返、混色、ANSI 序列、样式嵌套顺序、滚轮加速、native helper 缺失路径 |
 | `InputTests.cs` | 27 | 键位注册表（默认/覆盖/冲突/形状/全局单例）、stdin 缓冲（分块 CSI、SGR 鼠标、WezTerm ESC 对、括号粘贴、kitty 可打印去重、超时冲刷、字节与 UTF-8 入口） |
+| `LatexTests.cs` | 2,824 | 2,822 条差分向量逐条对照 TS 参考实现（含 display 模式的分数堆叠、运算符上下限、矩阵/分段函数布局），另 2 项语料完整性守卫（条数下界、同时覆盖两种 display 模式与 `undefined` 结果） |
 | `LoaderTests.cs` | 21 | Loader 默认帧与着色函数、`setIndicator` 的 verbatim/空帧/自定义帧、`setMessage`、`invalidate` 刷新、单帧不动画、多帧动画与 `stop` 冻结、重复 `start` 不叠加计时器、render 前置空行与宽度填充；CancellableLoader 的 Esc/Ctrl-C 取消、`OnAbort` 回调、其他按键不取消、`dispose` 停表且 token 仍可用 |
 | `LayoutTests.cs` | 48 | 叶子盒的固有高度与裁剪、仅绘制有源行、光标标记行滚动入视、vstack 纵向堆叠/间距/`grow` 填充/隐藏条目不留空隙、hstack 并排/center/end/stretch 对齐/零宽子项、布局节点暴露；ScrollView 的视口裁剪、滚动平移、`scrollBy` 边界与未消费余量、follow-end、`disableFollow`、`scrollToStart/End`、内容收缩时的钳制、子项变异拒绝、非 vertical 轴拒绝、always/auto/hidden 滚动条与延迟隐藏；滚动条几何与绘制、`replaceScrollbarCell`；命中测试的深度排序与嵌套滚动视图；OSC 133 区域前缀剥离 |
 | `TerminalImageTests.cs` | 46 | Kitty/iTerm2 编码与 base64 长度、单元格尺寸与宽高比优化、行数换算、PNG/JPEG/GIF/WebP 尺寸解析、Kitty 元数据注册/查询/FIFO 淘汰、跨块放置重建、`cropKittyImageLine`、`renderImage` 的 Kitty/iTerm2/降级分支、`imageFallback` 与 OSC 8 超链接、能力探测（Kitty/Ghostty/WezTerm/iTerm2/tmux 转发） |

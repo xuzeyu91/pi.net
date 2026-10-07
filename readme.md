@@ -25,7 +25,7 @@ Pi 的理念是「让 Pi 适配你的工作流，而不是反过来」：库只�
 | **Pi.Chord** | 独立的应用编排运行时：服务、复制状态、RPC 与插件 |
 | **Pi.Server / Pi.Client** | RPC 传输：握手 / 请求 / 取消 / 推送、会话路由、Unix 域套接字与本地服务器发现 |
 | **Pi.Codemode** | 沙箱化 JavaScript 执行：唯一能力是调用注入的工具；@options 源码解析、TypeScript 声明渲染与沙箱编排（VM 执行经 `ICodemodeJsEngine` 注入点外置） |
-| **Pi.Tui** | 终端 UI 框架：差分渲染 + 同步输出、字素级宽度测量与换行、ANSI/OSC 解析与 SGR 跟踪、Kitty 键盘协议与按键解码、overlay 栈、焦点管理、颜色（OKLCH/OKHSL）与键位注册表、stdin 转义序列缓冲、终端内联图像（Kitty / iTerm2 协议）、栈/滚动布局引擎 |
+| **Pi.Tui** | 终端 UI 框架：差分渲染 + 同步输出、字素级宽度测量与换行、ANSI/OSC 解析与 SGR 跟踪、Kitty 键盘协议与按键解码、overlay 栈、焦点管理、颜色（OKLCH/OKHSL）与键位注册表、stdin 转义序列缓冲、终端内联图像（Kitty / iTerm2 协议）、栈/滚动布局引擎、LaTeX 数学渲染 |
 
 > tui 进行中（24/45 文件，见 [tui 移植状态](docs/tui-porting-status.md)）；coding-agent（交互式 CLI 主产品）与 evals 尚未移植。durable / codemode 已完整移植，见[移植状态](docs/porting-status.md)。
 
@@ -35,7 +35,7 @@ Pi 的理念是「让 Pi 适配你的工作流，而不是反过来」：库只�
 
 ```bash
 dotnet build Pi.slnx    # 0 警告 0 错误（沙箱内需加 -m:1）
-dotnet test  Pi.slnx    # 1041 项测试
+dotnet test  Pi.slnx    # 3865 项测试
 ```
 
 测试基于 xunit.v3 + Microsoft.Testing.Platform（MTP）。若 `dotnet test` 未触发执行，直接运行测试产物：
@@ -46,7 +46,7 @@ tests/Pi.<Pkg>.Tests/bin/Debug/net10.0/Pi.<Pkg>.Tests.exe
 
 ## 移植状态
 
-11 个运行时项目，构建 0 警告 0 错误，**1041 项测试全部通过**（2026-10-07 实测，P58 更新；durable 315 + tui 221 + 其余 505）。
+11 个运行时项目，构建 0 警告 0 错误，**3865 项测试全部通过**（2026-10-07 实测，P58 更新；durable 315 + tui 3045 + 其余 505；其中 tui 含 2822 条 latex 差分向量）。
 
 - ✅ 完整移植：telemetry / protocol / agent（含 proxy.ts）/ mcp
 - ✅ 完整移植：server / client（RPC 主循环、会话路由、Unix 域套接字传输与本地服务器发现）
@@ -54,7 +54,7 @@ tests/Pi.<Pkg>.Tests/bin/Debug/net10.0/Pi.<Pkg>.Tests.exe
 - ✅ 完整移植：chord（delta / services / facets / node 层 / api）
 - ✅ 完整移植：codemode（identifier / types / source / declarations / runtime protocol + host 沙箱编排 + prelude 源码 + Wasm 加载）
 - 🚧 durable：基础层 + storage + session + env + harness（含 tools/events/harness.ts 装配）+ **testing 层（assertions / storage-conformance / env-conformance / runner / storage-benchmark）**已完成；各 `harness-*.test.ts` 对应测试补齐中
-- 🚧 tui：核心层完成（差分渲染 + 同步输出、Unicode 宽度/换行/截断、ANSI/OSC/SGR 跟踪、按键与 Kitty 协议、overlay 栈与焦点、颜色与 OKLCH/OKHSL、键位注册表、stdin 转义序列缓冲、终端图像（Kitty/iTerm2 编码与元数据）、8 个基础组件），31/45 文件、221 项测试；剩余 autocomplete / latex / 编辑器 / markdown 等叶子组件 / 备用屏渲染器
+- 🚧 tui：核心层完成（差分渲染 + 同步输出、Unicode 宽度/换行/截断、ANSI/OSC/SGR 跟踪、按键与 Kitty 协议、overlay 栈与焦点、颜色与 OKLCH/OKHSL、键位注册表、stdin 转义序列缓冲、终端图像（Kitty/iTerm2 编码与元数据）、8 个基础组件），32/45 文件、3045 项测试；剩余 autocomplete / 编辑器 / markdown 等叶子组件 / 备用屏渲染器
 - ⏳ 未开始：coding-agent / evals
 
 逐包进度、TS → C# 关键设计差异、CBOR 线上兼容要点与路线图，见 **[docs/porting-status.md](docs/porting-status.md)**。

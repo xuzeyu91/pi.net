@@ -11,4 +11,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Pi.Tui\Pi.Tui.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <!-- Differential test vectors captured from the TypeScript renderLatex reference implementation. -->
+    <None Include="latex-corpus.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
 </Project>
