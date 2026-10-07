@@ -13,6 +13,13 @@ public interface IComponent
     {
     }
 
+    /// <summary>
+    /// Optional handler for normalized mouse events. Returning null means "not interested"; a result
+    /// with <see cref="TuiMouseEventResult.Handled"/>, <see cref="TuiMouseEventResult.Capture"/> or
+    /// <see cref="TuiMouseEventResult.Focus"/> set makes the event stop propagating.
+    /// </summary>
+    TuiMouseEventResult? HandleMouse(TuiMouseEvent @event) => null;
+
     /// <summary>If true, the component receives key release events (Kitty protocol). Default false.</summary>
     bool WantsKeyRelease => false;
 
@@ -1206,6 +1213,12 @@ public class Container : IComponent
 {
     public List<IComponent> Children { get; } = new();
 
+    /// <summary>
+    /// Child heights observed during the last render, reused for hit-testing when the width is
+    /// unchanged (port of <c>Container.mouseLayout</c>).
+    /// </summary>
+    private (int Width, List<(IComponent Component, int Height)> Children)? _mouseLayout;
+
     public virtual void AddChild(IComponent component) => Children.Add(component);
 
     public virtual void RemoveChild(IComponent component) => Children.Remove(component);
@@ -1220,13 +1233,49 @@ public class Container : IComponent
         }
     }
 
+    public virtual TuiMouseEventResult? HandleMouse(TuiMouseEvent @event)
+    {
+        if (@event.Y < 0 || @event.Y >= @event.Height)
+        {
+            return null;
+        }
+
+        var mouseChildren = _mouseLayout is { } cached && cached.Width == @event.Width
+            ? cached.Children
+            : Children.Select(child => (Component: child, Height: child.Render(@event.Width).Length)).ToList();
+
+        var childY = 0;
+        foreach (var (child, childHeight) in mouseChildren)
+        {
+            if (@event.Y >= childY && @event.Y < childY + childHeight)
+            {
+                var childEvent = @event.Clone();
+                childEvent.Y = @event.Y - childY;
+                childEvent.Height = childHeight;
+                var result = MouseDispatch.Dispatch(child, childEvent);
+                if (result is not null && result.Focus == true && TuiComponents.HasHandleInput(this))
+                {
+                    result.FocusTarget = this;
+                    return result;
+                }
+                return result;
+            }
+            childY += childHeight;
+        }
+        return null;
+    }
+
     public virtual string[] Render(int width)
     {
         var lines = new List<string>();
+        var mouseChildren = new List<(IComponent Component, int Height)>();
         foreach (var child in Children)
         {
-            lines.AddRange(child.Render(width));
+            var childLines = child.Render(width);
+            mouseChildren.Add((child, childLines.Length));
+            lines.AddRange(childLines);
         }
+        _mouseLayout = (width, mouseChildren);
         return lines.ToArray();
     }
 }

@@ -145,4 +145,109 @@ public class KeysAndUtilTests
         Assert.Equal(0, WordNavigation.FindWordBackward("hello", 0));
         Assert.Equal(5, WordNavigation.FindWordForward("hello", 10));
     }
+
+    /// <summary>
+    /// Pins the documented approximation for CJK text (T22).
+    /// </summary>
+    /// <remarks>
+    /// The reference uses <c>Intl.Segmenter</c> with word granularity, which for Han/Kana/Thai runs
+    /// delegates to ICU's <em>dictionary</em> word breaker: it segments <c>"你好世界。你好，世界"</c> as
+    /// <c>你好|世界|。|你好|，|世界</c>. .NET exposes no equivalent API, so this port groups
+    /// consecutive runes of the same class and therefore treats the whole <c>你好世界</c> run as one
+    /// word. ASCII behaviour is unaffected because both sides then split at the punctuation characters
+    /// inside a segment (see the upstream Ctrl+W / Alt+D punctuation tests, which pass).
+    /// </remarks>
+    [Fact]
+    public void WordNavigation_ApproximatesIcuDictionarySegmentation()
+    {
+        const string text = "你好世界。你好，世界"; // 10 chars: 你好世界 | 。 | 你好 | ， | 世界
+
+        // Agrees with the reference: every step that stops at a punctuation boundary or inside a
+        // two-character dictionary word.
+        Assert.Equal(8, WordNavigation.FindWordBackward(text, 10)); // ICU: 8, skips 世界
+        Assert.Equal(7, WordNavigation.FindWordBackward(text, 8)); // ICU: 7, skips ，
+        Assert.Equal(5, WordNavigation.FindWordBackward(text, 6)); // ICU: 5, skips 。
+        Assert.Equal(4, WordNavigation.FindWordBackward(text, 5)); // ICU: 4, skips 。
+        Assert.Equal(0, WordNavigation.FindWordBackward(text, 2)); // ICU: 0, skips 你好
+        Assert.Equal(4, WordNavigation.FindWordForward(text, 2)); // ICU: 4, skips 世界
+        Assert.Equal(5, WordNavigation.FindWordForward(text, 4)); // ICU: 5, skips 。
+        Assert.Equal(7, WordNavigation.FindWordForward(text, 5)); // ICU: 7, skips 你好
+
+        // Diverges: inside a Han run the port sees one word, ICU sees 你好|世界.
+        Assert.Equal(0, WordNavigation.FindWordBackward(text, 4)); // ICU: 2
+        Assert.Equal(0, WordNavigation.FindWordBackward(text, 3)); // ICU: 2
+        Assert.Equal(4, WordNavigation.FindWordForward(text, 0)); // ICU: 2
+
+        // Scripts without dictionary segmentation agree with the reference.
+        Assert.Equal(4, WordNavigation.FindWordForward("가나다라", 0));
+        Assert.Equal(0, WordNavigation.FindWordBackward("가나다라", 4));
+
+        // Classification uses the JavaScript whitespace set (T15): U+FEFF is whitespace in JS but not
+        // in .NET, U+0085 the other way round.
+        Assert.Equal(0, WordNavigation.FindWordBackward("abc\ufeff", 4));
+        Assert.Equal(3, WordNavigation.FindWordBackward("abc\u0085", 4));
+        Assert.Equal(1, WordNavigation.FindWordForward("\u0085abc", 0));
+    }
+
+    [Fact]
+    public void MouseDispatch_RetargetsAndClassifiesResults()
+    {
+        var target = new TuiMouseDispatchTarget
+        {
+            Component = new Container(),
+            OriginX = 10,
+            OriginY = 4,
+            Width = 20,
+            Height = 3,
+        };
+        var retargeted = MouseDispatch.Retarget(
+            new TuiMouseEvent { X = 1, Y = 1, ScreenX = 12, ScreenY = 7, Width = 80, Height = 24 },
+            target);
+        Assert.Equal(2, retargeted.X);
+        Assert.Equal(3, retargeted.Y);
+        Assert.Equal(20, retargeted.Width);
+        Assert.Equal(3, retargeted.Height);
+        Assert.Equal(12, retargeted.ScreenX);
+
+        // No interest -> no dispatch result.
+        Assert.Null(MouseDispatch.Dispatch(new Container(), new TuiMouseEvent { Width = 10, Height = 1 }));
+
+        // An interested component gets a target with the origin transform.
+        var interested = new ProbeComponent { MouseResult = new TuiMouseEventResult { Handled = true } };
+        var dispatched = MouseDispatch.Dispatch(interested, new TuiMouseEvent
+        {
+            X = 3,
+            Y = 1,
+            ScreenX = 13,
+            ScreenY = 5,
+            Width = 20,
+            Height = 4,
+        });
+        Assert.NotNull(dispatched);
+        Assert.True(dispatched.Handled);
+        Assert.Equal(10, dispatched.Target.OriginX);
+        Assert.Equal(4, dispatched.Target.OriginY);
+        Assert.Same(interested, dispatched.Target.Component);
+        Assert.Null(dispatched.FocusTarget);
+
+        // focus implies handled, and a component that overrides HandleInput becomes the focus target.
+        var focusable = new ProbeComponent { MouseResult = new TuiMouseEventResult { Focus = true } };
+        var focused = MouseDispatch.Dispatch(focusable, new TuiMouseEvent { Width = 5, Height = 1 });
+        Assert.NotNull(focused);
+        Assert.True(focused.Handled);
+        Assert.Same(focusable, focused.FocusTarget);
+    }
+
+    private sealed class ProbeComponent : IComponent
+    {
+        public TuiMouseEventResult? MouseResult { get; set; }
+
+        public string[] Render(int width) => new[] { "" };
+
+        public void HandleInput(string data)
+        {
+        }
+
+        public TuiMouseEventResult? HandleMouse(TuiMouseEvent @event) => MouseResult;
+    }
 }

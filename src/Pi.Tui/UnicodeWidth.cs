@@ -34,6 +34,44 @@ public static class UnicodeWidth
         }
     }
 
+    /// <summary>
+    /// Enumerate grapheme clusters together with their UTF-16 start index, mirroring the
+    /// <c>{ segment, index }</c> pairs produced by JS <c>Intl.Segmenter</c>.
+    /// </summary>
+    public static IEnumerable<(int Index, string Segment)> GraphemesWithIndex(string text)
+    {
+        if (text.Length == 0)
+        {
+            yield break;
+        }
+        var enumerator = StringInfo.GetTextElementEnumerator(text);
+        while (enumerator.MoveNext())
+        {
+            yield return (enumerator.ElementIndex, (string)enumerator.Current);
+        }
+    }
+
+    /// <summary>First grapheme cluster, or null when the string is empty (JS <c>segments[0]?.segment</c>).</summary>
+    public static string? FirstGrapheme(string text)
+    {
+        foreach (var segment in Graphemes(text))
+        {
+            return segment;
+        }
+        return null;
+    }
+
+    /// <summary>Last grapheme cluster, or null when the string is empty (JS <c>segments.at(-1)?.segment</c>).</summary>
+    public static string? LastGrapheme(string text)
+    {
+        string? last = null;
+        foreach (var segment in Graphemes(text))
+        {
+            last = segment;
+        }
+        return last;
+    }
+
     /// <summary>Fast path: every UTF-16 unit is printable ASCII (0x20..0x7E).</summary>
     public static bool IsPrintableAscii(string str)
     {

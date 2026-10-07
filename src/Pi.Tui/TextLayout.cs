@@ -805,7 +805,22 @@ public static class TextLayout
             or >= 0x20000 and <= 0x2fa1f;
     }
 
-    public static bool IsWhitespaceChar(string ch) => ch.Length > 0 && char.IsWhiteSpace(ch[0]);
+    /// <summary>
+    /// JS <c>/\s/.test(ch)</c>. The regex is unanchored, so a multi-character argument only needs one
+    /// match. The JavaScript whitespace set is deliberately not <see cref="char.IsWhiteSpace(char)"/>:
+    /// JS includes U+FEFF and excludes U+0085 (see T15 in <c>docs/tui-porting-status.md</c>).
+    /// </summary>
+    public static bool IsWhitespaceChar(string ch)
+    {
+        foreach (var c in ch)
+        {
+            if (JsString.IsWhitespace(c))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public static bool IsPunctuationChar(string ch) =>
         ch.Length == 1 && PunctuationChars.Contains(ch[0]);

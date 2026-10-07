@@ -10,10 +10,10 @@
 | 指标 | 数值 |
 |---|---|
 | TS 源码（不含 `*.test.ts`） | 45 个文件 / 19,293 行 |
-| 已移植 | 33 个文件 / 12,073 行（62.6%） |
-| 待移植 | 12 个文件 / 7,220 行 |
-| .NET 产出 | 37 个 `.cs` / 13,868 行 |
-| 测试 | `Pi.Tui.Tests` 8,304 项全部通过 |
+| 已移植 | 34 个文件 / 12,567 行（65.1%） |
+| 待移植 | 11 个文件 / 6,726 行 |
+| .NET 产出 | 39 个 `.cs` / 15,261 行 |
+| 测试 | `Pi.Tui.Tests` 13,756 项全部通过 |
 | 构建 | 0 警告 0 错误（`dotnet build Pi.slnx -m:1`） |
 
 ## 逐文件清单
@@ -22,9 +22,9 @@
 
 | TS 文件 | 行数 | .NET | 说明 |
 |---|---|---|---|
-| `utils.ts` | 1397 | `Ansi.cs` / `UnicodeWidth.cs` / `TextLayout.cs` | 拆成三个文件：ANSI/OSC 提取与 SGR 跟踪、字素与可见宽度、换行/截断/切片/段落提取 |
+| `utils.ts` | 1397 | `Ansi.cs` / `UnicodeWidth.cs` / `TextLayout.cs` / `JsString.cs` | 拆成四个文件：ANSI/OSC 提取与 SGR 跟踪、字素与可见宽度、换行/截断/切片/段落提取、JS 字符串语义（`trim` 空白集与 `slice` 钳制） |
 | `keys.ts` | 1401 | `Keys.cs` | `matchesKey` / `parseKey` / Kitty CSI-u 解码 / 修饰键位掩码 / `Key` 构造助手 |
-| `tui.ts` | 1493 | `Tui.cs` | `Component`/`Container`、焦点与 overlay 栈、渲染调度、overlay 布局解算、`compositeTuiLine` |
+| `tui.ts` | 1493 | `Tui.cs` + `MouseEvents.cs` | `Component`/`Container`、焦点与 overlay 栈、渲染调度、overlay 布局解算、`compositeTuiLine`、鼠标事件类型与 `dispatchMouseEvent`/`retargetMouseEvent`/`Container.handleMouse`（屏幕级路由见 T21） |
 | `terminal.ts` | 554 | `Terminal.cs` | `ITerminal` + `ProcessTerminal` + `StringTerminal`（测试假件，TS 侧由 vitest 注入） |
 | `tui-main-screen.ts` | 655 | `TuiMainScreen.cs` | 差分渲染全流程、同步输出（CSI 2026）、kitty 图像行预留、超宽行守卫 |
 | `terminal-colors.ts` | 91 | `TerminalColors.cs` | OSC 11 背景色、DSR 配色方案上报解析 |
@@ -53,12 +53,12 @@
 | `latex.ts` | 1506 | `Latex.cs` + `LatexData.cs` | LaTeX → Unicode/ANSI 渲染：符号/运算符/关系/重音/花体等 16 张查表（拆到 `LatexData.cs`）、命令与分组解析、上下标（Unicode 上下标优先，否则线性 `^`/`_`）、分数/根式/`\not`/`\operatorname`/`\overset` 等、`matrix`/`cases`/`aligned`/`array` 等环境、display 模式下的垂直堆叠布局（分数线与运算符上下限）、输出归一化。**行为由 2,822 条差分用例对照 TS 参考实现锁定**（见下） |
 | `terminal-image.ts` | 757 | `TerminalImage.cs` | 协议探测与能力缓存、Kitty/iTerm2 编码器、图像元数据注册与查询（1000 条 FIFO 淘汰）、分块传输下的放置重建、`cropKittyImageLine`、`calculateImageCellSize/Rows`、PNG/JPEG/GIF/WebP 尺寸解析、`renderImage`、`imageFallback`、OSC 8 超链接 |
 | `autocomplete.ts` | 861 | `Autocomplete.cs` + `AutocompleteData.cs` + `NodePath.cs` + `JsString.cs` | 斜杠命令补全（含 `skill:` 裸名模糊匹配的两段过滤）、`@` 模糊文件搜索（`fd` 子进程 + 打分/去重/排序）、readdir 路径补全（`~` 展开、`./` 保留、包裹符剥离、引号路径）、CJK 标点/空白分隔符判定、`applyCompletion` 光标换算。**行为由 5,244 条差分用例对照 TS 参考实现锁定**（见下），其中 769 条同时钉住了 `node:path` win32 语义 |
+| `components/input.ts` | 494 | `Components/Input.cs` + `MouseEvents.cs` | 单行输入组件：括号粘贴缓冲（分块/尾随数据/结束标记跨块）、kill ring（Ctrl+W/U/K/Y、Alt+Y 轮转与累积语义）、撤销栈（按字合并、移动/粘贴断链）、字素级光标移动与删除、Home/End/词级导航、Kitty CSI-u 可打印字符、控制字符拒收、水平滚动窗口渲染（光标居中/贴边/末尾留列）、占位符与反显光标、`CURSOR_MARKER` 注入、鼠标点击定位光标。顺带把 `tui.ts` 的鼠标事件类型与派发辅助（`MouseDispatch`、`Container.HandleMouse`）一并落地。**行为由 5,450 条差分用例对照 TS 参考实现锁定**（见下） |
 
 ### ⏳ 待移植
 
 | TS 文件 | 行数 | 依赖 | 备注 |
 |---|---|---|---|
-| `components/input.ts` | 494 | keys / keybindings / stdin-buffer | 单行输入组件（编辑器基础） |
 | `components/editor.ts` | 2472 | input / kill-ring / undo-stack / word-navigation / autocomplete / latex | 多行编辑器（最大单文件） |
 | `editor-component.ts` | 74 | editor | 编辑器包装组件 |
 | `components/markdown.ts` | 1025 | latex / colors | Markdown → ANSI 渲染 |
@@ -75,11 +75,10 @@
 
 依赖关系决定了下面的顺序；每批都以「构建 0 警告 0 错误 + 测试全绿」收口。
 
-1. **`components/input.ts`** —— 依赖 keys / keybindings / stdin-buffer（均已完成），是 `editor.ts` 的前置。
-2. **`components/editor.ts` + `editor-component.ts`** —— 依赖 input / kill-ring / undo-stack / word-navigation / autocomplete / latex。
-3. **`components/markdown.ts` / `select-list.ts` / `settings-list.ts` / `image.ts` / `mouse-region.ts` / `alt-screen-flash.ts`** —— 其余叶子组件。
-4. **`alt-screen-search.ts` → `tui-alt-screen.ts`** —— 最后收口，依赖上面几乎所有内容（含 `layout.ts` 的布局帧与命中测试）。
-5. **`index.ts`** —— 公开面清单，随各文件落地自然完成。
+1. **`components/editor.ts` + `editor-component.ts`** —— 依赖 input / kill-ring / undo-stack / word-navigation / autocomplete / latex（全部已完成）。
+2. **`components/markdown.ts` / `select-list.ts` / `settings-list.ts` / `image.ts` / `mouse-region.ts` / `alt-screen-flash.ts`** —— 其余叶子组件。
+3. **`alt-screen-search.ts` → `tui-alt-screen.ts`** —— 最后收口，依赖上面几乎所有内容（含 `layout.ts` 的布局帧与命中测试），并负责把 `tui.ts` 里剩下的屏幕级鼠标路由（`dispatchMouseToOverlay` / `resolveMouseFocusTarget` / `renderedOverlayLayouts`）与 SGR 鼠标解码接上。
+4. **`index.ts`** —— 公开面清单，随各文件落地自然完成。
 
 ## 关键设计差异（TS → C#）
 
@@ -88,7 +87,7 @@
 | T1 | **native 插件加载改为显式注入点** | TS 的 `native-platform.ts` 用 `createRequire()` 加载 `<platform>-platform[-x11].node` 预编译插件，并按路径缓存。.NET 没有 Node addon ABI，因此改为 `NativePlatform.SetNativePlatformHelper(INativePlatformHelper)` 由宿主显式提供（P/Invoke 包装或托管实现）。未安装 helper 时所有查询报告「不可用」——这正是 TS 在插件缺失时的行为。`native-module-path.ts` 的候选路径探测无 .NET 对应物，仅以 `GetNativeModuleCandidates` 保留搜索顺序作为文档。 |
 | T2 | **`EventEmitter` → .NET event** | `StdinBuffer` 的 `data` / `paste` 事件改为 `event Action<string>?`；`setTimeout` 冲刷计时器改为 `Timer`，并用 `lock` 保护状态（TS 单线程，C# 计时器回调在线程池线程）。 |
 | T3 | **原始模式（raw mode）是尽力而为** | Node 有 `process.stdin.setRawMode`；.NET 无跨平台等价 API。Unix 上 shell out `stty raw -echo`（停止时 `stty sane`），Windows 上用 P/Invoke 打开虚拟终端输入；输入经 `Console.ReadKey` 映射回框架期望的转义序列。 |
-| T4 | **Unicode 数据源不同** | TS 用 npm `get-east-asian-width`、`\p{RGI_Emoji}`、`\p{Default_Ignorable_Code_Point}`；.NET 侧改用显式宽字符区间表 + emoji 启发式 + `CharUnicodeInfo`。字素簇用 `StringInfo`（UAX #29），词切分自行按 rune 分类。 |
+| T4 | **Unicode 数据源不同** | TS 用 npm `get-east-asian-width`、`\p{RGI_Emoji}`、`\p{Default_Ignorable_Code_Point}`；.NET 侧改用显式宽字符区间表 + emoji 启发式 + `CharUnicodeInfo`。字素簇用 `StringInfo`（UAX #29），词切分自行按 rune 分类（与 ICU 词典分词的差异见 T22）。 |
 | T5 | **JS 正则 `\d` → `[0-9]`** | .NET 的 `\d` 等价于 `\p{Nd}`，会匹配阿拉伯-印度数字等 Unicode 十进制数字，而 JS 的 `\d` 只匹配 `0-9`。所有移植的解析正则都显式写成 `[0-9]`。 |
 | T6 | **JS `Math.round` → `JsMath.Round`** | .NET 的 `Math.Round` 默认银行家舍入（`Math.Round(2.5) == 2`），JS 是「.5 向上取整」（`Math.round(2.5) == 3`）。所有颜色/尺寸换算改用 `JsMath.Round`（`Math.Floor(v + 0.5)`）。 |
 | T7 | **`RgbColor` 通道是 double 而非 byte** | TS 的 `RgbColor` 是 `{r,g,b: number}`，sRGB 混合会产生小数值。C# 的 `RgbColor` 因此用 `double` 通道，避免 `colorToRgb` 提前截断（`mixColors(srgb)` 的结果会随之失真）。 |
@@ -98,13 +97,15 @@
 | T11 | **文件型调试日志未移植** | `tui-main-screen.ts` 的 `PI_TUI_DEBUG` / `PI_TUI_DEBUG_REDRAW` 会把整屏内容与崩溃信息写到 `/tmp/tui/*.log` 和 `pi-tui-crash.log`。C# 侧未移植文件日志，但**超宽行守卫仍然抛异常**（并先停止终端以复原状态）。 |
 | T12 | **`ProcessTerminal` 无 `drainInput` 的 stdin 排空** | TS 的 `drainInput` 从 stdin 真读并丢弃残余字节，避免退出后按键泄漏到父 shell。.NET 侧因输入读取在 `Console.ReadKey` 上，改为「解除回调 + 等待 idle 窗口」的近似实现。 |
 | T13 | **`setInterval` 动画计时器 → `System.Threading.Timer`** | `Loader` 的帧推进在 TS 里由单线程 `setInterval` 驱动；C# 用 `System.Threading.Timer`，回调可能在线程池线程上运行，与渲染线程并发访问组件状态。tick 体内用 `lock` 保护，且 `ITui.RequestRender` 本身已是线程安全的。`ScrollView` 的瞬态滚动条延迟隐藏同理（T14）。 |
-| T15 | **JS 的 `\s` / `trim` 与 .NET 不是同一字符集** | JS `\s` 包含 U+FEFF、不含 U+0085；.NET `\s` 与 `char.IsWhiteSpace` 恰好相反。`latex.ts` 大量依赖 `\s` 判断（命令后的空白、`trimEnd`、`\operatorname*` 的修饰符跳过），故 `Latex` 显式实现 `IsJsWhitespace` / `JsTrim` / `JsTrimStart` / `JsTrimEnd`，并用显式字符类替换正则里的 `\s`。 |
+| T15 | **JS 的 `\s` / `trim` 与 .NET 不是同一字符集** | JS `\s` 包含 U+FEFF、不含 U+0085；.NET `\s` 与 `char.IsWhiteSpace` 恰好相反。`latex.ts` 大量依赖 `\s` 判断（命令后的空白、`trimEnd`、`\operatorname*` 的修饰符跳过），故 `JsString` 显式实现 `IsWhitespace` / `Trim` / `TrimStart` / `TrimEnd`，并用显式字符类替换正则里的 `\s`。`TextLayout.IsWhitespaceChar`（JS 的 `/\s/.test(ch)`，**未锚定**，多字符参数只要含一个空白即为真）与 `WordNavigation` 的字符分类同样走这个集合；`Fuzzy.Filter` 的 `[\s/]+` 也改成显式字符类。 |
 | T16 | **星平面私有区哨兵按代理对处理** | TS 用 U+F0000–U+F0005 作内部哨兵（标记、保护空格、具名运算符边界）。这些码点在 UTF-16 里是代理对，.NET 的 `\uXXXX` 只吃 4 位十六进制，正则字符类也按码元工作。C# 侧写 `\uDB80\uDC0x`，并把带后行断言的字符类改写成「单码元字符类 \| 显式代理对」的择一形式，以免误匹配低代理相同的其他星平面字符。 |
 | T14 | **`ScrollView` 的瞬态滚动条计时器** | 同 T13：`setTimeout` → `System.Threading.Timer`。Node 的 `unref()` 无 .NET 对应物，但 `System.Threading.Timer` 同样不会阻止进程退出。 |
 | T17 | **`AbortSignal` → `CancellationToken`；`fd` 子进程改为可注入** | `autocomplete.ts` 的 `getSuggestions(lines, line, col, { signal, force })` 在 C# 侧是 `GetSuggestionsAsync(lines, line, col, AutocompleteRequest(Signal, Force))`，`Promise` → `Task`。`walkDirectoryWithFd` 仍用 `Process` 启动 `fd`（`ProcessStartInfo.ArgumentList`、UTF-8 stdout、`CancellationToken.Register` 时 `Kill(entireProcessTree: true)`），但多了一个 `internal static FdProcessOverride` 测试缝，用于在未安装 `fd` 的机器上驱动 fuzzy 分支（与 TS 侧替换 `child_process` 的沙盒 shim 等价）。`os.homedir()` → `Environment.SpecialFolder.UserProfile`。 |
 | T18 | **`autocompleteSeparatorRegex` / `autocompleteBoundaryRegex` 改为码点表 + 谓词** | TS 用 `(?:\s|CJK 标点)` 正则做字符分类，其中 `\p{Script_Extensions=Han}` 等在 .NET 里没有对应写法，且集合含星平面码点（U+16FE2），而 .NET 字符类按 UTF-16 码元工作。因此 `AutocompleteData.SeparatorRanges` / `CjkPunctuationRanges` 由脚本从 Node 实跑枚举生成，分类改为 `IsSeparator(int codePoint)` 谓词；`(?:^\|sep)$` 这种「以分隔符结尾或为空」的用法写成 `IsTokenBoundary(string)`。顺带修掉了 `Fuzzy.Filter` 里 `.NET \s`/`trim` 与 JS 的字符集差异（T15 的同类问题）。 |
 | T19 | **`node:path` win32 语义按 1:1 转写** | `autocomplete.ts` 用 `join` / `dirname` / `basename` 生成**用户可见**的补全串，而 `System.IO.Path` 归一化规则不同（`Path.Join(".", "x")` 是 `".\x"`，Node 返回 `"x"`）。`NodePath.cs` 因此逐行转写 Node v22.22.2 的 `path.win32`（含 UNC / 设备根 / 保留设备名 / CVE-2024-36139 的冒号守卫），并用 **769 条** 从 `node:path` 实跑捕获的向量钉住。 |
 | T20 | **排序必须稳定，`localeCompare` 需与 Node 对齐** | JS `Array.prototype.sort` 稳定，`List<T>.Sort` 不稳定，而 `autocomplete.ts` 的比较器（先目录后文件、分数/深度/长度多级并列）会打平，故 C# 侧统一走 `StableSort`（`OrderBy` + `Comparer<T>.Create`）。`localeCompare` 用 `CultureInfo.CurrentCulture.CompareInfo`（Node 与 .NET 5+ 都走 ICU），并用 **1,225 条** `collate` 向量验证符号一致。 |
+| T21 | **鼠标事件类型与派发辅助已落地，屏幕级路由留给备用屏** | `components/input.ts` 需要 `TuiMouseEvent` / `TuiMouseEventResult`，因此把 `tui.ts` 的鼠标类型、`dispatchMouseEvent` / `retargetMouseEvent`（→ `MouseDispatch.Dispatch` / `Retarget`）以及 `Container.handleMouse`（含 `mouseLayout` 子项高度缓存）一并移植。TS 用 `"target" in result` 判别「已转发到子组件」，C# 用 `is TuiMouseDispatchResult`；TS 用 `component.handleInput` 的真值判断「这个容器自己会路由按键」，C# 里该方法恒存在（接口默认实现），故改为反射检查组件是否**覆写**了它（`TuiComponents.HasHandleInput`）。仍留在 `tui.ts` 未移植的是屏幕级路由：`TuiBase.dispatchMouseToOverlay` / `resolveMouseFocusTarget` / `renderedOverlayLayouts` 与 `tui-alt-screen.ts` 的 `parseSgrMouseEvent`——它们只被备用屏渲染器使用，随 `tui-alt-screen.ts` 一起落地。 |
+| T22 | **CJK 词切分只能是近似（ICU 词典）** | TS 的 `findWordBackward` / `findWordForward` 用 `Intl.Segmenter(..., { granularity: "word" })`，对汉字/假名/泰文等走 ICU 的**词典**分词：`"你好世界。你好，世界"` 被切成 `你好\|世界\|。\|你好\|，\|世界`。.NET 没有等价 API（`StringInfo` 只有字素簇），C# 侧改为「同字符类连续 rune 归组」，因此整段汉字串被当作一个词。ASCII 行为不受影响——两侧都会在词内标点处断开（上游 Ctrl+W / Alt+D 的标点边界用例全绿）。偏差只出现在「一段汉字串超过 2 字」时：`Ctrl+W` / `Alt+D` / 词级光标一次跨越整段而不是一个词。差分语料里 **7 条**受影响的按键用例被标为 `icuFrom`，测试只验证到分歧发生前的那一步（`CorpusIsFullyCovered` 断言这个数字恒为 7，不许静默增长），另有 `WordNavigation_ApproximatesIcuDictionarySegmentation` 显式钉住近似行为与参考值的差异。 |
 
 ## 差分验证（latex.ts）
 
@@ -173,14 +174,51 @@ node --experimental-strip-types --no-warnings genfd.mjs   > fd-corpus.json      
 node --experimental-strip-types --no-warnings merge.mjs                             # 合并 + 生成 cjk 区间
 ```
 
+## 差分验证（input.ts）
+
+`components/input.ts` 是有状态组件，差分取的是**可确定性驱动的整条链路**：语料记录「操作序列 + 每一步之后的可观测量」，
+C# 侧重放同一序列并逐步比对。`tests/Pi.Tui.Tests/input-corpus.json` 保存 **5,450 条**向量，全部由**原始 TypeScript
+实现**实跑得到：
+
+| 区段 | 条数 | 内容 |
+|---|---|---|
+| `render` | 3,329 | `render(width)` 的输出行与 `renderedStartColumn`。5 个提示符 × 3 个占位符 × 3 个样式 × 宽度 0/1/2/3/4/5/8/10/20/40/93 × 焦点开关 × 12 个值（空串 / ASCII / 韩文 / 日文 / 中文 / 全角 / 组合标记 / ZWJ emoji / tab / 混排）× **每个字素边界**作为光标位。其中 1,800 条走水平滚动分支 |
+| `keys` | 476 | 操作序列（`new` / `setValue` / `handleInput`）与每一步之后的 `(value, cursor, 提交次数, 取消次数)`。含：上游 `test/input.test.ts` 全部 36 个用例逐步重放（连同其 84 条断言）、14 个导航绑定 × 5 个值 × 3 种起点、10 个删除绑定 × 5 个值 × 3 种起点、kill/yank 与累积语义、撤销合并与断链、提交/取消、控制字符拒收、Kitty CSI-u 可打印解码、括号粘贴分块与尾随数据、`setValue` 光标钳制、字素级移动与删除 |
+| `mouse` | 1,642 | `handleMouse` 的 `(value, cursor, result)`。6 种事件类型 × 4 个按钮 × 修饰键 × 行号 −1/0/1 × 覆盖整行宽的列坐标 × 5 个值 × 4 种宽度，另加 103 条 `renderedStartColumn > 0` 的滚动窗口命中 |
+| `ws` | 1 | `isWhitespaceChar`（JS `/\s/`）在 U+0000–U+3000 上的完整判定表（25 个码点为真） |
+
+驱动方式：上游测试文件被原样复制，只把 `node:assert` / `node:test` 换成记录器、把 `Input` 换成一个**子类代理**
+（在实例上重定义 `onSubmit` / `onEscape` 为访问器以记录提交与取消，并在 `handleInput` / `setValue` / 构造之后打快照）。
+上游用例里「每个场景新建一个 `Input`」这件事也记成一步（`op: "new"`），否则重放时实例会跨场景串状态——
+这正是第一轮 180 条失败里 173 条的成因。
+
+沙盒一致性校验（必做）：用同一份真实 `utils.ts`（含 `get-east-asian-width`）直接跑上游 `test/input.test.ts`，
+**36/36 全部通过**。
+
+重新生成（需要 Node 22.6+）：
+
+```bash
+mkdir /tmp/inputcheck && cd /tmp/inputcheck
+npm init -y && npm install get-east-asian-width
+cp <pi>/packages/tui/src/{utils.ts,keys.ts,keybindings.ts,kill-ring.ts,undo-stack.ts,word-navigation.ts} .
+sed -e 's|from "../tui.ts"|from "./tui-shim.mjs"|' -e 's|from "\.\./|from "./|g' \
+    <pi>/packages/tui/src/components/input.ts > input.ts     # tui-shim.mjs 只导出 CURSOR_MARKER
+cp <pi>/packages/tui/test/input.test.ts upstream-input.test.ts
+# 把 upstream-input.test.ts 的 import 换成 ./input-proxy.ts / ./assert-shim.mjs / ./test-shim.mjs / ./utils.ts
+node --experimental-strip-types --no-warnings gen.mjs > input-corpus.json
+```
+
+`input-proxy.ts` 的关键点：TS 的 `private` 在运行时只是普通属性，所以 `inst.cursor` 可读；但 `onSubmit` 是**实例字段**
+（值为 `undefined`），会遮蔽原型上的访问器，因此必须在子类构造里用 `Object.defineProperty(this, ...)` 重新定义。
+
 ## 测试覆盖
 
-`tests/Pi.Tui.Tests`（8,304 项，已禁用并行化——多个用例共享进程级全局状态：能力缓存、Kitty 元数据注册表、环境变量探测、全局键位注册表、native helper）：
+`tests/Pi.Tui.Tests`（13,756 项，已禁用并行化——多个用例共享进程级全局状态：能力缓存、Kitty 元数据注册表、环境变量探测、全局键位注册表、native helper）：
 
 | 测试文件 | 项数 | 覆盖 |
 |---|---|---|
 | `TextEngineTests.cs` | 24 | 可见宽度、ANSI/OSC/APC 提取、tab 展开、截断/切片/换行、SGR 跨行携带、overlay 合成 |
-| `KeysAndUtilTests.cs` | 13 | 传统与 Kitty 按键匹配、`parseKey`、释放/重复判定、可打印解码、模糊匹配、kill ring、undo 栈、词导航 |
+| `KeysAndUtilTests.cs` | 15 | 传统与 Kitty 按键匹配、`parseKey`、释放/重复判定、可打印解码、模糊匹配、kill ring、undo 栈、词导航（含 CJK 近似与 JS 空白集）、鼠标派发的重定位/结果归类/焦点目标 |
 | `ComponentTests.cs` | 17 | Text/Spacer/Box/TruncatedText/VStack/HStack 渲染、栈可见性、`TuiMainScreen` 差分渲染与同步输出、宽度变更全量重绘、超宽行守卫、overlay 合成 |
 | `ColorAndUtilTests.cs` | 25 | 颜色解析（hex/oklch/okhsl）、调色板索引、JS 舍入、OKLCH/OKHSL 转换与往返、混色、ANSI 序列、样式嵌套顺序、滚轮加速、native helper 缺失路径 |
 | `InputTests.cs` | 27 | 键位注册表（默认/覆盖/冲突/形状/全局单例）、stdin 缓冲（分块 CSI、SGR 鼠标、WezTerm ESC 对、括号粘贴、kitty 可打印去重、超时冲刷、字节与 UTF-8 入口） |
@@ -189,3 +227,4 @@ node --experimental-strip-types --no-warnings merge.mjs                         
 | `LayoutTests.cs` | 48 | 叶子盒的固有高度与裁剪、仅绘制有源行、光标标记行滚动入视、vstack 纵向堆叠/间距/`grow` 填充/隐藏条目不留空隙、hstack 并排/center/end/stretch 对齐/零宽子项、布局节点暴露；ScrollView 的视口裁剪、滚动平移、`scrollBy` 边界与未消费余量、follow-end、`disableFollow`、`scrollToStart/End`、内容收缩时的钳制、子项变异拒绝、非 vertical 轴拒绝、always/auto/hidden 滚动条与延迟隐藏；滚动条几何与绘制、`replaceScrollbarCell`；命中测试的深度排序与嵌套滚动视图；OSC 133 区域前缀剥离 |
 | `TerminalImageTests.cs` | 46 | Kitty/iTerm2 编码与 base64 长度、单元格尺寸与宽高比优化、行数换算、PNG/JPEG/GIF/WebP 尺寸解析、Kitty 元数据注册/查询/FIFO 淘汰、跨块放置重建、`cropKittyImageLine`、`renderImage` 的 Kitty/iTerm2/降级分支、`imageFallback` 与 OSC 8 超链接、能力探测（Kitty/Ghostty/WezTerm/iTerm2/tmux 转发） |
 | `AutocompleteTests.cs` | 5,259 | 5,244 条差分向量逐条对照 TS 参考实现（2,051 条路径补全/`applyCompletion`、290 条斜杠命令、597 条私有纯函数、234 条打分、769 条 `node:path`、28 条 `fd` 模糊搜索、45 条 Tab 触发、1,225 条 `localeCompare`），另 15 项守卫（语料条数与覆盖分布、分隔符区间表逐条边界、CJK 字母不参与分隔、`JsString` 的 trim/slice 语义） |
+| `InputCorpusTests.cs` | 5,453 | 5,450 条差分向量逐条对照 TS 参考实现（3,329 条 `render`、476 条按键序列逐步重放——含上游 36 个用例的 84 条断言、1,642 条 `handleMouse`、1 条 `/\s/` 码点全表），另 3 项：覆盖分布守卫（滚动窗口、提示符超宽早返回、两种焦点态、6 种鼠标事件类型与 4 个按钮都被取到）、语料规模守卫（含「`icuFrom` 标记恒为 7 条」） |

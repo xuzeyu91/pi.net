@@ -37,7 +37,7 @@ public static class WordNavigation
 
         int Classify(int cp)
         {
-            if (char.IsWhiteSpace(char.ConvertFromUtf32(cp), 0))
+            if (JsString.IsWhitespace((char)cp))
             {
                 return 0;
             }
@@ -203,5 +203,5 @@ public static class WordNavigation
         return newCursor;
     }
 
-    private static bool IsWhitespace(string s) => s.Length > 0 && char.IsWhiteSpace(s, 0);
+    private static bool IsWhitespace(string s) => TextLayout.IsWhitespaceChar(s);
 }
