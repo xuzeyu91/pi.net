@@ -17,3 +17,6 @@
 *.nupkg
 *.snupkg
 
+# WorkBuddy AI local workspace state (session logs, memory notes)
+.workbuddy-ai/
+

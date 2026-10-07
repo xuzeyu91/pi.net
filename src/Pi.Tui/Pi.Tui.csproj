@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Port of packages/tui: minimal terminal UI framework with differential rendering. -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="Pi.Tui.Tests" />
+  </ItemGroup>
+</Project>
