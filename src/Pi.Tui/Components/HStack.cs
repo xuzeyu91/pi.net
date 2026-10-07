@@ -11,6 +11,9 @@ public sealed class HStack : Stack
         : base(children.Select(c => StackChild.Of(c)), options)
     {
     }
+
+    protected override bool IsVertical => false;
+
     public override string[] Render(int width)
     {
         var safeWidth = Math.Max(1, width);

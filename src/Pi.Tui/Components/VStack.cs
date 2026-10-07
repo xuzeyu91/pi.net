@@ -12,6 +12,8 @@ public sealed class VStack : Stack
     {
     }
 
+    protected override bool IsVertical => true;
+
     public override string[] Render(int width)
     {
         var viewport = new LayoutViewport(Math.Max(1, width), int.MaxValue);

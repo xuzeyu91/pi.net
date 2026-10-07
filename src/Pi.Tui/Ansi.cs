@@ -68,6 +68,34 @@ public static class Ansi
         return null;
     }
 
+    /// <summary>Return only the background color active at the end of an ANSI-styled string.</summary>
+    public static string GetActiveBackgroundAnsi(string text)
+    {
+        var tracker = new AnsiCodeTracker();
+        UpdateTrackerFromText(text, tracker);
+        return tracker.GetActiveBackgroundCode();
+    }
+
+    /// <summary>Feed every escape sequence found in <paramref name="text"/> to <paramref name="tracker"/>.</summary>
+    internal static void UpdateTrackerFromText(string text, AnsiCodeTracker tracker)
+    {
+        var i = text.IndexOf('\x1b');
+        while (i != -1)
+        {
+            var ansi = ExtractAnsiCode(text, i);
+            if (ansi is { } code && code.Length > 0)
+            {
+                tracker.Process(code.Code);
+                i += code.Length;
+            }
+            else
+            {
+                i++;
+            }
+            i = text.IndexOf('\x1b', i);
+        }
+    }
+
     /// <summary>Remove ANSI, OSC, and APC control sequences while preserving visible text.</summary>
     public static string StripTerminalSequences(string str)
     {
@@ -318,6 +346,9 @@ internal sealed class AnsiCodeTracker
         }
         return result;
     }
+
+    /// <summary>Return only the background color code active at the end of the processed text.</summary>
+    public string GetActiveBackgroundCode() => _bgColor is not null ? $"{Esc}[{_bgColor}m" : "";
 
     public bool HasActiveCodes() =>
         _bold || _dim || _italic || _underline || _blink || _inverse || _hidden ||

@@ -40,11 +40,14 @@ public sealed class StackOptions
 }
 
 /// <summary>Base class for vertical and horizontal stacks (port of <c>components/stack.ts</c>).</summary>
-public abstract class Stack : Container
+public abstract class Stack : Container, ILayoutComponent
 {
     protected readonly List<StackLayoutEntry> Entries = new();
     protected readonly int Gap;
     protected readonly StackAlign Align;
+
+    /// <summary>Whether this stack lays out along the vertical axis.</summary>
+    protected abstract bool IsVertical { get; }
 
     protected Stack(IEnumerable<StackChild>? children = null, StackOptions? options = null)
     {
@@ -106,6 +109,15 @@ public abstract class Stack : Container
 
     internal static int NormalizeSize(int? value, int fallback) =>
         value is null ? fallback : Math.Max(0, value.Value);
+
+    /// <summary>Expose this stack to the layout engine.</summary>
+    public ILayoutNode GetLayoutNode() => new StackLayoutNode
+    {
+        IsVertical = IsVertical,
+        Entries = Entries,
+        Gap = Gap,
+        Align = Align,
+    };
 
     /// <summary>Filter entries by their visibility predicate.</summary>
     public static List<StackLayoutEntry> VisibleStackEntries(IReadOnlyList<StackLayoutEntry> entries, LayoutViewport viewport) =>

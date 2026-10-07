@@ -10,10 +10,10 @@
 | 指标 | 数值 |
 |---|---|
 | TS 源码（不含 `*.test.ts`） | 45 个文件 / 19,293 行 |
-| 已移植 | 27 个文件 / 8,892 行（46.1%） |
-| 待移植 | 18 个文件 / 10,401 行 |
-| .NET 产出 | 27 个 `.cs` / 9,048 行 |
-| 测试 | `Pi.Tui.Tests` 152 项全部通过 |
+| 已移植 | 31 个文件 / 9,706 行（50.3%） |
+| 待移植 | 14 个文件 / 9,587 行 |
+| .NET 产出 | 31 个 `.cs` / 10,276 行 |
+| 测试 | `Pi.Tui.Tests` 221 项全部通过 |
 | 构建 | 0 警告 0 错误（`dotnet build Pi.slnx -m:1`） |
 
 ## 逐文件清单
@@ -46,27 +46,27 @@
 | `components/v-stack.ts` | 33 | `Components/VStack.cs` | 垂直栈 |
 | `components/h-stack.ts` | 44 | `Components/HStack.cs` | 水平栈 |
 | `components/truncated-text.ts` | 65 | `Components/TruncatedText.cs` | 单行截断文本 |
+| `components/loader.ts` | 101 | `Components/Loader.cs` | 动画加载指示器（帧序列、可配置间隔、spinner/message 着色函数、`setIndicator` 重启动画） |
+| `components/cancellable-loader.ts` | 40 | `Components/CancellableLoader.cs` | Esc 取消的加载指示器，暴露 `CancellationToken` 与 `OnAbort` |
+| `components/scroll-view.ts` | 224 | `Components/ScrollView.cs` | 单子项滚动视口：follow-end、overscroll、scrollbar（hidden/auto/always）、瞬态滚动条延迟隐藏、`IScrollLayoutState` |
+| `layout.ts` | 449 | `Layout.cs` | 布局引擎：栈/滚动解算、盒子裁剪、kitty 图像行裁剪、滚动条几何与绘制、命中测试（`getLayoutBoxesAt` / `getScrollViewBox` / `getScrollViewsAt`） |
 | `terminal-image.ts` | 757 | `TerminalImage.cs` | 协议探测与能力缓存、Kitty/iTerm2 编码器、图像元数据注册与查询（1000 条 FIFO 淘汰）、分块传输下的放置重建、`cropKittyImageLine`、`calculateImageCellSize/Rows`、PNG/JPEG/GIF/WebP 尺寸解析、`renderImage`、`imageFallback`、OSC 8 超链接 |
 
 ### ⏳ 待移植
 
 | TS 文件 | 行数 | 依赖 | 备注 |
 |---|---|---|---|
-| `components/loader.ts` | 101 | — | 动画加载指示器 |
-| `components/cancellable-loader.ts` | 40 | loader | 可取消加载指示器 |
 | `components/input.ts` | 494 | keys / keybindings / stdin-buffer | 单行输入组件（编辑器基础） |
 | `components/editor.ts` | 2472 | input / kill-ring / undo-stack / word-navigation / autocomplete / latex | 多行编辑器（最大单文件） |
 | `editor-component.ts` | 74 | editor | 编辑器包装组件 |
 | `components/markdown.ts` | 1025 | latex / colors | Markdown → ANSI 渲染 |
 | `components/select-list.ts` | 273 | fuzzy | 选择列表 |
 | `components/settings-list.ts` | 328 | select-list | 设置列表 |
-| `components/scroll-view.ts` | 224 | wheel-scroll | 滚动视图 |
 | `components/image.ts` | 167 | terminal-image | 图像组件 |
 | `components/mouse-region.ts` | 33 | — | 鼠标区域标记 |
 | `components/alt-screen-flash.ts` | 51 | — | 备用屏闪烁提示 |
 | `autocomplete.ts` | 861 | fuzzy | 自动补全引擎与 provider |
 | `latex.ts` | 1506 | — | LaTeX → Unicode/ANSI 渲染 |
-| `layout.ts` | 449 | layout-node | 布局引擎（flex 解算） |
 | `alt-screen-search.ts` | 327 | — | 备用屏搜索 |
 | `tui-alt-screen.ts` | 1784 | 上述多数 | 备用屏渲染器（全屏模式） |
 | `index.ts` | 192 | — | 桶文件（C# 无对应概念，公开面由类型可见性决定） |
@@ -75,15 +75,13 @@
 
 依赖关系决定了下面的顺序；每批都以「构建 0 警告 0 错误 + 测试全绿」收口。
 
-1. **`components/loader.ts` → `cancellable-loader.ts`** —— 最小、无依赖，可快速补齐组件族。
-2. **`layout.ts`** —— 依赖已完成的 `layout-node.ts`，是备用屏与若干组件的公共基础。
-3. **`latex.ts`** —— 纯函数式转换，无前置依赖；`markdown.ts` 依赖它。
-4. **`autocomplete.ts`** —— 依赖已完成的 `fuzzy.ts`。
-5. **`components/input.ts`** —— 依赖 keys / keybindings / stdin-buffer（均已完成），是 `editor.ts` 的前置。
-6. **`components/editor.ts` + `editor-component.ts`** —— 依赖 input / kill-ring / undo-stack / word-navigation / autocomplete / latex。
-7. **`components/markdown.ts` / `select-list.ts` / `settings-list.ts` / `scroll-view.ts` / `image.ts` / `mouse-region.ts` / `alt-screen-flash.ts`** —— 其余叶子组件。
-8. **`alt-screen-search.ts` → `tui-alt-screen.ts`** —— 最后收口，依赖上面几乎所有内容。
-9. **`index.ts`** —— 公开面清单，随各文件落地自然完成。
+1. **`latex.ts`** —— 纯函数式转换，无前置依赖；`markdown.ts` 依赖它。
+2. **`autocomplete.ts`** —— 依赖已完成的 `fuzzy.ts`。
+3. **`components/input.ts`** —— 依赖 keys / keybindings / stdin-buffer（均已完成），是 `editor.ts` 的前置。
+4. **`components/editor.ts` + `editor-component.ts`** —— 依赖 input / kill-ring / undo-stack / word-navigation / autocomplete / latex。
+5. **`components/markdown.ts` / `select-list.ts` / `settings-list.ts` / `image.ts` / `mouse-region.ts` / `alt-screen-flash.ts`** —— 其余叶子组件。
+6. **`alt-screen-search.ts` → `tui-alt-screen.ts`** —— 最后收口，依赖上面几乎所有内容（含 `layout.ts` 的布局帧与命中测试）。
+7. **`index.ts`** —— 公开面清单，随各文件落地自然完成。
 
 ## 关键设计差异（TS → C#）
 
@@ -101,6 +99,8 @@
 | T10 | **`KeyId \| KeyId[]` 保留为联合结构** | `getResolvedBindings()` 在 TS 里对单键返回裸字符串、多键返回数组。C# 用 `KeybindingKeys` 结构保留该区别（否则 coding-agent 回写配置文件时形状会变）。 |
 | T11 | **文件型调试日志未移植** | `tui-main-screen.ts` 的 `PI_TUI_DEBUG` / `PI_TUI_DEBUG_REDRAW` 会把整屏内容与崩溃信息写到 `/tmp/tui/*.log` 和 `pi-tui-crash.log`。C# 侧未移植文件日志，但**超宽行守卫仍然抛异常**（并先停止终端以复原状态）。 |
 | T12 | **`ProcessTerminal` 无 `drainInput` 的 stdin 排空** | TS 的 `drainInput` 从 stdin 真读并丢弃残余字节，避免退出后按键泄漏到父 shell。.NET 侧因输入读取在 `Console.ReadKey` 上，改为「解除回调 + 等待 idle 窗口」的近似实现。 |
+| T13 | **`setInterval` 动画计时器 → `System.Threading.Timer`** | `Loader` 的帧推进在 TS 里由单线程 `setInterval` 驱动；C# 用 `System.Threading.Timer`，回调可能在线程池线程上运行，与渲染线程并发访问组件状态。tick 体内用 `lock` 保护，且 `ITui.RequestRender` 本身已是线程安全的。`ScrollView` 的瞬态滚动条延迟隐藏同理（T14）。 |
+| T14 | **`ScrollView` 的瞬态滚动条计时器** | 同 T13：`setTimeout` → `System.Threading.Timer`。Node 的 `unref()` 无 .NET 对应物，但 `System.Threading.Timer` 同样不会阻止进程退出。 |
 
 ## 测试覆盖
 
@@ -113,4 +113,6 @@
 | `ComponentTests.cs` | 17 | Text/Spacer/Box/TruncatedText/VStack/HStack 渲染、栈可见性、`TuiMainScreen` 差分渲染与同步输出、宽度变更全量重绘、超宽行守卫、overlay 合成 |
 | `ColorAndUtilTests.cs` | 25 | 颜色解析（hex/oklch/okhsl）、调色板索引、JS 舍入、OKLCH/OKHSL 转换与往返、混色、ANSI 序列、样式嵌套顺序、滚轮加速、native helper 缺失路径 |
 | `InputTests.cs` | 27 | 键位注册表（默认/覆盖/冲突/形状/全局单例）、stdin 缓冲（分块 CSI、SGR 鼠标、WezTerm ESC 对、括号粘贴、kitty 可打印去重、超时冲刷、字节与 UTF-8 入口） |
+| `LoaderTests.cs` | 21 | Loader 默认帧与着色函数、`setIndicator` 的 verbatim/空帧/自定义帧、`setMessage`、`invalidate` 刷新、单帧不动画、多帧动画与 `stop` 冻结、重复 `start` 不叠加计时器、render 前置空行与宽度填充；CancellableLoader 的 Esc/Ctrl-C 取消、`OnAbort` 回调、其他按键不取消、`dispose` 停表且 token 仍可用 |
+| `LayoutTests.cs` | 48 | 叶子盒的固有高度与裁剪、仅绘制有源行、光标标记行滚动入视、vstack 纵向堆叠/间距/`grow` 填充/隐藏条目不留空隙、hstack 并排/center/end/stretch 对齐/零宽子项、布局节点暴露；ScrollView 的视口裁剪、滚动平移、`scrollBy` 边界与未消费余量、follow-end、`disableFollow`、`scrollToStart/End`、内容收缩时的钳制、子项变异拒绝、非 vertical 轴拒绝、always/auto/hidden 滚动条与延迟隐藏；滚动条几何与绘制、`replaceScrollbarCell`；命中测试的深度排序与嵌套滚动视图；OSC 133 区域前缀剥离 |
 | `TerminalImageTests.cs` | 46 | Kitty/iTerm2 编码与 base64 长度、单元格尺寸与宽高比优化、行数换算、PNG/JPEG/GIF/WebP 尺寸解析、Kitty 元数据注册/查询/FIFO 淘汰、跨块放置重建、`cropKittyImageLine`、`renderImage` 的 Kitty/iTerm2/降级分支、`imageFallback` 与 OSC 8 超链接、能力探测（Kitty/Ghostty/WezTerm/iTerm2/tmux 转发） |

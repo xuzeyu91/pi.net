@@ -1,10 +1,17 @@
 namespace Pi.Tui.Components;
 
 /// <summary>Text component - displays multi-line text with word wrapping (port of <c>components/text.ts</c>).</summary>
-public sealed class Text : IComponent
+/// <remarks>
+/// Not sealed: <c>Loader</c> derives from it and overrides <see cref="Render"/> / <see cref="Invalidate"/>
+/// exactly as the TS original does. Note that <see cref="SetText"/> and <see cref="SetCustomBgFn"/> clear the
+/// cache directly rather than through the virtual <see cref="Invalidate"/> — mirroring TS, where those methods
+/// assign the cache fields themselves. Routing them through the virtual would recurse forever in <c>Loader</c>
+/// (its override re-enters <see cref="SetText"/>).
+/// </remarks>
+public class Text : IComponent
 {
     private string _text;
-    private readonly int _paddingX;
+    private int _paddingX;
     private readonly int _paddingY;
     private Func<string, string>? _customBgFn;
 
@@ -23,23 +30,31 @@ public sealed class Text : IComponent
     public void SetText(string text)
     {
         _text = text;
-        Invalidate();
+        ClearCache();
     }
 
     public void SetCustomBgFn(Func<string, string>? customBgFn)
     {
         _customBgFn = customBgFn;
+        ClearCache();
+    }
+
+    public void SetPaddingX(int paddingX)
+    {
+        _paddingX = paddingX;
         Invalidate();
     }
 
-    public void Invalidate()
+    public virtual void Invalidate() => ClearCache();
+
+    private void ClearCache()
     {
         _cachedText = null;
         _cachedWidth = null;
         _cachedLines = null;
     }
 
-    public string[] Render(int width)
+    public virtual string[] Render(int width)
     {
         if (_cachedLines is not null && _cachedText == _text && _cachedWidth == width)
         {
@@ -56,11 +71,14 @@ public sealed class Text : IComponent
         }
 
         var normalizedText = _text.Replace("\t", "   ");
-        var contentWidth = Math.Max(1, width - _paddingX * 2);
+
+        // Reduce margins when necessary so content and padding fit within the available width.
+        var paddingX = Math.Min(_paddingX, Math.Max(0, (int)Math.Floor((width - 1) / 2.0)));
+        var contentWidth = Math.Max(1, width - paddingX * 2);
         var wrappedLines = TextLayout.WrapTextWithAnsi(normalizedText, contentWidth);
 
-        var leftMargin = new string(' ', _paddingX);
-        var rightMargin = new string(' ', _paddingX);
+        var leftMargin = new string(' ', paddingX);
+        var rightMargin = new string(' ', paddingX);
         var contentLines = new List<string>();
 
         foreach (var line in wrappedLines)
