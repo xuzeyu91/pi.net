@@ -146,6 +146,8 @@ public class SelectList : IComponent
             var item = _filteredItems[i];
             if (item is null)
             {
+                // Kept 1:1 with the TS `if (!item) continue;`, which guards against sparse arrays.
+                // A List<T> index in range is never null, so this is unreachable here.
                 continue;
             }
 
@@ -177,7 +179,8 @@ public class SelectList : IComponent
 
         if (@event.Type == TuiMouseEventType.Wheel && @event.WheelDelta is not null and not 0)
         {
-            var delta = @event.WheelDelta.Value < 0 ? -1 : 1;            var previousIndex = _selectedIndex;
+            var delta = @event.WheelDelta.Value < 0 ? -1 : 1;
+            var previousIndex = _selectedIndex;
             _selectedIndex = Math.Max(0, Math.Min(_filteredItems.Count - 1, _selectedIndex + delta));
             if (_selectedIndex != previousIndex)
             {
