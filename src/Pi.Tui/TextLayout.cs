@@ -781,29 +781,12 @@ public static class TextLayout
         }
     }
 
-    /// <summary>Check if a grapheme is a CJK break opportunity (Han/Hiragana/Katakana/Hangul/Bopomofo).</summary>
-    private static bool IsCjkBreakSegment(string segment)
-    {
-        if (segment.Length == 0)
-        {
-            return false;
-        }
-        var cp = segment.EnumerateRunes().First().Value;
-        return cp is >= 0x2e80 and <= 0x2eff
-            or >= 0x3040 and <= 0x30ff
-            or >= 0x3100 and <= 0x312f
-            or >= 0x31a0 and <= 0x31bf
-            or >= 0x31f0 and <= 0x31ff
-            or >= 0x3400 and <= 0x4dbf
-            or >= 0x4e00 and <= 0x9fff
-            or >= 0xf900 and <= 0xfaff
-            or >= 0x1100 and <= 0x11ff
-            or >= 0x3130 and <= 0x318f
-            or >= 0xa960 and <= 0xa97f
-            or >= 0xac00 and <= 0xd7ff
-            or >= 0xff65 and <= 0xff9f
-            or >= 0x20000 and <= 0x2fa1f;
-    }
+    /// <summary>
+    /// Check if a grapheme is a CJK break opportunity (Han/Hiragana/Katakana/Hangul/Bopomofo).
+    /// Delegates to the exact probed table in <see cref="JsCjk"/>; an earlier hand-written range
+    /// approximation missed Script_Extensions code points such as U+00B7 and U+3001.
+    /// </summary>
+    private static bool IsCjkBreakSegment(string segment) => JsCjk.IsCjkBreak(segment);
 
     /// <summary>
     /// JS <c>/\s/.test(ch)</c>. The regex is unanchored, so a multi-character argument only needs one

@@ -182,7 +182,7 @@ internal static class JsString
     }
 
     /// <summary>Binary search over a flat table of inclusive (start, end) code point pairs.</summary>
-    private static bool InRanges(ReadOnlySpan<int> ranges, int codePoint)
+    internal static bool InRanges(ReadOnlySpan<int> ranges, int codePoint)
     {
         var low = 0;
         var high = (ranges.Length / 2) - 1;

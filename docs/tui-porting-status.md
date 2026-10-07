@@ -10,10 +10,10 @@
 | 指标 | 数值 |
 |---|---|
 | TS 源码（不含 `*.test.ts`） | 45 个文件 / 19,293 行 |
-| 已移植 | 35 个文件 / 12,840 行（66.6%） |
-| 待移植 | 10 个文件 / 6,453 行 |
-| .NET 产出 | 41 个 `.cs` / 15,489 行 |
-| 测试 | `Pi.Tui.Tests` 16,484 项全部通过 |
+| 已移植 | 37 个文件 / 15,386 行（79.7%） |
+| 待移植 | 8 个文件 / 3,907 行 |
+| .NET 产出 | 46 个 `.cs` / 18,785 行 |
+| 测试 | `Pi.Tui.Tests` 16,599 项全部通过 |
 | 构建 | 0 警告 0 错误（`dotnet build Pi.slnx -m:1`） |
 
 ## 逐文件清单
@@ -55,13 +55,13 @@
 | `autocomplete.ts` | 861 | `Autocomplete.cs` + `AutocompleteData.cs` + `NodePath.cs` + `JsString.cs` | 斜杠命令补全（含 `skill:` 裸名模糊匹配的两段过滤）、`@` 模糊文件搜索（`fd` 子进程 + 打分/去重/排序）、readdir 路径补全（`~` 展开、`./` 保留、包裹符剥离、引号路径）、CJK 标点/空白分隔符判定、`applyCompletion` 光标换算。**行为由 5,244 条差分用例对照 TS 参考实现锁定**（见下），其中 769 条同时钉住了 `node:path` win32 语义 |
 | `components/input.ts` | 494 | `Components/Input.cs` + `MouseEvents.cs` | 单行输入组件：括号粘贴缓冲（分块/尾随数据/结束标记跨块）、kill ring（Ctrl+W/U/K/Y、Alt+Y 轮转与累积语义）、撤销栈（按字合并、移动/粘贴断链）、字素级光标移动与删除、Home/End/词级导航、Kitty CSI-u 可打印字符、控制字符拒收、水平滚动窗口渲染（光标居中/贴边/末尾留列）、占位符与反显光标、`CURSOR_MARKER` 注入、鼠标点击定位光标。顺带把 `tui.ts` 的鼠标事件类型与派发辅助（`MouseDispatch`、`Container.HandleMouse`）一并落地。**行为由 5,450 条差分用例对照 TS 参考实现锁定**（见下） |
 | `components/select-list.ts` | 273 | `Components/SelectList.cs` + `JsCaseData.cs` | 选择列表：前缀过滤（按 JS `toLowerCase` 的全量大小写映射，见 T23）、选中项与滚动窗口（`maxVisible` 居中、越界选择索引、`maxVisible` 为 0）、主列宽度上下界与自定义截断回调、描述列单行化（`/[\r\n]+/` → 空格 + trim）与宽度不足时的降级、无匹配提示、上下键环绕、确认/取消、鼠标悬停不选中、press→click 配对、滚轮换行。**行为由 2,598 条差分用例 + 9,109 条大小写映射向量对照 TS 参考实现锁定**（见下） |
+| `components/editor.ts` | 2472 | `Components/Editor.cs` + `JsCjk.cs` + `JsCjkData.cs` + `JsMicrotask.cs` | 多行编辑器（最大单文件）：多行缓冲与光标、撤销栈与 kill ring、字/行/词级导航（含 CJK 词边界）、括号粘贴与**粘贴标记**（超长粘贴被合并成 `[paste #N +M lines]`，由 `segmentWithMarkers` 当作原子字素簇段参与移动 / 删除 / 换行，`getExpandedText` 还原真实内容；差分语料仅在 `paste` 区段的超长粘贴场景中间接覆盖到标记本身）、横向滚动与软换行渲染（`wordWrapLine`）、`@` 文件补全与斜杠命令补全挂载、鼠标点击/拖拽定位、边框色与内边距、提交历史。**行为由 7,040 条差分用例（6,327 场景 + 713 换行向量）对照 TS 参考实现锁定**（见下） |
+| `editor-component.ts` | 74 | `Components/EditorComponent.cs` | 编辑器包装组件（`IEditorComponent` 接口面，TS 可选成员在 C# 为可空属性） |
 
 ### ⏳ 待移植
 
 | TS 文件 | 行数 | 依赖 | 备注 |
 |---|---|---|---|
-| `components/editor.ts` | 2472 | input / kill-ring / undo-stack / word-navigation / autocomplete / latex / select-list | 多行编辑器（最大单文件） |
-| `editor-component.ts` | 74 | editor | 编辑器包装组件 |
 | `components/markdown.ts` | 1025 | latex / colors | Markdown → ANSI 渲染 |
 | `components/settings-list.ts` | 328 | select-list | 设置列表 |
 | `components/image.ts` | 167 | terminal-image | 图像组件 |
@@ -75,7 +75,7 @@
 
 依赖关系决定了下面的顺序；每批都以「构建 0 警告 0 错误 + 测试全绿」收口。
 
-1. **`components/editor.ts` + `editor-component.ts`** —— 依赖 input / kill-ring / undo-stack / word-navigation / autocomplete / latex / **select-list**（全部已完成）。
+1. ~~**`components/editor.ts` + `editor-component.ts`**~~ —— ✅ 已完成（P62，见上「已完成」清单）。
 2. **`components/markdown.ts` / `settings-list.ts` / `image.ts` / `mouse-region.ts` / `alt-screen-flash.ts`** —— 其余叶子组件。
 3. **`alt-screen-search.ts` → `tui-alt-screen.ts`** —— 最后收口，依赖上面几乎所有内容（含 `layout.ts` 的布局帧与命中测试），并负责把 `tui.ts` 里剩下的屏幕级鼠标路由（`dispatchMouseToOverlay` / `resolveMouseFocusTarget` / `renderedOverlayLayouts`）与 SGR 鼠标解码接上。
 4. **`index.ts`** —— 公开面清单，随各文件落地自然完成。
@@ -107,6 +107,8 @@
 | T21 | **鼠标事件类型与派发辅助已落地，屏幕级路由留给备用屏** | `components/input.ts` 需要 `TuiMouseEvent` / `TuiMouseEventResult`，因此把 `tui.ts` 的鼠标类型、`dispatchMouseEvent` / `retargetMouseEvent`（→ `MouseDispatch.Dispatch` / `Retarget`）以及 `Container.handleMouse`（含 `mouseLayout` 子项高度缓存）一并移植。TS 用 `"target" in result` 判别「已转发到子组件」，C# 用 `is TuiMouseDispatchResult`；TS 用 `component.handleInput` 的真值判断「这个容器自己会路由按键」，C# 里该方法恒存在（接口默认实现），故改为反射检查组件是否**覆写**了它（`TuiComponents.HasHandleInput`）。仍留在 `tui.ts` 未移植的是屏幕级路由：`TuiBase.dispatchMouseToOverlay` / `resolveMouseFocusTarget` / `renderedOverlayLayouts` 与 `tui-alt-screen.ts` 的 `parseSgrMouseEvent`——它们只被备用屏渲染器使用，随 `tui-alt-screen.ts` 一起落地。 |
 | T22 | **CJK 词切分只能是近似（ICU 词典）** | TS 的 `findWordBackward` / `findWordForward` 用 `Intl.Segmenter(..., { granularity: "word" })`，对汉字/假名/泰文等走 ICU 的**词典**分词：`"你好世界。你好，世界"` 被切成 `你好\|世界\|。\|你好\|，\|世界`。.NET 没有等价 API（`StringInfo` 只有字素簇），C# 侧改为「同字符类连续 rune 归组」，因此整段汉字串被当作一个词。ASCII 行为不受影响——两侧都会在词内标点处断开（上游 Ctrl+W / Alt+D 的标点边界用例全绿）。偏差只出现在「一段汉字串超过 2 字」时：`Ctrl+W` / `Alt+D` / 词级光标一次跨越整段而不是一个词。差分语料里 **7 条**受影响的按键用例被标为 `icuFrom`，测试只验证到分歧发生前的那一步（`CorpusIsFullyCovered` 断言这个数字恒为 7，不许静默增长），另有 `WordNavigation_ApproximatesIcuDictionarySegmentation` 显式钉住近似行为与参考值的差异。 |
 | T23 | **`toLowerCase` 需要打补丁才能等于 JS（`ToUpperCase` 尚未处理）** | JS 的 `String.prototype.toLowerCase` 用的是 Unicode **完整**大小写映射，.NET 的 `Rune.ToLowerInvariant` 是**简单**映射，两者在 56 个码点上不同（全部是 .NET 缺映射、Unicode 版本差异：U+0130、Latin Extended-D、Garay、Beria Erfe；**不存在双方都有映射却给出不同结果的码点**），另有 U+03A3 的上下文相关 Final_Sigma 规则。因此新增 `JsString.ToLowerCase` = 简单映射 + 56 条覆盖表（`JsCaseData.LowerOverrides`）+ Final_Sigma；Final_Sigma 依赖的 `Cased` / `Case_Ignorable` 谓词按 V8 实测的集合固化成区间表（131 + 464 个区间）——注意 V8 用的是**旧版** `Case_Ignorable` 推导（含 U+0027 U+002E U+003A U+00B7 U+0387 U+055F U+05F4 U+2018 U+2019 U+2024 U+2027 U+FE13 U+FE52 U+FE55 U+FF07 U+FF0E U+FF1A 这 17 个非 Mn/Me/Cf/Lm/Sk 码点），且在扫描时**先判 case-ignorable 再判 cased**（U+02B0 同时属于两类，按可忽略处理）。`JsString.ToLowerCase` 已接入 `Fuzzy` / `Autocomplete` / `TerminalImage` / `Keys` 的全部字符串级小写调用点（这些模块原先直接用 `ToLowerInvariant`，属潜在偏差；语料本身不含分歧码点，故改造后测试仍全绿）。仍未处理的是 **`toUpperCase`**：`keys.ts` 的 `data === key.toUpperCase()` 与 `alt-screen-search.ts` 的 `charAt(0).toUpperCase()` 仍用 .NET 简单映射，等 `alt-screen-search.ts` 那一批再补对称的表。 |
+| T24 | **CJK 字符类谓词改为码点区间表** | `utils.ts` 的三个谓词（`cjkBreakRegex` / `cjkPunctuationRegex` / `autocompleteSeparatorRegex`）建立在 `\p{Script_Extensions=Han\|Hiragana\|Katakana\|Hangul\|Bopomofo}` 上，.NET 正则无法表达 `Script_Extensions`，故按原始正则实跑探测生成区间表（`JsCjkData`，由 `JsCjk` 使用）。三处语义细节需与正则逐一核对：`cjkBreakRegex` 无锚点且无 `g` 标志，因此**参数中任意一个 rune** 命中即返回真（现有调用方都传单个字素簇，等价于判首 rune）；`autocompleteSeparatorRegex` 是「`\s` 或 CJK 标点」的并集，故 `\s` 部分仍走 `JsString.IsWhitespace`；`cjkPunctuationRegex` 只判单个码点。 |
+| T25 | **JS `await` 的微任务跳跃需显式注入点** | TS 的 `await` 即使被等值已 settle 也**必然** defer 到微任务队列（当前同步栈结束后才续接）；C# 的 `await` 对已完成的任务会**同步续接**，`Task.Yield` 才近似 JS 语义。`editor.ts` 的补全链路（`handleInput` → `getSuggestionsAsync` → 渲染列表）因此把这一步抽成 `Editor.AutocompleteDeferral`（`Func<JsMicrotask>`）：生产用 `Task.Yield`，差分测试换成 `JsMicrotaskSource` 由测试在两次操作之间 `Resume()`，使交错完全确定（`JsMicrotask` 是自定义 awaiter，`IsCompleted` 恒为 false，续接由源码保存、`Resume` 内联执行；不能用 `TaskCompletionSource`——`ConfigureAwait(false)` 的续接在 `SetResult` 里是**投递**而非内联，队列会出现"续接在途但看起来为空"的竞态）。 |
 
 ## 差分验证（latex.ts）
 
@@ -258,9 +260,63 @@ node merge-case.mjs                                                             
 U+10D7 后面跟一个字面量 `0`。星平面码点必须用八位的 `\UXXXXXXXX`——第一轮 47 条 U+10000 以上的映射向量
 就是因为这个失败的。
 
+## 差分验证（editor.ts）
+
+`components/editor.ts` 是 tui 最大的单文件（2,472 行），且是有状态组件（多行缓冲、撤销栈、kill ring、
+补全挂载、滚动窗口、鼠标态），差分同样取「操作序列 + 每一步之后的可观测量」。
+`tests/Pi.Tui.Tests/editor-corpus.json` 保存 **7,040 条**向量（6,327 条场景 + 713 条 `wordWrapLine` 纯函数
+向量），全部由**原始 TypeScript 实现**实跑得到：
+
+| 区段 | 条数 | 内容 |
+|---|---|---|
+| `api` | 55 | 公开 API 表面：`setText` / `insertTextAtCursor` / `setPaddingX` / `setAutocompleteMaxVisible` / `setBorderColor` / `setFocused` / `addToHistory` / `invalidate` 的调用，配合 `getText` / `getExpandedText` / `getPaddingX` / `getAutocompleteMaxVisible` 的返回值与 `render` 输出比对 |
+| `render` | 183 | `render(width)` 的输出行。27 个初始文本（空 / ASCII / 多行 / 中日文 / emoji / tab / 超长单行 / 前后空白 / 中英混排 / 标点 / 组合字符 / 路径 / 斜杠命令 / `@file` / `#tag` / 反斜杠 / 重音）× 7 种宽度（1 / 2 / 3 / 5 / 10 / 20 / 40），并以逐字符 `input` 推进光标后再次渲染，覆盖横向滚动窗口与软换行分支 |
+| `padding` | 150 | `setPaddingX` 五档（0 / 1 / 2 / 5 / 100）× 6 个文本 × 5 种宽度（4 / 8 / 12 / 20 / 40）的渲染行（左右内边距、边框字符、内容裁剪） |
+| `focus` | 24 | `setFocused` 与 `setBorderColor` 切换时的渲染差异（`focus` / `theme` / `border` 三态组合） |
+| `scroll` | 18 | 超长多行文档的纵向滚动窗口：6 种视口高度（5 / 8 / 10 / 12 / 24 / 60 行）下逐键移动光标，比对 `scrollOffset` 钳制、光标入视与渲染起始行 |
+| `mouse` | 15 | `handleMouse` 的 `(cursor, result)`。6 种事件类型（click / press / release / move / drag / wheel）× 4 个按钮值（left / middle / right / none）× 行号 −1..99 × 列坐标 0..999 扫描，含点击定位、拖拽选择、press→click 配对与滚轮 |
+| `paste` | 70 | 括号粘贴（`\x1b[200~ … \x1b[201~`）的完整投递：多行粘贴的缩进保持、超宽粘贴的换行、粘贴后的文本 / 光标 / 渲染 / 展开结果；另含 26 条不含粘贴的导航键序列（`inputs`）作对照 |
+| `sequences` | 78 | 多字符 / 粘贴输入序列（`inputs`）后的完整状态：文本、光标、渲染输出与 `getExpandedText` 展开结果 |
+| `keys` | 3,321 | 单键 `handleInput` 逐步重放（每场景一次按键）：导航绑定（行首 / 行尾 / 上下左右 / 词级，含修饰键组合与 CJK 近似）、删除与 kill/yank、撤销（Ctrl+_）的合并与断链、提交 / 取消、控制字符拒收，以及 `keys.ts` 解码层的大量边界（功能键、rxvt 风格序列、Kitty CSI-u 可打印解码、Shift+Enter、设备属性响应）。**提示历史浏览（Ctrl+P / Ctrl+N）不在差分语料内**，由上游 `editor-history-keybindings.test.ts` 覆盖 |
+| `keysMoved` | 1,476 | 多键序列（每场景平均 2.5 次按键，以右键 / Ctrl+A 等光标移动键为主）的逐步状态，用来钉住移动语义本身（无渲染断言） |
+| `keysRender` | 861 | 单键 + 按键前后各一次 `render(width)` 的全量输出比对（横向滚动 + 软换行 + 光标标记行） |
+| `autocomplete` | 76 | `@` 文件补全与斜杠命令补全的挂载链路：`provider` 注入预设建议、`getSuggestionsAsync` 返回后（`sleep` / `flush` 驱动微任务队列，见 T25）的列表渲染、上下选择、Tab/Enter 应用、Esc 关闭、以及补全打开时导航键的改道 |
+
+驱动方式：语料把每个场景写成一条 op 序列（`text` / `insert` / `padding` / `maxVisible` / `history` /
+`border` / `focus` / `provider` / `input` / `inputs` / `mouse` / `render` / `api` / `text-of` /
+`expanded` / `invalidate` / `sleep` / `flush`），测试按序重放；观测类 op（`text-of` / `expanded` /
+`render` / `api`）把当时的状态（文本、光标、补全标志、内边距、`maxVisible`、渲染输出）与 TS 记录值
+逐项比对。补全区段用 `provider` 注入预设建议；TS 侧的 `await getSuggestionsAsync(...)` 即使值已
+settle 也会 defer 到微任务队列，因此语料用 `sleep` / `flush` 两个 op 显式排出队列，C# 侧对应
+`Editor.AutocompleteDeferral` 注入点（生产用 `Task.Yield`，差分时换成 `JsMicrotaskSource` 由 `flush`
+恢复）——否则续接会与线程池竞态，重放不可复现（见 T25）。
+
+沙盒一致性校验（必做）：用同一份真实 `editor.ts`（连同其 import 闭包）直接跑上游
+`test/editor.test.ts` 与 `test/editor-history-keybindings.test.ts` —— 两者针对同一份源码全部通过，
+即语料与上游用例同源，任一改动都会同时打破两边（本机复现需先装 tui 包的依赖
+`get-east-asian-width` / `marked`）。
+
+`icuFrom` 机制同 `input.ts`：语料里 **23 条**受 ICU 词典分词影响的按键用例被标记，测试只验证到分歧发生
+前的那一步（`CorpusMarksTheIcuSegmentationBoundary` 断言这个数字恒为 23，不许静默增长）。
+
+重新生成（需要 Node 22.6+）。`editor.ts` 的直接依赖是 `autocomplete.ts`（仅类型）/ `keybindings.ts` /
+`keys.ts` / `kill-ring.ts` / `tui.ts` / `undo-stack.ts` / `utils.ts` / `word-navigation.ts` /
+`select-list.ts`（后者的 `tui.ts` 是纯类型 import，strip-types 下自然擦除）：
+
+```bash
+mkdir /tmp/edcheck && cd /tmp/edcheck
+npm init -y && npm install get-east-asian-width
+cp <pi>/packages/tui/src/{utils.ts,keys.ts,keybindings.ts,kill-ring.ts,undo-stack.ts,word-navigation.ts,autocomplete.ts,tui.ts} .
+cp <pi>/packages/tui/src/components/{editor.ts,select-list.ts} .
+sed -i -e 's|from "../tui.ts"|from "./tui-shim.mjs"|' -e 's|from "\.\./|from "./|g' editor.ts
+cp <pi>/packages/tui/test/{editor.test.ts,editor-history-keybindings.test.ts} .
+# 把 import 换成 ./editor-proxy.ts / ./assert-shim.mjs / ./test-shim.mjs；代理在每次快照点记录
+node --experimental-strip-types --no-warnings gen.mjs > editor-corpus.json
+```
+
 ## 测试覆盖
 
-`tests/Pi.Tui.Tests`（16,484 项，已禁用并行化——多个用例共享进程级全局状态：能力缓存、Kitty 元数据注册表、环境变量探测、全局键位注册表、native helper）：
+`tests/Pi.Tui.Tests`（16,599 项，已禁用并行化——多个用例共享进程级全局状态：能力缓存、Kitty 元数据注册表、环境变量探测、全局键位注册表、native helper）：
 
 | 测试文件 | 项数 | 覆盖 |
 |---|---|---|
@@ -276,3 +332,4 @@ U+10D7 后面跟一个字面量 `0`。星平面码点必须用八位的 `\UXXXXX
 | `AutocompleteTests.cs` | 5,259 | 5,244 条差分向量逐条对照 TS 参考实现（2,051 条路径补全/`applyCompletion`、290 条斜杠命令、597 条私有纯函数、234 条打分、769 条 `node:path`、28 条 `fd` 模糊搜索、45 条 Tab 触发、1,225 条 `localeCompare`），另 15 项守卫（语料条数与覆盖分布、分隔符区间表逐条边界、CJK 字母不参与分隔、`JsString` 的 trim/slice 语义） |
 | `InputCorpusTests.cs` | 5,453 | 5,450 条差分向量逐条对照 TS 参考实现（3,329 条 `render`、476 条按键序列逐步重放——含上游 36 个用例的 84 条断言、1,642 条 `handleMouse`、1 条 `/\s/` 码点全表），另 3 项：覆盖分布守卫（滚动窗口、提示符超宽早返回、两种焦点态、6 种鼠标事件类型与 4 个按钮都被取到）、语料规模守卫（含「`icuFrom` 标记恒为 7 条」） |
 | `SelectListCorpusTests.cs` | 2,728 | 2,598 条差分向量逐条对照 TS 参考实现（1,492 条 `render`、5 条上游场景复刻、570 条按键序列逐步重放、656 条 `handleMouse`），加 3 项大小写映射向量（1,488 条单码点映射、7,621 条 Final_Sigma 上下文串、U+0000–U+10FFFF 全码点比对 `Cased` / `Case_Ignorable` 两个谓词），另 2 项守卫：语料规模与覆盖分布（无匹配行、滚动提示、四种样式回调、`selectedPrefix` 恒为 0、按键三类事件与鼠标三类事件都被取到、两个大小写结构特例都在语料里） |
+| `EditorCorpusTests.cs` | 115 | 7,040 条差分向量逐条对照 TS 参考实现（6,327 条场景——`api` 55 / `render` 183 / `padding` 150 / `focus` 24 / `scroll` 18 / `mouse` 15 / `paste` 70 / `sequences` 78 / `keys` 3,321 / `keysMoved` 1,476 / `keysRender` 861 / `autocomplete` 76，每步比对文本、光标、补全标志、内边距、`maxVisible` 与渲染输出；713 条 `wordWrapLine` 纯函数向量），另 4 项守卫：语料规模、覆盖分布（12 个区段、提交历史、三种渲染模式都被取到）、「`icuFrom` 标记恒为 23 条」、超宽字素簇不递归 |
