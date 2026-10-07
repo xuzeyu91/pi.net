@@ -10,9 +10,10 @@
 | 指标 | 数值 |
 |---|---|
 | TS 源码（不含 `*.test.ts`） | 45 个文件 / 19,293 行 |
-| 已移植 | 24 个文件 / 约 10,000 行 TS 对应 |
-| .NET 产出 | 24 个 `.cs` / 8,192 行 |
-| 测试 | `Pi.Tui.Tests` 106 项全部通过 |
+| 已移植 | 27 个文件 / 8,892 行（46.1%） |
+| 待移植 | 18 个文件 / 10,401 行 |
+| .NET 产出 | 27 个 `.cs` / 9,048 行 |
+| 测试 | `Pi.Tui.Tests` 152 项全部通过 |
 | 构建 | 0 警告 0 错误（`dotnet build Pi.slnx -m:1`） |
 
 ## 逐文件清单
@@ -45,12 +46,12 @@
 | `components/v-stack.ts` | 33 | `Components/VStack.cs` | 垂直栈 |
 | `components/h-stack.ts` | 44 | `Components/HStack.cs` | 水平栈 |
 | `components/truncated-text.ts` | 65 | `Components/TruncatedText.cs` | 单行截断文本 |
+| `terminal-image.ts` | 757 | `TerminalImage.cs` | 协议探测与能力缓存、Kitty/iTerm2 编码器、图像元数据注册与查询（1000 条 FIFO 淘汰）、分块传输下的放置重建、`cropKittyImageLine`、`calculateImageCellSize/Rows`、PNG/JPEG/GIF/WebP 尺寸解析、`renderImage`、`imageFallback`、OSC 8 超链接 |
 
 ### ⏳ 待移植
 
 | TS 文件 | 行数 | 依赖 | 备注 |
 |---|---|---|---|
-| `terminal-image.ts` | 757 | — | **部分完成**：协议探测/能力缓存/图像行识别/kitty 删除序列/超链接已完成；缺 kitty & iTerm2 编码器、图像元数据注册与查询、`cropKittyImageLine`、`calculateImageCellSize/Rows`、PNG/JPEG/GIF/WebP 尺寸解析、`renderImage`、`imageFallback` |
 | `components/loader.ts` | 101 | — | 动画加载指示器 |
 | `components/cancellable-loader.ts` | 40 | loader | 可取消加载指示器 |
 | `components/input.ts` | 494 | keys / keybindings / stdin-buffer | 单行输入组件（编辑器基础） |
@@ -74,16 +75,15 @@
 
 依赖关系决定了下面的顺序；每批都以「构建 0 警告 0 错误 + 测试全绿」收口。
 
-1. **`terminal-image.ts` 收尾** —— 无前置依赖，且 `components/image.ts` 与 `tui-alt-screen.ts` 都要用。
-2. **`components/loader.ts` → `cancellable-loader.ts`** —— 最小、无依赖，可快速补齐组件族。
-3. **`layout.ts`** —— 依赖已完成的 `layout-node.ts`，是备用屏与若干组件的公共基础。
-4. **`latex.ts`** —— 纯函数式转换，无前置依赖；`markdown.ts` 依赖它。
-5. **`autocomplete.ts`** —— 依赖已完成的 `fuzzy.ts`。
-6. **`components/input.ts`** —— 依赖 keys / keybindings / stdin-buffer（均已完成），是 `editor.ts` 的前置。
-7. **`components/editor.ts` + `editor-component.ts`** —— 依赖 input / kill-ring / undo-stack / word-navigation / autocomplete / latex。
-8. **`components/markdown.ts` / `select-list.ts` / `settings-list.ts` / `scroll-view.ts` / `image.ts` / `mouse-region.ts` / `alt-screen-flash.ts`** —— 其余叶子组件。
-9. **`alt-screen-search.ts` → `tui-alt-screen.ts`** —— 最后收口，依赖上面几乎所有内容。
-10. **`index.ts`** —— 公开面清单，随各文件落地自然完成。
+1. **`components/loader.ts` → `cancellable-loader.ts`** —— 最小、无依赖，可快速补齐组件族。
+2. **`layout.ts`** —— 依赖已完成的 `layout-node.ts`，是备用屏与若干组件的公共基础。
+3. **`latex.ts`** —— 纯函数式转换，无前置依赖；`markdown.ts` 依赖它。
+4. **`autocomplete.ts`** —— 依赖已完成的 `fuzzy.ts`。
+5. **`components/input.ts`** —— 依赖 keys / keybindings / stdin-buffer（均已完成），是 `editor.ts` 的前置。
+6. **`components/editor.ts` + `editor-component.ts`** —— 依赖 input / kill-ring / undo-stack / word-navigation / autocomplete / latex。
+7. **`components/markdown.ts` / `select-list.ts` / `settings-list.ts` / `scroll-view.ts` / `image.ts` / `mouse-region.ts` / `alt-screen-flash.ts`** —— 其余叶子组件。
+8. **`alt-screen-search.ts` → `tui-alt-screen.ts`** —— 最后收口，依赖上面几乎所有内容。
+9. **`index.ts`** —— 公开面清单，随各文件落地自然完成。
 
 ## 关键设计差异（TS → C#）
 
@@ -104,12 +104,13 @@
 
 ## 测试覆盖
 
-`tests/Pi.Tui.Tests`（106 项）：
+`tests/Pi.Tui.Tests`（152 项，已禁用并行化——多个用例共享进程级全局状态：能力缓存、Kitty 元数据注册表、环境变量探测、全局键位注册表、native helper）：
 
 | 测试文件 | 项数 | 覆盖 |
 |---|---|---|
-| `TextEngineTests.cs` | 18 | 可见宽度、ANSI/OSC/APC 提取、tab 展开、截断/切片/换行、SGR 跨行携带、overlay 合成 |
-| `KeysAndUtilTests.cs` | 15 | 传统与 Kitty 按键匹配、`parseKey`、释放/重复判定、可打印解码、模糊匹配、kill ring、undo 栈、词导航 |
+| `TextEngineTests.cs` | 24 | 可见宽度、ANSI/OSC/APC 提取、tab 展开、截断/切片/换行、SGR 跨行携带、overlay 合成 |
+| `KeysAndUtilTests.cs` | 13 | 传统与 Kitty 按键匹配、`parseKey`、释放/重复判定、可打印解码、模糊匹配、kill ring、undo 栈、词导航 |
 | `ComponentTests.cs` | 17 | Text/Spacer/Box/TruncatedText/VStack/HStack 渲染、栈可见性、`TuiMainScreen` 差分渲染与同步输出、宽度变更全量重绘、超宽行守卫、overlay 合成 |
 | `ColorAndUtilTests.cs` | 25 | 颜色解析（hex/oklch/okhsl）、调色板索引、JS 舍入、OKLCH/OKHSL 转换与往返、混色、ANSI 序列、样式嵌套顺序、滚轮加速、native helper 缺失路径 |
-| `InputTests.cs` | 31 | 键位注册表（默认/覆盖/冲突/形状/全局单例）、stdin 缓冲（分块 CSI、SGR 鼠标、WezTerm ESC 对、括号粘贴、kitty 可打印去重、超时冲刷、字节与 UTF-8 入口） |
+| `InputTests.cs` | 27 | 键位注册表（默认/覆盖/冲突/形状/全局单例）、stdin 缓冲（分块 CSI、SGR 鼠标、WezTerm ESC 对、括号粘贴、kitty 可打印去重、超时冲刷、字节与 UTF-8 入口） |
+| `TerminalImageTests.cs` | 46 | Kitty/iTerm2 编码与 base64 长度、单元格尺寸与宽高比优化、行数换算、PNG/JPEG/GIF/WebP 尺寸解析、Kitty 元数据注册/查询/FIFO 淘汰、跨块放置重建、`cropKittyImageLine`、`renderImage` 的 Kitty/iTerm2/降级分支、`imageFallback` 与 OSC 8 超链接、能力探测（Kitty/Ghostty/WezTerm/iTerm2/tmux 转发） |

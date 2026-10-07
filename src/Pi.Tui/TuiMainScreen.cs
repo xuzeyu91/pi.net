@@ -26,7 +26,7 @@ public sealed class TuiMainScreen : TuiBase
     private const string KittySequencePrefix = "\x1b_G";
 
     private string[] _previousLines = Array.Empty<string>();
-    private HashSet<int> _previousKittyImageIds = new();
+    private HashSet<long> _previousKittyImageIds = new();
     private int _previousWidth;
     private int _previousHeight;
     private int _cursorRow;
@@ -40,7 +40,7 @@ public sealed class TuiMainScreen : TuiBase
 
     public override TuiMode Mode => TuiMode.Regular;
 
-    private sealed record KittyImageHeader(int[] Ids, int Rows);
+    private sealed record KittyImageHeader(long[] Ids, int Rows);
 
     private static KittyImageHeader? ParseKittyImageHeader(string line)
     {
@@ -56,7 +56,7 @@ public sealed class TuiMainScreen : TuiBase
             return null;
         }
 
-        var ids = new List<int>();
+        var ids = new List<long>();
         var rows = 1;
         foreach (var param in line.Substring(paramsStart, paramsEnd - paramsStart).Split(','))
         {
@@ -65,7 +65,7 @@ public sealed class TuiMainScreen : TuiBase
             {
                 continue;
             }
-            if (!int.TryParse(kv[1], out var numberValue) || numberValue <= 0)
+            if (!long.TryParse(kv[1], out var numberValue) || numberValue <= 0)
             {
                 continue;
             }
@@ -75,13 +75,13 @@ public sealed class TuiMainScreen : TuiBase
             }
             else if (kv[0] == "r")
             {
-                rows = numberValue;
+                rows = (int)numberValue;
             }
         }
         return new KittyImageHeader(ids.ToArray(), rows);
     }
 
-    private static int[] ExtractKittyImageIds(string line) => ParseKittyImageHeader(line)?.Ids ?? Array.Empty<int>();
+    private static long[] ExtractKittyImageIds(string line) => ParseKittyImageHeader(line)?.Ids ?? Array.Empty<long>();
 
     private static int ExtractKittyImageRows(string line) => ParseKittyImageHeader(line)?.Rows ?? 1;
 
@@ -101,7 +101,7 @@ public sealed class TuiMainScreen : TuiBase
     public void RestoreRenderState(TuiMainScreenRenderState state)
     {
         _previousLines = state.PreviousLines.Select(line => TerminalImage.IsImageLine(line) ? "" : line).ToArray();
-        _previousKittyImageIds = new HashSet<int>();
+        _previousKittyImageIds = new HashSet<long>();
         _previousWidth = state.PreviousWidth;
         _previousHeight = state.PreviousHeight;
         _cursorRow = state.CursorRow;
@@ -141,9 +141,9 @@ public sealed class TuiMainScreen : TuiBase
         Terminal.Write("\r\n");
     }
 
-    private HashSet<int> CollectKittyImageIds(string[] lines)
+    private HashSet<long> CollectKittyImageIds(string[] lines)
     {
-        var ids = new HashSet<int>();
+        var ids = new HashSet<long>();
         foreach (var line in lines)
         {
             foreach (var id in ExtractKittyImageIds(line))
@@ -154,7 +154,7 @@ public sealed class TuiMainScreen : TuiBase
         return ids;
     }
 
-    private string DeleteKittyImages(IEnumerable<int> ids)
+    private string DeleteKittyImages(IEnumerable<long> ids)
     {
         var buffer = new StringBuilder();
         foreach (var id in ids)
@@ -220,7 +220,7 @@ public sealed class TuiMainScreen : TuiBase
             return "";
         }
 
-        var ids = new HashSet<int>();
+        var ids = new HashSet<long>();
         var maxLine = Math.Min(lastChanged, _previousLines.Length - 1);
         for (var i = firstChanged; i <= maxLine; i++)
         {
