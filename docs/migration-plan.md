@@ -42,14 +42,14 @@
 | codemode | ✅ 完整 | identifier/types/source/declarations/runtime protocol + host 编排 + prelude；VM 执行经 `ICodemodeJsEngine` 注入点外置 |
 | env | ✅ 完整 | 落在 `Pi.Durable/Env/`（Result / FileStat / LocalExecutionEnv / SnapshotFileWatcher / StreamDecoder / LineScanner） |
 | durable | 🚧 源码完整 | 基础层 / storage / session / env / harness / tools / truncate / testing 全部落地；**部分 `harness-*.test.ts` 覆盖待补** |
-| tui | 🚧 37/45 文件 | 核心层 + 输入/颜色/键位 + 组件（text/box/stack/loader/scroll-view/input/editor/select-list）+ latex/autocomplete/layout/terminal-image；**剩余 8 个文件** |
+| tui | 🚧 44/45 文件 | 核心层 + 输入/颜色/键位 + 组件（text/box/stack/loader/scroll-view/input/editor/select-list/markdown/settings-list/image/mouse-region/alt-screen-flash）+ latex/autocomplete/layout/terminal-image/alt-screen-search + 备用屏渲染器；**仅剩 `index.ts` 桶文件** |
 
 ### 1.3 待迁移清单（按依赖顺序）
 
 | 优先级 | 项目 | 待办 | 源规模 | 依赖 |
 |---|---|---|---:|---|
-| P0 | tui | `components/markdown.ts`、`settings-list.ts`、`image.ts`、`mouse-region.ts`、`alt-screen-flash.ts`、`alt-screen-search.ts` | ~1,930 行 | latex / colors / select-list / terminal-image |
-| P0 | tui | `tui-alt-screen.ts`（备用屏渲染器，含 `tui.ts` 屏幕级鼠标路由 + SGR 解码） | 1,784 行 | 上述全部 + layout |
+| P0 | ~~tui~~ | ~~`components/markdown.ts`、`settings-list.ts`、`image.ts`、`mouse-region.ts`、`alt-screen-flash.ts`、`alt-screen-search.ts`~~ ✅ P63 完成 | ~1,930 行 | latex / colors / select-list / terminal-image |
+| P0 | ~~tui~~ | ~~`tui-alt-screen.ts`（备用屏渲染器，含 `tui.ts` 屏幕级鼠标路由 + SGR 解码）~~ ✅ P64 完成 | 1,784 行 | 上述全部 + layout |
 | P1 | tui | `index.ts`（桶文件，C# 无对应概念，公开面由类型可见性决定） | 192 行 | — |
 | P1 | durable | 补齐各 `harness-*.test.ts` 的差分测试覆盖 | ~25,671 行测试 | — |
 | P2 | coding-agent | 全包移植（会话 / 工具系统 / 技能 / 主题 / RPC 模式 / TUI 交互） | 19,427 行 | ai / agent / mcp / durable / tui |
@@ -66,7 +66,7 @@
 
 每个阶段以「构建 0 警告 0 错误 + 相关测试全绿 + 一致性核对」收口，然后提交并推送。
 
-### 阶段 1 — tui 叶子组件收口（markdown / alt-screen-search / settings-list / image / mouse-region / alt-screen-flash）
+### 阶段 1 — tui 叶子组件收口（markdown / alt-screen-search / settings-list / image / mouse-region / alt-screen-flash）✅ 已完成（P63）
 
 - **目标**：把工作区中未提交的 6 个 tui 文件移植补齐、修复缺陷、测试全绿并入库。
 - **文件范围**：
@@ -77,12 +77,17 @@
 - **验收标准**：`dotnet build Pi.slnx -m:1` 0 警告 0 错误；`Pi.Tui.Tests` 全绿（含 markdown 4,990 条、extra-components 1,692 条、alt-screen-search 语料）。
 - **一致性检查点**：CRLF 归一化 = marked 的 `/\r\n|\r/g`；markdown 渲染逐条对照 TS 参考；settings/image/mouse-region/flash 行为逐条对照。
 
-### 阶段 2 — tui 备用屏渲染器（`tui-alt-screen.ts`）
+### 阶段 2 — tui 备用屏渲染器（`tui-alt-screen.ts`）✅ 已完成（P64）
 
 - **目标**：移植全屏渲染器 `TuiAltScreen`，并把 `tui.ts` 中剩余的屏幕级鼠标路由（`dispatchMouseToOverlay` / `resolveMouseFocusTarget` / `renderedOverlayLayouts`）与 SGR 鼠标解码接入。
-- **文件范围**：新增 `src/Pi.Tui/TuiAltScreen.cs`；补充 `Tui.cs` / `Layout.cs` 的屏幕级 API。
+- **文件范围**：新增 `src/Pi.Tui/TuiAltScreen.cs`（2,450 行）；补充 `Tui.cs` / `Layout.cs` 的屏幕级 API。
 - **验收标准**：构建 0 警告 0 错误；新增差分 / 行为测试通过；`index.ts` 公开面清单核对。
 - **一致性检查点**：备用屏进入/退出序列、同步输出、差分渲染、overlay 鼠标路由、SGR 解码与 TS 1:1。
+- **完成情况**：
+  - `TuiAltScreen.cs`（`TuiBase` + `IViewportTui`）落地全部 ~90 个成员；`Tui.cs` 补 `OverlayBounds` / `IOverlayHandle.GetBounds` / `IViewportTui` / `renderedOverlayLayouts` / `resolveMouseFocusTarget` / `dispatchMouseToOverlay`。
+  - 新增 `tests/Pi.Tui.Tests/alt-screen-corpus.json`（37 条场景，由 TS 参考实跑捕获）+ `AltScreenCorpusTests.cs`（37 条差分 + 2 项守卫）。
+  - 修复 1 处**真实缺陷**（`ShowOverlay` / `HideOverlay` / `OverlayHandleImpl.Hide` 在 `stop()` 后仍写 `HideCursor`，应经 `hideTerminalCursor()` 守卫）与 2 处 TS 语义偏差（`ViewportHeight / 3`、稳定排序）。
+  - 一致性校验：上游 `test/tui-alt-screen.test.ts` **64/64 通过**；`Pi.Tui.Tests` 全量 23,812 项全绿。
 
 ### 阶段 3 — durable 测试覆盖补齐
 

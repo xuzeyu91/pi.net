@@ -130,6 +130,15 @@ public sealed class OverlayUnfocusOptions
     public IComponent? Target { get; set; }
 }
 
+/// <summary>Last rendered terminal-relative overlay rectangle (port of <c>OverlayBounds</c>).</summary>
+public sealed class OverlayBounds
+{
+    public required int Row { get; init; }
+    public required int Col { get; init; }
+    public required int Width { get; init; }
+    public required int Height { get; init; }
+}
+
 /// <summary>Handle returned by <see cref="TuiBase.ShowOverlay"/> for controlling an overlay.</summary>
 public interface IOverlayHandle
 {
@@ -139,6 +148,9 @@ public interface IOverlayHandle
     void Focus();
     void Unfocus(OverlayUnfocusOptions? options = null);
     bool IsFocused();
+
+    /// <summary>Get the most recent rendered bounds for a visible overlay.</summary>
+    OverlayBounds? GetBounds();
 }
 
 /// <summary>Result of a TUI input listener: consume the event and/or replace the data.</summary>
@@ -194,6 +206,17 @@ public interface ITui : IComponent
     Task<TerminalColorScheme?> QueryTerminalColorSchemeAsync(int timeoutMs);
 }
 
+/// <summary>
+/// TUI renderer with an application-owned viewport (port of <c>ViewportTUI</c>). TS keys this off the
+/// <c>VIEWPORT_TUI</c> symbol so the check survives duplicate module instances; C# uses the interface
+/// itself as the runtime marker.
+/// </summary>
+public interface IViewportTui : ITui
+{
+    /// <summary>Replace the component tree rendered into the viewport, or null to fall back to the mounted roots.</summary>
+    void SetLayoutRoot(IComponent? component);
+}
+
 /// <summary>Base class for TUI renderers: component container, focus, overlays, render scheduling.</summary>
 public abstract class TuiBase : Container, ITui
 {
@@ -203,6 +226,12 @@ public abstract class TuiBase : Container, ITui
     private readonly object _renderLock = new();
     private readonly HashSet<Func<string, TuiInputListenerResult?>> _inputListeners = new();
     private readonly List<OverlayStackEntry> _overlayStack = new();
+
+    /// <summary>
+    /// Overlay rectangles produced by the most recent compositing pass, in stack order. Mouse dispatch
+    /// walks this backwards so the visually topmost overlay under the pointer wins.
+    /// </summary>
+    private List<RenderedOverlayLayout> _renderedOverlayLayouts = new();
     private readonly List<(Action<TerminalColorScheme> Listener, Action Unsubscribe)> _colorSchemeListeners = new();
 
     private IComponent? _focusedComponent;
@@ -282,7 +311,7 @@ public abstract class TuiBase : Container, ITui
         _showHardwareCursor = enabled;
         if (!enabled)
         {
-            Terminal.HideCursor();
+            HideTerminalCursor();
         }
         RequestRender();
     }
@@ -469,7 +498,7 @@ public abstract class TuiBase : Container, ITui
         {
             SetFocus(component);
         }
-        Terminal.HideCursor();
+        HideTerminalCursor();
         RequestRender();
         return new OverlayHandleImpl(this, entry);
     }
@@ -489,9 +518,18 @@ public abstract class TuiBase : Container, ITui
         }
         if (_overlayStack.Count == 0)
         {
-            Terminal.HideCursor();
+            HideTerminalCursor();
         }
         RequestRender();
+    }
+
+    /// <summary>Hide the cursor while running. After stop(), the shell owns the cursor and it must stay visible.</summary>
+    private void HideTerminalCursor()
+    {
+        if (!_stopped)
+        {
+            Terminal.HideCursor();
+        }
     }
 
     private void RemoveOverlayEntry(OverlayStackEntry entry)
@@ -502,6 +540,56 @@ public abstract class TuiBase : Container, ITui
     }
 
     public bool HasOverlay() => _overlayStack.Any(IsOverlayVisible);
+
+    /// <summary>Check if the focused component is a visible overlay.</summary>
+    protected bool IsOverlayFocused() =>
+        _overlayStack.Any(entry => entry.Component == _focusedComponent && IsOverlayVisible(entry));
+
+    /// <summary>Keep overlay containers as keyboard focus owners when a nested control is clicked.</summary>
+    protected IComponent ResolveMouseFocusTarget(IComponent component)
+    {
+        for (var index = _overlayStack.Count - 1; index >= 0; index--)
+        {
+            var overlay = _overlayStack[index];
+            if (IsOverlayVisible(overlay) && ContainsComponent(overlay.Component, component))
+            {
+                return overlay.Component;
+            }
+        }
+        return component;
+    }
+
+    /// <summary>Dispatch to the visually topmost overlay under the pointer.</summary>
+    protected (bool Hit, TuiMouseDispatchResult? Result) DispatchMouseToOverlay(TuiMouseEvent @event)
+    {
+        for (var index = _renderedOverlayLayouts.Count - 1; index >= 0; index--)
+        {
+            var layout = _renderedOverlayLayouts[index];
+            if (@event.ScreenX < layout.Col
+                || @event.ScreenX >= layout.Col + layout.Width
+                || @event.ScreenY < layout.Row
+                || @event.ScreenY >= layout.Row + layout.Height)
+            {
+                continue;
+            }
+            var local = @event.Clone();
+            local.X = @event.ScreenX - layout.Col;
+            local.Y = @event.ScreenY - layout.Row;
+            local.Width = layout.Width;
+            local.Height = layout.Height;
+            var result = MouseDispatch.Dispatch(layout.Entry.Component, local);
+            if (result is null)
+            {
+                return (true, null);
+            }
+            if (result.Focus == true)
+            {
+                result.FocusTarget = layout.Entry.Component;
+            }
+            return (true, result);
+        }
+        return (false, null);
+    }
 
     private bool IsOverlayVisible(OverlayStackEntry entry)
     {
@@ -558,7 +646,7 @@ public abstract class TuiBase : Container, ITui
             }
             if (_tui._overlayStack.Count == 0)
             {
-                _tui.Terminal.HideCursor();
+                _tui.HideTerminalCursor();
             }
             _tui.RequestRender();
         }
@@ -636,6 +724,16 @@ public abstract class TuiBase : Container, ITui
         }
 
         public bool IsFocused() => _tui._focusedComponent == _entry.Component;
+
+        public OverlayBounds? GetBounds()
+        {
+            if (!_tui._overlayStack.Contains(_entry) || !_tui.IsOverlayVisible(_entry) || _entry.Bounds is null)
+            {
+                return null;
+            }
+            var bounds = _entry.Bounds;
+            return new OverlayBounds { Row = bounds.Row, Col = bounds.Col, Width = bounds.Width, Height = bounds.Height };
+        }
     }
 
     public override void Invalidate()
@@ -887,11 +985,17 @@ public abstract class TuiBase : Container, ITui
     {
         if (_overlayStack.Count == 0)
         {
+            _renderedOverlayLayouts = new List<RenderedOverlayLayout>();
             return lines;
         }
         var result = new List<string>(lines);
 
-        var rendered = new List<(string[] OverlayLines, int Row, int Col, int Width)>();
+        foreach (var entry in _overlayStack)
+        {
+            entry.Bounds = null;
+        }
+
+        var rendered = new List<(OverlayStackEntry Entry, string[] OverlayLines, int Row, int Col, int Width)>();
         var minLinesNeeded = result.Count;
 
         var visibleEntries = _overlayStack.Where(IsOverlayVisible).OrderBy(e => e.FocusOrder).ToList();
@@ -906,9 +1010,27 @@ public abstract class TuiBase : Container, ITui
                 overlayLines = overlayLines.Take(mh).ToArray();
             }
             var finalLayout = ResolveOverlayLayoutFull(entry.Options, overlayLines.Length, termWidth, termHeight);
-            rendered.Add((overlayLines, finalLayout.Row, finalLayout.Col, width));
+            entry.Bounds = new OverlayBounds
+            {
+                Row = finalLayout.Row,
+                Col = finalLayout.Col,
+                Width = width,
+                Height = overlayLines.Length,
+            };
+            rendered.Add((entry, overlayLines, finalLayout.Row, finalLayout.Col, width));
             minLinesNeeded = Math.Max(minLinesNeeded, finalLayout.Row + overlayLines.Length);
         }
+
+        _renderedOverlayLayouts = rendered
+            .Select(item => new RenderedOverlayLayout
+            {
+                Entry = item.Entry,
+                Row = item.Row,
+                Col = item.Col,
+                Width = item.Width,
+                Height = item.OverlayLines.Length,
+            })
+            .ToList();
 
         var workingHeight = Math.Max(Math.Max(result.Count, termHeight), minLinesNeeded);
         while (result.Count < workingHeight)
@@ -917,7 +1039,7 @@ public abstract class TuiBase : Container, ITui
         }
 
         var viewportStart = Math.Max(0, workingHeight - termHeight);
-        foreach (var (overlayLines, row, col, w) in rendered)
+        foreach (var (_, overlayLines, row, col, w) in rendered)
         {
             for (var i = 0; i < overlayLines.Length; i++)
             {
@@ -1151,6 +1273,19 @@ public abstract class TuiBase : Container, ITui
         public required IComponent? PreFocus { get; set; }
         public required bool Hidden { get; set; }
         public required int FocusOrder { get; set; }
+
+        /// <summary>Last rendered bounds, cleared at the start of every compositing pass.</summary>
+        public OverlayBounds? Bounds { get; set; }
+    }
+
+    /// <summary>A visible overlay's on-screen rectangle, used for pointer hit testing.</summary>
+    private sealed class RenderedOverlayLayout
+    {
+        public required OverlayStackEntry Entry { get; init; }
+        public required int Row { get; init; }
+        public required int Col { get; init; }
+        public required int Width { get; init; }
+        public required int Height { get; init; }
     }
 
     private abstract class OverlayFocusRestoreState

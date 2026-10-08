@@ -28,5 +28,7 @@
     <None Include="alt-screen-search-corpus.json" CopyToOutputDirectory="PreserveNewest" />
     <!-- Differential test vectors captured from the TypeScript settings-list/image/mouse-region/alt-screen-flash reference implementations. -->
     <None Include="extra-components-corpus.json" CopyToOutputDirectory="PreserveNewest" />
+    <!-- Differential scenario vectors captured from the TypeScript tui-alt-screen.ts reference implementation. -->
+    <None Include="alt-screen-corpus.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

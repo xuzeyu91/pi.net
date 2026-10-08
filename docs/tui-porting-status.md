@@ -10,10 +10,10 @@
 | 指标 | 数值 |
 |---|---|
 | TS 源码（不含 `*.test.ts`） | 45 个文件 / 19,293 行 |
-| 已移植 | 43 个文件 / 17,317 行（89.8%） |
-| 待移植 | 2 个文件 / 1,976 行 |
-| .NET 产出 | 58 个 `.cs` / 23,999 行 |
-| 测试 | `Pi.Tui.Tests` 23,773 项全部通过 |
+| 已移植 | 44 个文件 / 19,101 行（99.0%） |
+| 待移植 | 1 个文件 / 192 行（`index.ts` 桶文件） |
+| .NET 产出 | 62 个 `.cs` / 26,619 行 |
+| 测试 | `Pi.Tui.Tests` 23,812 项全部通过 |
 | 构建 | 0 警告 0 错误（`dotnet build Pi.slnx -m:1`） |
 
 ## 逐文件清单
@@ -24,7 +24,7 @@
 |---|---|---|---|
 | `utils.ts` | 1397 | `Ansi.cs` / `UnicodeWidth.cs` / `TextLayout.cs` / `JsString.cs` | 拆成四个文件：ANSI/OSC 提取与 SGR 跟踪、字素与可见宽度、换行/截断/切片/段落提取、JS 字符串语义（`trim` 空白集与 `slice` 钳制） |
 | `keys.ts` | 1401 | `Keys.cs` | `matchesKey` / `parseKey` / Kitty CSI-u 解码 / 修饰键位掩码 / `Key` 构造助手 |
-| `tui.ts` | 1493 | `Tui.cs` + `MouseEvents.cs` | `Component`/`Container`、焦点与 overlay 栈、渲染调度、overlay 布局解算、`compositeTuiLine`、鼠标事件类型与 `dispatchMouseEvent`/`retargetMouseEvent`/`Container.handleMouse`（屏幕级路由见 T21） |
+| `tui.ts` | 1493 | `Tui.cs` + `MouseEvents.cs` | `Component`/`Container`、焦点与 overlay 栈、渲染调度、overlay 布局解算、`compositeTuiLine`、鼠标事件类型与 `dispatchMouseEvent`/`retargetMouseEvent`/`Container.handleMouse`，以及屏幕级鼠标路由（`renderedOverlayLayouts` / `resolveMouseFocusTarget` / `dispatchMouseToOverlay`，见差异 T21）；`isViewportTUI` 的 `Symbol` 标记改为 `IViewportTui` 接口（差异 T28） |
 | `terminal.ts` | 554 | `Terminal.cs` | `ITerminal` + `ProcessTerminal` + `StringTerminal`（测试假件，TS 侧由 vitest 注入） |
 | `tui-main-screen.ts` | 655 | `TuiMainScreen.cs` | 差分渲染全流程、同步输出（CSI 2026）、kitty 图像行预留、超宽行守卫 |
 | `terminal-colors.ts` | 91 | `TerminalColors.cs` | OSC 11 背景色、DSR 配色方案上报解析 |
@@ -63,12 +63,12 @@
 | `components/mouse-region.ts` | 33 | `Components/MouseRegion.cs` | 鼠标区域标记：渲染透传 + `handleMouse` 委派 |
 | `components/alt-screen-flash.ts` | 51 | `Components/AltScreenFlashContainer.cs` | 备用屏闪烁提示（TTL、条目栈、`requestRender`、`dispose`） |
 | `alt-screen-search.ts` | 327 | `AltScreenSearch.cs` | 备用屏搜索：索引构建、匹配定位、大小写不敏感（JS `toUpperCase` 全量映射，见 T23）、`getAltScreenSearchMatchKey` |
+| `tui-alt-screen.ts` | 1784 | `TuiAltScreen.cs` | 备用屏（全屏模式）渲染器，tui 最后一个大文件：`TuiBase` 的 `DoRender` 全流程、SGR 鼠标解码与视图输入派发、屏幕级 overlay 路由、搜索高亮与导航按钮命中、文本选择（点击 / 双击 / 三击、词级拖拽、自动滚动、复制到剪贴板含 OSC 52 与 `copyOnSelect`）、滚动条悬停与拖拽、跳到底部指示器、闪烁提示合成、Kitty 图像缓存与 `prepareKittyScreen`、布局根挂载与 `getScreenLines`。**行为由 37 条差分场景对照 TS 参考实现逐步锁定**（见下） |
 
 ### ⏳ 待移植
 
 | TS 文件 | 行数 | 依赖 | 备注 |
 |---|---|---|---|
-| `tui-alt-screen.ts` | 1784 | 上述多数 | 备用屏渲染器（全屏模式），并负责把 `tui.ts` 里剩下的屏幕级鼠标路由（`dispatchMouseToOverlay` / `resolveMouseFocusTarget` / `renderedOverlayLayouts`）与 SGR 鼠标解码接上 |
 | `index.ts` | 192 | — | 桶文件（C# 无对应概念，公开面由类型可见性决定） |
 
 ## 建议的推进顺序
@@ -77,8 +77,20 @@
 
 1. ~~**`components/editor.ts` + `editor-component.ts`**~~ —— ✅ 已完成（P62，见上「已完成」清单）。
 2. ~~**`components/markdown.ts` / `settings-list.ts` / `image.ts` / `mouse-region.ts` / `alt-screen-flash.ts` / `alt-screen-search.ts`**~~ —— ✅ 已完成（P63，见上「已完成」清单）。
-3. **`tui-alt-screen.ts`** —— 最后收口，依赖上面几乎所有内容（含 `layout.ts` 的布局帧与命中测试），并负责把 `tui.ts` 里剩下的屏幕级鼠标路由（`dispatchMouseToOverlay` / `resolveMouseFocusTarget` / `renderedOverlayLayouts`）与 SGR 鼠标解码接上。
-4. **`index.ts`** —— 公开面清单，随各文件落地自然完成。
+3. ~~**`tui-alt-screen.ts`**~~ —— ✅ 已完成（P64，见上「已完成」清单）。最后收口，依赖上面几乎所有内容（含 `layout.ts` 的布局帧与命中测试），并把 `tui.ts` 里剩下的屏幕级鼠标路由（`dispatchMouseToOverlay` / `resolveMouseFocusTarget` / `renderedOverlayLayouts`）与 SGR 鼠标解码一并落地。
+4. **`index.ts`** —— 公开面清单，随各文件落地自然完成（C# 无桶文件概念）。
+
+## `index.ts` 公开面核对
+
+`index.ts`（192 行）是纯桶文件，C# 无对应概念——公开面由各类型自身的可见性决定。但它同时是一份**公开面契约**，因此逐条核对了一遍：`index.ts` 导出的每个符号在 `src/Pi.Tui` 都有等价物（命名按 C# 约定转 PascalCase 并按模块归组，例如 `colorToHex` → `Colors.ColorToHex`、`renderLatex` → `Latex.Render`、`fuzzyFilter` → `Fuzzy.Filter`、`Component`/`Focusable` → `IComponent`/`IFocusable`）。
+
+三处**有意的差异**（其余 1:1）：
+
+| `index.ts` 导出 | C# 承载 | 原因 |
+|---|---|---|
+| `Marked` / `Token` / `Tokens`（re-export 自 npm `marked`） | `Pi.Tui.Marked` 命名空间的 `MarkedLexer` / `MarkedTokenizer` / `MarkedRules` / `MarkedToken` | `Marked` 是 `marked` 的默认导出类（`new Marked().parse()`）；C# 侧按 T26 把 tokenizer/lexer/rules 内联移植，入口能力由 `MarkedLexer` 提供，消费方是 `Markdown.cs`。`Token`/`Tokens` 是纯类型别名。 |
+| `isAppleTerminalSession` | 无（能力内联进 `ProcessTerminal`） | 见差异 T3：C# 直接从 `ConsoleKeyInfo.Modifiers` 读 Shift，不需要「平台 + `TERM_PROGRAM`」启发式。 |
+| `StdinBufferEventMap` | `StdinBuffer` 上的 `event Action<string>?` | 见差异 T2：`EventEmitter` 的事件映射类型在 C# 由事件声明承载。 |
 
 ## 关键设计差异（TS → C#）
 
@@ -86,7 +98,7 @@
 |---|---|---|
 | T1 | **native 插件加载改为显式注入点** | TS 的 `native-platform.ts` 用 `createRequire()` 加载 `<platform>-platform[-x11].node` 预编译插件，并按路径缓存。.NET 没有 Node addon ABI，因此改为 `NativePlatform.SetNativePlatformHelper(INativePlatformHelper)` 由宿主显式提供（P/Invoke 包装或托管实现）。未安装 helper 时所有查询报告「不可用」——这正是 TS 在插件缺失时的行为。`native-module-path.ts` 的候选路径探测无 .NET 对应物，仅以 `GetNativeModuleCandidates` 保留搜索顺序作为文档。 |
 | T2 | **`EventEmitter` → .NET event** | `StdinBuffer` 的 `data` / `paste` 事件改为 `event Action<string>?`；`setTimeout` 冲刷计时器改为 `Timer`，并用 `lock` 保护状态（TS 单线程，C# 计时器回调在线程池线程）。 |
-| T3 | **原始模式（raw mode）是尽力而为** | Node 有 `process.stdin.setRawMode`；.NET 无跨平台等价 API。Unix 上 shell out `stty raw -echo`（停止时 `stty sane`），Windows 上用 P/Invoke 打开虚拟终端输入；输入经 `Console.ReadKey` 映射回框架期望的转义序列。 |
+| T3 | **原始模式（raw mode）是尽力而为** | Node 有 `process.stdin.setRawMode`；.NET 无跨平台等价 API。Unix 上 shell out `stty raw -echo`（停止时 `stty sane`），Windows 上用 P/Invoke 打开虚拟终端输入；输入经 `Console.ReadKey` 映射回框架期望的转义序列。**附带效应：`isAppleTerminalSession()` / `normalizeNativeShiftEnterInput()` 无对应物**——TS 之所以要「平台是 darwin 且 `TERM_PROGRAM === "Apple_Terminal"`，或平台是 win32」再猜 Shift+Enter，是因为这些终端对 Shift+Enter 只发一个裸 `\r`，必须靠平台启发式补成 `\x1b[13;2u`。C# 的 `ProcessTerminal` 直接从 `ConsoleKeyInfo.Modifiers` 读到 Shift，因此 `ConsoleKey.Enter` 分支写 `alt ? "\x1b\r" : shift ? "\x1b[13;2u" : "\r"` 即可，无需启发式（`index.ts` 也因此不导出 `isAppleTerminalSession`，见「公开面核对」）。 |
 | T4 | **Unicode 数据源不同** | TS 用 npm `get-east-asian-width`、`\p{RGI_Emoji}`、`\p{Default_Ignorable_Code_Point}`；.NET 侧改用显式宽字符区间表 + emoji 启发式 + `CharUnicodeInfo`。字素簇用 `StringInfo`（UAX #29），词切分自行按 rune 分类（与 ICU 词典分词的差异见 T22）。 |
 | T5 | **JS 正则 `\d` → `[0-9]`** | .NET 的 `\d` 等价于 `\p{Nd}`，会匹配阿拉伯-印度数字等 Unicode 十进制数字，而 JS 的 `\d` 只匹配 `0-9`。所有移植的解析正则都显式写成 `[0-9]`。 |
 | T6 | **JS `Math.round` → `JsMath.Round`** | .NET 的 `Math.Round` 默认银行家舍入（`Math.Round(2.5) == 2`），JS 是「.5 向上取整」（`Math.round(2.5) == 3`）。所有颜色/尺寸换算改用 `JsMath.Round`（`Math.Floor(v + 0.5)`）。 |
@@ -104,13 +116,16 @@
 | T18 | **`autocompleteSeparatorRegex` / `autocompleteBoundaryRegex` 改为码点表 + 谓词** | TS 用 `(?:\s|CJK 标点)` 正则做字符分类，其中 `\p{Script_Extensions=Han}` 等在 .NET 里没有对应写法，且集合含星平面码点（U+16FE2），而 .NET 字符类按 UTF-16 码元工作。因此 `AutocompleteData.SeparatorRanges` / `CjkPunctuationRanges` 由脚本从 Node 实跑枚举生成，分类改为 `IsSeparator(int codePoint)` 谓词；`(?:^\|sep)$` 这种「以分隔符结尾或为空」的用法写成 `IsTokenBoundary(string)`。顺带修掉了 `Fuzzy.Filter` 里 `.NET \s`/`trim` 与 JS 的字符集差异（T15 的同类问题）。 |
 | T19 | **`node:path` win32 语义按 1:1 转写** | `autocomplete.ts` 用 `join` / `dirname` / `basename` 生成**用户可见**的补全串，而 `System.IO.Path` 归一化规则不同（`Path.Join(".", "x")` 是 `".\x"`，Node 返回 `"x"`）。`NodePath.cs` 因此逐行转写 Node v22.22.2 的 `path.win32`（含 UNC / 设备根 / 保留设备名 / CVE-2024-36139 的冒号守卫），并用 **769 条** 从 `node:path` 实跑捕获的向量钉住。 |
 | T20 | **排序必须稳定，`localeCompare` 需与 Node 对齐** | JS `Array.prototype.sort` 稳定，`List<T>.Sort` 不稳定，而 `autocomplete.ts` 的比较器（先目录后文件、分数/深度/长度多级并列）会打平，故 C# 侧统一走 `StableSort`（`OrderBy` + `Comparer<T>.Create`）。`localeCompare` 用 `CultureInfo.CurrentCulture.CompareInfo`（Node 与 .NET 5+ 都走 ICU），并用 **1,225 条** `collate` 向量验证符号一致。 |
-| T21 | **鼠标事件类型与派发辅助已落地，屏幕级路由留给备用屏** | `components/input.ts` 需要 `TuiMouseEvent` / `TuiMouseEventResult`，因此把 `tui.ts` 的鼠标类型、`dispatchMouseEvent` / `retargetMouseEvent`（→ `MouseDispatch.Dispatch` / `Retarget`）以及 `Container.handleMouse`（含 `mouseLayout` 子项高度缓存）一并移植。TS 用 `"target" in result` 判别「已转发到子组件」，C# 用 `is TuiMouseDispatchResult`；TS 用 `component.handleInput` 的真值判断「这个容器自己会路由按键」，C# 里该方法恒存在（接口默认实现），故改为反射检查组件是否**覆写**了它（`TuiComponents.HasHandleInput`）。仍留在 `tui.ts` 未移植的是屏幕级路由：`TuiBase.dispatchMouseToOverlay` / `resolveMouseFocusTarget` / `renderedOverlayLayouts` 与 `tui-alt-screen.ts` 的 `parseSgrMouseEvent`——它们只被备用屏渲染器使用，随 `tui-alt-screen.ts` 一起落地。 |
+| T21 | **鼠标事件类型与派发辅助已落地，屏幕级路由随备用屏一并完成** | `components/input.ts` 需要 `TuiMouseEvent` / `TuiMouseEventResult`，因此把 `tui.ts` 的鼠标类型、`dispatchMouseEvent` / `retargetMouseEvent`（→ `MouseDispatch.Dispatch` / `Retarget`）以及 `Container.handleMouse`（含 `mouseLayout` 子项高度缓存）一并移植。TS 用 `"target" in result` 判别「已转发到子组件」，C# 用 `is TuiMouseDispatchResult`；TS 用 `component.handleInput` 的真值判断「这个容器自己会路由按键」，C# 里该方法恒存在（接口默认实现），故改为反射检查组件是否**覆写**了它（`TuiComponents.HasHandleInput`）。P64 把剩下的屏幕级路由补齐：`TuiBase.renderedOverlayLayouts`（每次合成重算并清空 `entry.Bounds`）、`resolveMouseFocusTarget`（沿 overlay 栈反向走 `ContainsComponent`）、`dispatchMouseToOverlay`（沿 `renderedOverlayLayouts` 反向命中、把事件克隆到局部坐标、`focus` 时把 `FocusTarget` 指向 overlay 组件），以及 `tui-alt-screen.ts` 的 `parseSgrMouseEvent`。 |
 | T22 | **CJK 词切分只能是近似（ICU 词典）** | TS 的 `findWordBackward` / `findWordForward` 用 `Intl.Segmenter(..., { granularity: "word" })`，对汉字/假名/泰文等走 ICU 的**词典**分词：`"你好世界。你好，世界"` 被切成 `你好\|世界\|。\|你好\|，\|世界`。.NET 没有等价 API（`StringInfo` 只有字素簇），C# 侧改为「同字符类连续 rune 归组」，因此整段汉字串被当作一个词。ASCII 行为不受影响——两侧都会在词内标点处断开（上游 Ctrl+W / Alt+D 的标点边界用例全绿）。偏差只出现在「一段汉字串超过 2 字」时：`Ctrl+W` / `Alt+D` / 词级光标一次跨越整段而不是一个词。差分语料里 **7 条**受影响的按键用例被标为 `icuFrom`，测试只验证到分歧发生前的那一步（`CorpusIsFullyCovered` 断言这个数字恒为 7，不许静默增长），另有 `WordNavigation_ApproximatesIcuDictionarySegmentation` 显式钉住近似行为与参考值的差异。 |
-| T23 | **`toLowerCase` 需要打补丁才能等于 JS（`ToUpperCase` 尚未处理）** | JS 的 `String.prototype.toLowerCase` 用的是 Unicode **完整**大小写映射，.NET 的 `Rune.ToLowerInvariant` 是**简单**映射，两者在 56 个码点上不同（全部是 .NET 缺映射、Unicode 版本差异：U+0130、Latin Extended-D、Garay、Beria Erfe；**不存在双方都有映射却给出不同结果的码点**），另有 U+03A3 的上下文相关 Final_Sigma 规则。因此新增 `JsString.ToLowerCase` = 简单映射 + 56 条覆盖表（`JsCaseData.LowerOverrides`）+ Final_Sigma；Final_Sigma 依赖的 `Cased` / `Case_Ignorable` 谓词按 V8 实测的集合固化成区间表（131 + 464 个区间）——注意 V8 用的是**旧版** `Case_Ignorable` 推导（含 U+0027 U+002E U+003A U+00B7 U+0387 U+055F U+05F4 U+2018 U+2019 U+2024 U+2027 U+FE13 U+FE52 U+FE55 U+FF07 U+FF0E U+FF1A 这 17 个非 Mn/Me/Cf/Lm/Sk 码点），且在扫描时**先判 case-ignorable 再判 cased**（U+02B0 同时属于两类，按可忽略处理）。`JsString.ToLowerCase` 已接入 `Fuzzy` / `Autocomplete` / `TerminalImage` / `Keys` 的全部字符串级小写调用点（这些模块原先直接用 `ToLowerInvariant`，属潜在偏差；语料本身不含分歧码点，故改造后测试仍全绿）。仍未处理的是 **`toUpperCase`**：`keys.ts` 的 `data === key.toUpperCase()` 与 `alt-screen-search.ts` 的 `charAt(0).toUpperCase()` 仍用 .NET 简单映射，等 `alt-screen-search.ts` 那一批再补对称的表。 |
+| T23 | **大小写映射需打补丁才能等于 JS（`toLowerCase` + `toUpperCase`）** | JS 的 `String.prototype.toLowerCase` 用的是 Unicode **完整**大小写映射，.NET 的 `Rune.ToLowerInvariant` 是**简单**映射，两者在 56 个码点上不同（全部是 .NET 缺映射、Unicode 版本差异：U+0130、Latin Extended-D、Garay、Beria Erfe；**不存在双方都有映射却给出不同结果的码点**），另有 U+03A3 的上下文相关 Final_Sigma 规则。因此新增 `JsString.ToLowerCase` = 简单映射 + 56 条覆盖表（`JsCaseData.LowerOverrides`）+ Final_Sigma；Final_Sigma 依赖的 `Cased` / `Case_Ignorable` 谓词按 V8 实测的集合固化成区间表（131 + 464 个区间）——注意 V8 用的是**旧版** `Case_Ignorable` 推导（含 U+0027 U+002E U+003A U+00B7 U+0387 U+055F U+05F4 U+2018 U+2019 U+2024 U+2027 U+FE13 U+FE52 U+FE55 U+FF07 U+FF0E U+FF1A 这 17 个非 Mn/Me/Cf/Lm/Sk 码点），且在扫描时**先判 case-ignorable 再判 cased**（U+02B0 同时属于两类，按可忽略处理）。`JsString.ToLowerCase` 已接入 `Fuzzy` / `Autocomplete` / `TerminalImage` / `Keys` 的全部字符串级小写调用点（这些模块原先直接用 `ToLowerInvariant`，属潜在偏差；语料本身不含分歧码点，故改造后测试仍全绿）。**对称的 `toUpperCase` 也已在 P63 补齐**：`JsCaseData.UpperOverrides`（1 个多码点展开 + 若干单码点覆盖，无上下文相关规则——`Final_Sigma` 只作用于小写）驱动 `JsString.ToUpperCase`，供 `AltScreenSearch.cs` 使用。`keys.ts` 的 `data === key.toUpperCase()` 在 C# 侧仍是 `ToUpperInvariant`，但该分支前置了 `isLetter = key[0] >= 'a' && key[0] <= 'z'`（纯 ASCII 小写字母），两者在 ASCII 上完全一致，故不构成偏差。 |
 | T24 | **CJK 字符类谓词改为码点区间表** | `utils.ts` 的三个谓词（`cjkBreakRegex` / `cjkPunctuationRegex` / `autocompleteSeparatorRegex`）建立在 `\p{Script_Extensions=Han\|Hiragana\|Katakana\|Hangul\|Bopomofo}` 上，.NET 正则无法表达 `Script_Extensions`，故按原始正则实跑探测生成区间表（`JsCjkData`，由 `JsCjk` 使用）。三处语义细节需与正则逐一核对：`cjkBreakRegex` 无锚点且无 `g` 标志，因此**参数中任意一个 rune** 命中即返回真（现有调用方都传单个字素簇，等价于判首 rune）；`autocompleteSeparatorRegex` 是「`\s` 或 CJK 标点」的并集，故 `\s` 部分仍走 `JsString.IsWhitespace`；`cjkPunctuationRegex` 只判单个码点。 |
 | T25 | **JS `await` 的微任务跳跃需显式注入点** | TS 的 `await` 即使被等值已 settle 也**必然** defer 到微任务队列（当前同步栈结束后才续接）；C# 的 `await` 对已完成的任务会**同步续接**，`Task.Yield` 才近似 JS 语义。`editor.ts` 的补全链路（`handleInput` → `getSuggestionsAsync` → 渲染列表）因此把这一步抽成 `Editor.AutocompleteDeferral`（`Func<JsMicrotask>`）：生产用 `Task.Yield`，差分测试换成 `JsMicrotaskSource` 由测试在两次操作之间 `Resume()`，使交错完全确定（`JsMicrotask` 是自定义 awaiter，`IsCompleted` 恒为 false，续接由源码保存、`Resume` 内联执行；不能用 `TaskCompletionSource`——`ConfigureAwait(false)` 的续接在 `SetResult` 里是**投递**而非内联，队列会出现"续接在途但看起来为空"的竞态）。 |
 | T26 | **`marked` 内联移植 + 行尾归一化** | `components/markdown.ts` 依赖 npm `marked` v18.0.5。C# 无 JS 解析器，故把 `marked` 的 tokenizer / lexer / rules 一并移植到 `Pi.Tui.Marked`（正则源与标志从活模块捕获，逐字节对齐）。关键语义：`Lexer.lex` 的行尾归一化是 `src.replace(/\r\n|\r/g, '\n')`——首版写成 `Replace("\r", "\n")` 会把 CRLF 拆成两个换行，使 `"a\r\nb"` 的段落被切成两个段落（15 条 CRLF 差分向量失败）。另：`marked` 的 `inlineQueue` 在 C# 里以 `MarkedInlineJob` 列表承载，`tokens.links` 侧表以 `Dictionary` 承载。 |
 | T27 | **`RegexOptions.Compiled` 规则集必须共享** | `MarkedRules` 里 ~50 个正则都带 `RegexOptions.Compiled`。.NET 在**首次匹配**时才 JIT 编译，所以若每个 `MarkedLexer` 都 `new MarkedRules()`，每次渲染都要重新编译全部正则——单次 `render` 因此要 ~300–500ms（整批 4,990 条差分用例从 13s 涨到 10+ 分钟）。改用共享的 `MarkedRules.Default`（正则匹配与 memo 工厂均线程安全）后，146 个去重输入从 45.2s 降到 0.6s（约 75×）。**教训：凡持有 `RegexOptions.Compiled` 的无状态规则集都应做成单例。** |
+| T28 | **`VIEWPORT_TUI` 的 `Symbol` 标记 → `IViewportTui` 接口** | TS 用 `Symbol.for("@earendil-works/pi-tui/viewport")` 作运行期标记，`isViewportTUI(tui)` 读该键判真，让 `setLayoutRoot` 只在备用屏上可用（`TuiMainScreen` 无此能力）。C# 无「跨包共享 Symbol 作结构标记」的等价物，改为让备用屏实现 `IViewportTui : ITui`（多一个 `SetLayoutRoot`），判定即 `is IViewportTui`——同样是结构判定，且编译期可查。 |
+| T29 | **备用屏选择态自动滚动的计时器** | `tui-alt-screen.ts` 的拖拽自动滚动在 TS 用 `setInterval`（`autoScrollTimer`），C# 用 `System.Threading.Timer`（同 T13 / T14 的既定处理）：回调在线程池线程，tick 体内对选择态加锁，`RequestRender` 本身线程安全。`NowMs()` 由 `Clock.Elapsed.TotalMilliseconds` 提供（对应 TS 的 `performance.now()`）。 |
+| T30 | **备用屏词级选择同样受 ICU 词典分词限制** | `tui-alt-screen.ts` 的双击选词 / 词级拖拽走 `word-navigation.ts` 的同一套 `Intl.Segmenter`（见 T22）。差分场景因此避开「整段汉字串」的词级选择；语料里的 CJK 选择场景用**字素级**坐标驱动（`cjk-graphemes`），只钉住字素边界与宽度计算，不触碰分词。 |
 
 ## 差分验证（latex.ts）
 
@@ -316,9 +331,47 @@ cp <pi>/packages/tui/test/{editor.test.ts,editor-history-keybindings.test.ts} .
 node --experimental-strip-types --no-warnings gen.mjs > editor-corpus.json
 ```
 
+## 差分验证（tui-alt-screen.ts）
+
+`tui-alt-screen.ts` 是**全屏渲染器**，状态极多（滚动视口、选择态、搜索态、滚动条拖拽、overlay 栈、Kitty 图像缓存、闪烁条目），且所有行为最终都体现为**屏幕输出**。因此差分取「脚本化场景 + 每步之后的可观测量」，`tests/Pi.Tui.Tests/alt-screen-corpus.json` 保存 **37 条**场景向量，全部由**原始 TypeScript 实现**实跑得到（不经 xterm，直接用假终端）：
+
+| 观测项 | 内容 |
+|---|---|
+| `screen` | `getScreenLines()` 的完整屏幕行（差分渲染 + 同步输出的最终结果） |
+| `viewportTop` / `isFollowingOutput` | 滚动位置与是否贴底跟随 |
+| `hasActiveSelection` / `hasOverlay` | 选择态与 overlay 栈是否非空 |
+| `startWrites` / `stopWrites` | `start()` / `stop()` 期间写入终端的所有字节（拼接后比对）——钉住进入/退出备用屏的转义序列、光标可见性、鼠标模式开关 |
+| `clipboard` / `openedUrls` | 复制到剪贴板的内容、点击超链接打开的 URL |
+| `overlayInputs` | overlay 组件收到的按键 |
+
+场景分组：启动/停止序列（默认 / `preserveScreen` / 禁用鼠标）、渲染与 resize（5 种终端尺寸，含 1×1 与 80×24）、键盘导航（默认翻页键 / 自定义半页 `ctrl+u`/`ctrl+d` / 自定义单行 `ctrl+y`/`ctrl+e` / OSC 133 提示符跳转）、滚轮（基础 / Alt 倍率 / 水平滚轮被忽略 / 传统 X10 `\x1b[M` / 嵌套滚动视图）、跳到底部指示器（跟随/不跟随）、滚动条悬停与拖拽、搜索（Ctrl+F 打开 → 输入查询 → 导航；以及在终端第 4 行用鼠标点搜索 overlay 的「上一个/下一个」按钮）、选择与剪贴板（OSC 52、注入成功/失败、`copyOnSelect` 关闭、双击 / 三击、词级拖拽、失焦、CJK 字素）、超链接点击、overlay 路由（聚焦 / 不捕获 / 搜索聚焦）、闪烁提示、布局根切换、组件鼠标路由。
+
+驱动方式（`tools/gen-alt-screen-corpus.mjs`，随 `tools/` 目录 gitignore）：用 `pathToFileURL` 动态 import TS 模块（Windows 绝对路径必须转 `file://` URL），把能力缓存钉成 `{ images: null, trueColor: true, hyperlinks: true }`，`wheelScrollLines` 固定为 `1`（不用 `"auto"`），并在**每一步之后 drain 微任务队列**——`copyOnSelect` 的复制是 fire-and-forget（`void this.copySelectionToClipboard()`），闪烁提示要等注入的异步剪贴板处理器 resolve 后才落地，而 C# 侧同一个委托是同步跑完的：
+
+```js
+await new Promise((resolve) => setImmediate(resolve));
+tui.renderNow();
+observe();
+```
+
+这一批踩到 / 修掉的问题：
+
+- **`startWrites` / `stopWrites` 记录形状不一致**：生成器最初记的是写入数组，C# 记的是拼接后的字符串，导致每条场景都在第一步「不等」。生成器改为 `terminal.writes.join("")`。
+- **`copyOnSelect` 场景的闪烁提示全部失败**：C# 侧能看到 `Copied!`，TS 侧看不到——根因就是上面那条微任务 drain。
+- **`overlay-search-keeps-scrolling` 的 `stopWrites` 多出一个前导 `\x1b[?25l`**：**真实缺陷**。`Tui.cs` 的 `ShowOverlay` / `HideOverlay` / `OverlayHandleImpl.Hide` 直接调了 `Terminal.HideCursor()`，而 TS 全部经 `hideTerminalCursor()`——后者在 `stopped` 之后是 no-op（停表后光标归 shell 管，必须保持可见）。已抽 `HideTerminalCursor()` 私有助手统一（`SetShowHardwareCursor` 同）。
+- **`search-navigate-buttons` 的 overlay 行选择伪影**：最初的点击坐标落在搜索 overlay 的输入行，产生零宽选择，而参考实现却高亮了它——追到 `Intl.Segmenter`：ICU 把 `┌` 与每个 `─` 各切成一个词段，而 `WordNavigation.SegmentWords` 把连续标点归成一段，于是 C# 侧「第 33 列所在的段」跨第 7–40 列，产生可见高亮。这是 T22 已记录的「ICU 词典分词不可复现」限制的又一表现，故把场景改成点**真正的导航按钮**（终端第 4 行；上一个按钮第 12–25 列、下一个第 29–35 列，悬停探针 `\x1b[<35;31;4M`），与参考测试的意图一致。
+- **实现里两处 TS 语义偏差 + 一处退化输入守卫**：`target = firstSegment.Row - scrollView.ViewportHeight / 3`（首版写成 `/2`）；`ranges.OrderByDescending(r => r.StartCol)`（JS `sort` 稳定，C# 需显式稳定排序）；`height != 0 && flashLines.Length > height` 才 `Skip`（对应 JS `slice(-0)` 保留全部元素，C# `Skip(len - 0)` 会把全部丢光）。
+
+沙盒一致性校验（必做）：用同一份真实 `tui-alt-screen.ts`（连同 import 闭包）直接跑上游 `test/tui-alt-screen.test.ts`，**64/64 全部通过**——即语料与上游用例同源，任一改动都会同时打破两边。本机复现需先备好 tui 包依赖：`get-east-asian-width` / `marked`（经 `D:\AI\参考项目\node_modules` 的 NTFS junction 指向隔离工作区）与 `@xterm/headless`（上游 `test/virtual-terminal.ts` 的假终端依赖它；本批语料的生成器改用不依赖 xterm 的 `FakeTerminal`，但一致性校验仍走上游那条路径）：
+
+```bash
+cd <pi>/packages/tui
+node --experimental-strip-types --no-warnings --test test/tui-alt-screen.test.ts
+```
+
 ## 测试覆盖
 
-`tests/Pi.Tui.Tests`（23,773 项，已禁用并行化——多个用例共享进程级全局状态：能力缓存、Kitty 元数据注册表、环境变量探测、全局键位注册表、native helper）：
+`tests/Pi.Tui.Tests`（23,812 项，已禁用并行化——多个用例共享进程级全局状态：能力缓存、Kitty 元数据注册表、环境变量探测、全局键位注册表、native helper）：
 
 | 测试文件 | 项数 | 覆盖 |
 |---|---|---|
@@ -337,4 +390,5 @@ node --experimental-strip-types --no-warnings gen.mjs > editor-corpus.json
 | `EditorCorpusTests.cs` | 115 | 7,040 条差分向量逐条对照 TS 参考实现（6,327 条场景——`api` 55 / `render` 183 / `padding` 150 / `focus` 24 / `scroll` 18 / `mouse` 15 / `paste` 70 / `sequences` 78 / `keys` 3,321 / `keysMoved` 1,476 / `keysRender` 861 / `autocomplete` 76，每步比对文本、光标、补全标志、内边距、`maxVisible` 与渲染输出；713 条 `wordWrapLine` 纯函数向量），另 4 项守卫：语料规模、覆盖分布（12 个区段、提交历史、三种渲染模式都被取到）、「`icuFrom` 标记恒为 23 条」、超宽字素簇不递归 |
 | `MarkdownCorpusTests.cs` | 4,994 | 4,990 条差分向量逐条对照 TS 参考实现（4,818 条 `render`、105 条 options、32 条 defaultStyle、21 条 noHyperlinks、12 条 highlight、1 条 transform 回调序列、1 条缓存快照），另 4 项守卫：语料规模与分区、覆盖分布（各块级构造、窄/宽宽度、两种超链接态、默认文本样式、可选主题成员）。`chalk` 的 `applyStyle`（嵌套重置重开、CRLF 感知的换行包裹）在测试里以 `ChalkStyle` 复刻 |
 | `ExtraComponentsCorpusTests.cs` | 1,696 | 1,692 条差分向量逐条对照 TS 参考实现（874 条 settings 的 op 序列重放、784 条 image 的 `render` 全矩阵、9 条 mouseRegion、25 条 flash），另 4 项守卫：语料规模与分区、覆盖分布（空/无匹配/滚动、模糊搜索、值循环、子菜单生命周期、press→click 配对与滚轮；image 的三种能力 / 三种 transcoder / 四种 mime / 缓存；flash 的 0–3 条目与 `dispose`；mouseRegion 的四个 case） |
-| `AltScreenSearchCorpusTests.cs` | ~50 | 备用屏搜索语料逐条对照 TS 参考实现（索引构建、匹配定位、`getAltScreenSearchMatchKey`、大小写不敏感路径） |
+| `AltScreenSearchCorpusTests.cs` | 520 | 备用屏搜索语料逐条对照 TS 参考实现（索引构建、匹配定位、`getAltScreenSearchMatchKey`、大小写不敏感路径） |
+| `AltScreenCorpusTests.cs` | 39 | 37 条备用屏渲染场景逐条对照 TS 参考实现（每步比对屏幕行、`viewportTop`、跟随输出、选择态、overlay 栈与输入、`start`/`stop` 写入、剪贴板、打开 URL），另 2 项守卫：语料规模（37 条、id 唯一）与覆盖分布（1×1 与 80×24、鼠标开/关的启动序列、`viewportTop` 0 与非 0、选择态开/关、非空剪贴板与两种复制结果、overlay 显示后隐藏且 `overlayInputs` 非空、打开 URL、`scrollToEndIndicator`、搜索样式、自定义键位） |

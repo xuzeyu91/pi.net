@@ -27,7 +27,7 @@ Pi 的理念是「让 Pi 适配你的工作流，而不是反过来」：库只�
 | **Pi.Codemode** | 沙箱化 JavaScript 执行：唯一能力是调用注入的工具；@options 源码解析、TypeScript 声明渲染与沙箱编排（VM 执行经 `ICodemodeJsEngine` 注入点外置） |
 | **Pi.Tui** | 终端 UI 框架：差分渲染 + 同步输出、字素级宽度测量与换行、ANSI/OSC 解析与 SGR 跟踪、Kitty 键盘协议与按键解码、overlay 栈、焦点管理、鼠标事件派发、颜色（OKLCH/OKHSL）与键位注册表、stdin 转义序列缓冲、终端内联图像（Kitty / iTerm2 协议）、栈/滚动布局引擎、LaTeX 数学渲染、斜杠命令与文件路径自动补全（含 `fd` 模糊搜索）、单行输入组件（Emacs 风格 kill/yank、撤销、括号粘贴）、选择列表组件（过滤/滚动窗口/鼠标/滚轮） |
 
-> tui 进行中（43/45 文件，见 [tui 移植状态](docs/tui-porting-status.md)）；coding-agent（交互式 CLI 主产品）与 evals 尚未移植。durable / codemode 已完整移植，见[移植状态](docs/porting-status.md)。
+> tui 进行中（44/45 文件，见 [tui 移植状态](docs/tui-porting-status.md)）；coding-agent（交互式 CLI 主产品）与 evals 尚未移植。durable / codemode 已完整移植，见[移植状态](docs/porting-status.md)。
 
 ## 快速开始
 
@@ -35,7 +35,7 @@ Pi 的理念是「让 Pi 适配你的工作流，而不是反过来」：库只�
 
 ```bash
 dotnet build Pi.slnx    # 0 警告 0 错误（沙箱内需加 -m:1）
-dotnet test  Pi.slnx    # 17329 项测试
+dotnet test  Pi.slnx    # 24657 项测试
 ```
 
 测试基于 xunit.v3 + Microsoft.Testing.Platform（MTP）。若 `dotnet test` 未触发执行，直接运行测试产物：
@@ -46,7 +46,7 @@ tests/Pi.<Pkg>.Tests/bin/Debug/net10.0/Pi.<Pkg>.Tests.exe
 
 ## 移植状态
 
-11 个运行时项目，构建 0 警告 0 错误，**17329 项测试**（2026-10-07 实测，P61 更新；durable 340 + tui 16484 + 其余 505；其中 tui 含 2822 条 latex、5244 条 autocomplete、5450 条 input、2598 条 select-list 差分向量与 9109 条大小写映射向量）。durable 满负荷时的间歇性挂起见 [docs/porting-status.md](docs/porting-status.md) 文末。
+11 个运行时项目，构建 0 警告 0 错误，**24657 项测试**（2026-10-09 实测，P64 更新；durable 340 + tui 23812 + 其余 505；其中 tui 含 2822 条 latex、5244 条 autocomplete、5450 条 input、2598 条 select-list、7040 条 editor、4990 条 markdown、1692 条 extra-components 差分向量与 9109 条大小写映射向量，另有 37 条备用屏场景）。durable 满负荷时的间歇性挂起见 [docs/porting-status.md](docs/porting-status.md) 文末。
 
 - ✅ 完整移植：telemetry / protocol / agent（含 proxy.ts）/ mcp
 - ✅ 完整移植：server / client（RPC 主循环、会话路由、Unix 域套接字传输与本地服务器发现）
@@ -54,7 +54,7 @@ tests/Pi.<Pkg>.Tests/bin/Debug/net10.0/Pi.<Pkg>.Tests.exe
 - ✅ 完整移植：chord（delta / services / facets / node 层 / api）
 - ✅ 完整移植：codemode（identifier / types / source / declarations / runtime protocol + host 沙箱编排 + prelude 源码 + Wasm 加载）
 - 🚧 durable：基础层 + storage + session + env + harness（含 tools/events/harness.ts 装配）+ **testing 层（assertions / storage-conformance / env-conformance / runner / storage-benchmark）**已完成；各 `harness-*.test.ts` 对应测试补齐中
-- 🚧 tui：核心层完成（差分渲染 + 同步输出、Unicode 宽度/换行/截断、ANSI/OSC/SGR 跟踪、按键与 Kitty 协议、overlay 栈与焦点、鼠标事件派发、颜色与 OKLCH/OKHSL、键位注册表、stdin 转义序列缓冲、终端图像（Kitty/iTerm2 编码与元数据）、布局引擎、LaTeX、自动补全、单行输入组件、选择列表组件、多行编辑器、markdown 渲染、设置列表、图像组件、备用屏搜索），43/45 文件、23,773 项测试；剩余备用屏渲染器 `tui-alt-screen.ts`
+- 🚧 tui：核心层完成（差分渲染 + 同步输出、Unicode 宽度/换行/截断、ANSI/OSC/SGR 跟踪、按键与 Kitty 协议、overlay 栈与焦点、鼠标事件派发、颜色与 OKLCH/OKHSL、键位注册表、stdin 转义序列缓冲、终端图像（Kitty/iTerm2 编码与元数据）、布局引擎、LaTeX、自动补全、单行输入组件、选择列表组件、多行编辑器、markdown 渲染、设置列表、图像组件、备用屏搜索、**备用屏渲染器（全屏模式：搜索 / 选择与复制 / 滚动条 / Kitty 图像缓存 / overlay 路由）**），44/45 文件、23,812 项测试；仅剩 `index.ts` 桶文件
 - ⏳ 未开始：coding-agent / evals
 
 逐包进度、TS → C# 关键设计差异、CBOR 线上兼容要点与路线图，见 **[docs/porting-status.md](docs/porting-status.md)**。

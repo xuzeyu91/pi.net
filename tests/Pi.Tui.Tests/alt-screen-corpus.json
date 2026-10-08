@@ -1,0 +1,5041 @@
+[
+	{
+		"kind": "scenario",
+		"id": "start-stop-default",
+		"columns": 20,
+		"rows": 6,
+		"capabilities": {
+			"images": null,
+			"trueColor": true,
+			"hyperlinks": true
+		},
+		"keybindings": null,
+		"options": {
+			"mouse": true,
+			"wheelScrollLines": 1,
+			"copyOnSelect": true,
+			"copySelection": null,
+			"scrollToEndIndicator": false,
+			"searchStyles": false,
+			"openUrl": false,
+			"onRightClickPaste": false
+		},
+		"setup": {
+			"children": [
+				{
+					"text": "line 1\nline 2\nline 3\nline 4\nline 5"
+				}
+			]
+		},
+		"steps": [
+			{
+				"op": "start"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<64;1;1M"
+			},
+			{
+				"op": "stop",
+				"preserveScreen": false
+			}
+		],
+		"observations": [
+			{
+				"screen": [
+					"line 1              \u001b[0m\u001b]8;;\u0007",
+					"line 2              \u001b[0m\u001b]8;;\u0007",
+					"line 3              \u001b[0m\u001b]8;;\u0007",
+					"line 4              \u001b[0m\u001b]8;;\u0007",
+					"line 5              \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 1              \u001b[0m\u001b]8;;\u0007",
+					"line 2              \u001b[0m\u001b]8;;\u0007",
+					"line 3              \u001b[0m\u001b]8;;\u0007",
+					"line 4              \u001b[0m\u001b]8;;\u0007",
+					"line 5              \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 1              \u001b[0m\u001b]8;;\u0007",
+					"line 2              \u001b[0m\u001b]8;;\u0007",
+					"line 3              \u001b[0m\u001b]8;;\u0007",
+					"line 4              \u001b[0m\u001b]8;;\u0007",
+					"line 5              \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			}
+		],
+		"startWrites": "\u001b[?1049h\u001b[?7l\u001b[?1000h\u001b[?1002h\u001b[?1003h\u001b[?1004h\u001b[?1006h\u001b[2J\u001b[H\u001b[?25l\u001b[?25l",
+		"stopWrites": "\u001b[?2026h\u001b[?1006l\u001b[?1004l\u001b[?1003l\u001b[?1002l\u001b[?1000l\u001b[?7h\u001b[?2026l\u001b[?25h\u001b[?2026h\u001b[?1049l\u001b[?7l\r\u001b[2Kline 1              \u001b[0m\u001b]8;;\u0007\r\n\r\u001b[2Kline 2              \u001b[0m\u001b]8;;\u0007\r\n\r\u001b[2Kline 3              \u001b[0m\u001b]8;;\u0007\r\n\r\u001b[2Kline 4              \u001b[0m\u001b]8;;\u0007\r\n\r\u001b[2Kline 5              \u001b[0m\u001b]8;;\u0007\u001b[0m\u001b[?7h\r\n\u001b[?25h\u001b[?2026l",
+		"clipboard": [],
+		"openedUrls": [],
+		"overlayInputs": {}
+	},
+	{
+		"kind": "scenario",
+		"id": "start-stop-preserve",
+		"columns": 20,
+		"rows": 6,
+		"capabilities": {
+			"images": null,
+			"trueColor": true,
+			"hyperlinks": true
+		},
+		"keybindings": null,
+		"options": {
+			"mouse": true,
+			"wheelScrollLines": 1,
+			"copyOnSelect": true,
+			"copySelection": null,
+			"scrollToEndIndicator": false,
+			"searchStyles": false,
+			"openUrl": false,
+			"onRightClickPaste": false
+		},
+		"setup": {
+			"children": [
+				{
+					"text": "line 1\nline 2\nline 3\nline 4\nline 5"
+				}
+			]
+		},
+		"steps": [
+			{
+				"op": "start"
+			},
+			{
+				"op": "stop",
+				"preserveScreen": true
+			}
+		],
+		"observations": [
+			{
+				"screen": [
+					"line 1              \u001b[0m\u001b]8;;\u0007",
+					"line 2              \u001b[0m\u001b]8;;\u0007",
+					"line 3              \u001b[0m\u001b]8;;\u0007",
+					"line 4              \u001b[0m\u001b]8;;\u0007",
+					"line 5              \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 1              \u001b[0m\u001b]8;;\u0007",
+					"line 2              \u001b[0m\u001b]8;;\u0007",
+					"line 3              \u001b[0m\u001b]8;;\u0007",
+					"line 4              \u001b[0m\u001b]8;;\u0007",
+					"line 5              \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			}
+		],
+		"startWrites": "\u001b[?1049h\u001b[?7l\u001b[?1000h\u001b[?1002h\u001b[?1003h\u001b[?1004h\u001b[?1006h\u001b[2J\u001b[H\u001b[?25l\u001b[?25l",
+		"stopWrites": "\u001b[?2026h\u001b[?1006l\u001b[?1004l\u001b[?1003l\u001b[?1002l\u001b[?1000l\u001b[?7h\u001b[?2026l\u001b[?25h\u001b[?2026h\u001b[?1049l\u001b[?25h\u001b[?2026l",
+		"clipboard": [],
+		"openedUrls": [],
+		"overlayInputs": {}
+	},
+	{
+		"kind": "scenario",
+		"id": "start-mouse-disabled",
+		"columns": 20,
+		"rows": 6,
+		"capabilities": {
+			"images": null,
+			"trueColor": true,
+			"hyperlinks": true
+		},
+		"keybindings": null,
+		"options": {
+			"mouse": false,
+			"wheelScrollLines": 1,
+			"copyOnSelect": true,
+			"copySelection": null,
+			"scrollToEndIndicator": false,
+			"searchStyles": false,
+			"openUrl": false,
+			"onRightClickPaste": false
+		},
+		"setup": {
+			"children": [
+				{
+					"text": "line 1\nline 2\nline 3\nline 4\nline 5"
+				}
+			]
+		},
+		"steps": [
+			{
+				"op": "start"
+			},
+			{
+				"op": "stop",
+				"preserveScreen": true
+			}
+		],
+		"observations": [
+			{
+				"screen": [
+					"line 1              \u001b[0m\u001b]8;;\u0007",
+					"line 2              \u001b[0m\u001b]8;;\u0007",
+					"line 3              \u001b[0m\u001b]8;;\u0007",
+					"line 4              \u001b[0m\u001b]8;;\u0007",
+					"line 5              \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 1              \u001b[0m\u001b]8;;\u0007",
+					"line 2              \u001b[0m\u001b]8;;\u0007",
+					"line 3              \u001b[0m\u001b]8;;\u0007",
+					"line 4              \u001b[0m\u001b]8;;\u0007",
+					"line 5              \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			}
+		],
+		"startWrites": "\u001b[?1049h\u001b[?7l\u001b[2J\u001b[H\u001b[?25l\u001b[?25l",
+		"stopWrites": "\u001b[?2026h\u001b[?7h\u001b[?2026l\u001b[?25h\u001b[?2026h\u001b[?1049l\u001b[?25h\u001b[?2026l",
+		"clipboard": [],
+		"openedUrls": [],
+		"overlayInputs": {}
+	},
+	{
+		"kind": "scenario",
+		"id": "render-20x4-10",
+		"columns": 20,
+		"rows": 4,
+		"capabilities": {
+			"images": null,
+			"trueColor": true,
+			"hyperlinks": true
+		},
+		"keybindings": null,
+		"options": {
+			"mouse": true,
+			"wheelScrollLines": 1,
+			"copyOnSelect": true,
+			"copySelection": null,
+			"scrollToEndIndicator": false,
+			"searchStyles": false,
+			"openUrl": false,
+			"onRightClickPaste": false
+		},
+		"setup": {
+			"children": [
+				{
+					"text": "line 1\nline 2\nline 3\nline 4\nline 5\nline 6\nline 7\nline 8\nline 9\nline 10"
+				}
+			]
+		},
+		"steps": [
+			{
+				"op": "start"
+			},
+			{
+				"op": "resize",
+				"columns": 25,
+				"rows": 6
+			},
+			{
+				"op": "stop",
+				"preserveScreen": true
+			}
+		],
+		"observations": [
+			{
+				"screen": [
+					"line 7              \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"line 9              \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 5                   \u001b[0m\u001b]8;;\u0007",
+					"line 6                   \u001b[0m\u001b]8;;\u0007",
+					"line 7                   \u001b[0m\u001b]8;;\u0007",
+					"line 8                   \u001b[0m\u001b]8;;\u0007",
+					"line 9                   \u001b[0m\u001b]8;;\u0007",
+					"line 10                  \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 4,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 5                   \u001b[0m\u001b]8;;\u0007",
+					"line 6                   \u001b[0m\u001b]8;;\u0007",
+					"line 7                   \u001b[0m\u001b]8;;\u0007",
+					"line 8                   \u001b[0m\u001b]8;;\u0007",
+					"line 9                   \u001b[0m\u001b]8;;\u0007",
+					"line 10                  \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 4,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			}
+		],
+		"startWrites": "\u001b[?1049h\u001b[?7l\u001b[?1000h\u001b[?1002h\u001b[?1003h\u001b[?1004h\u001b[?1006h\u001b[2J\u001b[H\u001b[?25l\u001b[?25l",
+		"stopWrites": "\u001b[?2026h\u001b[?1006l\u001b[?1004l\u001b[?1003l\u001b[?1002l\u001b[?1000l\u001b[?7h\u001b[?2026l\u001b[?25h\u001b[?2026h\u001b[?1049l\u001b[?25h\u001b[?2026l",
+		"clipboard": [],
+		"openedUrls": [],
+		"overlayInputs": {}
+	},
+	{
+		"kind": "scenario",
+		"id": "render-40x8-3",
+		"columns": 40,
+		"rows": 8,
+		"capabilities": {
+			"images": null,
+			"trueColor": true,
+			"hyperlinks": true
+		},
+		"keybindings": null,
+		"options": {
+			"mouse": true,
+			"wheelScrollLines": 1,
+			"copyOnSelect": true,
+			"copySelection": null,
+			"scrollToEndIndicator": false,
+			"searchStyles": false,
+			"openUrl": false,
+			"onRightClickPaste": false
+		},
+		"setup": {
+			"children": [
+				{
+					"text": "line 1\nline 2\nline 3"
+				}
+			]
+		},
+		"steps": [
+			{
+				"op": "start"
+			},
+			{
+				"op": "resize",
+				"columns": 45,
+				"rows": 10
+			},
+			{
+				"op": "stop",
+				"preserveScreen": true
+			}
+		],
+		"observations": [
+			{
+				"screen": [
+					"line 1                                  \u001b[0m\u001b]8;;\u0007",
+					"line 2                                  \u001b[0m\u001b]8;;\u0007",
+					"line 3                                  \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 1                                       \u001b[0m\u001b]8;;\u0007",
+					"line 2                                       \u001b[0m\u001b]8;;\u0007",
+					"line 3                                       \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 1                                       \u001b[0m\u001b]8;;\u0007",
+					"line 2                                       \u001b[0m\u001b]8;;\u0007",
+					"line 3                                       \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			}
+		],
+		"startWrites": "\u001b[?1049h\u001b[?7l\u001b[?1000h\u001b[?1002h\u001b[?1003h\u001b[?1004h\u001b[?1006h\u001b[2J\u001b[H\u001b[?25l\u001b[?25l",
+		"stopWrites": "\u001b[?2026h\u001b[?1006l\u001b[?1004l\u001b[?1003l\u001b[?1002l\u001b[?1000l\u001b[?7h\u001b[?2026l\u001b[?25h\u001b[?2026h\u001b[?1049l\u001b[?25h\u001b[?2026l",
+		"clipboard": [],
+		"openedUrls": [],
+		"overlayInputs": {}
+	},
+	{
+		"kind": "scenario",
+		"id": "render-10x5-30",
+		"columns": 10,
+		"rows": 5,
+		"capabilities": {
+			"images": null,
+			"trueColor": true,
+			"hyperlinks": true
+		},
+		"keybindings": null,
+		"options": {
+			"mouse": true,
+			"wheelScrollLines": 1,
+			"copyOnSelect": true,
+			"copySelection": null,
+			"scrollToEndIndicator": false,
+			"searchStyles": false,
+			"openUrl": false,
+			"onRightClickPaste": false
+		},
+		"setup": {
+			"children": [
+				{
+					"text": "line 1\nline 2\nline 3\nline 4\nline 5\nline 6\nline 7\nline 8\nline 9\nline 10\nline 11\nline 12\nline 13\nline 14\nline 15\nline 16\nline 17\nline 18\nline 19\nline 20\nline 21\nline 22\nline 23\nline 24\nline 25\nline 26\nline 27\nline 28\nline 29\nline 30"
+				}
+			]
+		},
+		"steps": [
+			{
+				"op": "start"
+			},
+			{
+				"op": "resize",
+				"columns": 15,
+				"rows": 7
+			},
+			{
+				"op": "stop",
+				"preserveScreen": true
+			}
+		],
+		"observations": [
+			{
+				"screen": [
+					"line 26   \u001b[0m\u001b]8;;\u0007",
+					"line 27   \u001b[0m\u001b]8;;\u0007",
+					"line 28   \u001b[0m\u001b]8;;\u0007",
+					"line 29   \u001b[0m\u001b]8;;\u0007",
+					"line 30   \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 25,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 24        \u001b[0m\u001b]8;;\u0007",
+					"line 25        \u001b[0m\u001b]8;;\u0007",
+					"line 26        \u001b[0m\u001b]8;;\u0007",
+					"line 27        \u001b[0m\u001b]8;;\u0007",
+					"line 28        \u001b[0m\u001b]8;;\u0007",
+					"line 29        \u001b[0m\u001b]8;;\u0007",
+					"line 30        \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 23,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 24        \u001b[0m\u001b]8;;\u0007",
+					"line 25        \u001b[0m\u001b]8;;\u0007",
+					"line 26        \u001b[0m\u001b]8;;\u0007",
+					"line 27        \u001b[0m\u001b]8;;\u0007",
+					"line 28        \u001b[0m\u001b]8;;\u0007",
+					"line 29        \u001b[0m\u001b]8;;\u0007",
+					"line 30        \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 23,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			}
+		],
+		"startWrites": "\u001b[?1049h\u001b[?7l\u001b[?1000h\u001b[?1002h\u001b[?1003h\u001b[?1004h\u001b[?1006h\u001b[2J\u001b[H\u001b[?25l\u001b[?25l",
+		"stopWrites": "\u001b[?2026h\u001b[?1006l\u001b[?1004l\u001b[?1003l\u001b[?1002l\u001b[?1000l\u001b[?7h\u001b[?2026l\u001b[?25h\u001b[?2026h\u001b[?1049l\u001b[?25h\u001b[?2026l",
+		"clipboard": [],
+		"openedUrls": [],
+		"overlayInputs": {}
+	},
+	{
+		"kind": "scenario",
+		"id": "render-80x24-5",
+		"columns": 80,
+		"rows": 24,
+		"capabilities": {
+			"images": null,
+			"trueColor": true,
+			"hyperlinks": true
+		},
+		"keybindings": null,
+		"options": {
+			"mouse": true,
+			"wheelScrollLines": 1,
+			"copyOnSelect": true,
+			"copySelection": null,
+			"scrollToEndIndicator": false,
+			"searchStyles": false,
+			"openUrl": false,
+			"onRightClickPaste": false
+		},
+		"setup": {
+			"children": [
+				{
+					"text": "line 1\nline 2\nline 3\nline 4\nline 5"
+				}
+			]
+		},
+		"steps": [
+			{
+				"op": "start"
+			},
+			{
+				"op": "resize",
+				"columns": 85,
+				"rows": 26
+			},
+			{
+				"op": "stop",
+				"preserveScreen": true
+			}
+		],
+		"observations": [
+			{
+				"screen": [
+					"line 1                                                                          \u001b[0m\u001b]8;;\u0007",
+					"line 2                                                                          \u001b[0m\u001b]8;;\u0007",
+					"line 3                                                                          \u001b[0m\u001b]8;;\u0007",
+					"line 4                                                                          \u001b[0m\u001b]8;;\u0007",
+					"line 5                                                                          \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 1                                                                               \u001b[0m\u001b]8;;\u0007",
+					"line 2                                                                               \u001b[0m\u001b]8;;\u0007",
+					"line 3                                                                               \u001b[0m\u001b]8;;\u0007",
+					"line 4                                                                               \u001b[0m\u001b]8;;\u0007",
+					"line 5                                                                               \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 1                                                                               \u001b[0m\u001b]8;;\u0007",
+					"line 2                                                                               \u001b[0m\u001b]8;;\u0007",
+					"line 3                                                                               \u001b[0m\u001b]8;;\u0007",
+					"line 4                                                                               \u001b[0m\u001b]8;;\u0007",
+					"line 5                                                                               \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			}
+		],
+		"startWrites": "\u001b[?1049h\u001b[?7l\u001b[?1000h\u001b[?1002h\u001b[?1003h\u001b[?1004h\u001b[?1006h\u001b[2J\u001b[H\u001b[?25l\u001b[?25l",
+		"stopWrites": "\u001b[?2026h\u001b[?1006l\u001b[?1004l\u001b[?1003l\u001b[?1002l\u001b[?1000l\u001b[?7h\u001b[?2026l\u001b[?25h\u001b[?2026h\u001b[?1049l\u001b[?25h\u001b[?2026l",
+		"clipboard": [],
+		"openedUrls": [],
+		"overlayInputs": {}
+	},
+	{
+		"kind": "scenario",
+		"id": "render-1x1-3",
+		"columns": 1,
+		"rows": 1,
+		"capabilities": {
+			"images": null,
+			"trueColor": true,
+			"hyperlinks": true
+		},
+		"keybindings": null,
+		"options": {
+			"mouse": true,
+			"wheelScrollLines": 1,
+			"copyOnSelect": true,
+			"copySelection": null,
+			"scrollToEndIndicator": false,
+			"searchStyles": false,
+			"openUrl": false,
+			"onRightClickPaste": false
+		},
+		"setup": {
+			"children": [
+				{
+					"text": "line 1\nline 2\nline 3"
+				}
+			]
+		},
+		"steps": [
+			{
+				"op": "start"
+			},
+			{
+				"op": "resize",
+				"columns": 6,
+				"rows": 3
+			},
+			{
+				"op": "stop",
+				"preserveScreen": true
+			}
+		],
+		"observations": [
+			{
+				"screen": [
+					"3\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 14,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 1\u001b[0m\u001b]8;;\u0007",
+					"line 2\u001b[0m\u001b]8;;\u0007",
+					"line 3\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 1\u001b[0m\u001b]8;;\u0007",
+					"line 2\u001b[0m\u001b]8;;\u0007",
+					"line 3\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			}
+		],
+		"startWrites": "\u001b[?1049h\u001b[?7l\u001b[?1000h\u001b[?1002h\u001b[?1003h\u001b[?1004h\u001b[?1006h\u001b[2J\u001b[H\u001b[?25l\u001b[?25l",
+		"stopWrites": "\u001b[?2026h\u001b[?1006l\u001b[?1004l\u001b[?1003l\u001b[?1002l\u001b[?1000l\u001b[?7h\u001b[?2026l\u001b[?25h\u001b[?2026h\u001b[?1049l\u001b[?25h\u001b[?2026l",
+		"clipboard": [],
+		"openedUrls": [],
+		"overlayInputs": {}
+	},
+	{
+		"kind": "scenario",
+		"id": "keys-default-page",
+		"columns": 20,
+		"rows": 10,
+		"capabilities": {
+			"images": null,
+			"trueColor": true,
+			"hyperlinks": true
+		},
+		"keybindings": null,
+		"options": {
+			"mouse": true,
+			"wheelScrollLines": 1,
+			"copyOnSelect": true,
+			"copySelection": null,
+			"scrollToEndIndicator": false,
+			"searchStyles": false,
+			"openUrl": false,
+			"onRightClickPaste": false
+		},
+		"setup": {
+			"children": [
+				{
+					"text": "line 1\nline 2\nline 3\nline 4\nline 5\nline 6\nline 7\nline 8\nline 9\nline 10\nline 11\nline 12\nline 13\nline 14\nline 15\nline 16\nline 17\nline 18\nline 19\nline 20\nline 21\nline 22\nline 23\nline 24\nline 25\nline 26\nline 27\nline 28\nline 29\nline 30"
+				}
+			]
+		},
+		"steps": [
+			{
+				"op": "start"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[5~"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[5~"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[6~"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[1;5H"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[1;5F"
+			},
+			{
+				"op": "stop",
+				"preserveScreen": true
+			}
+		],
+		"observations": [
+			{
+				"screen": [
+					"line 21             \u001b[0m\u001b]8;;\u0007",
+					"line 22             \u001b[0m\u001b]8;;\u0007",
+					"line 23             \u001b[0m\u001b]8;;\u0007",
+					"line 24             \u001b[0m\u001b]8;;\u0007",
+					"line 25             \u001b[0m\u001b]8;;\u0007",
+					"line 26             \u001b[0m\u001b]8;;\u0007",
+					"line 27             \u001b[0m\u001b]8;;\u0007",
+					"line 28             \u001b[0m\u001b]8;;\u0007",
+					"line 29             \u001b[0m\u001b]8;;\u0007",
+					"line 30             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 20,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 15             \u001b[0m\u001b]8;;\u0007",
+					"line 16             \u001b[0m\u001b]8;;\u0007",
+					"line 17             \u001b[0m\u001b]8;;\u0007",
+					"line 18             \u001b[0m\u001b]8;;\u0007",
+					"line 19             \u001b[0m\u001b]8;;\u0007",
+					"line 20             \u001b[0m\u001b]8;;\u0007",
+					"line 21             \u001b[0m\u001b]8;;\u0007",
+					"line 22             \u001b[0m\u001b]8;;\u0007",
+					"line 23             \u001b[0m\u001b]8;;\u0007",
+					"line 24             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 14,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 9              \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007",
+					"line 12             \u001b[0m\u001b]8;;\u0007",
+					"line 13             \u001b[0m\u001b]8;;\u0007",
+					"line 14             \u001b[0m\u001b]8;;\u0007",
+					"line 15             \u001b[0m\u001b]8;;\u0007",
+					"line 16             \u001b[0m\u001b]8;;\u0007",
+					"line 17             \u001b[0m\u001b]8;;\u0007",
+					"line 18             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 8,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 15             \u001b[0m\u001b]8;;\u0007",
+					"line 16             \u001b[0m\u001b]8;;\u0007",
+					"line 17             \u001b[0m\u001b]8;;\u0007",
+					"line 18             \u001b[0m\u001b]8;;\u0007",
+					"line 19             \u001b[0m\u001b]8;;\u0007",
+					"line 20             \u001b[0m\u001b]8;;\u0007",
+					"line 21             \u001b[0m\u001b]8;;\u0007",
+					"line 22             \u001b[0m\u001b]8;;\u0007",
+					"line 23             \u001b[0m\u001b]8;;\u0007",
+					"line 24             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 14,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 1              \u001b[0m\u001b]8;;\u0007",
+					"line 2              \u001b[0m\u001b]8;;\u0007",
+					"line 3              \u001b[0m\u001b]8;;\u0007",
+					"line 4              \u001b[0m\u001b]8;;\u0007",
+					"line 5              \u001b[0m\u001b]8;;\u0007",
+					"line 6              \u001b[0m\u001b]8;;\u0007",
+					"line 7              \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"line 9              \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 21             \u001b[0m\u001b]8;;\u0007",
+					"line 22             \u001b[0m\u001b]8;;\u0007",
+					"line 23             \u001b[0m\u001b]8;;\u0007",
+					"line 24             \u001b[0m\u001b]8;;\u0007",
+					"line 25             \u001b[0m\u001b]8;;\u0007",
+					"line 26             \u001b[0m\u001b]8;;\u0007",
+					"line 27             \u001b[0m\u001b]8;;\u0007",
+					"line 28             \u001b[0m\u001b]8;;\u0007",
+					"line 29             \u001b[0m\u001b]8;;\u0007",
+					"line 30             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 20,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 21             \u001b[0m\u001b]8;;\u0007",
+					"line 22             \u001b[0m\u001b]8;;\u0007",
+					"line 23             \u001b[0m\u001b]8;;\u0007",
+					"line 24             \u001b[0m\u001b]8;;\u0007",
+					"line 25             \u001b[0m\u001b]8;;\u0007",
+					"line 26             \u001b[0m\u001b]8;;\u0007",
+					"line 27             \u001b[0m\u001b]8;;\u0007",
+					"line 28             \u001b[0m\u001b]8;;\u0007",
+					"line 29             \u001b[0m\u001b]8;;\u0007",
+					"line 30             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 20,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			}
+		],
+		"startWrites": "\u001b[?1049h\u001b[?7l\u001b[?1000h\u001b[?1002h\u001b[?1003h\u001b[?1004h\u001b[?1006h\u001b[2J\u001b[H\u001b[?25l\u001b[?25l",
+		"stopWrites": "\u001b[?2026h\u001b[?1006l\u001b[?1004l\u001b[?1003l\u001b[?1002l\u001b[?1000l\u001b[?7h\u001b[?2026l\u001b[?25h\u001b[?2026h\u001b[?1049l\u001b[?25h\u001b[?2026l",
+		"clipboard": [],
+		"openedUrls": [],
+		"overlayInputs": {}
+	},
+	{
+		"kind": "scenario",
+		"id": "keys-custom-half-line",
+		"columns": 20,
+		"rows": 10,
+		"capabilities": {
+			"images": null,
+			"trueColor": true,
+			"hyperlinks": true
+		},
+		"keybindings": {
+			"tui.altScreen.halfPageUp": "ctrl+u",
+			"tui.altScreen.halfPageDown": "ctrl+d"
+		},
+		"options": {
+			"mouse": true,
+			"wheelScrollLines": 1,
+			"copyOnSelect": true,
+			"copySelection": null,
+			"scrollToEndIndicator": false,
+			"searchStyles": false,
+			"openUrl": false,
+			"onRightClickPaste": false
+		},
+		"setup": {
+			"children": [
+				{
+					"text": "line 1\nline 2\nline 3\nline 4\nline 5\nline 6\nline 7\nline 8\nline 9\nline 10\nline 11\nline 12\nline 13\nline 14\nline 15\nline 16\nline 17\nline 18\nline 19\nline 20\nline 21\nline 22\nline 23\nline 24\nline 25\nline 26\nline 27\nline 28\nline 29\nline 30"
+				}
+			]
+		},
+		"steps": [
+			{
+				"op": "start"
+			},
+			{
+				"op": "input",
+				"data": "\u0015"
+			},
+			{
+				"op": "input",
+				"data": "\u0015"
+			},
+			{
+				"op": "input",
+				"data": "\u0004"
+			},
+			{
+				"op": "stop",
+				"preserveScreen": true
+			}
+		],
+		"observations": [
+			{
+				"screen": [
+					"line 21             \u001b[0m\u001b]8;;\u0007",
+					"line 22             \u001b[0m\u001b]8;;\u0007",
+					"line 23             \u001b[0m\u001b]8;;\u0007",
+					"line 24             \u001b[0m\u001b]8;;\u0007",
+					"line 25             \u001b[0m\u001b]8;;\u0007",
+					"line 26             \u001b[0m\u001b]8;;\u0007",
+					"line 27             \u001b[0m\u001b]8;;\u0007",
+					"line 28             \u001b[0m\u001b]8;;\u0007",
+					"line 29             \u001b[0m\u001b]8;;\u0007",
+					"line 30             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 20,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 16             \u001b[0m\u001b]8;;\u0007",
+					"line 17             \u001b[0m\u001b]8;;\u0007",
+					"line 18             \u001b[0m\u001b]8;;\u0007",
+					"line 19             \u001b[0m\u001b]8;;\u0007",
+					"line 20             \u001b[0m\u001b]8;;\u0007",
+					"line 21             \u001b[0m\u001b]8;;\u0007",
+					"line 22             \u001b[0m\u001b]8;;\u0007",
+					"line 23             \u001b[0m\u001b]8;;\u0007",
+					"line 24             \u001b[0m\u001b]8;;\u0007",
+					"line 25             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 15,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 11             \u001b[0m\u001b]8;;\u0007",
+					"line 12             \u001b[0m\u001b]8;;\u0007",
+					"line 13             \u001b[0m\u001b]8;;\u0007",
+					"line 14             \u001b[0m\u001b]8;;\u0007",
+					"line 15             \u001b[0m\u001b]8;;\u0007",
+					"line 16             \u001b[0m\u001b]8;;\u0007",
+					"line 17             \u001b[0m\u001b]8;;\u0007",
+					"line 18             \u001b[0m\u001b]8;;\u0007",
+					"line 19             \u001b[0m\u001b]8;;\u0007",
+					"line 20             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 10,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 16             \u001b[0m\u001b]8;;\u0007",
+					"line 17             \u001b[0m\u001b]8;;\u0007",
+					"line 18             \u001b[0m\u001b]8;;\u0007",
+					"line 19             \u001b[0m\u001b]8;;\u0007",
+					"line 20             \u001b[0m\u001b]8;;\u0007",
+					"line 21             \u001b[0m\u001b]8;;\u0007",
+					"line 22             \u001b[0m\u001b]8;;\u0007",
+					"line 23             \u001b[0m\u001b]8;;\u0007",
+					"line 24             \u001b[0m\u001b]8;;\u0007",
+					"line 25             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 15,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 16             \u001b[0m\u001b]8;;\u0007",
+					"line 17             \u001b[0m\u001b]8;;\u0007",
+					"line 18             \u001b[0m\u001b]8;;\u0007",
+					"line 19             \u001b[0m\u001b]8;;\u0007",
+					"line 20             \u001b[0m\u001b]8;;\u0007",
+					"line 21             \u001b[0m\u001b]8;;\u0007",
+					"line 22             \u001b[0m\u001b]8;;\u0007",
+					"line 23             \u001b[0m\u001b]8;;\u0007",
+					"line 24             \u001b[0m\u001b]8;;\u0007",
+					"line 25             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 15,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			}
+		],
+		"startWrites": "\u001b[?1049h\u001b[?7l\u001b[?1000h\u001b[?1002h\u001b[?1003h\u001b[?1004h\u001b[?1006h\u001b[2J\u001b[H\u001b[?25l\u001b[?25l",
+		"stopWrites": "\u001b[?2026h\u001b[?1006l\u001b[?1004l\u001b[?1003l\u001b[?1002l\u001b[?1000l\u001b[?7h\u001b[?2026l\u001b[?25h\u001b[?2026h\u001b[?1049l\u001b[?25h\u001b[?2026l",
+		"clipboard": [],
+		"openedUrls": [],
+		"overlayInputs": {}
+	},
+	{
+		"kind": "scenario",
+		"id": "keys-custom-single-line",
+		"columns": 20,
+		"rows": 10,
+		"capabilities": {
+			"images": null,
+			"trueColor": true,
+			"hyperlinks": true
+		},
+		"keybindings": {
+			"tui.altScreen.lineUp": "ctrl+y",
+			"tui.altScreen.lineDown": "ctrl+e"
+		},
+		"options": {
+			"mouse": true,
+			"wheelScrollLines": 1,
+			"copyOnSelect": true,
+			"copySelection": null,
+			"scrollToEndIndicator": false,
+			"searchStyles": false,
+			"openUrl": false,
+			"onRightClickPaste": false
+		},
+		"setup": {
+			"children": [
+				{
+					"text": "line 1\nline 2\nline 3\nline 4\nline 5\nline 6\nline 7\nline 8\nline 9\nline 10\nline 11\nline 12\nline 13\nline 14\nline 15\nline 16\nline 17\nline 18\nline 19\nline 20\nline 21\nline 22\nline 23\nline 24\nline 25\nline 26\nline 27\nline 28\nline 29\nline 30"
+				}
+			]
+		},
+		"steps": [
+			{
+				"op": "start"
+			},
+			{
+				"op": "input",
+				"data": "\u0019"
+			},
+			{
+				"op": "input",
+				"data": "\u0019"
+			},
+			{
+				"op": "input",
+				"data": "\u0005"
+			},
+			{
+				"op": "stop",
+				"preserveScreen": true
+			}
+		],
+		"observations": [
+			{
+				"screen": [
+					"line 21             \u001b[0m\u001b]8;;\u0007",
+					"line 22             \u001b[0m\u001b]8;;\u0007",
+					"line 23             \u001b[0m\u001b]8;;\u0007",
+					"line 24             \u001b[0m\u001b]8;;\u0007",
+					"line 25             \u001b[0m\u001b]8;;\u0007",
+					"line 26             \u001b[0m\u001b]8;;\u0007",
+					"line 27             \u001b[0m\u001b]8;;\u0007",
+					"line 28             \u001b[0m\u001b]8;;\u0007",
+					"line 29             \u001b[0m\u001b]8;;\u0007",
+					"line 30             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 20,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 20             \u001b[0m\u001b]8;;\u0007",
+					"line 21             \u001b[0m\u001b]8;;\u0007",
+					"line 22             \u001b[0m\u001b]8;;\u0007",
+					"line 23             \u001b[0m\u001b]8;;\u0007",
+					"line 24             \u001b[0m\u001b]8;;\u0007",
+					"line 25             \u001b[0m\u001b]8;;\u0007",
+					"line 26             \u001b[0m\u001b]8;;\u0007",
+					"line 27             \u001b[0m\u001b]8;;\u0007",
+					"line 28             \u001b[0m\u001b]8;;\u0007",
+					"line 29             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 19,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 19             \u001b[0m\u001b]8;;\u0007",
+					"line 20             \u001b[0m\u001b]8;;\u0007",
+					"line 21             \u001b[0m\u001b]8;;\u0007",
+					"line 22             \u001b[0m\u001b]8;;\u0007",
+					"line 23             \u001b[0m\u001b]8;;\u0007",
+					"line 24             \u001b[0m\u001b]8;;\u0007",
+					"line 25             \u001b[0m\u001b]8;;\u0007",
+					"line 26             \u001b[0m\u001b]8;;\u0007",
+					"line 27             \u001b[0m\u001b]8;;\u0007",
+					"line 28             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 18,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 20             \u001b[0m\u001b]8;;\u0007",
+					"line 21             \u001b[0m\u001b]8;;\u0007",
+					"line 22             \u001b[0m\u001b]8;;\u0007",
+					"line 23             \u001b[0m\u001b]8;;\u0007",
+					"line 24             \u001b[0m\u001b]8;;\u0007",
+					"line 25             \u001b[0m\u001b]8;;\u0007",
+					"line 26             \u001b[0m\u001b]8;;\u0007",
+					"line 27             \u001b[0m\u001b]8;;\u0007",
+					"line 28             \u001b[0m\u001b]8;;\u0007",
+					"line 29             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 19,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 20             \u001b[0m\u001b]8;;\u0007",
+					"line 21             \u001b[0m\u001b]8;;\u0007",
+					"line 22             \u001b[0m\u001b]8;;\u0007",
+					"line 23             \u001b[0m\u001b]8;;\u0007",
+					"line 24             \u001b[0m\u001b]8;;\u0007",
+					"line 25             \u001b[0m\u001b]8;;\u0007",
+					"line 26             \u001b[0m\u001b]8;;\u0007",
+					"line 27             \u001b[0m\u001b]8;;\u0007",
+					"line 28             \u001b[0m\u001b]8;;\u0007",
+					"line 29             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 19,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			}
+		],
+		"startWrites": "\u001b[?1049h\u001b[?7l\u001b[?1000h\u001b[?1002h\u001b[?1003h\u001b[?1004h\u001b[?1006h\u001b[2J\u001b[H\u001b[?25l\u001b[?25l",
+		"stopWrites": "\u001b[?2026h\u001b[?1006l\u001b[?1004l\u001b[?1003l\u001b[?1002l\u001b[?1000l\u001b[?7h\u001b[?2026l\u001b[?25h\u001b[?2026h\u001b[?1049l\u001b[?25h\u001b[?2026l",
+		"clipboard": [],
+		"openedUrls": [],
+		"overlayInputs": {}
+	},
+	{
+		"kind": "scenario",
+		"id": "keys-prompt-navigation",
+		"columns": 30,
+		"rows": 6,
+		"capabilities": {
+			"images": null,
+			"trueColor": true,
+			"hyperlinks": true
+		},
+		"keybindings": null,
+		"options": {
+			"mouse": true,
+			"wheelScrollLines": 1,
+			"copyOnSelect": true,
+			"copySelection": null,
+			"scrollToEndIndicator": false,
+			"searchStyles": false,
+			"openUrl": false,
+			"onRightClickPaste": false
+		},
+		"setup": {
+			"children": [
+				{
+					"text": "\u001b]133;A\u0007$ first command\nfirst output\nmore output\n\u001b]133;A\u0007$ second command\nsecond output\n\u001b]133;A\u0007$ third command\nthird output\ntail one\ntail two"
+				}
+			]
+		},
+		"steps": [
+			{
+				"op": "start"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[1;5A"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[1;5A"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[1;5B"
+			},
+			{
+				"op": "stop",
+				"preserveScreen": true
+			}
+		],
+		"observations": [
+			{
+				"screen": [
+					"$ second command              \u001b[0m\u001b]8;;\u0007",
+					"second output                 \u001b[0m\u001b]8;;\u0007",
+					"$ third command               \u001b[0m\u001b]8;;\u0007",
+					"third output                  \u001b[0m\u001b]8;;\u0007",
+					"tail one                      \u001b[0m\u001b]8;;\u0007",
+					"tail two                      \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 3,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"$ first command               \u001b[0m\u001b]8;;\u0007",
+					"first output                  \u001b[0m\u001b]8;;\u0007",
+					"more output                   \u001b[0m\u001b]8;;\u0007",
+					"$ second command              \u001b[0m\u001b]8;;\u0007",
+					"second output                 \u001b[0m\u001b]8;;\u0007",
+					"$ third command               \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"$ first command               \u001b[0m\u001b]8;;\u0007",
+					"first output                  \u001b[0m\u001b]8;;\u0007",
+					"more output                   \u001b[0m\u001b]8;;\u0007",
+					"$ second command              \u001b[0m\u001b]8;;\u0007",
+					"second output                 \u001b[0m\u001b]8;;\u0007",
+					"$ third command               \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"$ second command              \u001b[0m\u001b]8;;\u0007",
+					"second output                 \u001b[0m\u001b]8;;\u0007",
+					"$ third command               \u001b[0m\u001b]8;;\u0007",
+					"third output                  \u001b[0m\u001b]8;;\u0007",
+					"tail one                      \u001b[0m\u001b]8;;\u0007",
+					"tail two                      \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 3,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"$ second command              \u001b[0m\u001b]8;;\u0007",
+					"second output                 \u001b[0m\u001b]8;;\u0007",
+					"$ third command               \u001b[0m\u001b]8;;\u0007",
+					"third output                  \u001b[0m\u001b]8;;\u0007",
+					"tail one                      \u001b[0m\u001b]8;;\u0007",
+					"tail two                      \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 3,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			}
+		],
+		"startWrites": "\u001b[?1049h\u001b[?7l\u001b[?1000h\u001b[?1002h\u001b[?1003h\u001b[?1004h\u001b[?1006h\u001b[2J\u001b[H\u001b[?25l\u001b[?25l",
+		"stopWrites": "\u001b[?2026h\u001b[?1006l\u001b[?1004l\u001b[?1003l\u001b[?1002l\u001b[?1000l\u001b[?7h\u001b[?2026l\u001b[?25h\u001b[?2026h\u001b[?1049l\u001b[?25h\u001b[?2026l",
+		"clipboard": [],
+		"openedUrls": [],
+		"overlayInputs": {}
+	},
+	{
+		"kind": "scenario",
+		"id": "wheel-basic",
+		"columns": 20,
+		"rows": 6,
+		"capabilities": {
+			"images": null,
+			"trueColor": true,
+			"hyperlinks": true
+		},
+		"keybindings": null,
+		"options": {
+			"mouse": true,
+			"wheelScrollLines": 1,
+			"copyOnSelect": true,
+			"copySelection": null,
+			"scrollToEndIndicator": false,
+			"searchStyles": false,
+			"openUrl": false,
+			"onRightClickPaste": false
+		},
+		"setup": {
+			"children": [
+				{
+					"text": "line 1\nline 2\nline 3\nline 4\nline 5\nline 6\nline 7\nline 8\nline 9\nline 10\nline 11\nline 12"
+				}
+			]
+		},
+		"steps": [
+			{
+				"op": "start"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<64;1;1M"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<64;10;3M"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<64;10;3M"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<65;10;3M"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<65;10;3M"
+			},
+			{
+				"op": "stop",
+				"preserveScreen": true
+			}
+		],
+		"observations": [
+			{
+				"screen": [
+					"line 7              \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"line 9              \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007",
+					"line 12             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 6              \u001b[0m\u001b]8;;\u0007",
+					"line 7              \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"line 9              \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 5,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 5              \u001b[0m\u001b]8;;\u0007",
+					"line 6              \u001b[0m\u001b]8;;\u0007",
+					"line 7              \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"line 9              \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 4,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 4              \u001b[0m\u001b]8;;\u0007",
+					"line 5              \u001b[0m\u001b]8;;\u0007",
+					"line 6              \u001b[0m\u001b]8;;\u0007",
+					"line 7              \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"line 9              \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 3,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 5              \u001b[0m\u001b]8;;\u0007",
+					"line 6              \u001b[0m\u001b]8;;\u0007",
+					"line 7              \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"line 9              \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 4,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 6              \u001b[0m\u001b]8;;\u0007",
+					"line 7              \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"line 9              \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 5,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 6              \u001b[0m\u001b]8;;\u0007",
+					"line 7              \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"line 9              \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 5,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			}
+		],
+		"startWrites": "\u001b[?1049h\u001b[?7l\u001b[?1000h\u001b[?1002h\u001b[?1003h\u001b[?1004h\u001b[?1006h\u001b[2J\u001b[H\u001b[?25l\u001b[?25l",
+		"stopWrites": "\u001b[?2026h\u001b[?1006l\u001b[?1004l\u001b[?1003l\u001b[?1002l\u001b[?1000l\u001b[?7h\u001b[?2026l\u001b[?25h\u001b[?2026h\u001b[?1049l\u001b[?25h\u001b[?2026l",
+		"clipboard": [],
+		"openedUrls": [],
+		"overlayInputs": {}
+	},
+	{
+		"kind": "scenario",
+		"id": "wheel-alt-multiplier",
+		"columns": 20,
+		"rows": 6,
+		"capabilities": {
+			"images": null,
+			"trueColor": true,
+			"hyperlinks": true
+		},
+		"keybindings": null,
+		"options": {
+			"mouse": true,
+			"wheelScrollLines": 1,
+			"copyOnSelect": true,
+			"copySelection": null,
+			"scrollToEndIndicator": false,
+			"searchStyles": false,
+			"openUrl": false,
+			"onRightClickPaste": false
+		},
+		"setup": {
+			"children": [
+				{
+					"text": "line 1\nline 2\nline 3\nline 4\nline 5\nline 6\nline 7\nline 8\nline 9\nline 10\nline 11\nline 12\nline 13\nline 14\nline 15\nline 16\nline 17\nline 18\nline 19\nline 20"
+				}
+			]
+		},
+		"steps": [
+			{
+				"op": "start"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<72;10;3M"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<72;10;3M"
+			},
+			{
+				"op": "stop",
+				"preserveScreen": true
+			}
+		],
+		"observations": [
+			{
+				"screen": [
+					"line 15             \u001b[0m\u001b]8;;\u0007",
+					"line 16             \u001b[0m\u001b]8;;\u0007",
+					"line 17             \u001b[0m\u001b]8;;\u0007",
+					"line 18             \u001b[0m\u001b]8;;\u0007",
+					"line 19             \u001b[0m\u001b]8;;\u0007",
+					"line 20             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 14,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007",
+					"line 12             \u001b[0m\u001b]8;;\u0007",
+					"line 13             \u001b[0m\u001b]8;;\u0007",
+					"line 14             \u001b[0m\u001b]8;;\u0007",
+					"line 15             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 9,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 5              \u001b[0m\u001b]8;;\u0007",
+					"line 6              \u001b[0m\u001b]8;;\u0007",
+					"line 7              \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"line 9              \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 4,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 5              \u001b[0m\u001b]8;;\u0007",
+					"line 6              \u001b[0m\u001b]8;;\u0007",
+					"line 7              \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"line 9              \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 4,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			}
+		],
+		"startWrites": "\u001b[?1049h\u001b[?7l\u001b[?1000h\u001b[?1002h\u001b[?1003h\u001b[?1004h\u001b[?1006h\u001b[2J\u001b[H\u001b[?25l\u001b[?25l",
+		"stopWrites": "\u001b[?2026h\u001b[?1006l\u001b[?1004l\u001b[?1003l\u001b[?1002l\u001b[?1000l\u001b[?7h\u001b[?2026l\u001b[?25h\u001b[?2026h\u001b[?1049l\u001b[?25h\u001b[?2026l",
+		"clipboard": [],
+		"openedUrls": [],
+		"overlayInputs": {}
+	},
+	{
+		"kind": "scenario",
+		"id": "wheel-horizontal-ignored",
+		"columns": 20,
+		"rows": 6,
+		"capabilities": {
+			"images": null,
+			"trueColor": true,
+			"hyperlinks": true
+		},
+		"keybindings": null,
+		"options": {
+			"mouse": true,
+			"wheelScrollLines": 1,
+			"copyOnSelect": true,
+			"copySelection": null,
+			"scrollToEndIndicator": false,
+			"searchStyles": false,
+			"openUrl": false,
+			"onRightClickPaste": false
+		},
+		"setup": {
+			"children": [
+				{
+					"text": "line 1\nline 2\nline 3\nline 4\nline 5\nline 6\nline 7\nline 8\nline 9\nline 10\nline 11\nline 12"
+				}
+			]
+		},
+		"steps": [
+			{
+				"op": "start"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<66;10;3M"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<67;10;3M"
+			},
+			{
+				"op": "stop",
+				"preserveScreen": true
+			}
+		],
+		"observations": [
+			{
+				"screen": [
+					"line 7              \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"line 9              \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007",
+					"line 12             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 7              \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"line 9              \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007",
+					"line 12             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 7              \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"line 9              \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007",
+					"line 12             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 7              \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"line 9              \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007",
+					"line 12             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			}
+		],
+		"startWrites": "\u001b[?1049h\u001b[?7l\u001b[?1000h\u001b[?1002h\u001b[?1003h\u001b[?1004h\u001b[?1006h\u001b[2J\u001b[H\u001b[?25l\u001b[?25l",
+		"stopWrites": "\u001b[?2026h\u001b[?1006l\u001b[?1004l\u001b[?1003l\u001b[?1002l\u001b[?1000l\u001b[?7h\u001b[?2026l\u001b[?25h\u001b[?2026h\u001b[?1049l\u001b[?25h\u001b[?2026l",
+		"clipboard": [],
+		"openedUrls": [],
+		"overlayInputs": {}
+	},
+	{
+		"kind": "scenario",
+		"id": "wheel-legacy-x10",
+		"columns": 20,
+		"rows": 6,
+		"capabilities": {
+			"images": null,
+			"trueColor": true,
+			"hyperlinks": true
+		},
+		"keybindings": null,
+		"options": {
+			"mouse": true,
+			"wheelScrollLines": 1,
+			"copyOnSelect": true,
+			"copySelection": null,
+			"scrollToEndIndicator": false,
+			"searchStyles": false,
+			"openUrl": false,
+			"onRightClickPaste": false
+		},
+		"setup": {
+			"children": [
+				{
+					"text": "line 1\nline 2\nline 3\nline 4\nline 5\nline 6\nline 7\nline 8\nline 9\nline 10\nline 11\nline 12"
+				}
+			]
+		},
+		"steps": [
+			{
+				"op": "start"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[M`++"
+			},
+			{
+				"op": "stop",
+				"preserveScreen": true
+			}
+		],
+		"observations": [
+			{
+				"screen": [
+					"line 7              \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"line 9              \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007",
+					"line 12             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 6              \u001b[0m\u001b]8;;\u0007",
+					"line 7              \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"line 9              \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 5,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 6              \u001b[0m\u001b]8;;\u0007",
+					"line 7              \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"line 9              \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 5,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			}
+		],
+		"startWrites": "\u001b[?1049h\u001b[?7l\u001b[?1000h\u001b[?1002h\u001b[?1003h\u001b[?1004h\u001b[?1006h\u001b[2J\u001b[H\u001b[?25l\u001b[?25l",
+		"stopWrites": "\u001b[?2026h\u001b[?1006l\u001b[?1004l\u001b[?1003l\u001b[?1002l\u001b[?1000l\u001b[?7h\u001b[?2026l\u001b[?25h\u001b[?2026h\u001b[?1049l\u001b[?25h\u001b[?2026l",
+		"clipboard": [],
+		"openedUrls": [],
+		"overlayInputs": {}
+	},
+	{
+		"kind": "scenario",
+		"id": "wheel-nested-scroll-views",
+		"columns": 24,
+		"rows": 8,
+		"capabilities": {
+			"images": null,
+			"trueColor": true,
+			"hyperlinks": true
+		},
+		"keybindings": null,
+		"options": {
+			"mouse": true,
+			"wheelScrollLines": 1,
+			"copyOnSelect": true,
+			"copySelection": null,
+			"scrollToEndIndicator": false,
+			"searchStyles": false,
+			"openUrl": false,
+			"onRightClickPaste": false
+		},
+		"setup": {
+			"root": [
+				{
+					"text": "line 1\nline 2\nline 3\nline 4\nline 5\nline 6\nline 7\nline 8\nline 9\nline 10\nline 11\nline 12\nline 13\nline 14\nline 15\nline 16\nline 17\nline 18\nline 19\nline 20",
+					"scrollView": true,
+					"basis": 0,
+					"grow": 1,
+					"minSize": 1
+				},
+				{
+					"text": "editor\nfooter",
+					"basis": "auto",
+					"minSize": 1
+				}
+			]
+		},
+		"steps": [
+			{
+				"op": "start"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<64;5;3M"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<64;5;3M"
+			},
+			{
+				"op": "stop",
+				"preserveScreen": true
+			}
+		],
+		"observations": [
+			{
+				"screen": [
+					"line 15                 \u001b[0m\u001b]8;;\u0007",
+					"line 16                 \u001b[0m\u001b]8;;\u0007",
+					"line 17                 \u001b[0m\u001b]8;;\u0007",
+					"line 18                 \u001b[0m\u001b]8;;\u0007",
+					"line 19                 \u001b[0m\u001b]8;;\u0007",
+					"line 20                 \u001b[0m\u001b]8;;\u0007",
+					"editor                  \u001b[0m\u001b]8;;\u0007",
+					"footer                  \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 14,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 14                 \u001b[0m\u001b]8;;\u0007",
+					"line 15                 \u001b[0m\u001b]8;;\u0007",
+					"line 16                 \u001b[0m\u001b]8;;\u0007",
+					"line 17                 \u001b[0m\u001b]8;;\u0007",
+					"line 18                 \u001b[0m\u001b]8;;\u0007",
+					"line 19                 \u001b[0m\u001b]8;;\u0007",
+					"editor                  \u001b[0m\u001b]8;;\u0007",
+					"footer                  \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 13,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 13                 \u001b[0m\u001b]8;;\u0007",
+					"line 14                 \u001b[0m\u001b]8;;\u0007",
+					"line 15                 \u001b[0m\u001b]8;;\u0007",
+					"line 16                 \u001b[0m\u001b]8;;\u0007",
+					"line 17                 \u001b[0m\u001b]8;;\u0007",
+					"line 18                 \u001b[0m\u001b]8;;\u0007",
+					"editor                  \u001b[0m\u001b]8;;\u0007",
+					"footer                  \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 12,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 13                 \u001b[0m\u001b]8;;\u0007",
+					"line 14                 \u001b[0m\u001b]8;;\u0007",
+					"line 15                 \u001b[0m\u001b]8;;\u0007",
+					"line 16                 \u001b[0m\u001b]8;;\u0007",
+					"line 17                 \u001b[0m\u001b]8;;\u0007",
+					"line 18                 \u001b[0m\u001b]8;;\u0007",
+					"editor                  \u001b[0m\u001b]8;;\u0007",
+					"footer                  \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 12,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			}
+		],
+		"startWrites": "\u001b[?1049h\u001b[?7l\u001b[?1000h\u001b[?1002h\u001b[?1003h\u001b[?1004h\u001b[?1006h\u001b[2J\u001b[H\u001b[?25l\u001b[?25l",
+		"stopWrites": "\u001b[?2026h\u001b[?1006l\u001b[?1004l\u001b[?1003l\u001b[?1002l\u001b[?1000l\u001b[?7h\u001b[?2026l\u001b[?25h\u001b[?2026h\u001b[?1049l\u001b[?25h\u001b[?2026l",
+		"clipboard": [],
+		"openedUrls": [],
+		"overlayInputs": {}
+	},
+	{
+		"kind": "scenario",
+		"id": "jump-to-end-indicator",
+		"columns": 30,
+		"rows": 6,
+		"capabilities": {
+			"images": null,
+			"trueColor": true,
+			"hyperlinks": true
+		},
+		"keybindings": null,
+		"options": {
+			"mouse": true,
+			"wheelScrollLines": 1,
+			"copyOnSelect": true,
+			"copySelection": null,
+			"scrollToEndIndicator": true,
+			"searchStyles": false,
+			"openUrl": false,
+			"onRightClickPaste": false
+		},
+		"setup": {
+			"root": [
+				{
+					"text": "line 1\nline 2\nline 3\nline 4\nline 5\nline 6\nline 7\nline 8",
+					"scrollView": true,
+					"basis": 0,
+					"grow": 1,
+					"minSize": 1
+				},
+				{
+					"text": "editor\nfooter",
+					"basis": "auto",
+					"minSize": 1
+				}
+			]
+		},
+		"steps": [
+			{
+				"op": "start"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<64;1;1M"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<0;15;4M"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<0;15;4m"
+			},
+			{
+				"op": "stop",
+				"preserveScreen": true
+			}
+		],
+		"observations": [
+			{
+				"screen": [
+					"line 5                        \u001b[0m\u001b]8;;\u0007",
+					"line 6                        \u001b[0m\u001b]8;;\u0007",
+					"line 7                        \u001b[0m\u001b]8;;\u0007",
+					"line 8                        \u001b[0m\u001b]8;;\u0007",
+					"editor                        \u001b[0m\u001b]8;;\u0007",
+					"footer                        \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 4,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 4                        \u001b[0m\u001b]8;;\u0007",
+					"line 5                        \u001b[0m\u001b]8;;\u0007",
+					"line 6                        \u001b[0m\u001b]8;;\u0007",
+					"line 7 \u001b[0m\u001b]8;;\u0007\u001b[7m ↓ Jump to end \u001b[0m\u001b]8;;\u0007        \u001b[0m\u001b]8;;\u0007",
+					"editor                        \u001b[0m\u001b]8;;\u0007",
+					"footer                        \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 3,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 5                        \u001b[0m\u001b]8;;\u0007",
+					"line 6                        \u001b[0m\u001b]8;;\u0007",
+					"line 7                        \u001b[0m\u001b]8;;\u0007",
+					"line 8                        \u001b[0m\u001b]8;;\u0007",
+					"editor                        \u001b[0m\u001b]8;;\u0007",
+					"footer                        \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 4,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 5                        \u001b[0m\u001b]8;;\u0007",
+					"line 6                        \u001b[0m\u001b]8;;\u0007",
+					"line 7                        \u001b[0m\u001b]8;;\u0007",
+					"line 8                        \u001b[0m\u001b]8;;\u0007",
+					"editor                        \u001b[0m\u001b]8;;\u0007",
+					"footer                        \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 4,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 5                        \u001b[0m\u001b]8;;\u0007",
+					"line 6                        \u001b[0m\u001b]8;;\u0007",
+					"line 7                        \u001b[0m\u001b]8;;\u0007",
+					"line 8                        \u001b[0m\u001b]8;;\u0007",
+					"editor                        \u001b[0m\u001b]8;;\u0007",
+					"footer                        \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 4,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			}
+		],
+		"startWrites": "\u001b[?1049h\u001b[?7l\u001b[?1000h\u001b[?1002h\u001b[?1003h\u001b[?1004h\u001b[?1006h\u001b[2J\u001b[H\u001b[?25l\u001b[?25l",
+		"stopWrites": "\u001b[?2026h\u001b[?1006l\u001b[?1004l\u001b[?1003l\u001b[?1002l\u001b[?1000l\u001b[?7h\u001b[?2026l\u001b[?25h\u001b[?2026h\u001b[?1049l\u001b[?25h\u001b[?2026l",
+		"clipboard": [],
+		"openedUrls": [],
+		"overlayInputs": {}
+	},
+	{
+		"kind": "scenario",
+		"id": "jump-to-end-indicator-no-follow",
+		"columns": 30,
+		"rows": 6,
+		"capabilities": {
+			"images": null,
+			"trueColor": true,
+			"hyperlinks": true
+		},
+		"keybindings": null,
+		"options": {
+			"mouse": true,
+			"wheelScrollLines": 1,
+			"copyOnSelect": true,
+			"copySelection": null,
+			"scrollToEndIndicator": true,
+			"searchStyles": false,
+			"openUrl": false,
+			"onRightClickPaste": false
+		},
+		"setup": {
+			"root": [
+				{
+					"text": "line 1\nline 2\nline 3\nline 4\nline 5\nline 6\nline 7\nline 8",
+					"scrollView": true,
+					"follow": "none",
+					"primary": true,
+					"basis": 0,
+					"grow": 1,
+					"minSize": 1
+				},
+				{
+					"text": "editor",
+					"basis": "auto",
+					"minSize": 1
+				}
+			]
+		},
+		"steps": [
+			{
+				"op": "start"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<64;1;1M"
+			},
+			{
+				"op": "stop",
+				"preserveScreen": true
+			}
+		],
+		"observations": [
+			{
+				"screen": [
+					"line 1                        \u001b[0m\u001b]8;;\u0007",
+					"line 2                        \u001b[0m\u001b]8;;\u0007",
+					"line 3                        \u001b[0m\u001b]8;;\u0007",
+					"line 4                        \u001b[0m\u001b]8;;\u0007",
+					"line 5                        \u001b[0m\u001b]8;;\u0007",
+					"editor                        \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 1                        \u001b[0m\u001b]8;;\u0007",
+					"line 2                        \u001b[0m\u001b]8;;\u0007",
+					"line 3                        \u001b[0m\u001b]8;;\u0007",
+					"line 4                        \u001b[0m\u001b]8;;\u0007",
+					"line 5                        \u001b[0m\u001b]8;;\u0007",
+					"editor                        \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 1                        \u001b[0m\u001b]8;;\u0007",
+					"line 2                        \u001b[0m\u001b]8;;\u0007",
+					"line 3                        \u001b[0m\u001b]8;;\u0007",
+					"line 4                        \u001b[0m\u001b]8;;\u0007",
+					"line 5                        \u001b[0m\u001b]8;;\u0007",
+					"editor                        \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			}
+		],
+		"startWrites": "\u001b[?1049h\u001b[?7l\u001b[?1000h\u001b[?1002h\u001b[?1003h\u001b[?1004h\u001b[?1006h\u001b[2J\u001b[H\u001b[?25l\u001b[?25l",
+		"stopWrites": "\u001b[?2026h\u001b[?1006l\u001b[?1004l\u001b[?1003l\u001b[?1002l\u001b[?1000l\u001b[?7h\u001b[?2026l\u001b[?25h\u001b[?2026h\u001b[?1049l\u001b[?25h\u001b[?2026l",
+		"clipboard": [],
+		"openedUrls": [],
+		"overlayInputs": {}
+	},
+	{
+		"kind": "scenario",
+		"id": "scrollbar-hover-and-drag",
+		"columns": 20,
+		"rows": 6,
+		"capabilities": {
+			"images": null,
+			"trueColor": true,
+			"hyperlinks": true
+		},
+		"keybindings": null,
+		"options": {
+			"mouse": true,
+			"wheelScrollLines": 1,
+			"copyOnSelect": true,
+			"copySelection": null,
+			"scrollToEndIndicator": false,
+			"searchStyles": false,
+			"openUrl": false,
+			"onRightClickPaste": false
+		},
+		"setup": {
+			"children": [
+				{
+					"text": "line 1\nline 2\nline 3\nline 4\nline 5\nline 6\nline 7\nline 8\nline 9\nline 10\nline 11\nline 12\nline 13\nline 14\nline 15\nline 16\nline 17\nline 18\nline 19\nline 20"
+				}
+			]
+		},
+		"steps": [
+			{
+				"op": "start"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<35;20;1M"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<0;20;5M"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<32;20;2M"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<0;20;2m"
+			},
+			{
+				"op": "stop",
+				"preserveScreen": true
+			}
+		],
+		"observations": [
+			{
+				"screen": [
+					"line 15             \u001b[0m\u001b]8;;\u0007",
+					"line 16             \u001b[0m\u001b]8;;\u0007",
+					"line 17             \u001b[0m\u001b]8;;\u0007",
+					"line 18             \u001b[0m\u001b]8;;\u0007",
+					"line 19             \u001b[0m\u001b]8;;\u0007",
+					"line 20             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 14,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 15             \u001b[0m\u001b]8;;\u0007",
+					"line 16             \u001b[0m\u001b]8;;\u0007",
+					"line 17             \u001b[0m\u001b]8;;\u0007",
+					"line 18             \u001b[0m\u001b]8;;\u0007",
+					"line 19             \u001b[0m\u001b]8;;\u0007",
+					"line 20             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 14,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 15             \u001b[0m\u001b]8;;\u0007",
+					"line 16             \u001b[0m\u001b]8;;\u0007",
+					"line 17             \u001b[0m\u001b]8;;\u0007",
+					"line 18             \u001b[0m\u001b]8;;\u0007",
+					"line 19             \u001b[0m\u001b]8;;\u0007",
+					"line 20             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 14,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 15             \u001b[0m\u001b]8;;\u0007",
+					"line 16            \u001b[7m \u001b[27m\u001b[0m\u001b]8;;\u0007",
+					"\u001b[7mline 17             \u001b[27m\u001b[0m\u001b]8;;\u0007",
+					"\u001b[7mline 18             \u001b[27m\u001b[0m\u001b]8;;\u0007",
+					"\u001b[7mline 19             \u001b[27m\u001b[0m\u001b]8;;\u0007",
+					"line 20             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 14,
+				"isFollowingOutput": true,
+				"hasActiveSelection": true,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 15    \u001b[0m\u001b]8;;\u0007\u001b[7m Copied! \u001b[0m\u001b]8;;\u0007\u001b[0m\u001b]8;;\u0007",
+					"line 16            \u001b[7m \u001b[27m\u001b[0m\u001b]8;;\u0007",
+					"\u001b[7mline 17             \u001b[27m\u001b[0m\u001b]8;;\u0007",
+					"\u001b[7mline 18             \u001b[27m\u001b[0m\u001b]8;;\u0007",
+					"\u001b[7mline 19             \u001b[27m\u001b[0m\u001b]8;;\u0007",
+					"line 20             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 14,
+				"isFollowingOutput": true,
+				"hasActiveSelection": true,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 15    \u001b[0m\u001b]8;;\u0007\u001b[7m Copied! \u001b[0m\u001b]8;;\u0007\u001b[0m\u001b]8;;\u0007",
+					"line 16            \u001b[7m \u001b[27m\u001b[0m\u001b]8;;\u0007",
+					"\u001b[7mline 17             \u001b[27m\u001b[0m\u001b]8;;\u0007",
+					"\u001b[7mline 18             \u001b[27m\u001b[0m\u001b]8;;\u0007",
+					"\u001b[7mline 19             \u001b[27m\u001b[0m\u001b]8;;\u0007",
+					"line 20             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 14,
+				"isFollowingOutput": true,
+				"hasActiveSelection": true,
+				"hasOverlay": false
+			}
+		],
+		"startWrites": "\u001b[?1049h\u001b[?7l\u001b[?1000h\u001b[?1002h\u001b[?1003h\u001b[?1004h\u001b[?1006h\u001b[2J\u001b[H\u001b[?25l\u001b[?25l",
+		"stopWrites": "\u001b[?2026h\u001b[?1006l\u001b[?1004l\u001b[?1003l\u001b[?1002l\u001b[?1000l\u001b[?7h\u001b[?2026l\u001b[?25h\u001b[?2026h\u001b[?1049l\u001b[?25h\u001b[?2026l",
+		"clipboard": [],
+		"openedUrls": [],
+		"overlayInputs": {}
+	},
+	{
+		"kind": "scenario",
+		"id": "search-open-query-navigate",
+		"columns": 40,
+		"rows": 10,
+		"capabilities": {
+			"images": null,
+			"trueColor": true,
+			"hyperlinks": true
+		},
+		"keybindings": null,
+		"options": {
+			"mouse": true,
+			"wheelScrollLines": 1,
+			"copyOnSelect": true,
+			"copySelection": null,
+			"scrollToEndIndicator": false,
+			"searchStyles": true,
+			"openUrl": false,
+			"onRightClickPaste": false
+		},
+		"setup": {
+			"children": [
+				{
+					"text": "line 1\nline 2\nline 3\nline 4\nline 5\nline 6\nline 7\nline 8\nline 9\nline 10\nline 11\nline 12\nline 13\nline 14\nline 15\nline 16\nline 17\nline 18\nline 19\nline 20"
+				}
+			]
+		},
+		"steps": [
+			{
+				"op": "start"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[102;6u"
+			},
+			{
+				"op": "input",
+				"data": "line 1"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[13u"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[13u"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[27u"
+			},
+			{
+				"op": "stop",
+				"preserveScreen": true
+			}
+		],
+		"observations": [
+			{
+				"screen": [
+					"line 11                                 \u001b[0m\u001b]8;;\u0007",
+					"line 12                                 \u001b[0m\u001b]8;;\u0007",
+					"line 13                                 \u001b[0m\u001b]8;;\u0007",
+					"line 14                                 \u001b[0m\u001b]8;;\u0007",
+					"line 15                                 \u001b[0m\u001b]8;;\u0007",
+					"line 16                                 \u001b[0m\u001b]8;;\u0007",
+					"line 17                                 \u001b[0m\u001b]8;;\u0007",
+					"line 18                                 \u001b[0m\u001b]8;;\u0007",
+					"line 19                                 \u001b[0m\u001b]8;;\u0007",
+					"line 20                                 \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 10,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 11                                 \u001b[0m\u001b]8;;\u0007",
+					"line 12\u001b[0m\u001b]8;;\u0007┌──────────────────────────────┐\u001b[0m\u001b]8;;\u0007 \u001b[0m\u001b]8;;\u0007",
+					"line 13\u001b[0m\u001b]8;;\u0007│ \u001b[7m\u001b[2mF\u001b[22m\u001b[27m\u001b[2mind in transcript\u001b[22m           │\u001b[0m\u001b]8;;\u0007 \u001b[0m\u001b]8;;\u0007",
+					"line 14\u001b[0m\u001b]8;;\u0007└──── ↑ Shift+Enter · ↓ Enter ─┘\u001b[0m\u001b]8;;\u0007 \u001b[0m\u001b]8;;\u0007",
+					"line 15                                 \u001b[0m\u001b]8;;\u0007",
+					"line 16                                 \u001b[0m\u001b]8;;\u0007",
+					"line 17                                 \u001b[0m\u001b]8;;\u0007",
+					"line 18                                 \u001b[0m\u001b]8;;\u0007",
+					"line 19                                 \u001b[0m\u001b]8;;\u0007",
+					"line 20                                 \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 10,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": true
+			},
+			{
+				"screen": [
+					"[line] [1]1                             ",
+					"<line> \u001b[0m\u001b]8;;\u0007┌──────────────────────────────┐\u001b[0m\u001b]8;;\u0007 \u001b[0m\u001b]8;;\u0007",
+					"<line> \u001b[0m\u001b]8;;\u0007│ line 1\u001b[7m \u001b[27m                \u001b[2m 3/11 \u001b[22m│\u001b[0m\u001b]8;;\u0007 \u001b[0m\u001b]8;;\u0007",
+					"<line> \u001b[0m\u001b]8;;\u0007└──── ↑ Shift+Enter · ↓ Enter ─┘\u001b[0m\u001b]8;;\u0007 \u001b[0m\u001b]8;;\u0007",
+					"<line> <1>5                             ",
+					"<line> <1>6                             ",
+					"<line> <1>7                             ",
+					"<line> <1>8                             ",
+					"<line> <1>9                             ",
+					"line 20                                 \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 10,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": true
+			},
+			{
+				"screen": [
+					"<line> <1>1                             ",
+					"[line] \u001b[0m\u001b]8;;\u0007┌──────────────────────────────┐\u001b[0m\u001b]8;;\u0007 \u001b[0m\u001b]8;;\u0007",
+					"<line> \u001b[0m\u001b]8;;\u0007│ line 1\u001b[7m \u001b[27m                \u001b[2m 4/11 \u001b[22m│\u001b[0m\u001b]8;;\u0007 \u001b[0m\u001b]8;;\u0007",
+					"<line> \u001b[0m\u001b]8;;\u0007└──── ↑ Shift+Enter · ↓ Enter ─┘\u001b[0m\u001b]8;;\u0007 \u001b[0m\u001b]8;;\u0007",
+					"<line> <1>5                             ",
+					"<line> <1>6                             ",
+					"<line> <1>7                             ",
+					"<line> <1>8                             ",
+					"<line> <1>9                             ",
+					"line 20                                 \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 10,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": true
+			},
+			{
+				"screen": [
+					"<line> <1>1                             ",
+					"<line> \u001b[0m\u001b]8;;\u0007┌──────────────────────────────┐\u001b[0m\u001b]8;;\u0007 \u001b[0m\u001b]8;;\u0007",
+					"[line] \u001b[0m\u001b]8;;\u0007│ line 1\u001b[7m \u001b[27m                \u001b[2m 5/11 \u001b[22m│\u001b[0m\u001b]8;;\u0007 \u001b[0m\u001b]8;;\u0007",
+					"<line> \u001b[0m\u001b]8;;\u0007└──── ↑ Shift+Enter · ↓ Enter ─┘\u001b[0m\u001b]8;;\u0007 \u001b[0m\u001b]8;;\u0007",
+					"<line> <1>5                             ",
+					"<line> <1>6                             ",
+					"<line> <1>7                             ",
+					"<line> <1>8                             ",
+					"<line> <1>9                             ",
+					"line 20                                 \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 10,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": true
+			},
+			{
+				"screen": [
+					"line 11                                 \u001b[0m\u001b]8;;\u0007",
+					"line 12                                 \u001b[0m\u001b]8;;\u0007",
+					"line 13                                 \u001b[0m\u001b]8;;\u0007",
+					"line 14                                 \u001b[0m\u001b]8;;\u0007",
+					"line 15                                 \u001b[0m\u001b]8;;\u0007",
+					"line 16                                 \u001b[0m\u001b]8;;\u0007",
+					"line 17                                 \u001b[0m\u001b]8;;\u0007",
+					"line 18                                 \u001b[0m\u001b]8;;\u0007",
+					"line 19                                 \u001b[0m\u001b]8;;\u0007",
+					"line 20                                 \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 10,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 11                                 \u001b[0m\u001b]8;;\u0007",
+					"line 12                                 \u001b[0m\u001b]8;;\u0007",
+					"line 13                                 \u001b[0m\u001b]8;;\u0007",
+					"line 14                                 \u001b[0m\u001b]8;;\u0007",
+					"line 15                                 \u001b[0m\u001b]8;;\u0007",
+					"line 16                                 \u001b[0m\u001b]8;;\u0007",
+					"line 17                                 \u001b[0m\u001b]8;;\u0007",
+					"line 18                                 \u001b[0m\u001b]8;;\u0007",
+					"line 19                                 \u001b[0m\u001b]8;;\u0007",
+					"line 20                                 \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 10,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			}
+		],
+		"startWrites": "\u001b[?1049h\u001b[?7l\u001b[?1000h\u001b[?1002h\u001b[?1003h\u001b[?1004h\u001b[?1006h\u001b[2J\u001b[H\u001b[?25l\u001b[?25l",
+		"stopWrites": "\u001b[?2026h\u001b[?1006l\u001b[?1004l\u001b[?1003l\u001b[?1002l\u001b[?1000l\u001b[?7h\u001b[?2026l\u001b[?25h\u001b[?2026h\u001b[?1049l\u001b[?25h\u001b[?2026l",
+		"clipboard": [],
+		"openedUrls": [],
+		"overlayInputs": {}
+	},
+	{
+		"kind": "scenario",
+		"id": "search-navigate-buttons",
+		"columns": 40,
+		"rows": 10,
+		"capabilities": {
+			"images": null,
+			"trueColor": true,
+			"hyperlinks": true
+		},
+		"keybindings": null,
+		"options": {
+			"mouse": true,
+			"wheelScrollLines": 1,
+			"copyOnSelect": true,
+			"copySelection": null,
+			"scrollToEndIndicator": false,
+			"searchStyles": false,
+			"openUrl": false,
+			"onRightClickPaste": false
+		},
+		"setup": {
+			"children": [
+				{
+					"text": "line 1\nline 2\nline 3\nline 4\nline 5\nline 6\nline 7\nline 8\nline 9\nline 10\nline 11\nline 12\nline 13\nline 14\nline 15\nline 16\nline 17\nline 18\nline 19\nline 20"
+				}
+			]
+		},
+		"steps": [
+			{
+				"op": "start"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[102;6u"
+			},
+			{
+				"op": "input",
+				"data": "line"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<35;31;4M"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<0;31;4M"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<0;31;4m"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<0;21;4M"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<0;21;4m"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[102;6u"
+			},
+			{
+				"op": "stop",
+				"preserveScreen": true
+			}
+		],
+		"observations": [
+			{
+				"screen": [
+					"line 11                                 \u001b[0m\u001b]8;;\u0007",
+					"line 12                                 \u001b[0m\u001b]8;;\u0007",
+					"line 13                                 \u001b[0m\u001b]8;;\u0007",
+					"line 14                                 \u001b[0m\u001b]8;;\u0007",
+					"line 15                                 \u001b[0m\u001b]8;;\u0007",
+					"line 16                                 \u001b[0m\u001b]8;;\u0007",
+					"line 17                                 \u001b[0m\u001b]8;;\u0007",
+					"line 18                                 \u001b[0m\u001b]8;;\u0007",
+					"line 19                                 \u001b[0m\u001b]8;;\u0007",
+					"line 20                                 \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 10,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 11                                 \u001b[0m\u001b]8;;\u0007",
+					"line 12\u001b[0m\u001b]8;;\u0007┌──────────────────────────────┐\u001b[0m\u001b]8;;\u0007 \u001b[0m\u001b]8;;\u0007",
+					"line 13\u001b[0m\u001b]8;;\u0007│ \u001b[7m\u001b[2mF\u001b[22m\u001b[27m\u001b[2mind in transcript\u001b[22m           │\u001b[0m\u001b]8;;\u0007 \u001b[0m\u001b]8;;\u0007",
+					"line 14\u001b[0m\u001b]8;;\u0007└──── ↑ Shift+Enter · ↓ Enter ─┘\u001b[0m\u001b]8;;\u0007 \u001b[0m\u001b]8;;\u0007",
+					"line 15                                 \u001b[0m\u001b]8;;\u0007",
+					"line 16                                 \u001b[0m\u001b]8;;\u0007",
+					"line 17                                 \u001b[0m\u001b]8;;\u0007",
+					"line 18                                 \u001b[0m\u001b]8;;\u0007",
+					"line 19                                 \u001b[0m\u001b]8;;\u0007",
+					"line 20                                 \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 10,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": true
+			},
+			{
+				"screen": [
+					"\u001b[1;7mline\u001b[22;27m 11                                 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 12\u001b[0m\u001b]8;;\u0007┌──────────────────────────────┐\u001b[0m\u001b]8;;\u0007 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 13\u001b[0m\u001b]8;;\u0007│ line\u001b[7m \u001b[27m                 \u001b[2m 11/20 \u001b[22m│\u001b[0m\u001b]8;;\u0007 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 14\u001b[0m\u001b]8;;\u0007└──── ↑ Shift+Enter · ↓ Enter ─┘\u001b[0m\u001b]8;;\u0007 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 15                                 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 16                                 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 17                                 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 18                                 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 19                                 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 20                                 \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 10,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": true
+			},
+			{
+				"screen": [
+					"\u001b[1;7mline\u001b[22;27m 11                                 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 12\u001b[0m\u001b]8;;\u0007┌──────────────────────────────┐\u001b[0m\u001b]8;;\u0007 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 13\u001b[0m\u001b]8;;\u0007│ line\u001b[7m \u001b[27m                 \u001b[2m 11/20 \u001b[22m│\u001b[0m\u001b]8;;\u0007 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 14\u001b[0m\u001b]8;;\u0007└──── ↑ Shift+Enter · ↓ Enter ─┘\u001b[0m\u001b]8;;\u0007 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 15                                 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 16                                 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 17                                 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 18                                 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 19                                 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 20                                 \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 10,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": true
+			},
+			{
+				"screen": [
+					"\u001b[4mline\u001b[24m 11                                 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[1;7mline\u001b[22;27m 12\u001b[0m\u001b]8;;\u0007┌──────────────────────────────┐\u001b[0m\u001b]8;;\u0007 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 13\u001b[0m\u001b]8;;\u0007│ line\u001b[7m \u001b[27m                 \u001b[2m 12/20 \u001b[22m│\u001b[0m\u001b]8;;\u0007 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 14\u001b[0m\u001b]8;;\u0007└──── ↑ Shift+Enter · ↓ Enter ─┘\u001b[0m\u001b]8;;\u0007 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 15                                 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 16                                 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 17                                 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 18                                 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 19                                 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 20                                 \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 10,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": true
+			},
+			{
+				"screen": [
+					"\u001b[4mline\u001b[24m 11                                 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[1;7mline\u001b[22;27m 12\u001b[0m\u001b]8;;\u0007┌──────────────────────────────┐\u001b[0m\u001b]8;;\u0007 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 13\u001b[0m\u001b]8;;\u0007│ line\u001b[7m \u001b[27m                 \u001b[2m 12/20 \u001b[22m│\u001b[0m\u001b]8;;\u0007 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 14\u001b[0m\u001b]8;;\u0007└──── ↑ Shift+Enter · ↓ Enter ─┘\u001b[0m\u001b]8;;\u0007 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 15                                 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 16                                 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 17                                 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 18                                 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 19                                 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 20                                 \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 10,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": true
+			},
+			{
+				"screen": [
+					"\u001b[1;7mline\u001b[22;27m 11                                 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 12\u001b[0m\u001b]8;;\u0007┌──────────────────────────────┐\u001b[0m\u001b]8;;\u0007 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 13\u001b[0m\u001b]8;;\u0007│ line\u001b[7m \u001b[27m                 \u001b[2m 11/20 \u001b[22m│\u001b[0m\u001b]8;;\u0007 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 14\u001b[0m\u001b]8;;\u0007└──── ↑ Shift+Enter · ↓ Enter ─┘\u001b[0m\u001b]8;;\u0007 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 15                                 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 16                                 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 17                                 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 18                                 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 19                                 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 20                                 \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 10,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": true
+			},
+			{
+				"screen": [
+					"\u001b[1;7mline\u001b[22;27m 11                                 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 12\u001b[0m\u001b]8;;\u0007┌──────────────────────────────┐\u001b[0m\u001b]8;;\u0007 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 13\u001b[0m\u001b]8;;\u0007│ line\u001b[7m \u001b[27m                 \u001b[2m 11/20 \u001b[22m│\u001b[0m\u001b]8;;\u0007 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 14\u001b[0m\u001b]8;;\u0007└──── ↑ Shift+Enter · ↓ Enter ─┘\u001b[0m\u001b]8;;\u0007 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 15                                 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 16                                 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 17                                 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 18                                 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 19                                 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[4mline\u001b[24m 20                                 \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 10,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": true
+			},
+			{
+				"screen": [
+					"line 11                                 \u001b[0m\u001b]8;;\u0007",
+					"line 12                                 \u001b[0m\u001b]8;;\u0007",
+					"line 13                                 \u001b[0m\u001b]8;;\u0007",
+					"line 14                                 \u001b[0m\u001b]8;;\u0007",
+					"line 15                                 \u001b[0m\u001b]8;;\u0007",
+					"line 16                                 \u001b[0m\u001b]8;;\u0007",
+					"line 17                                 \u001b[0m\u001b]8;;\u0007",
+					"line 18                                 \u001b[0m\u001b]8;;\u0007",
+					"line 19                                 \u001b[0m\u001b]8;;\u0007",
+					"line 20                                 \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 10,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 11                                 \u001b[0m\u001b]8;;\u0007",
+					"line 12                                 \u001b[0m\u001b]8;;\u0007",
+					"line 13                                 \u001b[0m\u001b]8;;\u0007",
+					"line 14                                 \u001b[0m\u001b]8;;\u0007",
+					"line 15                                 \u001b[0m\u001b]8;;\u0007",
+					"line 16                                 \u001b[0m\u001b]8;;\u0007",
+					"line 17                                 \u001b[0m\u001b]8;;\u0007",
+					"line 18                                 \u001b[0m\u001b]8;;\u0007",
+					"line 19                                 \u001b[0m\u001b]8;;\u0007",
+					"line 20                                 \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 10,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			}
+		],
+		"startWrites": "\u001b[?1049h\u001b[?7l\u001b[?1000h\u001b[?1002h\u001b[?1003h\u001b[?1004h\u001b[?1006h\u001b[2J\u001b[H\u001b[?25l\u001b[?25l",
+		"stopWrites": "\u001b[?2026h\u001b[?1006l\u001b[?1004l\u001b[?1003l\u001b[?1002l\u001b[?1000l\u001b[?7h\u001b[?2026l\u001b[?25h\u001b[?2026h\u001b[?1049l\u001b[?25h\u001b[?2026l",
+		"clipboard": [],
+		"openedUrls": [],
+		"overlayInputs": {}
+	},
+	{
+		"kind": "scenario",
+		"id": "selection-drag-copy-osc52",
+		"columns": 20,
+		"rows": 6,
+		"capabilities": {
+			"images": null,
+			"trueColor": true,
+			"hyperlinks": true
+		},
+		"keybindings": null,
+		"options": {
+			"mouse": true,
+			"wheelScrollLines": 1,
+			"copyOnSelect": true,
+			"copySelection": null,
+			"scrollToEndIndicator": false,
+			"searchStyles": false,
+			"openUrl": false,
+			"onRightClickPaste": false
+		},
+		"setup": {
+			"children": [
+				{
+					"text": "line 1\nline 2\nline 3\nline 4\nline 5\nline 6\nline 7\nline 8\nline 9\nline 10\nline 11\nline 12"
+				}
+			]
+		},
+		"steps": [
+			{
+				"op": "start"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<0;1;3M"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<32;8;3M"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<0;8;3m"
+			},
+			{
+				"op": "stop",
+				"preserveScreen": true
+			}
+		],
+		"observations": [
+			{
+				"screen": [
+					"line 7              \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"line 9              \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007",
+					"line 12             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 7              \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"line 9              \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007",
+					"line 12             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 7              \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"\u001b[7mline 9  \u001b[27m            \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007",
+					"line 12             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": true,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 7     \u001b[0m\u001b]8;;\u0007\u001b[7m Copied! \u001b[0m\u001b]8;;\u0007\u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"\u001b[7mline 9  \u001b[27m            \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007",
+					"line 12             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": true,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 7     \u001b[0m\u001b]8;;\u0007\u001b[7m Copied! \u001b[0m\u001b]8;;\u0007\u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"\u001b[7mline 9  \u001b[27m            \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007",
+					"line 12             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": true,
+				"hasOverlay": false
+			}
+		],
+		"startWrites": "\u001b[?1049h\u001b[?7l\u001b[?1000h\u001b[?1002h\u001b[?1003h\u001b[?1004h\u001b[?1006h\u001b[2J\u001b[H\u001b[?25l\u001b[?25l",
+		"stopWrites": "\u001b[?2026h\u001b[?1006l\u001b[?1004l\u001b[?1003l\u001b[?1002l\u001b[?1000l\u001b[?7h\u001b[?2026l\u001b[?25h\u001b[?2026h\u001b[?1049l\u001b[?25h\u001b[?2026l",
+		"clipboard": [],
+		"openedUrls": [],
+		"overlayInputs": {}
+	},
+	{
+		"kind": "scenario",
+		"id": "selection-injected-clipboard-ok",
+		"columns": 20,
+		"rows": 6,
+		"capabilities": {
+			"images": null,
+			"trueColor": true,
+			"hyperlinks": true
+		},
+		"keybindings": null,
+		"options": {
+			"mouse": true,
+			"wheelScrollLines": 1,
+			"copyOnSelect": true,
+			"copySelection": "ok",
+			"scrollToEndIndicator": false,
+			"searchStyles": false,
+			"openUrl": false,
+			"onRightClickPaste": false
+		},
+		"setup": {
+			"children": [
+				{
+					"text": "line 1\nline 2\nline 3\nline 4\nline 5\nline 6\nline 7\nline 8\nline 9\nline 10\nline 11\nline 12"
+				}
+			]
+		},
+		"steps": [
+			{
+				"op": "start"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<0;1;3M"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<32;8;3M"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<0;8;3m"
+			},
+			{
+				"op": "copyActive"
+			},
+			{
+				"op": "stop",
+				"preserveScreen": true
+			}
+		],
+		"observations": [
+			{
+				"screen": [
+					"line 7              \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"line 9              \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007",
+					"line 12             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 7              \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"line 9              \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007",
+					"line 12             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 7              \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"\u001b[7mline 9  \u001b[27m            \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007",
+					"line 12             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": true,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 7     \u001b[0m\u001b]8;;\u0007\u001b[7m Copied! \u001b[0m\u001b]8;;\u0007\u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"\u001b[7mline 9  \u001b[27m            \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007",
+					"line 12             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": true,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 7     \u001b[0m\u001b]8;;\u0007\u001b[7m Copied! \u001b[0m\u001b]8;;\u0007\u001b[0m\u001b]8;;\u0007",
+					"line 8     \u001b[0m\u001b]8;;\u0007\u001b[7m Copied! \u001b[0m\u001b]8;;\u0007\u001b[0m\u001b]8;;\u0007",
+					"\u001b[7mline 9  \u001b[27m            \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007",
+					"line 12             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": true,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 7     \u001b[0m\u001b]8;;\u0007\u001b[7m Copied! \u001b[0m\u001b]8;;\u0007\u001b[0m\u001b]8;;\u0007",
+					"line 8     \u001b[0m\u001b]8;;\u0007\u001b[7m Copied! \u001b[0m\u001b]8;;\u0007\u001b[0m\u001b]8;;\u0007",
+					"\u001b[7mline 9  \u001b[27m            \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007",
+					"line 12             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": true,
+				"hasOverlay": false
+			}
+		],
+		"startWrites": "\u001b[?1049h\u001b[?7l\u001b[?1000h\u001b[?1002h\u001b[?1003h\u001b[?1004h\u001b[?1006h\u001b[2J\u001b[H\u001b[?25l\u001b[?25l",
+		"stopWrites": "\u001b[?2026h\u001b[?1006l\u001b[?1004l\u001b[?1003l\u001b[?1002l\u001b[?1000l\u001b[?7h\u001b[?2026l\u001b[?25h\u001b[?2026h\u001b[?1049l\u001b[?25h\u001b[?2026l",
+		"clipboard": [
+			"line 9",
+			"line 9"
+		],
+		"openedUrls": [],
+		"overlayInputs": {}
+	},
+	{
+		"kind": "scenario",
+		"id": "selection-injected-clipboard-error",
+		"columns": 20,
+		"rows": 6,
+		"capabilities": {
+			"images": null,
+			"trueColor": true,
+			"hyperlinks": true
+		},
+		"keybindings": null,
+		"options": {
+			"mouse": true,
+			"wheelScrollLines": 1,
+			"copyOnSelect": true,
+			"copySelection": "message",
+			"scrollToEndIndicator": false,
+			"searchStyles": false,
+			"openUrl": false,
+			"onRightClickPaste": false
+		},
+		"setup": {
+			"children": [
+				{
+					"text": "line 1\nline 2\nline 3\nline 4\nline 5\nline 6\nline 7\nline 8\nline 9\nline 10\nline 11\nline 12"
+				}
+			]
+		},
+		"steps": [
+			{
+				"op": "start"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<0;1;3M"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<32;8;3M"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<0;8;3m"
+			},
+			{
+				"op": "stop",
+				"preserveScreen": true
+			}
+		],
+		"observations": [
+			{
+				"screen": [
+					"line 7              \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"line 9              \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007",
+					"line 12             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 7              \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"line 9              \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007",
+					"line 12             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 7              \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"\u001b[7mline 9  \u001b[27m            \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007",
+					"line 12             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": true,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"l\u001b[0m\u001b]8;;\u0007\u001b[7m clipboard offline \u001b[0m\u001b]8;;\u0007\u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"\u001b[7mline 9  \u001b[27m            \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007",
+					"line 12             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": true,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"l\u001b[0m\u001b]8;;\u0007\u001b[7m clipboard offline \u001b[0m\u001b]8;;\u0007\u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"\u001b[7mline 9  \u001b[27m            \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007",
+					"line 12             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": true,
+				"hasOverlay": false
+			}
+		],
+		"startWrites": "\u001b[?1049h\u001b[?7l\u001b[?1000h\u001b[?1002h\u001b[?1003h\u001b[?1004h\u001b[?1006h\u001b[2J\u001b[H\u001b[?25l\u001b[?25l",
+		"stopWrites": "\u001b[?2026h\u001b[?1006l\u001b[?1004l\u001b[?1003l\u001b[?1002l\u001b[?1000l\u001b[?7h\u001b[?2026l\u001b[?25h\u001b[?2026h\u001b[?1049l\u001b[?25h\u001b[?2026l",
+		"clipboard": [
+			"line 9"
+		],
+		"openedUrls": [],
+		"overlayInputs": {}
+	},
+	{
+		"kind": "scenario",
+		"id": "selection-copy-disabled",
+		"columns": 20,
+		"rows": 6,
+		"capabilities": {
+			"images": null,
+			"trueColor": true,
+			"hyperlinks": true
+		},
+		"keybindings": null,
+		"options": {
+			"mouse": true,
+			"wheelScrollLines": 1,
+			"copyOnSelect": false,
+			"copySelection": "ok",
+			"scrollToEndIndicator": false,
+			"searchStyles": false,
+			"openUrl": false,
+			"onRightClickPaste": false
+		},
+		"setup": {
+			"children": [
+				{
+					"text": "line 1\nline 2\nline 3\nline 4\nline 5\nline 6\nline 7\nline 8\nline 9\nline 10\nline 11\nline 12"
+				}
+			]
+		},
+		"steps": [
+			{
+				"op": "start"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<0;1;3M"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<32;8;3M"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<0;8;3m"
+			},
+			{
+				"op": "setCopyOnSelect",
+				"enabled": true
+			},
+			{
+				"op": "copyActive"
+			},
+			{
+				"op": "stop",
+				"preserveScreen": true
+			}
+		],
+		"observations": [
+			{
+				"screen": [
+					"line 7              \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"line 9              \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007",
+					"line 12             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 7              \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"line 9              \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007",
+					"line 12             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 7              \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"\u001b[7mline 9  \u001b[27m            \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007",
+					"line 12             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": true,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 7              \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"\u001b[7mline 9  \u001b[27m            \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007",
+					"line 12             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": true,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 7              \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"\u001b[7mline 9  \u001b[27m            \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007",
+					"line 12             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": true,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 7     \u001b[0m\u001b]8;;\u0007\u001b[7m Copied! \u001b[0m\u001b]8;;\u0007\u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"\u001b[7mline 9  \u001b[27m            \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007",
+					"line 12             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": true,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 7     \u001b[0m\u001b]8;;\u0007\u001b[7m Copied! \u001b[0m\u001b]8;;\u0007\u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"\u001b[7mline 9  \u001b[27m            \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007",
+					"line 12             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": true,
+				"hasOverlay": false
+			}
+		],
+		"startWrites": "\u001b[?1049h\u001b[?7l\u001b[?1000h\u001b[?1002h\u001b[?1003h\u001b[?1004h\u001b[?1006h\u001b[2J\u001b[H\u001b[?25l\u001b[?25l",
+		"stopWrites": "\u001b[?2026h\u001b[?1006l\u001b[?1004l\u001b[?1003l\u001b[?1002l\u001b[?1000l\u001b[?7h\u001b[?2026l\u001b[?25h\u001b[?2026h\u001b[?1049l\u001b[?25h\u001b[?2026l",
+		"clipboard": [
+			"line 9"
+		],
+		"openedUrls": [],
+		"overlayInputs": {}
+	},
+	{
+		"kind": "scenario",
+		"id": "selection-double-triple-click",
+		"columns": 24,
+		"rows": 6,
+		"capabilities": {
+			"images": null,
+			"trueColor": true,
+			"hyperlinks": true
+		},
+		"keybindings": null,
+		"options": {
+			"mouse": true,
+			"wheelScrollLines": 1,
+			"copyOnSelect": true,
+			"copySelection": "ok",
+			"scrollToEndIndicator": false,
+			"searchStyles": false,
+			"openUrl": false,
+			"onRightClickPaste": false
+		},
+		"setup": {
+			"children": [
+				{
+					"text": "alpha beta-gamma/delta epsilon\nsecond line here"
+				}
+			]
+		},
+		"steps": [
+			{
+				"op": "start"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<0;2;1M"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<0;2;1m"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<0;2;1M"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<0;2;1m"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<0;2;1M"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<0;2;1m"
+			},
+			{
+				"op": "stop",
+				"preserveScreen": true
+			}
+		],
+		"observations": [
+			{
+				"screen": [
+					"alpha beta-gamma/delta  \u001b[0m\u001b]8;;\u0007",
+					"epsilon                 \u001b[0m\u001b]8;;\u0007",
+					"second line here        \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"alpha beta-gamma/delta  \u001b[0m\u001b]8;;\u0007",
+					"epsilon                 \u001b[0m\u001b]8;;\u0007",
+					"second line here        \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"alpha beta-gamma/delta  \u001b[0m\u001b]8;;\u0007",
+					"epsilon                 \u001b[0m\u001b]8;;\u0007",
+					"second line here        \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"\u001b[7malpha\u001b[27m beta-gamma/delta  \u001b[0m\u001b]8;;\u0007",
+					"epsilon                 \u001b[0m\u001b]8;;\u0007",
+					"second line here        \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": true,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"\u001b[7malpha\u001b[27m beta-gamm\u001b[0m\u001b]8;;\u0007\u001b[7m Copied! \u001b[0m\u001b]8;;\u0007\u001b[0m\u001b]8;;\u0007",
+					"epsilon                 \u001b[0m\u001b]8;;\u0007",
+					"second line here        \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": true,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"\u001b[7malpha beta-gamm\u001b[0m\u001b]8;;\u0007\u001b[7m Copied! \u001b[0m\u001b]8;;\u0007\u001b[0m\u001b]8;;\u0007",
+					"epsilon                 \u001b[0m\u001b]8;;\u0007",
+					"second line here        \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": true,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"\u001b[7malpha beta-gamm\u001b[0m\u001b]8;;\u0007\u001b[7m Copied! \u001b[0m\u001b]8;;\u0007\u001b[0m\u001b]8;;\u0007",
+					"epsilon        \u001b[0m\u001b]8;;\u0007\u001b[7m Copied! \u001b[0m\u001b]8;;\u0007\u001b[0m\u001b]8;;\u0007",
+					"second line here        \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": true,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"\u001b[7malpha beta-gamm\u001b[0m\u001b]8;;\u0007\u001b[7m Copied! \u001b[0m\u001b]8;;\u0007\u001b[0m\u001b]8;;\u0007",
+					"epsilon        \u001b[0m\u001b]8;;\u0007\u001b[7m Copied! \u001b[0m\u001b]8;;\u0007\u001b[0m\u001b]8;;\u0007",
+					"second line here        \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": true,
+				"hasOverlay": false
+			}
+		],
+		"startWrites": "\u001b[?1049h\u001b[?7l\u001b[?1000h\u001b[?1002h\u001b[?1003h\u001b[?1004h\u001b[?1006h\u001b[2J\u001b[H\u001b[?25l\u001b[?25l",
+		"stopWrites": "\u001b[?2026h\u001b[?1006l\u001b[?1004l\u001b[?1003l\u001b[?1002l\u001b[?1000l\u001b[?7h\u001b[?2026l\u001b[?25h\u001b[?2026h\u001b[?1049l\u001b[?25h\u001b[?2026l",
+		"clipboard": [
+			"alpha",
+			"alpha beta-gamma/delta"
+		],
+		"openedUrls": [],
+		"overlayInputs": {}
+	},
+	{
+		"kind": "scenario",
+		"id": "selection-word-drag",
+		"columns": 24,
+		"rows": 6,
+		"capabilities": {
+			"images": null,
+			"trueColor": true,
+			"hyperlinks": true
+		},
+		"keybindings": null,
+		"options": {
+			"mouse": true,
+			"wheelScrollLines": 1,
+			"copyOnSelect": true,
+			"copySelection": "ok",
+			"scrollToEndIndicator": false,
+			"searchStyles": false,
+			"openUrl": false,
+			"onRightClickPaste": false
+		},
+		"setup": {
+			"children": [
+				{
+					"text": "alpha beta-gamma/delta epsilon\nsecond line here"
+				}
+			]
+		},
+		"steps": [
+			{
+				"op": "start"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<0;2;1M"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<0;2;1m"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<0;2;1M"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<32;9;1M"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<0;9;1m"
+			},
+			{
+				"op": "stop",
+				"preserveScreen": true
+			}
+		],
+		"observations": [
+			{
+				"screen": [
+					"alpha beta-gamma/delta  \u001b[0m\u001b]8;;\u0007",
+					"epsilon                 \u001b[0m\u001b]8;;\u0007",
+					"second line here        \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"alpha beta-gamma/delta  \u001b[0m\u001b]8;;\u0007",
+					"epsilon                 \u001b[0m\u001b]8;;\u0007",
+					"second line here        \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"alpha beta-gamma/delta  \u001b[0m\u001b]8;;\u0007",
+					"epsilon                 \u001b[0m\u001b]8;;\u0007",
+					"second line here        \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"\u001b[7malpha\u001b[27m beta-gamma/delta  \u001b[0m\u001b]8;;\u0007",
+					"epsilon                 \u001b[0m\u001b]8;;\u0007",
+					"second line here        \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": true,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"\u001b[7malpha beta-gamma/delta\u001b[27m  \u001b[0m\u001b]8;;\u0007",
+					"epsilon                 \u001b[0m\u001b]8;;\u0007",
+					"second line here        \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": true,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"\u001b[7malpha beta-gamm\u001b[0m\u001b]8;;\u0007\u001b[7m Copied! \u001b[0m\u001b]8;;\u0007\u001b[0m\u001b]8;;\u0007",
+					"epsilon                 \u001b[0m\u001b]8;;\u0007",
+					"second line here        \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": true,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"\u001b[7malpha beta-gamm\u001b[0m\u001b]8;;\u0007\u001b[7m Copied! \u001b[0m\u001b]8;;\u0007\u001b[0m\u001b]8;;\u0007",
+					"epsilon                 \u001b[0m\u001b]8;;\u0007",
+					"second line here        \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": true,
+				"hasOverlay": false
+			}
+		],
+		"startWrites": "\u001b[?1049h\u001b[?7l\u001b[?1000h\u001b[?1002h\u001b[?1003h\u001b[?1004h\u001b[?1006h\u001b[2J\u001b[H\u001b[?25l\u001b[?25l",
+		"stopWrites": "\u001b[?2026h\u001b[?1006l\u001b[?1004l\u001b[?1003l\u001b[?1002l\u001b[?1000l\u001b[?7h\u001b[?2026l\u001b[?25h\u001b[?2026h\u001b[?1049l\u001b[?25h\u001b[?2026l",
+		"clipboard": [
+			"alpha beta-gamma/delta"
+		],
+		"openedUrls": [],
+		"overlayInputs": {}
+	},
+	{
+		"kind": "scenario",
+		"id": "selection-focus-loss",
+		"columns": 20,
+		"rows": 6,
+		"capabilities": {
+			"images": null,
+			"trueColor": true,
+			"hyperlinks": true
+		},
+		"keybindings": null,
+		"options": {
+			"mouse": true,
+			"wheelScrollLines": 1,
+			"copyOnSelect": true,
+			"copySelection": "ok",
+			"scrollToEndIndicator": false,
+			"searchStyles": false,
+			"openUrl": false,
+			"onRightClickPaste": false
+		},
+		"setup": {
+			"children": [
+				{
+					"text": "line 1\nline 2\nline 3\nline 4\nline 5\nline 6\nline 7\nline 8\nline 9\nline 10\nline 11\nline 12"
+				}
+			]
+		},
+		"steps": [
+			{
+				"op": "start"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<0;1;3M"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<32;8;3M"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<0;8;3m"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[O"
+			},
+			{
+				"op": "stop",
+				"preserveScreen": true
+			}
+		],
+		"observations": [
+			{
+				"screen": [
+					"line 7              \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"line 9              \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007",
+					"line 12             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 7              \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"line 9              \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007",
+					"line 12             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 7              \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"\u001b[7mline 9  \u001b[27m            \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007",
+					"line 12             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": true,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 7     \u001b[0m\u001b]8;;\u0007\u001b[7m Copied! \u001b[0m\u001b]8;;\u0007\u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"\u001b[7mline 9  \u001b[27m            \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007",
+					"line 12             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": true,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 7     \u001b[0m\u001b]8;;\u0007\u001b[7m Copied! \u001b[0m\u001b]8;;\u0007\u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"\u001b[7mline 9  \u001b[27m            \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007",
+					"line 12             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": true,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 7     \u001b[0m\u001b]8;;\u0007\u001b[7m Copied! \u001b[0m\u001b]8;;\u0007\u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"\u001b[7mline 9  \u001b[27m            \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007",
+					"line 12             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": true,
+				"hasOverlay": false
+			}
+		],
+		"startWrites": "\u001b[?1049h\u001b[?7l\u001b[?1000h\u001b[?1002h\u001b[?1003h\u001b[?1004h\u001b[?1006h\u001b[2J\u001b[H\u001b[?25l\u001b[?25l",
+		"stopWrites": "\u001b[?2026h\u001b[?1006l\u001b[?1004l\u001b[?1003l\u001b[?1002l\u001b[?1000l\u001b[?7h\u001b[?2026l\u001b[?25h\u001b[?2026h\u001b[?1049l\u001b[?25h\u001b[?2026l",
+		"clipboard": [
+			"line 9"
+		],
+		"openedUrls": [],
+		"overlayInputs": {}
+	},
+	{
+		"kind": "scenario",
+		"id": "selection-cjk-graphemes",
+		"columns": 24,
+		"rows": 6,
+		"capabilities": {
+			"images": null,
+			"trueColor": true,
+			"hyperlinks": true
+		},
+		"keybindings": null,
+		"options": {
+			"mouse": true,
+			"wheelScrollLines": 1,
+			"copyOnSelect": true,
+			"copySelection": "ok",
+			"scrollToEndIndicator": false,
+			"searchStyles": false,
+			"openUrl": false,
+			"onRightClickPaste": false
+		},
+		"setup": {
+			"children": [
+				{
+					"text": "你好世界 café 👋🏽 混合 text\n第二行 content"
+				}
+			]
+		},
+		"steps": [
+			{
+				"op": "start"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<0;1;1M"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<32;6;1M"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<0;6;1m"
+			},
+			{
+				"op": "stop",
+				"preserveScreen": true
+			}
+		],
+		"observations": [
+			{
+				"screen": [
+					"你好世界 café 👋🏽 混合   \u001b[0m\u001b]8;;\u0007",
+					"text                    \u001b[0m\u001b]8;;\u0007",
+					"第二行 content          \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"你好世界 café 👋🏽 混合   \u001b[0m\u001b]8;;\u0007",
+					"text                    \u001b[0m\u001b]8;;\u0007",
+					"第二行 content          \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"\u001b[7m你好世\u001b[27m界 café 👋🏽 混合   \u001b[0m\u001b]8;;\u0007",
+					"text                    \u001b[0m\u001b]8;;\u0007",
+					"第二行 content          \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": true,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"\u001b[7m你好世\u001b[27m界 café  \u001b[0m\u001b]8;;\u0007\u001b[7m Copied! \u001b[0m\u001b]8;;\u0007\u001b[0m\u001b]8;;\u0007",
+					"text                    \u001b[0m\u001b]8;;\u0007",
+					"第二行 content          \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": true,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"\u001b[7m你好世\u001b[27m界 café  \u001b[0m\u001b]8;;\u0007\u001b[7m Copied! \u001b[0m\u001b]8;;\u0007\u001b[0m\u001b]8;;\u0007",
+					"text                    \u001b[0m\u001b]8;;\u0007",
+					"第二行 content          \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": true,
+				"hasOverlay": false
+			}
+		],
+		"startWrites": "\u001b[?1049h\u001b[?7l\u001b[?1000h\u001b[?1002h\u001b[?1003h\u001b[?1004h\u001b[?1006h\u001b[2J\u001b[H\u001b[?25l\u001b[?25l",
+		"stopWrites": "\u001b[?2026h\u001b[?1006l\u001b[?1004l\u001b[?1003l\u001b[?1002l\u001b[?1000l\u001b[?7h\u001b[?2026l\u001b[?25h\u001b[?2026h\u001b[?1049l\u001b[?25h\u001b[?2026l",
+		"clipboard": [
+			"你好世"
+		],
+		"openedUrls": [],
+		"overlayInputs": {}
+	},
+	{
+		"kind": "scenario",
+		"id": "hyperlink-click-open-url",
+		"columns": 40,
+		"rows": 6,
+		"capabilities": {
+			"images": null,
+			"trueColor": true,
+			"hyperlinks": true
+		},
+		"keybindings": null,
+		"options": {
+			"mouse": true,
+			"wheelScrollLines": 1,
+			"copyOnSelect": true,
+			"copySelection": null,
+			"scrollToEndIndicator": false,
+			"searchStyles": false,
+			"openUrl": true,
+			"onRightClickPaste": false
+		},
+		"setup": {
+			"children": [
+				{
+					"text": "\u001b]8;;https://example.com/a\u0007first link\u001b]8;;\u0007 plain \u001b]8;;https://example.com/b\u0007second\u001b]8;;\u0007"
+				}
+			]
+		},
+		"steps": [
+			{
+				"op": "start"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<0;3;1M"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<0;3;1m"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<0;30;1M"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<0;30;1m"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<0;3;1M"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<32;6;1M"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<0;6;1m"
+			},
+			{
+				"op": "stop",
+				"preserveScreen": true
+			}
+		],
+		"observations": [
+			{
+				"screen": [
+					"\u001b]8;;https://example.com/a\u0007first link\u001b]8;;\u0007 plain \u001b]8;;https://example.com/b\u0007second\u001b]8;;\u0007                 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"\u001b]8;;https://example.com/a\u0007first link\u001b]8;;\u0007 plain \u001b]8;;https://example.com/b\u0007second\u001b]8;;\u0007                 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"\u001b]8;;https://example.com/a\u0007first link\u001b]8;;\u0007 plain \u001b]8;;https://example.com/b\u0007second\u001b]8;;\u0007                 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"\u001b]8;;https://example.com/a\u0007first link\u001b]8;;\u0007 plain \u001b]8;;https://example.com/b\u0007second\u001b]8;;\u0007                 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"\u001b]8;;https://example.com/a\u0007first link\u001b]8;;\u0007 plain \u001b]8;;https://example.com/b\u0007second\u001b]8;;\u0007                 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"\u001b]8;;https://example.com/a\u0007first link\u001b]8;;\u0007 plain \u001b]8;;https://example.com/b\u0007second\u001b]8;;\u0007                 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"\u001b]8;;https://example.com/a\u0007fi\u001b[7m\u001b]8;;https://example.com/a\u0007rst \u001b[27m\u001b]8;;https://example.com/a\u0007link\u001b]8;;\u0007 plain \u001b]8;;https://example.com/b\u0007second\u001b]8;;\u0007                 \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": true,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"\u001b]8;;https://example.com/a\u0007fi\u001b[7m\u001b]8;;https://example.com/a\u0007rst \u001b[27m\u001b]8;;https://example.com/a\u0007link\u001b]8;;\u0007 plain \u001b]8;;https://example.com/b\u0007second\u001b]8;;\u0007        \u001b[0m\u001b]8;;\u0007\u001b[7m Copied! \u001b[0m\u001b]8;;\u0007\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": true,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"\u001b]8;;https://example.com/a\u0007fi\u001b[7m\u001b]8;;https://example.com/a\u0007rst \u001b[27m\u001b]8;;https://example.com/a\u0007link\u001b]8;;\u0007 plain \u001b]8;;https://example.com/b\u0007second\u001b]8;;\u0007        \u001b[0m\u001b]8;;\u0007\u001b[7m Copied! \u001b[0m\u001b]8;;\u0007\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": true,
+				"hasOverlay": false
+			}
+		],
+		"startWrites": "\u001b[?1049h\u001b[?7l\u001b[?1000h\u001b[?1002h\u001b[?1003h\u001b[?1004h\u001b[?1006h\u001b[2J\u001b[H\u001b[?25l\u001b[?25l",
+		"stopWrites": "\u001b[?2026h\u001b[?1006l\u001b[?1004l\u001b[?1003l\u001b[?1002l\u001b[?1000l\u001b[?7h\u001b[?2026l\u001b[?25h\u001b[?2026h\u001b[?1049l\u001b[?25h\u001b[?2026l",
+		"clipboard": [],
+		"openedUrls": [
+			"https://example.com/a"
+		],
+		"overlayInputs": {}
+	},
+	{
+		"kind": "scenario",
+		"id": "overlay-focused-routing",
+		"columns": 20,
+		"rows": 6,
+		"capabilities": {
+			"images": null,
+			"trueColor": true,
+			"hyperlinks": true
+		},
+		"keybindings": null,
+		"options": {
+			"mouse": true,
+			"wheelScrollLines": 1,
+			"copyOnSelect": true,
+			"copySelection": null,
+			"scrollToEndIndicator": false,
+			"searchStyles": false,
+			"openUrl": false,
+			"onRightClickPaste": false
+		},
+		"setup": {
+			"children": [
+				{
+					"text": "line 1\nline 2\nline 3\nline 4\nline 5\nline 6\nline 7\nline 8\nline 9\nline 10\nline 11\nline 12"
+				}
+			]
+		},
+		"steps": [
+			{
+				"op": "start"
+			},
+			{
+				"op": "showOverlay",
+				"name": "main"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[5~"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<64;10;3M"
+			},
+			{
+				"op": "input",
+				"data": "\u001bOH"
+			},
+			{
+				"op": "hideOverlay",
+				"name": "main"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[5~"
+			},
+			{
+				"op": "stop",
+				"preserveScreen": true
+			}
+		],
+		"observations": [
+			{
+				"screen": [
+					"line 7              \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"line 9              \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007",
+					"line 12             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 7              \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007overlay             \u001b[0m\u001b]8;;\u0007\u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007",
+					"line 12             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": true
+			},
+			{
+				"screen": [
+					"line 7              \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007overlay             \u001b[0m\u001b]8;;\u0007\u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007",
+					"line 12             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": true
+			},
+			{
+				"screen": [
+					"line 7              \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007overlay             \u001b[0m\u001b]8;;\u0007\u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007",
+					"line 12             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": true
+			},
+			{
+				"screen": [
+					"line 7              \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007overlay             \u001b[0m\u001b]8;;\u0007\u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007",
+					"line 12             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": true
+			},
+			{
+				"screen": [
+					"line 7              \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"line 9              \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007",
+					"line 12             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 5              \u001b[0m\u001b]8;;\u0007",
+					"line 6              \u001b[0m\u001b]8;;\u0007",
+					"line 7              \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"line 9              \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 4,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 5              \u001b[0m\u001b]8;;\u0007",
+					"line 6              \u001b[0m\u001b]8;;\u0007",
+					"line 7              \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"line 9              \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 4,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			}
+		],
+		"startWrites": "\u001b[?1049h\u001b[?7l\u001b[?1000h\u001b[?1002h\u001b[?1003h\u001b[?1004h\u001b[?1006h\u001b[2J\u001b[H\u001b[?25l\u001b[?25l",
+		"stopWrites": "\u001b[?2026h\u001b[?1006l\u001b[?1004l\u001b[?1003l\u001b[?1002l\u001b[?1000l\u001b[?7h\u001b[?2026l\u001b[?25h\u001b[?2026h\u001b[?1049l\u001b[?25h\u001b[?2026l",
+		"clipboard": [],
+		"openedUrls": [],
+		"overlayInputs": {
+			"main": [
+				"\u001b[5~",
+				"\u001b[<64;10;3M",
+				"\u001bOH"
+			]
+		}
+	},
+	{
+		"kind": "scenario",
+		"id": "overlay-not-focused-keeps-scrolling",
+		"columns": 20,
+		"rows": 6,
+		"capabilities": {
+			"images": null,
+			"trueColor": true,
+			"hyperlinks": true
+		},
+		"keybindings": null,
+		"options": {
+			"mouse": true,
+			"wheelScrollLines": 1,
+			"copyOnSelect": true,
+			"copySelection": null,
+			"scrollToEndIndicator": false,
+			"searchStyles": false,
+			"openUrl": false,
+			"onRightClickPaste": false
+		},
+		"setup": {
+			"children": [
+				{
+					"text": "line 1\nline 2\nline 3\nline 4\nline 5\nline 6\nline 7\nline 8\nline 9\nline 10\nline 11\nline 12"
+				}
+			]
+		},
+		"steps": [
+			{
+				"op": "start"
+			},
+			{
+				"op": "showOverlay",
+				"name": "noncapturing",
+				"options": {
+					"nonCapturing": true
+				}
+			},
+			{
+				"op": "input",
+				"data": "\u001b[5~"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<64;10;3M"
+			},
+			{
+				"op": "stop",
+				"preserveScreen": true
+			}
+		],
+		"observations": [
+			{
+				"screen": [
+					"line 7              \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"line 9              \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007",
+					"line 12             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 7              \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007overlay             \u001b[0m\u001b]8;;\u0007\u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007",
+					"line 12             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": true
+			},
+			{
+				"screen": [
+					"line 5              \u001b[0m\u001b]8;;\u0007",
+					"line 6              \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007overlay             \u001b[0m\u001b]8;;\u0007\u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"line 9              \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 4,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": true
+			},
+			{
+				"screen": [
+					"line 4              \u001b[0m\u001b]8;;\u0007",
+					"line 5              \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007overlay             \u001b[0m\u001b]8;;\u0007\u001b[0m\u001b]8;;\u0007",
+					"line 7              \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"line 9              \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 3,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": true
+			},
+			{
+				"screen": [
+					"line 4              \u001b[0m\u001b]8;;\u0007",
+					"line 5              \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007overlay             \u001b[0m\u001b]8;;\u0007\u001b[0m\u001b]8;;\u0007",
+					"line 7              \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"line 9              \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 3,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": true
+			}
+		],
+		"startWrites": "\u001b[?1049h\u001b[?7l\u001b[?1000h\u001b[?1002h\u001b[?1003h\u001b[?1004h\u001b[?1006h\u001b[2J\u001b[H\u001b[?25l\u001b[?25l",
+		"stopWrites": "\u001b[?2026h\u001b[?1006l\u001b[?1004l\u001b[?1003l\u001b[?1002l\u001b[?1000l\u001b[?7h\u001b[?2026l\u001b[?25h\u001b[?2026h\u001b[?1049l\u001b[?25h\u001b[?2026l",
+		"clipboard": [],
+		"openedUrls": [],
+		"overlayInputs": {
+			"noncapturing": []
+		}
+	},
+	{
+		"kind": "scenario",
+		"id": "overlay-search-keeps-scrolling",
+		"columns": 20,
+		"rows": 6,
+		"capabilities": {
+			"images": null,
+			"trueColor": true,
+			"hyperlinks": true
+		},
+		"keybindings": null,
+		"options": {
+			"mouse": true,
+			"wheelScrollLines": 1,
+			"copyOnSelect": true,
+			"copySelection": null,
+			"scrollToEndIndicator": false,
+			"searchStyles": false,
+			"openUrl": false,
+			"onRightClickPaste": false
+		},
+		"setup": {
+			"children": [
+				{
+					"text": "line 1\nline 2\nline 3\nline 4\nline 5\nline 6\nline 7\nline 8\nline 9\nline 10\nline 11\nline 12"
+				}
+			]
+		},
+		"steps": [
+			{
+				"op": "start"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[102;6u"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[5~"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<64;1;4M"
+			},
+			{
+				"op": "stop",
+				"preserveScreen": true
+			}
+		],
+		"observations": [
+			{
+				"screen": [
+					"line 7              \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"line 9              \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007",
+					"line 12             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 7              \u001b[0m\u001b]8;;\u0007",
+					"l\u001b[0m\u001b]8;;\u0007┌────────────────┐\u001b[0m\u001b]8;;\u0007 \u001b[0m\u001b]8;;\u0007",
+					"l\u001b[0m\u001b]8;;\u0007│ \u001b[7m\u001b[2mF\u001b[22m\u001b[27m\u001b[2mind in transcr\u001b[0m\u001b[22m│\u001b[0m\u001b]8;;\u0007 \u001b[0m\u001b]8;;\u0007",
+					"l\u001b[0m\u001b]8;;\u0007└────────── ↑ ↓ ─┘\u001b[0m\u001b]8;;\u0007 \u001b[0m\u001b]8;;\u0007",
+					"line 11             \u001b[0m\u001b]8;;\u0007",
+					"line 12             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": true
+			},
+			{
+				"screen": [
+					"line 5              \u001b[0m\u001b]8;;\u0007",
+					"l\u001b[0m\u001b]8;;\u0007┌────────────────┐\u001b[0m\u001b]8;;\u0007 \u001b[0m\u001b]8;;\u0007",
+					"l\u001b[0m\u001b]8;;\u0007│ \u001b[7m\u001b[2mF\u001b[22m\u001b[27m\u001b[2mind in transcr\u001b[0m\u001b[22m│\u001b[0m\u001b]8;;\u0007 \u001b[0m\u001b]8;;\u0007",
+					"l\u001b[0m\u001b]8;;\u0007└────────── ↑ ↓ ─┘\u001b[0m\u001b]8;;\u0007 \u001b[0m\u001b]8;;\u0007",
+					"line 9              \u001b[0m\u001b]8;;\u0007",
+					"line 10             \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 4,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": true
+			},
+			{
+				"screen": [
+					"line 4              \u001b[0m\u001b]8;;\u0007",
+					"l\u001b[0m\u001b]8;;\u0007┌────────────────┐\u001b[0m\u001b]8;;\u0007 \u001b[0m\u001b]8;;\u0007",
+					"l\u001b[0m\u001b]8;;\u0007│ \u001b[7m\u001b[2mF\u001b[22m\u001b[27m\u001b[2mind in transcr\u001b[0m\u001b[22m│\u001b[0m\u001b]8;;\u0007 \u001b[0m\u001b]8;;\u0007",
+					"l\u001b[0m\u001b]8;;\u0007└────────── ↑ ↓ ─┘\u001b[0m\u001b]8;;\u0007 \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"line 9              \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 3,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": true
+			},
+			{
+				"screen": [
+					"line 4              \u001b[0m\u001b]8;;\u0007",
+					"l\u001b[0m\u001b]8;;\u0007┌────────────────┐\u001b[0m\u001b]8;;\u0007 \u001b[0m\u001b]8;;\u0007",
+					"l\u001b[0m\u001b]8;;\u0007│ \u001b[7m\u001b[2mF\u001b[22m\u001b[27m\u001b[2mind in transcr\u001b[0m\u001b[22m│\u001b[0m\u001b]8;;\u0007 \u001b[0m\u001b]8;;\u0007",
+					"l\u001b[0m\u001b]8;;\u0007└────────── ↑ ↓ ─┘\u001b[0m\u001b]8;;\u0007 \u001b[0m\u001b]8;;\u0007",
+					"line 8              \u001b[0m\u001b]8;;\u0007",
+					"line 9              \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 3,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			}
+		],
+		"startWrites": "\u001b[?1049h\u001b[?7l\u001b[?1000h\u001b[?1002h\u001b[?1003h\u001b[?1004h\u001b[?1006h\u001b[2J\u001b[H\u001b[?25l\u001b[?25l",
+		"stopWrites": "\u001b[?2026h\u001b[?1006l\u001b[?1004l\u001b[?1003l\u001b[?1002l\u001b[?1000l\u001b[?7h\u001b[?2026l\u001b[?25h\u001b[?2026h\u001b[?1049l\u001b[?25h\u001b[?2026l",
+		"clipboard": [],
+		"openedUrls": [],
+		"overlayInputs": {}
+	},
+	{
+		"kind": "scenario",
+		"id": "flash-stack",
+		"columns": 24,
+		"rows": 6,
+		"capabilities": {
+			"images": null,
+			"trueColor": true,
+			"hyperlinks": true
+		},
+		"keybindings": null,
+		"options": {
+			"mouse": true,
+			"wheelScrollLines": 1,
+			"copyOnSelect": true,
+			"copySelection": null,
+			"scrollToEndIndicator": false,
+			"searchStyles": false,
+			"openUrl": false,
+			"onRightClickPaste": false
+		},
+		"setup": {
+			"children": [
+				{
+					"text": "line 1\nline 2\nline 3\nline 4\nline 5\nline 6\nline 7\nline 8\nline 9\nline 10\nline 11\nline 12"
+				}
+			]
+		},
+		"steps": [
+			{
+				"op": "start"
+			},
+			{
+				"op": "flash",
+				"message": "one",
+				"durationMs": 60000
+			},
+			{
+				"op": "flash",
+				"message": "two",
+				"durationMs": 60000
+			},
+			{
+				"op": "stop",
+				"preserveScreen": true
+			}
+		],
+		"observations": [
+			{
+				"screen": [
+					"line 7                  \u001b[0m\u001b]8;;\u0007",
+					"line 8                  \u001b[0m\u001b]8;;\u0007",
+					"line 9                  \u001b[0m\u001b]8;;\u0007",
+					"line 10                 \u001b[0m\u001b]8;;\u0007",
+					"line 11                 \u001b[0m\u001b]8;;\u0007",
+					"line 12                 \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 7             \u001b[0m\u001b]8;;\u0007\u001b[7m one \u001b[0m\u001b]8;;\u0007\u001b[0m\u001b]8;;\u0007",
+					"line 8                  \u001b[0m\u001b]8;;\u0007",
+					"line 9                  \u001b[0m\u001b]8;;\u0007",
+					"line 10                 \u001b[0m\u001b]8;;\u0007",
+					"line 11                 \u001b[0m\u001b]8;;\u0007",
+					"line 12                 \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 7             \u001b[0m\u001b]8;;\u0007\u001b[7m one \u001b[0m\u001b]8;;\u0007\u001b[0m\u001b]8;;\u0007",
+					"line 8             \u001b[0m\u001b]8;;\u0007\u001b[7m two \u001b[0m\u001b]8;;\u0007\u001b[0m\u001b]8;;\u0007",
+					"line 9                  \u001b[0m\u001b]8;;\u0007",
+					"line 10                 \u001b[0m\u001b]8;;\u0007",
+					"line 11                 \u001b[0m\u001b]8;;\u0007",
+					"line 12                 \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 7             \u001b[0m\u001b]8;;\u0007\u001b[7m one \u001b[0m\u001b]8;;\u0007\u001b[0m\u001b]8;;\u0007",
+					"line 8             \u001b[0m\u001b]8;;\u0007\u001b[7m two \u001b[0m\u001b]8;;\u0007\u001b[0m\u001b]8;;\u0007",
+					"line 9                  \u001b[0m\u001b]8;;\u0007",
+					"line 10                 \u001b[0m\u001b]8;;\u0007",
+					"line 11                 \u001b[0m\u001b]8;;\u0007",
+					"line 12                 \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			}
+		],
+		"startWrites": "\u001b[?1049h\u001b[?7l\u001b[?1000h\u001b[?1002h\u001b[?1003h\u001b[?1004h\u001b[?1006h\u001b[2J\u001b[H\u001b[?25l\u001b[?25l",
+		"stopWrites": "\u001b[?2026h\u001b[?1006l\u001b[?1004l\u001b[?1003l\u001b[?1002l\u001b[?1000l\u001b[?7h\u001b[?2026l\u001b[?25h\u001b[?2026h\u001b[?1049l\u001b[?25h\u001b[?2026l",
+		"clipboard": [],
+		"openedUrls": [],
+		"overlayInputs": {}
+	},
+	{
+		"kind": "scenario",
+		"id": "layout-root-swap",
+		"columns": 24,
+		"rows": 6,
+		"capabilities": {
+			"images": null,
+			"trueColor": true,
+			"hyperlinks": true
+		},
+		"keybindings": null,
+		"options": {
+			"mouse": true,
+			"wheelScrollLines": 1,
+			"copyOnSelect": true,
+			"copySelection": null,
+			"scrollToEndIndicator": false,
+			"searchStyles": false,
+			"openUrl": false,
+			"onRightClickPaste": false
+		},
+		"setup": {
+			"children": [
+				{
+					"text": "line 1\nline 2\nline 3\nline 4\nline 5\nline 6\nline 7\nline 8\nline 9\nline 10\nline 11\nline 12"
+				}
+			]
+		},
+		"steps": [
+			{
+				"op": "start"
+			},
+			{
+				"op": "setLayoutRoot",
+				"value": "root",
+				"entries": [
+					{
+						"text": "line 1\nline 2\nline 3\nline 4"
+					}
+				]
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<64;1;1M"
+			},
+			{
+				"op": "setLayoutRoot",
+				"value": null
+			},
+			{
+				"op": "stop",
+				"preserveScreen": true
+			}
+		],
+		"observations": [
+			{
+				"screen": [
+					"line 7                  \u001b[0m\u001b]8;;\u0007",
+					"line 8                  \u001b[0m\u001b]8;;\u0007",
+					"line 9                  \u001b[0m\u001b]8;;\u0007",
+					"line 10                 \u001b[0m\u001b]8;;\u0007",
+					"line 11                 \u001b[0m\u001b]8;;\u0007",
+					"line 12                 \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 1                  \u001b[0m\u001b]8;;\u0007",
+					"line 2                  \u001b[0m\u001b]8;;\u0007",
+					"line 3                  \u001b[0m\u001b]8;;\u0007",
+					"line 4                  \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 6,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 1                  \u001b[0m\u001b]8;;\u0007",
+					"line 2                  \u001b[0m\u001b]8;;\u0007",
+					"line 3                  \u001b[0m\u001b]8;;\u0007",
+					"line 4                  \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 5,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 6                  \u001b[0m\u001b]8;;\u0007",
+					"line 7                  \u001b[0m\u001b]8;;\u0007",
+					"line 8                  \u001b[0m\u001b]8;;\u0007",
+					"line 9                  \u001b[0m\u001b]8;;\u0007",
+					"line 10                 \u001b[0m\u001b]8;;\u0007",
+					"line 11                 \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 5,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"line 6                  \u001b[0m\u001b]8;;\u0007",
+					"line 7                  \u001b[0m\u001b]8;;\u0007",
+					"line 8                  \u001b[0m\u001b]8;;\u0007",
+					"line 9                  \u001b[0m\u001b]8;;\u0007",
+					"line 10                 \u001b[0m\u001b]8;;\u0007",
+					"line 11                 \u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 5,
+				"isFollowingOutput": false,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			}
+		],
+		"startWrites": "\u001b[?1049h\u001b[?7l\u001b[?1000h\u001b[?1002h\u001b[?1003h\u001b[?1004h\u001b[?1006h\u001b[2J\u001b[H\u001b[?25l\u001b[?25l",
+		"stopWrites": "\u001b[?2026h\u001b[?1006l\u001b[?1004l\u001b[?1003l\u001b[?1002l\u001b[?1000l\u001b[?7h\u001b[?2026l\u001b[?25h\u001b[?2026h\u001b[?1049l\u001b[?25h\u001b[?2026l",
+		"clipboard": [],
+		"openedUrls": [],
+		"overlayInputs": {}
+	},
+	{
+		"kind": "scenario",
+		"id": "mouse-region-click-focus",
+		"columns": 30,
+		"rows": 8,
+		"capabilities": {
+			"images": null,
+			"trueColor": true,
+			"hyperlinks": true
+		},
+		"keybindings": null,
+		"options": {
+			"mouse": true,
+			"wheelScrollLines": 1,
+			"copyOnSelect": true,
+			"copySelection": null,
+			"scrollToEndIndicator": false,
+			"searchStyles": false,
+			"openUrl": false,
+			"onRightClickPaste": false
+		},
+		"setup": {
+			"children": [
+				{
+					"text": "click me here\nsecond row\nthird row"
+				}
+			]
+		},
+		"steps": [
+			{
+				"op": "start"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<0;3;1M"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<0;3;1m"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<0;3;1M"
+			},
+			{
+				"op": "input",
+				"data": "\u001b[<0;3;1m"
+			},
+			{
+				"op": "stop",
+				"preserveScreen": true
+			}
+		],
+		"observations": [
+			{
+				"screen": [
+					"click me here                 \u001b[0m\u001b]8;;\u0007",
+					"second row                    \u001b[0m\u001b]8;;\u0007",
+					"third row                     \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"click me here                 \u001b[0m\u001b]8;;\u0007",
+					"second row                    \u001b[0m\u001b]8;;\u0007",
+					"third row                     \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"click me here                 \u001b[0m\u001b]8;;\u0007",
+					"second row                    \u001b[0m\u001b]8;;\u0007",
+					"third row                     \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": false,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"\u001b[7mclick\u001b[27m me here                 \u001b[0m\u001b]8;;\u0007",
+					"second row                    \u001b[0m\u001b]8;;\u0007",
+					"third row                     \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": true,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"\u001b[7mclick\u001b[27m me here        \u001b[0m\u001b]8;;\u0007\u001b[7m Copied! \u001b[0m\u001b]8;;\u0007\u001b[0m\u001b]8;;\u0007",
+					"second row                    \u001b[0m\u001b]8;;\u0007",
+					"third row                     \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": true,
+				"hasOverlay": false
+			},
+			{
+				"screen": [
+					"\u001b[7mclick\u001b[27m me here        \u001b[0m\u001b]8;;\u0007\u001b[7m Copied! \u001b[0m\u001b]8;;\u0007\u001b[0m\u001b]8;;\u0007",
+					"second row                    \u001b[0m\u001b]8;;\u0007",
+					"third row                     \u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007",
+					"\u001b[0m\u001b]8;;\u0007"
+				],
+				"viewportTop": 0,
+				"isFollowingOutput": true,
+				"hasActiveSelection": true,
+				"hasOverlay": false
+			}
+		],
+		"startWrites": "\u001b[?1049h\u001b[?7l\u001b[?1000h\u001b[?1002h\u001b[?1003h\u001b[?1004h\u001b[?1006h\u001b[2J\u001b[H\u001b[?25l\u001b[?25l",
+		"stopWrites": "\u001b[?2026h\u001b[?1006l\u001b[?1004l\u001b[?1003l\u001b[?1002l\u001b[?1000l\u001b[?7h\u001b[?2026l\u001b[?25h\u001b[?2026h\u001b[?1049l\u001b[?25h\u001b[?2026l",
+		"clipboard": [],
+		"openedUrls": [],
+		"overlayInputs": {}
+	}
+]
