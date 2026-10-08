@@ -1,4 +1,4 @@
-namespace Pi.Tui.Markdown;
+﻿namespace Pi.Tui.Marked;
 
 /// <summary>
 /// A single markdown token (port of marked's structural token objects).

@@ -1,6 +1,6 @@
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
-namespace Pi.Tui.Markdown;
+namespace Pi.Tui.Marked;
 
 /// <summary>
 /// JS string/regex semantics that the marked port relies on and that .NET spells differently.

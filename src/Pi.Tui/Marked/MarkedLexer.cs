@@ -1,6 +1,6 @@
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
-namespace Pi.Tui.Markdown;
+namespace Pi.Tui.Marked;
 
 /// <summary>Port of marked's mutable lexer state, shared between the lexer and its tokenizer.</summary>
 public sealed class MarkedLexerState
@@ -32,13 +32,19 @@ public sealed class MarkedInlineJob
 /// </summary>
 public sealed class MarkedLexer
 {
+    /// <summary>marked's line-ending normalisation rule (<c>/\r\n|\r/g</c>).</summary>
+    private static readonly Regex CarriageReturnRegex = new(@"\r\n|\r", RegexOptions.Compiled);
+
     public MarkedLexer(MarkedOptions? options = null)
     {
         Options = options ?? new MarkedOptions();
         Tokens = [];
         InlineQueue = [];
         State = new MarkedLexerState();
-        Tokenizer = new MarkedTokenizer(Options, MarkedRules.CreateDefault()) { Lexer = this };
+        // MarkedRules.Default is a shared instance: rebuilding the rule set per lexer would recreate
+        // every RegexOptions.Compiled pattern, forcing .NET to re-JIT each one on first match (which
+        // dominated render time). Regex matching and the memoised factories are thread-safe.
+        Tokenizer = new MarkedTokenizer(Options, MarkedRules.Default) { Lexer = this };
     }
 
     public MarkedOptions Options { get; }
@@ -62,7 +68,9 @@ public sealed class MarkedLexer
 
     public List<MarkedToken> Lex(string src)
     {
-        src = src.Replace("\r", "\n");
+        // marked normalises line endings with `src.replace(/\r\n|\r/g, '\n')`; a plain
+        // Replace("\r", "\n") would turn a CRLF into two newlines and split the paragraph.
+        src = CarriageReturnRegex.Replace(src, "\n");
         BlockTokens(src, Tokens);
         foreach (var job in InlineQueue)
         {
@@ -98,6 +106,28 @@ public sealed class MarkedLexer
 
             var last = tokens.Count > 0 ? tokens[^1] : null;
             MarkedToken? token = null;
+            var extensions = Options.Extensions;
+
+            // marked tries the registered block extensions before any built-in tokenizer:
+            // extensions.block.some(o => (r = o.call({lexer}, src, tokens)) ? (src = src.substring(r.raw.length), tokens.push(r), true) : false)
+            if (extensions is not null)
+            {
+                foreach (var extension in extensions.Block)
+                {
+                    token = extension(this, src, tokens);
+                    if (token is not null)
+                    {
+                        src = src[token.Raw.Length..];
+                        tokens.Add(token);
+                        break;
+                    }
+                }
+
+                if (token is not null)
+                {
+                    continue;
+                }
+            }
 
             if (token is null)
             {
@@ -251,12 +281,33 @@ public sealed class MarkedLexer
                 }
             }
 
+            // marked truncates the source at the earliest startBlock extension hit before
+            // running the paragraph tokenizer on it (the extensions themselves already had
+            // their chance above and declined).
+            var paragraphSrc = src;
+            if (extensions is not null)
+            {
+                var start = int.MaxValue;
+                foreach (var getStart in extensions.StartBlock)
+                {
+                    var index = getStart(this, JsString.Slice(src, 1));
+                    if (index is >= 0)
+                    {
+                        start = Math.Min(start, index.Value);
+                    }
+                }
+
+                if (start < int.MaxValue)
+                {
+                    paragraphSrc = JsString.Slice(src, 0, start + 1);
+                }
+            }
+
             if (token is null && State.Top)
             {
-                token = Tokenizer.Paragraph(src);
+                token = Tokenizer.Paragraph(paragraphSrc);
                 if (token is not null)
                 {
-                    src = src[token.Raw.Length..];
                     if (lastParagraphClipped && last?.Type == "paragraph")
                     {
                         last.Raw += (last.Raw.EndsWith('\n') ? "" : "\n") + token.Raw;
@@ -269,9 +320,10 @@ public sealed class MarkedLexer
                         tokens.Add(token);
                     }
 
-                    // marked tracks whether the paragraph was clipped by a startBlock extension.
-                    // Without extensions this is always false, so the flag stays false.
-                    lastParagraphClipped = false;
+                    // marked records whether the startBlock extensions clipped the source this
+                    // time; the next paragraph merges into the previous token when they did.
+                    lastParagraphClipped = paragraphSrc.Length != src.Length;
+                    src = src[token.Raw.Length..];
                     continue;
                 }
             }
@@ -331,7 +383,7 @@ public sealed class MarkedLexer
                         + "["
                         + new string('a', whole.Length - 2)
                         + "]"
-                        + JsString.Slice(masked, reflinkSearch.LastIndex, 0);
+                        + JsString.Slice(masked, reflinkSearch.LastIndex);
                 }
 
                 match = reflinkSearch.Exec(masked);
@@ -344,7 +396,7 @@ public sealed class MarkedLexer
         {
             masked = JsString.Slice(masked, 0, punct.Index)
                 + "++"
-                + JsString.Slice(masked, anyPunctuation.LastIndex, 0);
+                + JsString.Slice(masked, anyPunctuation.LastIndex);
             punct = anyPunctuation.Exec(masked);
         }
 
@@ -357,7 +409,7 @@ public sealed class MarkedLexer
                 + "["
                 + new string('a', skip.Value.Length - consumed - 2)
                 + "]"
-                + JsString.Slice(masked, blockSkip.LastIndex, 0);
+                + JsString.Slice(masked, blockSkip.LastIndex);
             skip = blockSkip.Exec(masked);
         }
 
@@ -381,6 +433,28 @@ public sealed class MarkedLexer
 
             cut = false;
             MarkedToken? token = null;
+            var extensions = Options.Extensions;
+
+            // marked tries the registered inline extensions before any built-in tokenizer:
+            // extensions.inline.some(p => (a = p.call({lexer}, src, tokens)) ? (src = src.substring(a.raw.length), tokens.push(a), true) : false)
+            if (extensions is not null)
+            {
+                foreach (var extension in extensions.Inline)
+                {
+                    token = extension(this, src, tokens);
+                    if (token is not null)
+                    {
+                        src = src[token.Raw.Length..];
+                        tokens.Add(token);
+                        break;
+                    }
+                }
+
+                if (token is not null)
+                {
+                    continue;
+                }
+            }
 
             if (token is null)
             {
@@ -500,9 +574,30 @@ public sealed class MarkedLexer
                 }
             }
 
+            // marked truncates the source at the earliest startInline extension hit before
+            // running the inlineText tokenizer on it.
+            var inlineTextSrc = src;
+            if (extensions is not null)
+            {
+                var start = int.MaxValue;
+                foreach (var getStart in extensions.StartInline)
+                {
+                    var index = getStart(this, JsString.Slice(src, 1));
+                    if (index is >= 0)
+                    {
+                        start = Math.Min(start, index.Value);
+                    }
+                }
+
+                if (start < int.MaxValue)
+                {
+                    inlineTextSrc = JsString.Slice(src, 0, start + 1);
+                }
+            }
+
             if (token is null)
             {
-                token = Tokenizer.InlineText(src);
+                token = Tokenizer.InlineText(inlineTextSrc);
                 if (token is not null)
                 {
                     src = src[token.Raw.Length..];

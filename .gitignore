@@ -20,3 +20,13 @@
 # WorkBuddy AI local workspace state (session logs, memory notes)
 .workbuddy-ai/
 
+# Local debug/repro scratch tools and ad-hoc diagnostic output
+tools/
+dump.json
+dump-*.txt
+run-all*.txt
+diag-partial.txt
+mdtest-*.txt
+full-diff.log
+*.ctrf
+

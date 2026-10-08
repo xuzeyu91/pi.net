@@ -139,6 +139,49 @@ internal static class JsString
     /// <summary>Whether a code point has the Unicode <c>Cased</c> property (V8's view of it).</summary>
     public static bool IsCased(int codePoint) => InRanges(JsCaseData.CasedRanges, codePoint);
 
+    /// <summary>
+    /// JavaScript <c>String.prototype.toUpperCase()</c> using the default (non-locale) full case
+    /// mapping. Unlike <see cref="ToLowerCase"/> there is no context-dependent rule: the default
+    /// case conversion has no conditional uppercase mapping, so each code point maps
+    /// independently. Mappings where .NET's simple mapping disagrees with V8's full mapping come
+    /// from <see cref="JsCaseData.UpperOverrides"/>.
+    /// </summary>
+    public static string ToUpperCase(string value)
+    {
+        if (value.Length == 0)
+        {
+            return value;
+        }
+
+        // Fast path: a string that is pure ASCII without lower-case letters cannot change, and
+        // cannot contain any of the override code points.
+        var plain = true;
+        foreach (var c in value)
+        {
+            if (c >= '\u0080' || (c >= 'a' && c <= 'z'))
+            {
+                plain = false;
+                break;
+            }
+        }
+
+        if (plain)
+        {
+            return value;
+        }
+
+        var builder = new StringBuilder(value.Length + 8);
+        foreach (var rune in value.EnumerateRunes())
+        {
+            builder.Append(
+                JsCaseData.UpperOverrides.TryGetValue(rune.Value, out var mapped)
+                    ? mapped
+                    : Rune.ToUpperInvariant(rune).ToString());
+        }
+
+        return builder.ToString();
+    }
+
     /// <summary>Whether a code point has the Unicode <c>Case_Ignorable</c> property (V8's view).</summary>
     public static bool IsCaseIgnorable(int codePoint) => InRanges(JsCaseData.CaseIgnorableRanges, codePoint);
 

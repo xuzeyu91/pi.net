@@ -10,10 +10,10 @@
 | 指标 | 数值 |
 |---|---|
 | TS 源码（不含 `*.test.ts`） | 45 个文件 / 19,293 行 |
-| 已移植 | 37 个文件 / 15,386 行（79.7%） |
-| 待移植 | 8 个文件 / 3,907 行 |
-| .NET 产出 | 46 个 `.cs` / 18,785 行 |
-| 测试 | `Pi.Tui.Tests` 16,599 项全部通过 |
+| 已移植 | 43 个文件 / 17,317 行（89.8%） |
+| 待移植 | 2 个文件 / 1,976 行 |
+| .NET 产出 | 58 个 `.cs` / 23,999 行 |
+| 测试 | `Pi.Tui.Tests` 23,773 项全部通过 |
 | 构建 | 0 警告 0 错误（`dotnet build Pi.slnx -m:1`） |
 
 ## 逐文件清单
@@ -57,18 +57,18 @@
 | `components/select-list.ts` | 273 | `Components/SelectList.cs` + `JsCaseData.cs` | 选择列表：前缀过滤（按 JS `toLowerCase` 的全量大小写映射，见 T23）、选中项与滚动窗口（`maxVisible` 居中、越界选择索引、`maxVisible` 为 0）、主列宽度上下界与自定义截断回调、描述列单行化（`/[\r\n]+/` → 空格 + trim）与宽度不足时的降级、无匹配提示、上下键环绕、确认/取消、鼠标悬停不选中、press→click 配对、滚轮换行。**行为由 2,598 条差分用例 + 9,109 条大小写映射向量对照 TS 参考实现锁定**（见下） |
 | `components/editor.ts` | 2472 | `Components/Editor.cs` + `JsCjk.cs` + `JsCjkData.cs` + `JsMicrotask.cs` | 多行编辑器（最大单文件）：多行缓冲与光标、撤销栈与 kill ring、字/行/词级导航（含 CJK 词边界）、括号粘贴与**粘贴标记**（超长粘贴被合并成 `[paste #N +M lines]`，由 `segmentWithMarkers` 当作原子字素簇段参与移动 / 删除 / 换行，`getExpandedText` 还原真实内容；差分语料仅在 `paste` 区段的超长粘贴场景中间接覆盖到标记本身）、横向滚动与软换行渲染（`wordWrapLine`）、`@` 文件补全与斜杠命令补全挂载、鼠标点击/拖拽定位、边框色与内边距、提交历史。**行为由 7,040 条差分用例（6,327 场景 + 713 换行向量）对照 TS 参考实现锁定**（见下） |
 | `editor-component.ts` | 74 | `Components/EditorComponent.cs` | 编辑器包装组件（`IEditorComponent` 接口面，TS 可选成员在 C# 为可空属性） |
+| `components/markdown.ts` | 1025 | `Components/Markdown.cs` + `Marked/`（`MarkedToken` / `MarkedText` / `MarkedRules` / `MarkedTokenizer` / `MarkedLexer` / `MarkedExtensions`） | Markdown → ANSI 渲染。`marked` v18.0.5 的 tokenizer/lexer/rules 一并移植（正则源与标志从活模块捕获，逐字节对齐）。**行为由 4,990 条差分用例对照 TS 参考实现锁定**（见下）。差异 T26 / T27 |
+| `components/settings-list.ts` | 328 | `Components/SettingsList.cs` | 设置列表：前缀搜索（fuzzy）、值循环、子菜单生命周期（open / done with value / done with `navigateTo`）、鼠标 press→click 配对与滚轮。**行为由 874 条差分用例锁定** |
+| `components/image.ts` | 167 | `Components/Image.cs` | 图像组件：能力（kitty/iterm2/none）× mime × transcoder × 尺寸选项 × 渲染缓存。**行为由 784 条差分用例锁定** |
+| `components/mouse-region.ts` | 33 | `Components/MouseRegion.cs` | 鼠标区域标记：渲染透传 + `handleMouse` 委派 |
+| `components/alt-screen-flash.ts` | 51 | `Components/AltScreenFlashContainer.cs` | 备用屏闪烁提示（TTL、条目栈、`requestRender`、`dispose`） |
+| `alt-screen-search.ts` | 327 | `AltScreenSearch.cs` | 备用屏搜索：索引构建、匹配定位、大小写不敏感（JS `toUpperCase` 全量映射，见 T23）、`getAltScreenSearchMatchKey` |
 
 ### ⏳ 待移植
 
 | TS 文件 | 行数 | 依赖 | 备注 |
 |---|---|---|---|
-| `components/markdown.ts` | 1025 | latex / colors | Markdown → ANSI 渲染 |
-| `components/settings-list.ts` | 328 | select-list | 设置列表 |
-| `components/image.ts` | 167 | terminal-image | 图像组件 |
-| `components/mouse-region.ts` | 33 | — | 鼠标区域标记 |
-| `components/alt-screen-flash.ts` | 51 | — | 备用屏闪烁提示 |
-| `alt-screen-search.ts` | 327 | — | 备用屏搜索 |
-| `tui-alt-screen.ts` | 1784 | 上述多数 | 备用屏渲染器（全屏模式） |
+| `tui-alt-screen.ts` | 1784 | 上述多数 | 备用屏渲染器（全屏模式），并负责把 `tui.ts` 里剩下的屏幕级鼠标路由（`dispatchMouseToOverlay` / `resolveMouseFocusTarget` / `renderedOverlayLayouts`）与 SGR 鼠标解码接上 |
 | `index.ts` | 192 | — | 桶文件（C# 无对应概念，公开面由类型可见性决定） |
 
 ## 建议的推进顺序
@@ -76,8 +76,8 @@
 依赖关系决定了下面的顺序；每批都以「构建 0 警告 0 错误 + 测试全绿」收口。
 
 1. ~~**`components/editor.ts` + `editor-component.ts`**~~ —— ✅ 已完成（P62，见上「已完成」清单）。
-2. **`components/markdown.ts` / `settings-list.ts` / `image.ts` / `mouse-region.ts` / `alt-screen-flash.ts`** —— 其余叶子组件。
-3. **`alt-screen-search.ts` → `tui-alt-screen.ts`** —— 最后收口，依赖上面几乎所有内容（含 `layout.ts` 的布局帧与命中测试），并负责把 `tui.ts` 里剩下的屏幕级鼠标路由（`dispatchMouseToOverlay` / `resolveMouseFocusTarget` / `renderedOverlayLayouts`）与 SGR 鼠标解码接上。
+2. ~~**`components/markdown.ts` / `settings-list.ts` / `image.ts` / `mouse-region.ts` / `alt-screen-flash.ts` / `alt-screen-search.ts`**~~ —— ✅ 已完成（P63，见上「已完成」清单）。
+3. **`tui-alt-screen.ts`** —— 最后收口，依赖上面几乎所有内容（含 `layout.ts` 的布局帧与命中测试），并负责把 `tui.ts` 里剩下的屏幕级鼠标路由（`dispatchMouseToOverlay` / `resolveMouseFocusTarget` / `renderedOverlayLayouts`）与 SGR 鼠标解码接上。
 4. **`index.ts`** —— 公开面清单，随各文件落地自然完成。
 
 ## 关键设计差异（TS → C#）
@@ -109,6 +109,8 @@
 | T23 | **`toLowerCase` 需要打补丁才能等于 JS（`ToUpperCase` 尚未处理）** | JS 的 `String.prototype.toLowerCase` 用的是 Unicode **完整**大小写映射，.NET 的 `Rune.ToLowerInvariant` 是**简单**映射，两者在 56 个码点上不同（全部是 .NET 缺映射、Unicode 版本差异：U+0130、Latin Extended-D、Garay、Beria Erfe；**不存在双方都有映射却给出不同结果的码点**），另有 U+03A3 的上下文相关 Final_Sigma 规则。因此新增 `JsString.ToLowerCase` = 简单映射 + 56 条覆盖表（`JsCaseData.LowerOverrides`）+ Final_Sigma；Final_Sigma 依赖的 `Cased` / `Case_Ignorable` 谓词按 V8 实测的集合固化成区间表（131 + 464 个区间）——注意 V8 用的是**旧版** `Case_Ignorable` 推导（含 U+0027 U+002E U+003A U+00B7 U+0387 U+055F U+05F4 U+2018 U+2019 U+2024 U+2027 U+FE13 U+FE52 U+FE55 U+FF07 U+FF0E U+FF1A 这 17 个非 Mn/Me/Cf/Lm/Sk 码点），且在扫描时**先判 case-ignorable 再判 cased**（U+02B0 同时属于两类，按可忽略处理）。`JsString.ToLowerCase` 已接入 `Fuzzy` / `Autocomplete` / `TerminalImage` / `Keys` 的全部字符串级小写调用点（这些模块原先直接用 `ToLowerInvariant`，属潜在偏差；语料本身不含分歧码点，故改造后测试仍全绿）。仍未处理的是 **`toUpperCase`**：`keys.ts` 的 `data === key.toUpperCase()` 与 `alt-screen-search.ts` 的 `charAt(0).toUpperCase()` 仍用 .NET 简单映射，等 `alt-screen-search.ts` 那一批再补对称的表。 |
 | T24 | **CJK 字符类谓词改为码点区间表** | `utils.ts` 的三个谓词（`cjkBreakRegex` / `cjkPunctuationRegex` / `autocompleteSeparatorRegex`）建立在 `\p{Script_Extensions=Han\|Hiragana\|Katakana\|Hangul\|Bopomofo}` 上，.NET 正则无法表达 `Script_Extensions`，故按原始正则实跑探测生成区间表（`JsCjkData`，由 `JsCjk` 使用）。三处语义细节需与正则逐一核对：`cjkBreakRegex` 无锚点且无 `g` 标志，因此**参数中任意一个 rune** 命中即返回真（现有调用方都传单个字素簇，等价于判首 rune）；`autocompleteSeparatorRegex` 是「`\s` 或 CJK 标点」的并集，故 `\s` 部分仍走 `JsString.IsWhitespace`；`cjkPunctuationRegex` 只判单个码点。 |
 | T25 | **JS `await` 的微任务跳跃需显式注入点** | TS 的 `await` 即使被等值已 settle 也**必然** defer 到微任务队列（当前同步栈结束后才续接）；C# 的 `await` 对已完成的任务会**同步续接**，`Task.Yield` 才近似 JS 语义。`editor.ts` 的补全链路（`handleInput` → `getSuggestionsAsync` → 渲染列表）因此把这一步抽成 `Editor.AutocompleteDeferral`（`Func<JsMicrotask>`）：生产用 `Task.Yield`，差分测试换成 `JsMicrotaskSource` 由测试在两次操作之间 `Resume()`，使交错完全确定（`JsMicrotask` 是自定义 awaiter，`IsCompleted` 恒为 false，续接由源码保存、`Resume` 内联执行；不能用 `TaskCompletionSource`——`ConfigureAwait(false)` 的续接在 `SetResult` 里是**投递**而非内联，队列会出现"续接在途但看起来为空"的竞态）。 |
+| T26 | **`marked` 内联移植 + 行尾归一化** | `components/markdown.ts` 依赖 npm `marked` v18.0.5。C# 无 JS 解析器，故把 `marked` 的 tokenizer / lexer / rules 一并移植到 `Pi.Tui.Marked`（正则源与标志从活模块捕获，逐字节对齐）。关键语义：`Lexer.lex` 的行尾归一化是 `src.replace(/\r\n|\r/g, '\n')`——首版写成 `Replace("\r", "\n")` 会把 CRLF 拆成两个换行，使 `"a\r\nb"` 的段落被切成两个段落（15 条 CRLF 差分向量失败）。另：`marked` 的 `inlineQueue` 在 C# 里以 `MarkedInlineJob` 列表承载，`tokens.links` 侧表以 `Dictionary` 承载。 |
+| T27 | **`RegexOptions.Compiled` 规则集必须共享** | `MarkedRules` 里 ~50 个正则都带 `RegexOptions.Compiled`。.NET 在**首次匹配**时才 JIT 编译，所以若每个 `MarkedLexer` 都 `new MarkedRules()`，每次渲染都要重新编译全部正则——单次 `render` 因此要 ~300–500ms（整批 4,990 条差分用例从 13s 涨到 10+ 分钟）。改用共享的 `MarkedRules.Default`（正则匹配与 memo 工厂均线程安全）后，146 个去重输入从 45.2s 降到 0.6s（约 75×）。**教训：凡持有 `RegexOptions.Compiled` 的无状态规则集都应做成单例。** |
 
 ## 差分验证（latex.ts）
 
@@ -316,7 +318,7 @@ node --experimental-strip-types --no-warnings gen.mjs > editor-corpus.json
 
 ## 测试覆盖
 
-`tests/Pi.Tui.Tests`（16,599 项，已禁用并行化——多个用例共享进程级全局状态：能力缓存、Kitty 元数据注册表、环境变量探测、全局键位注册表、native helper）：
+`tests/Pi.Tui.Tests`（23,773 项，已禁用并行化——多个用例共享进程级全局状态：能力缓存、Kitty 元数据注册表、环境变量探测、全局键位注册表、native helper）：
 
 | 测试文件 | 项数 | 覆盖 |
 |---|---|---|
@@ -333,3 +335,6 @@ node --experimental-strip-types --no-warnings gen.mjs > editor-corpus.json
 | `InputCorpusTests.cs` | 5,453 | 5,450 条差分向量逐条对照 TS 参考实现（3,329 条 `render`、476 条按键序列逐步重放——含上游 36 个用例的 84 条断言、1,642 条 `handleMouse`、1 条 `/\s/` 码点全表），另 3 项：覆盖分布守卫（滚动窗口、提示符超宽早返回、两种焦点态、6 种鼠标事件类型与 4 个按钮都被取到）、语料规模守卫（含「`icuFrom` 标记恒为 7 条」） |
 | `SelectListCorpusTests.cs` | 2,728 | 2,598 条差分向量逐条对照 TS 参考实现（1,492 条 `render`、5 条上游场景复刻、570 条按键序列逐步重放、656 条 `handleMouse`），加 3 项大小写映射向量（1,488 条单码点映射、7,621 条 Final_Sigma 上下文串、U+0000–U+10FFFF 全码点比对 `Cased` / `Case_Ignorable` 两个谓词），另 2 项守卫：语料规模与覆盖分布（无匹配行、滚动提示、四种样式回调、`selectedPrefix` 恒为 0、按键三类事件与鼠标三类事件都被取到、两个大小写结构特例都在语料里） |
 | `EditorCorpusTests.cs` | 115 | 7,040 条差分向量逐条对照 TS 参考实现（6,327 条场景——`api` 55 / `render` 183 / `padding` 150 / `focus` 24 / `scroll` 18 / `mouse` 15 / `paste` 70 / `sequences` 78 / `keys` 3,321 / `keysMoved` 1,476 / `keysRender` 861 / `autocomplete` 76，每步比对文本、光标、补全标志、内边距、`maxVisible` 与渲染输出；713 条 `wordWrapLine` 纯函数向量），另 4 项守卫：语料规模、覆盖分布（12 个区段、提交历史、三种渲染模式都被取到）、「`icuFrom` 标记恒为 23 条」、超宽字素簇不递归 |
+| `MarkdownCorpusTests.cs` | 4,994 | 4,990 条差分向量逐条对照 TS 参考实现（4,818 条 `render`、105 条 options、32 条 defaultStyle、21 条 noHyperlinks、12 条 highlight、1 条 transform 回调序列、1 条缓存快照），另 4 项守卫：语料规模与分区、覆盖分布（各块级构造、窄/宽宽度、两种超链接态、默认文本样式、可选主题成员）。`chalk` 的 `applyStyle`（嵌套重置重开、CRLF 感知的换行包裹）在测试里以 `ChalkStyle` 复刻 |
+| `ExtraComponentsCorpusTests.cs` | 1,696 | 1,692 条差分向量逐条对照 TS 参考实现（874 条 settings 的 op 序列重放、784 条 image 的 `render` 全矩阵、9 条 mouseRegion、25 条 flash），另 4 项守卫：语料规模与分区、覆盖分布（空/无匹配/滚动、模糊搜索、值循环、子菜单生命周期、press→click 配对与滚轮；image 的三种能力 / 三种 transcoder / 四种 mime / 缓存；flash 的 0–3 条目与 `dispose`；mouseRegion 的四个 case） |
+| `AltScreenSearchCorpusTests.cs` | ~50 | 备用屏搜索语料逐条对照 TS 参考实现（索引构建、匹配定位、`getAltScreenSearchMatchKey`、大小写不敏感路径） |

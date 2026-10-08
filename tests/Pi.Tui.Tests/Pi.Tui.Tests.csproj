@@ -22,5 +22,11 @@
     <None Include="select-list-corpus.json" CopyToOutputDirectory="PreserveNewest" />
     <!-- Differential test vectors captured from the TypeScript Editor component reference implementation. -->
     <None Include="editor-corpus.json" CopyToOutputDirectory="PreserveNewest" />
+    <!-- Differential test vectors captured from the TypeScript Markdown component reference implementation. -->
+    <None Include="markdown-corpus.json" CopyToOutputDirectory="PreserveNewest" />
+    <!-- Differential test vectors captured from the TypeScript alt-screen-search.ts reference implementation. -->
+    <None Include="alt-screen-search-corpus.json" CopyToOutputDirectory="PreserveNewest" />
+    <!-- Differential test vectors captured from the TypeScript settings-list/image/mouse-region/alt-screen-flash reference implementations. -->
+    <None Include="extra-components-corpus.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

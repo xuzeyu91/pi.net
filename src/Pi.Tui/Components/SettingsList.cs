@@ -127,6 +127,16 @@ public class SettingsList : IComponent
         }
     }
 
+    /// <summary>
+    /// Test seam: the current selection index. The TS field is <c>private</c> but readable at runtime,
+    /// so the differential corpus records it; this exposes the same observable without widening the
+    /// public surface.
+    /// </summary>
+    internal int SelectedIndexForTests => _selectedIndex;
+
+    /// <summary>Test seam: whether a submenu is currently open (mirrors the TS runtime field).</summary>
+    internal bool SubmenuOpenForTests => _submenuComponent is not null;
+
     public void Invalidate() => _submenuComponent?.Invalidate();
 
     public string[] Render(int width)

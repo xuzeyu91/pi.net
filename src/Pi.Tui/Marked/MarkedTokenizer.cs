@@ -1,6 +1,6 @@
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
-namespace Pi.Tui.Markdown;
+namespace Pi.Tui.Marked;
 
 /// <summary>Options that change tokenization (port of the marked options markdown.ts relies on).</summary>
 public sealed class MarkedOptions
@@ -10,6 +10,12 @@ public sealed class MarkedOptions
     public bool Pedantic { get; set; }
 
     public bool Breaks { get; set; }
+
+    /// <summary>
+    /// Tokenizer extensions registered through marked's <c>use({ extensions })</c>.
+    /// <c>components/markdown.ts</c> installs the latex extensions here.
+    /// </summary>
+    public MarkedExtensions? Extensions { get; set; }
 }
 
 /// <summary>
@@ -203,7 +209,9 @@ public sealed class MarkedTokenizer
 
             var previousTop = Lexer.State.Top;
             Lexer.State.Top = true;
-            Lexer.BlockTokens(stripped, tokens);
+            // marked passes the third blockTokens argument as `true` here so a paragraph produced by
+            // this chunk merges into a paragraph left over from the previous chunk (lazy continuation).
+            Lexer.BlockTokens(stripped, tokens, true);
             Lexer.State.Top = previousTop;
 
             if (lines.Count == 0)
@@ -261,9 +269,12 @@ public sealed class MarkedTokenizer
             Items = [],
         };
 
+        // marked builds the item pattern as `\d{1,9}\<last char of the bullet>` for ordered lists
+        // and `\<bullet>` otherwise. Written as concatenation on purpose: inside an interpolated
+        // string `\$` does not start a hole, so `$"\\d{1,9}\\${bullet[^1]}"` would emit a stray '$'.
         var bulletPattern = ordered
-            ? $"\\d{{1,9}}\\${bullet[^1]}"
-            : $"\\{bullet}";
+            ? "\\d{1,9}\\" + bullet[^1]
+            : "\\" + bullet;
         if (Options.Pedantic)
         {
             bulletPattern = ordered ? bulletPattern : "[*+-]";
@@ -285,7 +296,7 @@ public sealed class MarkedTokenizer
             }
 
             itemRaw = match.Value;
-            src = src[itemRaw.Length..];
+            src = JsString.Slice(src, itemRaw.Length);
 
             var expanded = MarkedText.ExpandTabs(
                 MarkedText.FirstLine(match.Groups[2].Value),
@@ -307,14 +318,14 @@ public sealed class MarkedTokenizer
             {
                 indent = MarkedText.Search(expanded, Rules.Other.NonSpaceChar);
                 indent = indent > 4 ? 1 : indent;
-                itemText = expanded[indent..];
+                itemText = JsString.Slice(expanded, indent);
                 indent += match.Groups[1].Value.Length;
             }
 
             if (blank && Rules.Other.BlankLine.IsMatch(nextLine))
             {
                 itemRaw += nextLine + "\n";
-                src = src[(nextLine.Length + 1)..];
+                src = JsString.Slice(src, nextLine.Length + 1);
                 atEnd = true;
             }
 
@@ -344,7 +355,7 @@ public sealed class MarkedTokenizer
                     if (MarkedText.Search(normalized, Rules.Other.NonSpaceChar) >= indent ||
                         JsString.Trim(line).Length == 0)
                     {
-                        itemText += "\n" + normalized[indent..];
+                        itemText += "\n" + JsString.Slice(normalized, indent);
                     }
                     else
                     {
@@ -360,8 +371,8 @@ public sealed class MarkedTokenizer
 
                     blank = JsString.Trim(line).Length == 0;
                     itemRaw += line + "\n";
-                    src = src[(line.Length + 1)..];
-                    expanded = normalized[indent..];
+                    src = JsString.Slice(src, line.Length + 1);
+                    expanded = JsString.Slice(normalized, indent);
                 }
             }
 
@@ -948,10 +959,12 @@ public sealed class MarkedTokenizer
     }
 
     /// <summary>
-    /// Strikethrough. marked's own <c>del</c> is fully shadowed here: <c>components/markdown.ts</c>
-    /// installs a <c>StrictStrikethroughTokenizer</c> whose <c>del</c> never returns <c>false</c>, and
-    /// marked's <c>use()</c> only falls back to the original when an override returns exactly
-    /// <c>false</c>. So this is the strict regex, not marked's.
+    /// Strikethrough. <c>components/markdown.ts</c> installs a <c>StrictStrikethroughTokenizer</c>
+    /// through <c>setOptions({ tokenizer })</c>, which fully shadows marked's own <c>del</c>: the
+    /// override returns the token whenever the strict regex matches and <c>undefined</c> otherwise
+    /// (marked's <c>use()</c> only falls back to the original method when an override returns
+    /// exactly <c>false</c>, which this one never does). So this is the strict regex verbatim,
+    /// not marked's delimiter-run search.
     /// </summary>
     public MarkedToken? Del(string src, string masked, string previous = "")
     {
@@ -961,62 +974,14 @@ public sealed class MarkedTokenizer
             return null;
         }
 
-        if (match.Groups[1].Value.Length == 0 && previous.Length > 0 &&
-            !Rules.Inline.Punctuation.IsMatch(previous))
+        var text = match.Groups[2].Value;
+        return new MarkedToken
         {
-            return null;
-        }
-
-        var length = JsString.CodePointLength(match.Value) - 1;
-        var open = length;
-
-        // JS: t = t.slice(-1 * e.length + i)
-        var search = JsString.Slice(masked, length - src.Length);
-        var rightMatch = Rules.Inline.DelRDelim.Match(search);
-        while (rightMatch.Success)
-        {
-            var run = FirstGroup(rightMatch, 1, 2, 3, 4, 5, 6);
-            if (run.Length == 0)
-            {
-                rightMatch = rightMatch.NextMatch();
-                continue;
-            }
-
-            var runLength = JsString.CodePointLength(run);
-            if (runLength != length)
-            {
-                rightMatch = rightMatch.NextMatch();
-                continue;
-            }
-
-            if (rightMatch.Groups[3].Value.Length > 0 || rightMatch.Groups[4].Value.Length > 0)
-            {
-                open += runLength;
-                rightMatch = rightMatch.NextMatch();
-                continue;
-            }
-
-            open -= runLength;
-            if (open > 0)
-            {
-                rightMatch = rightMatch.NextMatch();
-                continue;
-            }
-
-            runLength = Math.Min(runLength, runLength + open);
-            var firstCharLength = MarkedText.FirstCodePointLength(rightMatch.Value);
-            var whole = JsString.Slice(src, 0, length + rightMatch.Index + firstCharLength + runLength);
-            var inner = JsString.Slice(whole, length, -length);
-            return new MarkedToken
-            {
-                Type = "del",
-                Raw = whole,
-                Text = inner,
-                Tokens = Lexer.InlineTokens(inner, []),
-            };
-        }
-
-        return null;
+            Type = "del",
+            Raw = match.Value,
+            Text = text,
+            Tokens = Lexer.InlineTokens(text, []),
+        };
     }
 
     public MarkedToken? Autolink(string src)

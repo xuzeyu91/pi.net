@@ -1,6 +1,6 @@
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
-namespace Pi.Tui.Markdown;
+namespace Pi.Tui.Marked;
 
 // Ported from marked v18.0.5 (packages/coding-agent/src/core/export-html/vendor/marked.min.js).
 // Regex sources and flags were captured from the live module, so they are byte-exact; only the JS
