@@ -1,0 +1,7280 @@
+{
+ "nodePathNormalize": [
+  {
+   "input": "",
+   "win32": ".",
+   "posix": "."
+  },
+  {
+   "input": ".",
+   "win32": ".",
+   "posix": "."
+  },
+  {
+   "input": "..",
+   "win32": "..",
+   "posix": ".."
+  },
+  {
+   "input": "/",
+   "win32": "\\",
+   "posix": "/"
+  },
+  {
+   "input": "\\",
+   "win32": "\\",
+   "posix": "\\"
+  },
+  {
+   "input": "//",
+   "win32": "\\",
+   "posix": "/"
+  },
+  {
+   "input": "///",
+   "win32": "\\",
+   "posix": "/"
+  },
+  {
+   "input": "/a",
+   "win32": "\\a",
+   "posix": "/a"
+  },
+  {
+   "input": "/a/",
+   "win32": "\\a\\",
+   "posix": "/a/"
+  },
+  {
+   "input": "/a//b",
+   "win32": "\\a\\b",
+   "posix": "/a/b"
+  },
+  {
+   "input": "/a/./b",
+   "win32": "\\a\\b",
+   "posix": "/a/b"
+  },
+  {
+   "input": "/a/../b",
+   "win32": "\\b",
+   "posix": "/b"
+  },
+  {
+   "input": "/a/b/..",
+   "win32": "\\a",
+   "posix": "/a"
+  },
+  {
+   "input": "a",
+   "win32": "a",
+   "posix": "a"
+  },
+  {
+   "input": "a/",
+   "win32": "a\\",
+   "posix": "a/"
+  },
+  {
+   "input": "a/b",
+   "win32": "a\\b",
+   "posix": "a/b"
+  },
+  {
+   "input": "a//b",
+   "win32": "a\\b",
+   "posix": "a/b"
+  },
+  {
+   "input": "a/./b",
+   "win32": "a\\b",
+   "posix": "a/b"
+  },
+  {
+   "input": "a/../b",
+   "win32": "b",
+   "posix": "b"
+  },
+  {
+   "input": "../a",
+   "win32": "..\\a",
+   "posix": "../a"
+  },
+  {
+   "input": "../../a",
+   "win32": "..\\..\\a",
+   "posix": "../../a"
+  },
+  {
+   "input": "a/../../b",
+   "win32": "..\\b",
+   "posix": "../b"
+  },
+  {
+   "input": "a/b/../..",
+   "win32": ".",
+   "posix": "."
+  },
+  {
+   "input": "a/..",
+   "win32": ".",
+   "posix": "."
+  },
+  {
+   "input": "a/../..",
+   "win32": "..",
+   "posix": ".."
+  },
+  {
+   "input": "./",
+   "win32": ".\\",
+   "posix": "./"
+  },
+  {
+   "input": "./a",
+   "win32": "a",
+   "posix": "a"
+  },
+  {
+   "input": "C:",
+   "win32": "C:.",
+   "posix": "C:"
+  },
+  {
+   "input": "C:.",
+   "win32": "C:.",
+   "posix": "C:."
+  },
+  {
+   "input": "C:..",
+   "win32": "C:..",
+   "posix": "C:.."
+  },
+  {
+   "input": "C:/",
+   "win32": "C:\\",
+   "posix": "C:/"
+  },
+  {
+   "input": "C://",
+   "win32": "C:\\",
+   "posix": "C:/"
+  },
+  {
+   "input": "C:/..",
+   "win32": "C:\\",
+   "posix": "."
+  },
+  {
+   "input": "C:/a",
+   "win32": "C:\\a",
+   "posix": "C:/a"
+  },
+  {
+   "input": "C:/a/",
+   "win32": "C:\\a\\",
+   "posix": "C:/a/"
+  },
+  {
+   "input": "C:a",
+   "win32": "C:a",
+   "posix": "C:a"
+  },
+  {
+   "input": "C:a/b",
+   "win32": "C:a\\b",
+   "posix": "C:a/b"
+  },
+  {
+   "input": "c:/A/B/",
+   "win32": "c:\\A\\B\\",
+   "posix": "c:/A/B/"
+  },
+  {
+   "input": "C:/a/../b",
+   "win32": "C:\\b",
+   "posix": "C:/b"
+  },
+  {
+   "input": "C:/a/b/../..",
+   "win32": "C:\\",
+   "posix": "C:"
+  },
+  {
+   "input": "1:",
+   "win32": ".\\1:",
+   "posix": "1:"
+  },
+  {
+   "input": "1:/a",
+   "win32": ".\\1:\\a",
+   "posix": "1:/a"
+  },
+  {
+   "input": "1:a/b",
+   "win32": "1:a\\b",
+   "posix": "1:a/b"
+  },
+  {
+   "input": "abc:",
+   "win32": ".\\abc:",
+   "posix": "abc:"
+  },
+  {
+   "input": "::",
+   "win32": ".\\::",
+   "posix": "::"
+  },
+  {
+   "input": "::a",
+   "win32": "::a",
+   "posix": "::a"
+  },
+  {
+   "input": ":a",
+   "win32": ":a",
+   "posix": ":a"
+  },
+  {
+   "input": "_x:",
+   "win32": ".\\_x:",
+   "posix": "_x:"
+  },
+  {
+   "input": "~:",
+   "win32": ".\\~:",
+   "posix": "~:"
+  },
+  {
+   "input": "z:y:z",
+   "win32": "z:y:z",
+   "posix": "z:y:z"
+  },
+  {
+   "input": "1:2",
+   "win32": "1:2",
+   "posix": "1:2"
+  },
+  {
+   "input": "//server",
+   "win32": "\\server",
+   "posix": "/server"
+  },
+  {
+   "input": "//server/",
+   "win32": "\\server\\",
+   "posix": "/server/"
+  },
+  {
+   "input": "//server/share",
+   "win32": "\\\\server\\share\\",
+   "posix": "/server/share"
+  },
+  {
+   "input": "//server/share/",
+   "win32": "\\\\server\\share\\",
+   "posix": "/server/share/"
+  },
+  {
+   "input": "//server/share/a",
+   "win32": "\\\\server\\share\\a",
+   "posix": "/server/share/a"
+  },
+  {
+   "input": "//server/share/a/b",
+   "win32": "\\\\server\\share\\a\\b",
+   "posix": "/server/share/a/b"
+  },
+  {
+   "input": "//server/share/a/../b",
+   "win32": "\\\\server\\share\\b",
+   "posix": "/server/share/b"
+  },
+  {
+   "input": "//a//b//",
+   "win32": "\\\\a\\b\\",
+   "posix": "/a/b/"
+  },
+  {
+   "input": "//?/C:/a",
+   "win32": "\\\\?\\C:\\a",
+   "posix": "/?/C:/a"
+  },
+  {
+   "input": "\\\\?\\C:\\a",
+   "win32": "\\\\?\\C:\\a",
+   "posix": "\\\\?\\C:\\a"
+  },
+  {
+   "input": "\\\\.\\pipe\\x",
+   "win32": "\\\\.\\pipe\\x",
+   "posix": "\\\\.\\pipe\\x"
+  },
+  {
+   "input": "/mnt/c/foo",
+   "win32": "\\mnt\\c\\foo",
+   "posix": "/mnt/c/foo"
+  },
+  {
+   "input": "\\a\\b",
+   "win32": "\\a\\b",
+   "posix": "\\a\\b"
+  },
+  {
+   "input": "/a\\b",
+   "win32": "\\a\\b",
+   "posix": "/a\\b"
+  },
+  {
+   "input": "~/a",
+   "win32": "~\\a",
+   "posix": "~/a"
+  },
+  {
+   "input": "~",
+   "win32": "~",
+   "posix": "~"
+  },
+  {
+   "input": "~/",
+   "win32": "~\\",
+   "posix": "~/"
+  },
+  {
+   "input": "~\\a",
+   "win32": "~\\a",
+   "posix": "~\\a"
+  },
+  {
+   "input": "@a",
+   "win32": "@a",
+   "posix": "@a"
+  },
+  {
+   "input": " @a ",
+   "win32": " @a ",
+   "posix": " @a "
+  },
+  {
+   "input": "1x:",
+   "win32": ".\\1x:",
+   "posix": "1x:"
+  },
+  {
+   "input": "x:y",
+   "win32": "x:y",
+   "posix": "x:y"
+  },
+  {
+   "input": "@:y",
+   "win32": "@:y",
+   "posix": "@:y"
+  },
+  {
+   "input": "-:y",
+   "win32": "-:y",
+   "posix": "-:y"
+  },
+  {
+   "input": "a/b:c",
+   "win32": "a\\b:c",
+   "posix": "a/b:c"
+  }
+ ],
+ "nodePathJoin": [
+  {
+   "parts": [
+    ""
+   ],
+   "win32": ".",
+   "posix": "."
+  },
+  {
+   "parts": [
+    "",
+    ""
+   ],
+   "win32": ".",
+   "posix": "."
+  },
+  {
+   "parts": [
+    "a"
+   ],
+   "win32": "a",
+   "posix": "a"
+  },
+  {
+   "parts": [
+    "a",
+    "b"
+   ],
+   "win32": "a\\b",
+   "posix": "a/b"
+  },
+  {
+   "parts": [
+    "a/",
+    "b"
+   ],
+   "win32": "a\\b",
+   "posix": "a/b"
+  },
+  {
+   "parts": [
+    "/a",
+    "b"
+   ],
+   "win32": "\\a\\b",
+   "posix": "/a/b"
+  },
+  {
+   "parts": [
+    "/a",
+    "/b"
+   ],
+   "win32": "\\a\\b",
+   "posix": "/a/b"
+  },
+  {
+   "parts": [
+    "/a",
+    ""
+   ],
+   "win32": "\\a",
+   "posix": "/a"
+  },
+  {
+   "parts": [
+    "C:\\base",
+    "/a"
+   ],
+   "win32": "C:\\base\\a",
+   "posix": "C:\\base/a"
+  },
+  {
+   "parts": [
+    "C:\\base",
+    "C:/"
+   ],
+   "win32": "C:\\base\\C:\\",
+   "posix": "C:\\base/C:/"
+  },
+  {
+   "parts": [
+    "C:\\base",
+    ".."
+   ],
+   "win32": "C:\\",
+   "posix": "."
+  },
+  {
+   "parts": [
+    "C:\\base",
+    "..",
+    ".."
+   ],
+   "win32": "C:\\",
+   "posix": ".."
+  },
+  {
+   "parts": [
+    "",
+    "a",
+    "b"
+   ],
+   "win32": "a\\b",
+   "posix": "a/b"
+  },
+  {
+   "parts": [
+    "a",
+    "..",
+    "b"
+   ],
+   "win32": "b",
+   "posix": "b"
+  },
+  {
+   "parts": [
+    "a",
+    "",
+    "b"
+   ],
+   "win32": "a\\b",
+   "posix": "a/b"
+  },
+  {
+   "parts": [
+    "/base",
+    "~/a"
+   ],
+   "win32": "\\base\\~\\a",
+   "posix": "/base/~/a"
+  },
+  {
+   "parts": [
+    "//server/share",
+    "a"
+   ],
+   "win32": "\\\\server\\share\\a",
+   "posix": "/server/share/a"
+  },
+  {
+   "parts": [
+    "a",
+    "b",
+    "c",
+    "d"
+   ],
+   "win32": "a\\b\\c\\d",
+   "posix": "a/b/c/d"
+  },
+  {
+   "parts": [
+    "C:\\base",
+    ""
+   ],
+   "win32": "C:\\base",
+   "posix": "C:\\base"
+  },
+  {
+   "parts": [
+    "/",
+    "a"
+   ],
+   "win32": "\\a",
+   "posix": "/a"
+  },
+  {
+   "parts": [
+    "/",
+    ".."
+   ],
+   "win32": "\\",
+   "posix": "/"
+  },
+  {
+   "parts": [
+    "a\\b",
+    "c"
+   ],
+   "win32": "a\\b\\c",
+   "posix": "a\\b/c"
+  },
+  {
+   "parts": [
+    "1:",
+    "a"
+   ],
+   "win32": ".\\1:\\a",
+   "posix": "1:/a"
+  }
+ ],
+ "nodePathDirname": [
+  {
+   "input": "",
+   "win32": ".",
+   "posix": "."
+  },
+  {
+   "input": ".",
+   "win32": ".",
+   "posix": "."
+  },
+  {
+   "input": "..",
+   "win32": ".",
+   "posix": "."
+  },
+  {
+   "input": "/",
+   "win32": "/",
+   "posix": "/"
+  },
+  {
+   "input": "\\",
+   "win32": "\\",
+   "posix": "."
+  },
+  {
+   "input": "//",
+   "win32": "/",
+   "posix": "/"
+  },
+  {
+   "input": "/a",
+   "win32": "/",
+   "posix": "/"
+  },
+  {
+   "input": "/a/",
+   "win32": "/",
+   "posix": "/"
+  },
+  {
+   "input": "/a/b",
+   "win32": "/a",
+   "posix": "/a"
+  },
+  {
+   "input": "/a/b/",
+   "win32": "/a",
+   "posix": "/a"
+  },
+  {
+   "input": "/a//b",
+   "win32": "/a/",
+   "posix": "/a/"
+  },
+  {
+   "input": "a",
+   "win32": ".",
+   "posix": "."
+  },
+  {
+   "input": "a/",
+   "win32": ".",
+   "posix": "."
+  },
+  {
+   "input": "a/b",
+   "win32": "a",
+   "posix": "a"
+  },
+  {
+   "input": "a/b/",
+   "win32": "a",
+   "posix": "a"
+  },
+  {
+   "input": "C:",
+   "win32": "C:",
+   "posix": "."
+  },
+  {
+   "input": "C:/",
+   "win32": "C:/",
+   "posix": "."
+  },
+  {
+   "input": "C:/a",
+   "win32": "C:/",
+   "posix": "C:"
+  },
+  {
+   "input": "C:/a/",
+   "win32": "C:/",
+   "posix": "C:"
+  },
+  {
+   "input": "C:a",
+   "win32": "C:",
+   "posix": "."
+  },
+  {
+   "input": "C:a/b",
+   "win32": "C:a",
+   "posix": "C:a"
+  },
+  {
+   "input": "c:/A/B/",
+   "win32": "c:/A",
+   "posix": "c:/A"
+  },
+  {
+   "input": "//server",
+   "win32": "/",
+   "posix": "//"
+  },
+  {
+   "input": "//server/",
+   "win32": "/",
+   "posix": "//"
+  },
+  {
+   "input": "//server/share",
+   "win32": "//server/share",
+   "posix": "//server"
+  },
+  {
+   "input": "//server/share/",
+   "win32": "//server/share/",
+   "posix": "//server"
+  },
+  {
+   "input": "//server/share/a",
+   "win32": "//server/share/",
+   "posix": "//server/share"
+  },
+  {
+   "input": "//server/share/a/b",
+   "win32": "//server/share/a",
+   "posix": "//server/share/a"
+  },
+  {
+   "input": "//server/share/a/b/",
+   "win32": "//server/share/a",
+   "posix": "//server/share/a"
+  },
+  {
+   "input": "//?/C:/a",
+   "win32": "//?/C:/",
+   "posix": "//?/C:"
+  },
+  {
+   "input": "\\\\.\\pipe\\x\\y",
+   "win32": "\\\\.\\pipe\\x",
+   "posix": "."
+  },
+  {
+   "input": "~/a",
+   "win32": "~",
+   "posix": "~"
+  },
+  {
+   "input": "~",
+   "win32": ".",
+   "posix": "."
+  },
+  {
+   "input": "~/",
+   "win32": ".",
+   "posix": "."
+  },
+  {
+   "input": "@a",
+   "win32": ".",
+   "posix": "."
+  },
+  {
+   "input": " @a ",
+   "win32": ".",
+   "posix": "."
+  },
+  {
+   "input": "/mnt/c/foo",
+   "win32": "/mnt/c",
+   "posix": "/mnt/c"
+  },
+  {
+   "input": "a//b",
+   "win32": "a/",
+   "posix": "a/"
+  },
+  {
+   "input": "1:",
+   "win32": ".",
+   "posix": "."
+  },
+  {
+   "input": "abc:",
+   "win32": ".",
+   "posix": "."
+  },
+  {
+   "input": "a/b/c.txt",
+   "win32": "a/b",
+   "posix": "a/b"
+  },
+  {
+   "input": "C:/a/b.txt",
+   "win32": "C:/a",
+   "posix": "C:/a"
+  }
+ ],
+ "nodePathBasename": [
+  {
+   "input": "",
+   "win32": "",
+   "posix": ""
+  },
+  {
+   "input": ".",
+   "win32": ".",
+   "posix": "."
+  },
+  {
+   "input": "..",
+   "win32": "..",
+   "posix": ".."
+  },
+  {
+   "input": "/",
+   "win32": "",
+   "posix": ""
+  },
+  {
+   "input": "\\",
+   "win32": "",
+   "posix": "\\"
+  },
+  {
+   "input": "//",
+   "win32": "",
+   "posix": ""
+  },
+  {
+   "input": "/a",
+   "win32": "a",
+   "posix": "a"
+  },
+  {
+   "input": "/a/",
+   "win32": "a",
+   "posix": "a"
+  },
+  {
+   "input": "/a/b",
+   "win32": "b",
+   "posix": "b"
+  },
+  {
+   "input": "/a/b/",
+   "win32": "b",
+   "posix": "b"
+  },
+  {
+   "input": "/a//b",
+   "win32": "b",
+   "posix": "b"
+  },
+  {
+   "input": "a",
+   "win32": "a",
+   "posix": "a"
+  },
+  {
+   "input": "a/",
+   "win32": "a",
+   "posix": "a"
+  },
+  {
+   "input": "a/b",
+   "win32": "b",
+   "posix": "b"
+  },
+  {
+   "input": "a/b/",
+   "win32": "b",
+   "posix": "b"
+  },
+  {
+   "input": "C:",
+   "win32": "",
+   "posix": "C:"
+  },
+  {
+   "input": "C:/",
+   "win32": "",
+   "posix": "C:"
+  },
+  {
+   "input": "C:/a",
+   "win32": "a",
+   "posix": "a"
+  },
+  {
+   "input": "C:/a/",
+   "win32": "a",
+   "posix": "a"
+  },
+  {
+   "input": "C:a",
+   "win32": "a",
+   "posix": "C:a"
+  },
+  {
+   "input": "C:a/b",
+   "win32": "b",
+   "posix": "b"
+  },
+  {
+   "input": "c:/A/B/",
+   "win32": "B",
+   "posix": "B"
+  },
+  {
+   "input": "//server",
+   "win32": "server",
+   "posix": "server"
+  },
+  {
+   "input": "//server/",
+   "win32": "server",
+   "posix": "server"
+  },
+  {
+   "input": "//server/share",
+   "win32": "share",
+   "posix": "share"
+  },
+  {
+   "input": "//server/share/",
+   "win32": "share",
+   "posix": "share"
+  },
+  {
+   "input": "//server/share/a",
+   "win32": "a",
+   "posix": "a"
+  },
+  {
+   "input": "//server/share/a/b",
+   "win32": "b",
+   "posix": "b"
+  },
+  {
+   "input": "//server/share/a/b/",
+   "win32": "b",
+   "posix": "b"
+  },
+  {
+   "input": "//?/C:/a",
+   "win32": "a",
+   "posix": "a"
+  },
+  {
+   "input": "\\\\.\\pipe\\x\\y",
+   "win32": "y",
+   "posix": "\\\\.\\pipe\\x\\y"
+  },
+  {
+   "input": "~/a",
+   "win32": "a",
+   "posix": "a"
+  },
+  {
+   "input": "~",
+   "win32": "~",
+   "posix": "~"
+  },
+  {
+   "input": "~/",
+   "win32": "~",
+   "posix": "~"
+  },
+  {
+   "input": "@a",
+   "win32": "@a",
+   "posix": "@a"
+  },
+  {
+   "input": " @a ",
+   "win32": " @a ",
+   "posix": " @a "
+  },
+  {
+   "input": "/mnt/c/foo",
+   "win32": "foo",
+   "posix": "foo"
+  },
+  {
+   "input": "a//b",
+   "win32": "b",
+   "posix": "b"
+  },
+  {
+   "input": "1:",
+   "win32": "1:",
+   "posix": "1:"
+  },
+  {
+   "input": "abc:",
+   "win32": "abc:",
+   "posix": "abc:"
+  },
+  {
+   "input": "a/b/c.txt",
+   "win32": "c.txt",
+   "posix": "c.txt"
+  },
+  {
+   "input": "C:/a/b.txt",
+   "win32": "b.txt",
+   "posix": "b.txt"
+  }
+ ],
+ "nodePathBasenameWithExt": [
+  {
+   "input": "a/b/c.txt",
+   "ext": ".txt",
+   "win32": "c",
+   "posix": "c"
+  },
+  {
+   "input": "a/b/c.txt",
+   "ext": ".md",
+   "win32": "c.txt",
+   "posix": "c.txt"
+  },
+  {
+   "input": "a/b/c.txt",
+   "ext": "c.txt",
+   "win32": "c.txt",
+   "posix": "c.txt"
+  },
+  {
+   "input": "a/b/c.txt",
+   "ext": "b/c.txt",
+   "win32": "c.txt",
+   "posix": "c.txt"
+  },
+  {
+   "input": "/a/b/",
+   "ext": ".txt",
+   "win32": "b",
+   "posix": "b"
+  },
+  {
+   "input": "c.txt",
+   "ext": "c.txt",
+   "win32": "",
+   "posix": ""
+  },
+  {
+   "input": "c.txt",
+   "ext": "",
+   "win32": "c.txt",
+   "posix": "c.txt"
+  },
+  {
+   "input": "",
+   "ext": ".txt",
+   "win32": "",
+   "posix": ""
+  },
+  {
+   "input": "C:/a/b.txt",
+   "ext": ".txt",
+   "win32": "b",
+   "posix": "b"
+  },
+  {
+   "input": "C:/a/b.txt",
+   "ext": ".txt.txt",
+   "win32": "b.txt",
+   "posix": "b.txt"
+  },
+  {
+   "input": "a.b.c",
+   "ext": ".c",
+   "win32": "a.b",
+   "posix": "a.b"
+  },
+  {
+   "input": "a.b.c",
+   "ext": ".b.c",
+   "win32": "a",
+   "posix": "a"
+  }
+ ],
+ "nodePathIsAbsolute": [
+  {
+   "input": "",
+   "win32": false,
+   "posix": false
+  },
+  {
+   "input": ".",
+   "win32": false,
+   "posix": false
+  },
+  {
+   "input": "..",
+   "win32": false,
+   "posix": false
+  },
+  {
+   "input": "/",
+   "win32": true,
+   "posix": true
+  },
+  {
+   "input": "\\",
+   "win32": true,
+   "posix": false
+  },
+  {
+   "input": "//",
+   "win32": true,
+   "posix": true
+  },
+  {
+   "input": "/a",
+   "win32": true,
+   "posix": true
+  },
+  {
+   "input": "/a/",
+   "win32": true,
+   "posix": true
+  },
+  {
+   "input": "/a/b",
+   "win32": true,
+   "posix": true
+  },
+  {
+   "input": "/a/b/",
+   "win32": true,
+   "posix": true
+  },
+  {
+   "input": "/a//b",
+   "win32": true,
+   "posix": true
+  },
+  {
+   "input": "a",
+   "win32": false,
+   "posix": false
+  },
+  {
+   "input": "a/",
+   "win32": false,
+   "posix": false
+  },
+  {
+   "input": "a/b",
+   "win32": false,
+   "posix": false
+  },
+  {
+   "input": "a/b/",
+   "win32": false,
+   "posix": false
+  },
+  {
+   "input": "C:",
+   "win32": false,
+   "posix": false
+  },
+  {
+   "input": "C:/",
+   "win32": true,
+   "posix": false
+  },
+  {
+   "input": "C:/a",
+   "win32": true,
+   "posix": false
+  },
+  {
+   "input": "C:/a/",
+   "win32": true,
+   "posix": false
+  },
+  {
+   "input": "C:a",
+   "win32": false,
+   "posix": false
+  },
+  {
+   "input": "C:a/b",
+   "win32": false,
+   "posix": false
+  },
+  {
+   "input": "c:/A/B/",
+   "win32": true,
+   "posix": false
+  },
+  {
+   "input": "//server",
+   "win32": true,
+   "posix": true
+  },
+  {
+   "input": "//server/",
+   "win32": true,
+   "posix": true
+  },
+  {
+   "input": "//server/share",
+   "win32": true,
+   "posix": true
+  },
+  {
+   "input": "//server/share/",
+   "win32": true,
+   "posix": true
+  },
+  {
+   "input": "//server/share/a",
+   "win32": true,
+   "posix": true
+  },
+  {
+   "input": "//server/share/a/b",
+   "win32": true,
+   "posix": true
+  },
+  {
+   "input": "//server/share/a/b/",
+   "win32": true,
+   "posix": true
+  },
+  {
+   "input": "//?/C:/a",
+   "win32": true,
+   "posix": true
+  },
+  {
+   "input": "\\\\.\\pipe\\x\\y",
+   "win32": true,
+   "posix": false
+  },
+  {
+   "input": "~/a",
+   "win32": false,
+   "posix": false
+  },
+  {
+   "input": "~",
+   "win32": false,
+   "posix": false
+  },
+  {
+   "input": "~/",
+   "win32": false,
+   "posix": false
+  },
+  {
+   "input": "@a",
+   "win32": false,
+   "posix": false
+  },
+  {
+   "input": " @a ",
+   "win32": false,
+   "posix": false
+  },
+  {
+   "input": "/mnt/c/foo",
+   "win32": true,
+   "posix": true
+  },
+  {
+   "input": "a//b",
+   "win32": false,
+   "posix": false
+  },
+  {
+   "input": "1:",
+   "win32": false,
+   "posix": false
+  },
+  {
+   "input": "abc:",
+   "win32": false,
+   "posix": false
+  },
+  {
+   "input": "a/b/c.txt",
+   "win32": false,
+   "posix": false
+  },
+  {
+   "input": "C:/a/b.txt",
+   "win32": true,
+   "posix": false
+  }
+ ],
+ "nodePathResolve": [
+  {
+   "parts": [
+    "/other/a"
+   ],
+   "win32": "D:\\other\\a",
+   "posix": "/other/a"
+  },
+  {
+   "parts": [
+    "/other/a",
+    "/cwd"
+   ],
+   "win32": "D:\\cwd",
+   "posix": "/cwd"
+  },
+  {
+   "parts": [
+    "/cwd",
+    "/other/a"
+   ],
+   "win32": "D:\\other\\a",
+   "posix": "/other/a"
+  },
+  {
+   "parts": [
+    "a"
+   ],
+   "win32": "D:\\AI\\参考项目\\pi.net\\a",
+   "posix": "/AI/参考项目/pi.net/a"
+  },
+  {
+   "parts": [
+    "a",
+    "b"
+   ],
+   "win32": "D:\\AI\\参考项目\\pi.net\\a\\b",
+   "posix": "/AI/参考项目/pi.net/a/b"
+  },
+  {
+   "parts": [
+    "a",
+    "b",
+    "c"
+   ],
+   "win32": "D:\\AI\\参考项目\\pi.net\\a\\b\\c",
+   "posix": "/AI/参考项目/pi.net/a/b/c"
+  },
+  {
+   "parts": [
+    "C:/a"
+   ],
+   "win32": "C:\\a",
+   "posix": "/AI/参考项目/pi.net/C:/a"
+  },
+  {
+   "parts": [
+    "C:/a",
+    "b"
+   ],
+   "win32": "C:\\a\\b",
+   "posix": "/AI/参考项目/pi.net/C:/a/b"
+  },
+  {
+   "parts": [
+    "C:/a",
+    "/b"
+   ],
+   "win32": "C:\\b",
+   "posix": "/b"
+  },
+  {
+   "parts": [
+    "C:/a",
+    "D:/b"
+   ],
+   "win32": "D:\\b",
+   "posix": "/AI/参考项目/pi.net/C:/a/D:/b"
+  },
+  {
+   "parts": [
+    "/a",
+    "C:/b"
+   ],
+   "win32": "C:\\b",
+   "posix": "/a/C:/b"
+  },
+  {
+   "parts": [
+    "C:/a/../b"
+   ],
+   "win32": "C:\\b",
+   "posix": "/AI/参考项目/pi.net/C:/b"
+  },
+  {
+   "parts": [
+    "",
+    ""
+   ],
+   "win32": "D:\\AI\\参考项目\\pi.net",
+   "posix": "/AI/参考项目/pi.net"
+  },
+  {
+   "parts": [
+    ""
+   ],
+   "win32": "D:\\AI\\参考项目\\pi.net",
+   "posix": "/AI/参考项目/pi.net"
+  },
+  {
+   "parts": [
+    "."
+   ],
+   "win32": "D:\\AI\\参考项目\\pi.net",
+   "posix": "/AI/参考项目/pi.net"
+  },
+  {
+   "parts": [
+    ".."
+   ],
+   "win32": "D:\\AI\\参考项目",
+   "posix": "/AI/参考项目"
+  },
+  {
+   "parts": [
+    "a/../b"
+   ],
+   "win32": "D:\\AI\\参考项目\\pi.net\\b",
+   "posix": "/AI/参考项目/pi.net/b"
+  },
+  {
+   "parts": [
+    "/"
+   ],
+   "win32": "D:\\",
+   "posix": "/"
+  },
+  {
+   "parts": [
+    "//"
+   ],
+   "win32": "D:\\",
+   "posix": "/"
+  },
+  {
+   "parts": [
+    "\\\\server\\share\\x"
+   ],
+   "win32": "\\\\server\\share\\x",
+   "posix": "/AI/参考项目/pi.net/\\\\server\\share\\x"
+  },
+  {
+   "parts": [
+    "\\\\server\\share\\x",
+    "y"
+   ],
+   "win32": "\\\\server\\share\\x\\y",
+   "posix": "/AI/参考项目/pi.net/\\\\server\\share\\x/y"
+  },
+  {
+   "parts": [
+    "C:"
+   ],
+   "win32": "C:\\",
+   "posix": "/AI/参考项目/pi.net/C:"
+  },
+  {
+   "parts": [
+    "C:b"
+   ],
+   "win32": "C:\\b",
+   "posix": "/AI/参考项目/pi.net/C:b"
+  },
+  {
+   "parts": [
+    "C:/"
+   ],
+   "win32": "C:\\",
+   "posix": "/AI/参考项目/pi.net/C:"
+  },
+  {
+   "parts": [
+    "/cwd/a/b",
+    "../../c"
+   ],
+   "win32": "D:\\cwd\\c",
+   "posix": "/cwd/c"
+  },
+  {
+   "parts": [
+    "a",
+    ""
+   ],
+   "win32": "D:\\AI\\参考项目\\pi.net\\a",
+   "posix": "/AI/参考项目/pi.net/a"
+  },
+  {
+   "parts": [
+    "",
+    "a"
+   ],
+   "win32": "D:\\AI\\参考项目\\pi.net\\a",
+   "posix": "/AI/参考项目/pi.net/a"
+  },
+  {
+   "parts": [
+    "/a/./b",
+    "../c"
+   ],
+   "win32": "D:\\a\\c",
+   "posix": "/a/c"
+  },
+  {
+   "parts": [
+    "C:/a",
+    ""
+   ],
+   "win32": "C:\\a",
+   "posix": "/AI/参考项目/pi.net/C:/a"
+  },
+  {
+   "parts": [
+    "/a",
+    ""
+   ],
+   "win32": "D:\\a",
+   "posix": "/a"
+  }
+ ],
+ "nodePathRelative": [
+  {
+   "from": "/a/b",
+   "to": "/a/b",
+   "win32": "",
+   "posix": ""
+  },
+  {
+   "from": "/a/b",
+   "to": "/a/b/c",
+   "win32": "c",
+   "posix": "c"
+  },
+  {
+   "from": "/a/b/c",
+   "to": "/a/b",
+   "win32": "..",
+   "posix": ".."
+  },
+  {
+   "from": "/a/b",
+   "to": "/a/c",
+   "win32": "..\\c",
+   "posix": "../c"
+  },
+  {
+   "from": "/a",
+   "to": "/b",
+   "win32": "..\\b",
+   "posix": "../b"
+  },
+  {
+   "from": "/",
+   "to": "/a",
+   "win32": "a",
+   "posix": "a"
+  },
+  {
+   "from": "/a",
+   "to": "/",
+   "win32": "..",
+   "posix": ".."
+  },
+  {
+   "from": "/a/b/c",
+   "to": "/a/b/c/d/e",
+   "win32": "d\\e",
+   "posix": "d/e"
+  },
+  {
+   "from": "/a/b",
+   "to": "/a/b/",
+   "win32": "",
+   "posix": ""
+  },
+  {
+   "from": "/a/b/",
+   "to": "/a/b",
+   "win32": "",
+   "posix": ""
+  },
+  {
+   "from": "C:/a/b",
+   "to": "C:/a/b",
+   "win32": "",
+   "posix": ""
+  },
+  {
+   "from": "C:/a/b",
+   "to": "C:/a/b/c",
+   "win32": "c",
+   "posix": "c"
+  },
+  {
+   "from": "C:/a/b/c",
+   "to": "C:/a/b",
+   "win32": "..",
+   "posix": ".."
+  },
+  {
+   "from": "C:/",
+   "to": "C:/a",
+   "win32": "a",
+   "posix": "a"
+  },
+  {
+   "from": "C:/a",
+   "to": "C:/",
+   "win32": "..",
+   "posix": ".."
+  },
+  {
+   "from": "C:/a",
+   "to": "D:/b",
+   "win32": "D:\\b",
+   "posix": "../../D:/b"
+  },
+  {
+   "from": "C:/a/b",
+   "to": "C:/c",
+   "win32": "..\\..\\c",
+   "posix": "../../c"
+  },
+  {
+   "from": "C:/a",
+   "to": "C:/a/../b",
+   "win32": "..\\b",
+   "posix": "../b"
+  },
+  {
+   "from": "a/b",
+   "to": "a/c",
+   "win32": "..\\c",
+   "posix": "../c"
+  },
+  {
+   "from": "a",
+   "to": "a/b",
+   "win32": "b",
+   "posix": "b"
+  },
+  {
+   "from": "",
+   "to": "",
+   "win32": "",
+   "posix": ""
+  },
+  {
+   "from": "/a/b",
+   "to": "a/b",
+   "win32": "..\\..\\AI\\参考项目\\pi.net\\a\\b",
+   "posix": "../../AI/参考项目/pi.net/a/b"
+  },
+  {
+   "from": "C:/a/b",
+   "to": "a/b",
+   "win32": "D:\\AI\\参考项目\\pi.net\\a\\b",
+   "posix": "../../../a/b"
+  },
+  {
+   "from": "\\\\server\\share\\x",
+   "to": "\\\\server\\share\\y",
+   "win32": "..\\y",
+   "posix": "../\\\\server\\share\\y"
+  },
+  {
+   "from": "\\\\server\\share\\x",
+   "to": "\\\\other\\share\\y",
+   "win32": "\\\\other\\share\\y",
+   "posix": "../\\\\other\\share\\y"
+  },
+  {
+   "from": "C:/a/../b",
+   "to": "b",
+   "win32": "D:\\AI\\参考项目\\pi.net\\b",
+   "posix": "../../b"
+  },
+  {
+   "from": "C:/a/b/../c",
+   "to": "C:/a/c",
+   "win32": "",
+   "posix": ""
+  },
+  {
+   "from": "/a/b",
+   "to": "/a/b/c/",
+   "win32": "c",
+   "posix": "c"
+  },
+  {
+   "from": "C:/a/b",
+   "to": "C:/a/b/c/",
+   "win32": "c",
+   "posix": "c"
+  },
+  {
+   "from": "/a/%E4%B8%AD",
+   "to": "/a/%E4%B8%AD/b",
+   "win32": "b",
+   "posix": "b"
+  }
+ ],
+ "pathsNormalizeWindowsShellPath": [
+  {
+   "input": "/c/Users/x",
+   "expected": "C:\\Users\\x"
+  },
+  {
+   "input": "/c",
+   "expected": "C:\\"
+  },
+  {
+   "input": "/c/",
+   "expected": "C:\\"
+  },
+  {
+   "input": "/C/Users/X",
+   "expected": "C:\\Users\\X"
+  },
+  {
+   "input": "/mnt/c/Users/x",
+   "expected": "C:\\Users\\x"
+  },
+  {
+   "input": "/mnt/C/x",
+   "expected": "C:\\x"
+  },
+  {
+   "input": "/cygdrive/c/x",
+   "expected": "C:\\x"
+  },
+  {
+   "input": "/cygdrive/C/x",
+   "expected": "C:\\x"
+  },
+  {
+   "input": "/MNT/c/x",
+   "expected": "C:\\x"
+  },
+  {
+   "input": "/c/a/b/c",
+   "expected": "C:\\a\\b\\c"
+  },
+  {
+   "input": "//server/share",
+   "expected": "//server/share"
+  },
+  {
+   "input": "/",
+   "expected": "/"
+  },
+  {
+   "input": "//",
+   "expected": "//"
+  },
+  {
+   "input": "c:/Users/x",
+   "expected": "c:/Users/x"
+  },
+  {
+   "input": "C:\\Users\\x",
+   "expected": "C:\\Users\\x"
+  },
+  {
+   "input": "/1/x",
+   "expected": "/1/x"
+  },
+  {
+   "input": "/cd/x",
+   "expected": "/cd/x"
+  },
+  {
+   "input": "/cygdrive/x",
+   "expected": "X:\\"
+  },
+  {
+   "input": "/mnt/",
+   "expected": "/mnt/"
+  },
+  {
+   "input": "/mnt//c/x",
+   "expected": "/mnt//c/x"
+  },
+  {
+   "input": "/c//x",
+   "expected": "C:\\\\x"
+  },
+  {
+   "input": "",
+   "expected": ""
+  },
+  {
+   "input": "a/b",
+   "expected": "a/b"
+  },
+  {
+   "input": "/c/Users/x/y/",
+   "expected": "C:\\Users\\x\\y\\"
+  },
+  {
+   "input": "/cygdrive/c",
+   "expected": "C:\\"
+  },
+  {
+   "input": "/mnt/c",
+   "expected": "C:\\"
+  },
+  {
+   "input": "/x",
+   "expected": "X:\\"
+  },
+  {
+   "input": "/mnt/cx/y",
+   "expected": "/mnt/cx/y"
+  }
+ ],
+ "pathsIsLocalPath": [
+  {
+   "input": "npm:@scope/pkg",
+   "expected": false
+  },
+  {
+   "input": "git:github.com/x/y",
+   "expected": false
+  },
+  {
+   "input": "github:x/y",
+   "expected": false
+  },
+  {
+   "input": "http://x",
+   "expected": false
+  },
+  {
+   "input": "https://x",
+   "expected": false
+  },
+  {
+   "input": "ssh://x",
+   "expected": false
+  },
+  {
+   "input": "builtin:foo",
+   "expected": false
+  },
+  {
+   "input": "npm:pkg",
+   "expected": false
+  },
+  {
+   "input": "./relative",
+   "expected": true
+  },
+  {
+   "input": "../up",
+   "expected": true
+  },
+  {
+   "input": "/abs",
+   "expected": true
+  },
+  {
+   "input": "file:///c:/x",
+   "expected": true
+  },
+  {
+   "input": "bare",
+   "expected": true
+  },
+  {
+   "input": "",
+   "expected": true
+  },
+  {
+   "input": "  npm:x  ",
+   "expected": false
+  },
+  {
+   "input": "NPM:x",
+   "expected": true
+  },
+  {
+   "input": "builtin",
+   "expected": true
+  },
+  {
+   "input": "https",
+   "expected": true
+  },
+  {
+   "input": "git",
+   "expected": true
+  },
+  {
+   "input": "ssh:",
+   "expected": false
+  }
+ ],
+ "pathsNormalizePath": [
+  {
+   "input": "",
+   "options": {},
+   "expected": ""
+  },
+  {
+   "input": "  /a/b  ",
+   "options": {
+    "trim": true
+   },
+   "expected": "A:\\b"
+  },
+  {
+   "input": "  /a/b  ",
+   "options": {},
+   "expected": "  /a/b  "
+  },
+  {
+   "input": "@file.txt",
+   "options": {
+    "stripAtPrefix": true
+   },
+   "expected": "file.txt"
+  },
+  {
+   "input": "@@file",
+   "options": {
+    "stripAtPrefix": true
+   },
+   "expected": "@file"
+  },
+  {
+   "input": "~",
+   "options": {
+    "homeDir": "/home/tester"
+   },
+   "expected": "/home/tester"
+  },
+  {
+   "input": "~/a/b",
+   "options": {
+    "homeDir": "/home/tester"
+   },
+   "expected": "\\home\\tester\\a\\b"
+  },
+  {
+   "input": "~\\a\\b",
+   "options": {
+    "homeDir": "C:\\home\\tester"
+   },
+   "expected": "C:\\home\\tester\\a\\b"
+  },
+  {
+   "input": "~/a/../b",
+   "options": {
+    "homeDir": "/home/tester"
+   },
+   "expected": "\\home\\tester\\b"
+  },
+  {
+   "input": "~//a",
+   "options": {
+    "homeDir": "/home/tester"
+   },
+   "expected": "\\home\\tester\\a"
+  },
+  {
+   "input": "~/",
+   "options": {
+    "homeDir": "/home/tester"
+   },
+   "expected": "\\home\\tester"
+  },
+  {
+   "input": "~x",
+   "options": {
+    "homeDir": "/home/tester"
+   },
+   "expected": "~x"
+  },
+  {
+   "input": "~",
+   "options": {
+    "homeDir": "/home/tester",
+    "expandTilde": false
+   },
+   "expected": "~"
+  },
+  {
+   "input": "/c/Users/x",
+   "options": {},
+   "expected": "C:\\Users\\x"
+  },
+  {
+   "input": "/mnt/c/Users/x",
+   "options": {},
+   "expected": "C:\\Users\\x"
+  },
+  {
+   "input": "file:///C:/Users/x",
+   "options": {},
+   "expected": "C:\\Users\\x"
+  },
+  {
+   "input": "file:///home/x/a%20b",
+   "options": {},
+   "expected": "<ERR_INVALID_FILE_URL_PATH>"
+  },
+  {
+   "input": "file:/C:/x",
+   "options": {},
+   "expected": "file:/C:/x"
+  },
+  {
+   "input": " /a /b　",
+   "options": {
+    "normalizeUnicodeSpaces": true
+   },
+   "expected": " /a /b "
+  },
+  {
+   "input": " /a﻿",
+   "options": {
+    "normalizeUnicodeSpaces": true
+   },
+   "expected": " /a﻿"
+  },
+  {
+   "input": "/a b",
+   "options": {},
+   "expected": "/a b"
+  },
+  {
+   "input": "@~/a",
+   "options": {
+    "stripAtPrefix": true,
+    "homeDir": "/home/tester"
+   },
+   "expected": "\\home\\tester\\a"
+  },
+  {
+   "input": "  @~/a  ",
+   "options": {
+    "trim": true,
+    "stripAtPrefix": true,
+    "homeDir": "/home/tester"
+   },
+   "expected": "\\home\\tester\\a"
+  },
+  {
+   "input": "@",
+   "options": {
+    "stripAtPrefix": true
+   },
+   "expected": ""
+  },
+  {
+   "input": "  ~/a  ",
+   "options": {
+    "trim": true,
+    "homeDir": "/home/tester"
+   },
+   "expected": "\\home\\tester\\a"
+  },
+  {
+   "input": "~\\a",
+   "options": {
+    "homeDir": "C:\\home\\tester"
+   },
+   "expected": "C:\\home\\tester\\a"
+  },
+  {
+   "input": "file:///C:/a/../b",
+   "options": {},
+   "expected": "C:\\b"
+  },
+  {
+   "input": "file://server/share/x",
+   "options": {},
+   "expected": "\\\\server\\share\\x"
+  },
+  {
+   "input": "file://",
+   "options": {},
+   "expected": "<ERR_INVALID_FILE_URL_PATH>"
+  },
+  {
+   "input": "file:",
+   "options": {},
+   "expected": "file:"
+  },
+  {
+   "input": "file:///a%2Fb",
+   "options": {},
+   "expected": "<ERR_INVALID_FILE_URL_PATH>"
+  },
+  {
+   "input": "file:///C:/x%zz",
+   "options": {},
+   "expected": "<URIError>"
+  }
+ ],
+ "pathsResolvePath": [
+  {
+   "input": "C:/a/b",
+   "baseDir": "C:/base",
+   "expected": "C:/a/b"
+  },
+  {
+   "input": "a/b",
+   "baseDir": "C:/base",
+   "expected": "C:/base/a/b"
+  },
+  {
+   "input": "../a",
+   "baseDir": "C:/base/x",
+   "expected": "C:/base/a"
+  },
+  {
+   "input": ".",
+   "baseDir": "C:/base/x",
+   "expected": "C:/base/x"
+  },
+  {
+   "input": "",
+   "baseDir": "C:/base/x",
+   "expected": "C:/base/x"
+  },
+  {
+   "input": "C:/a/../b",
+   "baseDir": "C:/base",
+   "expected": "C:/b"
+  },
+  {
+   "input": "a",
+   "baseDir": "C:/base/../other",
+   "expected": "C:/other/a"
+  },
+  {
+   "input": "/a/b",
+   "baseDir": "C:/base",
+   "expected": "A:/b"
+  },
+  {
+   "input": "C:/a/b",
+   "baseDir": "C:/base/../other",
+   "expected": "C:/a/b"
+  },
+  {
+   "input": "/c/a/b",
+   "baseDir": "C:/base",
+   "expected": "C:/a/b"
+  },
+  {
+   "input": "file:///C:/a/b",
+   "baseDir": "C:/base",
+   "expected": "C:/a/b"
+  },
+  {
+   "input": "@a/b",
+   "baseDir": "C:/base",
+   "expected": "C:/base/@a/b"
+  }
+ ],
+ "pathsCwdRelative": [
+  {
+   "filePath": "/cwd/a/b",
+   "cwd": "/cwd",
+   "relative": "a\\b",
+   "formatted": "a/b"
+  },
+  {
+   "filePath": "/cwd",
+   "cwd": "/cwd",
+   "relative": ".",
+   "formatted": "."
+  },
+  {
+   "filePath": "/cwd/",
+   "cwd": "/cwd",
+   "relative": ".",
+   "formatted": "."
+  },
+  {
+   "filePath": "/cwd/a/../b",
+   "cwd": "/cwd",
+   "relative": "b",
+   "formatted": "b"
+  },
+  {
+   "filePath": "/other/a",
+   "cwd": "/cwd",
+   "relative": null,
+   "formatted": "D:/other/a"
+  },
+  {
+   "filePath": "/cwd/../other",
+   "cwd": "/cwd",
+   "relative": null,
+   "formatted": "D:/other"
+  },
+  {
+   "filePath": "/cwd/a/b/../../c",
+   "cwd": "/cwd",
+   "relative": "c",
+   "formatted": "c"
+  },
+  {
+   "filePath": "/cwd/a/../../b",
+   "cwd": "/cwd",
+   "relative": null,
+   "formatted": "D:/b"
+  },
+  {
+   "filePath": "/cwd/a/b",
+   "cwd": "/cwd/a",
+   "relative": "b",
+   "formatted": "b"
+  },
+  {
+   "filePath": "/cwd/a",
+   "cwd": "/cwd/a/b",
+   "relative": null,
+   "formatted": "D:/cwd/a"
+  }
+ ],
+ "pathsPlatform": "win32",
+ "fileUrlToPath": [
+  {
+   "input": "file:///C:/Users/x",
+   "win32": "C:\\Users\\x",
+   "posix": "/C:/Users/x"
+  },
+  {
+   "input": "file:///home/x/a%20b",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/home/x/a b"
+  },
+  {
+   "input": "file:/C:/x",
+   "win32": "C:\\x",
+   "posix": "/C:/x"
+  },
+  {
+   "input": "file://localhost/C:/x",
+   "win32": "C:\\x",
+   "posix": "/C:/x"
+  },
+  {
+   "input": "file://server/share/x",
+   "win32": "\\\\server\\share\\x",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file:///c:/a/../b",
+   "win32": "c:\\b",
+   "posix": "/c:/b"
+  },
+  {
+   "input": "file:///C%3A/x",
+   "win32": "C:\\x",
+   "posix": "/C:/x"
+  },
+  {
+   "input": "file:///C%2F/x",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "<ERR_INVALID_FILE_URL_PATH>"
+  },
+  {
+   "input": "file:///",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/"
+  },
+  {
+   "input": "file:////server/share",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "//server/share"
+  },
+  {
+   "input": "file:///a/b/",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/a/b/"
+  },
+  {
+   "input": "file:///C:/a%2Fb",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "<ERR_INVALID_FILE_URL_PATH>"
+  },
+  {
+   "input": "file:///a%zz",
+   "win32": "<URIError>",
+   "posix": "<URIError>"
+  },
+  {
+   "input": "file:///C:/a?q=1#f",
+   "win32": "C:\\a",
+   "posix": "/C:/a"
+  },
+  {
+   "input": "file:///x/./y",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/x/y"
+  },
+  {
+   "input": "file:///x/../y",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/y"
+  },
+  {
+   "input": "file:///C:\\a\\b",
+   "win32": "C:\\a\\b",
+   "posix": "/C:/a/b"
+  },
+  {
+   "input": "file:///C:/a\\b",
+   "win32": "C:\\a\\b",
+   "posix": "/C:/a/b"
+  },
+  {
+   "input": "file:\\C:\\x",
+   "win32": "C:\\x",
+   "posix": "/C:/x"
+  },
+  {
+   "input": "file:///\\C:/x",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "//C:/x"
+  },
+  {
+   "input": "file:///C:/a/../..",
+   "win32": "C:\\",
+   "posix": "/C:/"
+  },
+  {
+   "input": "file:///C:/a/../../..",
+   "win32": "C:\\",
+   "posix": "/C:/"
+  },
+  {
+   "input": "file:///c:/A/B/",
+   "win32": "c:\\A\\B\\",
+   "posix": "/c:/A/B/"
+  },
+  {
+   "input": "file:////C:/x",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "//C:/x"
+  },
+  {
+   "input": "file://///C:/x",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "///C:/x"
+  },
+  {
+   "input": "file:///C|/x",
+   "win32": "C:\\x",
+   "posix": "/C:/x"
+  },
+  {
+   "input": "file:///C:/x%00y",
+   "win32": "C:\\x\u0000y",
+   "posix": "/C:/x\u0000y"
+  },
+  {
+   "input": "file:///C:/x%",
+   "win32": "<URIError>",
+   "posix": "<URIError>"
+  },
+  {
+   "input": "file:///C:/x%2",
+   "win32": "<URIError>",
+   "posix": "<URIError>"
+  },
+  {
+   "input": "file:///C:/%E4%B8%AD",
+   "win32": "C:\\中",
+   "posix": "/C:/中"
+  },
+  {
+   "input": "file:///%E4%B8",
+   "win32": "<URIError>",
+   "posix": "<URIError>"
+  },
+  {
+   "input": "file:///C:/a b",
+   "win32": "C:\\a b",
+   "posix": "/C:/a b"
+  },
+  {
+   "input": "file:///C:/a\tb",
+   "win32": "C:\\ab",
+   "posix": "/C:/ab"
+  },
+  {
+   "input": "file:///C:/a\nb",
+   "win32": "C:\\ab",
+   "posix": "/C:/ab"
+  },
+  {
+   "input": "file://user@localhost/C:/x",
+   "win32": "<ERR_INVALID_URL>",
+   "posix": "<ERR_INVALID_URL>"
+  },
+  {
+   "input": "file:///C:/x/.",
+   "win32": "C:\\x\\",
+   "posix": "/C:/x/"
+  },
+  {
+   "input": "file:///C:/x/..",
+   "win32": "C:\\",
+   "posix": "/C:/"
+  },
+  {
+   "input": "file:///.hidden",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/.hidden"
+  },
+  {
+   "input": "file:///C:/.hidden",
+   "win32": "C:\\.hidden",
+   "posix": "/C:/.hidden"
+  },
+  {
+   "input": "file:///C:/a/.b/..",
+   "win32": "C:\\a\\",
+   "posix": "/C:/a/"
+  },
+  {
+   "input": "file:///C:/x/./.",
+   "win32": "C:\\x\\",
+   "posix": "/C:/x/"
+  },
+  {
+   "input": "file:///a/../",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/"
+  },
+  {
+   "input": "file:///a/b/../",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/a/"
+  },
+  {
+   "input": "file:///C:relative",
+   "win32": "C:relative",
+   "posix": "/C:relative"
+  },
+  {
+   "input": "file:///C:",
+   "win32": "C:",
+   "posix": "/C:"
+  },
+  {
+   "input": "file:///1:/x",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/1:/x"
+  },
+  {
+   "input": "file:///a%2fb",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "<ERR_INVALID_FILE_URL_PATH>"
+  },
+  {
+   "input": "file:///a%5cb",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/a\\b"
+  },
+  {
+   "input": "file:///%2e%2e/x",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/x"
+  },
+  {
+   "input": "file:///C:/a+b",
+   "win32": "C:\\a+b",
+   "posix": "/C:/a+b"
+  },
+  {
+   "input": "file://",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/"
+  },
+  {
+   "input": "file:",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/"
+  },
+  {
+   "input": "FILE:///C:/x",
+   "win32": "C:\\x",
+   "posix": "/C:/x"
+  },
+  {
+   "input": "File:///C:/x",
+   "win32": "C:\\x",
+   "posix": "/C:/x"
+  },
+  {
+   "input": "file://127.0.0.1/C:/x",
+   "win32": "\\\\127.0.0.1\\C:\\x",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://LOCALHOST/C:/x",
+   "win32": "C:\\x",
+   "posix": "/C:/x"
+  },
+  {
+   "input": "file:///a//b",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/a//b"
+  },
+  {
+   "input": "file:///a///b",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/a///b"
+  },
+  {
+   "input": "file:///..",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/"
+  },
+  {
+   "input": "file:///../..",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/"
+  },
+  {
+   "input": "file:///?q",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/"
+  },
+  {
+   "input": "file:///C:/x/ y",
+   "win32": "C:\\x\\ y",
+   "posix": "/C:/x/ y"
+  },
+  {
+   "input": "  file:///C:/x  ",
+   "win32": "C:\\x",
+   "posix": "/C:/x"
+  },
+  {
+   "input": "file:///C:/x%2Fy",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "<ERR_INVALID_FILE_URL_PATH>"
+  },
+  {
+   "input": "file:///C:/a/b/c/d",
+   "win32": "C:\\a\\b\\c\\d",
+   "posix": "/C:/a/b/c/d"
+  },
+  {
+   "input": "file:///C:/a/././b",
+   "win32": "C:\\a\\b",
+   "posix": "/C:/a/b"
+  },
+  {
+   "input": "file:///C:/a/b/../../c",
+   "win32": "C:\\c",
+   "posix": "/C:/c"
+  },
+  {
+   "input": "file:///C:/x#f",
+   "win32": "C:\\x",
+   "posix": "/C:/x"
+  },
+  {
+   "input": "file:///C:/x?",
+   "win32": "C:\\x",
+   "posix": "/C:/x"
+  },
+  {
+   "input": "file:///a/",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/a/"
+  },
+  {
+   "input": "file:///a//",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/a//"
+  },
+  {
+   "input": "file:///a///",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/a///"
+  },
+  {
+   "input": "file:///a//b",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/a//b"
+  },
+  {
+   "input": "file:///a//b/",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/a//b/"
+  },
+  {
+   "input": "file:////a",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "//a"
+  },
+  {
+   "input": "file://///a",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "///a"
+  },
+  {
+   "input": "file:////",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "//"
+  },
+  {
+   "input": "file://///",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "///"
+  },
+  {
+   "input": "file:///a/./",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/a/"
+  },
+  {
+   "input": "file:///a/../",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/"
+  },
+  {
+   "input": "file:///a/.",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/a/"
+  },
+  {
+   "input": "file:///a/../b/",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/b/"
+  },
+  {
+   "input": "file:///./a",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/a"
+  },
+  {
+   "input": "file:///../a",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/a"
+  },
+  {
+   "input": "file:///a/b/c/",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/a/b/c/"
+  },
+  {
+   "input": "file:///a/b/../",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/a/"
+  },
+  {
+   "input": "file:///a/b/..",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/a/"
+  },
+  {
+   "input": "file:///a/../b/",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/b/"
+  },
+  {
+   "input": "file:///../",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/"
+  },
+  {
+   "input": "file:///./",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/"
+  },
+  {
+   "input": "file:///../..",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/"
+  },
+  {
+   "input": "file:///a/..//b",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "//b"
+  },
+  {
+   "input": "file:///a//../b",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/a/b"
+  },
+  {
+   "input": "file:///a/b//..",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/a/b/"
+  },
+  {
+   "input": "file:///a/b/..//",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/a//"
+  },
+  {
+   "input": "file:///a/././b",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/a/b"
+  },
+  {
+   "input": "file:///a/b/c/../..",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/a/"
+  },
+  {
+   "input": "file:///a/b/c/../../",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/a/"
+  },
+  {
+   "input": "file:///a/b/c/../",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/a/b/"
+  },
+  {
+   "input": "file:///a/b/c/./d",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/a/b/c/d"
+  },
+  {
+   "input": "file:///a/b/../../../..",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/"
+  },
+  {
+   "input": "file:///a/b/../../../../..",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/"
+  },
+  {
+   "input": "file:///a/b/../../c/",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/c/"
+  },
+  {
+   "input": "file:///a/b/..?q",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/a/"
+  },
+  {
+   "input": "file:///a/b/..#f",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/a/"
+  },
+  {
+   "input": "file:///a/b/./",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/a/b/"
+  },
+  {
+   "input": "file:///a/b/.",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/a/b/"
+  },
+  {
+   "input": "file:///C:/a/../b",
+   "win32": "C:\\b",
+   "posix": "/C:/b"
+  },
+  {
+   "input": "file:///C:/a/../../b",
+   "win32": "C:\\b",
+   "posix": "/C:/b"
+  },
+  {
+   "input": "file:///C:/../b",
+   "win32": "C:\\b",
+   "posix": "/C:/b"
+  },
+  {
+   "input": "file:///C:/a/..",
+   "win32": "C:\\",
+   "posix": "/C:/"
+  },
+  {
+   "input": "file:///C:/a/../",
+   "win32": "C:\\",
+   "posix": "/C:/"
+  },
+  {
+   "input": "file:///1:/a",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/1:/a"
+  },
+  {
+   "input": "file:///a/1:/b",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/a/1:/b"
+  },
+  {
+   "input": "file:///a\\b",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/a/b"
+  },
+  {
+   "input": "file:///a/b\\",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/a/b/"
+  },
+  {
+   "input": "file:///a/%2e%2e/",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/"
+  },
+  {
+   "input": "file:///a/%2e/",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/a/"
+  },
+  {
+   "input": "file:///a/.%2e/",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/"
+  },
+  {
+   "input": "file:///a/%2e./",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/"
+  },
+  {
+   "input": "file:///%2e%2e/",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/"
+  },
+  {
+   "input": "file:///a/%2e%2E/b",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/b"
+  },
+  {
+   "input": "file:///a/.%2E/b",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/b"
+  },
+  {
+   "input": "file:///a/%2E./b",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/b"
+  },
+  {
+   "input": "file:///a/%2E%2E",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/"
+  },
+  {
+   "input": "file:///a/..%2e/",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/a/.../"
+  },
+  {
+   "input": "file:///a/..%2f",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "<ERR_INVALID_FILE_URL_PATH>"
+  },
+  {
+   "input": "file:///%2f",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "<ERR_INVALID_FILE_URL_PATH>"
+  },
+  {
+   "input": "file:///a%00b",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/a\u0000b"
+  },
+  {
+   "input": "file://host/a",
+   "win32": "\\\\host\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://host",
+   "win32": "\\\\host\\",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://host\\a",
+   "win32": "\\\\host\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://host/a\\b",
+   "win32": "\\\\host\\a\\b",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://host?q",
+   "win32": "\\\\host\\",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://host#f",
+   "win32": "\\\\host\\",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://host/a?q",
+   "win32": "\\\\host\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://?q",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/"
+  },
+  {
+   "input": "file://#f",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/"
+  },
+  {
+   "input": "file:///#f",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/"
+  },
+  {
+   "input": "file:///a?q/b",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/a"
+  },
+  {
+   "input": "file://HOST/a",
+   "win32": "\\\\host\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://Host./a",
+   "win32": "\\\\host.\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://ho_st/a",
+   "win32": "\\\\ho_st\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://-a/a",
+   "win32": "\\\\-a\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://a-/a",
+   "win32": "\\\\a-\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://a..b/a",
+   "win32": "\\\\a..b\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://user@host/a",
+   "win32": "<ERR_INVALID_URL>",
+   "posix": "<ERR_INVALID_URL>"
+  },
+  {
+   "input": "file://ho st/a",
+   "win32": "<ERR_INVALID_URL>",
+   "posix": "<ERR_INVALID_URL>"
+  },
+  {
+   "input": "file://host:8080/a",
+   "win32": "<ERR_INVALID_URL>",
+   "posix": "<ERR_INVALID_URL>"
+  },
+  {
+   "input": "file://host:80/a",
+   "win32": "<ERR_INVALID_URL>",
+   "posix": "<ERR_INVALID_URL>"
+  },
+  {
+   "input": "file://host:/a",
+   "win32": "<ERR_INVALID_URL>",
+   "posix": "<ERR_INVALID_URL>"
+  },
+  {
+   "input": "file:////host//a",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "//host//a"
+  },
+  {
+   "input": "file://%41/a",
+   "win32": "\\\\a\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://%zz/a",
+   "win32": "<ERR_INVALID_URL>",
+   "posix": "<ERR_INVALID_URL>"
+  },
+  {
+   "input": "file://a%20b/a",
+   "win32": "<ERR_INVALID_URL>",
+   "posix": "<ERR_INVALID_URL>"
+  },
+  {
+   "input": "file://a\u0000b/a",
+   "win32": "<ERR_INVALID_URL>",
+   "posix": "<ERR_INVALID_URL>"
+  },
+  {
+   "input": "file://C:",
+   "win32": "C:",
+   "posix": "/C:"
+  },
+  {
+   "input": "file://C",
+   "win32": "\\\\c\\",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://C/x",
+   "win32": "\\\\c\\x",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://C|",
+   "win32": "C:",
+   "posix": "/C:"
+  },
+  {
+   "input": "file://c|/a",
+   "win32": "c:\\a",
+   "posix": "/c:/a"
+  },
+  {
+   "input": "file://C|/",
+   "win32": "C:\\",
+   "posix": "/C:/"
+  },
+  {
+   "input": "file:///C|",
+   "win32": "C:",
+   "posix": "/C:"
+  },
+  {
+   "input": "file:///C|/a/b",
+   "win32": "C:\\a\\b",
+   "posix": "/C:/a/b"
+  },
+  {
+   "input": "file://C:foo",
+   "win32": "<ERR_INVALID_URL>",
+   "posix": "<ERR_INVALID_URL>"
+  },
+  {
+   "input": "file://ab:/a",
+   "win32": "<ERR_INVALID_URL>",
+   "posix": "<ERR_INVALID_URL>"
+  },
+  {
+   "input": "file://a:/b",
+   "win32": "a:\\b",
+   "posix": "/a:/b"
+  },
+  {
+   "input": "file://1:/a",
+   "win32": "<ERR_INVALID_URL>",
+   "posix": "<ERR_INVALID_URL>"
+  },
+  {
+   "input": "file://|:/a",
+   "win32": "<ERR_INVALID_URL>",
+   "posix": "<ERR_INVALID_URL>"
+  },
+  {
+   "input": "file://[::1]/a",
+   "win32": "\\\\[::1]\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://[x]/a",
+   "win32": "<ERR_INVALID_URL>",
+   "posix": "<ERR_INVALID_URL>"
+  },
+  {
+   "input": "file://LOCALHOST/a",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/a"
+  },
+  {
+   "input": "file://localhost",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/"
+  },
+  {
+   "input": "file://127.0.0.1/a",
+   "win32": "\\\\127.0.0.1\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file:",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/"
+  },
+  {
+   "input": "file:/",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/"
+  },
+  {
+   "input": "file:a",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/a"
+  },
+  {
+   "input": "file:/a",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/a"
+  },
+  {
+   "input": "file:a/b",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/a/b"
+  },
+  {
+   "input": "file:C:/a",
+   "win32": "C:\\a",
+   "posix": "/C:/a"
+  },
+  {
+   "input": "file:C|/a",
+   "win32": "C:\\a",
+   "posix": "/C:/a"
+  },
+  {
+   "input": "file://a",
+   "win32": "\\\\a\\",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": " file:///a ",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/a"
+  },
+  {
+   "input": "\tfile:///a\n",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/a"
+  },
+  {
+   "input": "file:///a\r\n",
+   "win32": "<ERR_INVALID_FILE_URL_PATH>",
+   "posix": "/a"
+  },
+  {
+   "input": "file://127.000.000.001/a",
+   "win32": "\\\\127.0.0.1\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://0x7f.1/a",
+   "win32": "\\\\127.0.0.1\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://2130706433/a",
+   "win32": "\\\\127.0.0.1\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://8/a",
+   "win32": "\\\\0.0.0.8\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://08/a",
+   "win32": "<ERR_INVALID_URL>",
+   "posix": "<ERR_INVALID_URL>"
+  },
+  {
+   "input": "file://080/a",
+   "win32": "<ERR_INVALID_URL>",
+   "posix": "<ERR_INVALID_URL>"
+  },
+  {
+   "input": "file://007/a",
+   "win32": "\\\\0.0.0.7\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://0/a",
+   "win32": "\\\\0.0.0.0\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://00/a",
+   "win32": "\\\\0.0.0.0\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://000/a",
+   "win32": "\\\\0.0.0.0\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://0x/a",
+   "win32": "\\\\0.0.0.0\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://0X/a",
+   "win32": "\\\\0.0.0.0\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://0xg/a",
+   "win32": "\\\\0xg\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://0x1g/a",
+   "win32": "\\\\0x1g\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://1.08/a",
+   "win32": "<ERR_INVALID_URL>",
+   "posix": "<ERR_INVALID_URL>"
+  },
+  {
+   "input": "file://08.1/a",
+   "win32": "<ERR_INVALID_URL>",
+   "posix": "<ERR_INVALID_URL>"
+  },
+  {
+   "input": "file://0.8/a",
+   "win32": "\\\\0.0.0.8\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://1.2.3.08/a",
+   "win32": "<ERR_INVALID_URL>",
+   "posix": "<ERR_INVALID_URL>"
+  },
+  {
+   "input": "file://999/a",
+   "win32": "\\\\0.0.3.231\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://256/a",
+   "win32": "\\\\0.0.1.0\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://1.256/a",
+   "win32": "\\\\1.0.1.0\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://0x100000000/a",
+   "win32": "<ERR_INVALID_URL>",
+   "posix": "<ERR_INVALID_URL>"
+  },
+  {
+   "input": "file://0xffffffff/a",
+   "win32": "\\\\255.255.255.255\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://1.0x10/a",
+   "win32": "\\\\1.0.0.16\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://010.1/a",
+   "win32": "\\\\8.0.0.1\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://1.2.3/a",
+   "win32": "\\\\1.2.0.3\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://1.2/a",
+   "win32": "\\\\1.0.0.2\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://1/a",
+   "win32": "\\\\0.0.0.1\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://1.2.3.4.5.6/a",
+   "win32": "<ERR_INVALID_URL>",
+   "posix": "<ERR_INVALID_URL>"
+  },
+  {
+   "input": "file://0177.1/a",
+   "win32": "\\\\127.0.0.1\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://0.0.0.08/a",
+   "win32": "<ERR_INVALID_URL>",
+   "posix": "<ERR_INVALID_URL>"
+  },
+  {
+   "input": "file://g/a",
+   "win32": "\\\\g\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://1g/a",
+   "win32": "\\\\1g\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://g1/a",
+   "win32": "\\\\g1\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://1.g/a",
+   "win32": "\\\\1.g\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://g.1/a",
+   "win32": "<ERR_INVALID_URL>",
+   "posix": "<ERR_INVALID_URL>"
+  },
+  {
+   "input": "file://0x.1/a",
+   "win32": "\\\\0.0.0.1\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://1.0x/a",
+   "win32": "\\\\1.0.0.0\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://1.0X/a",
+   "win32": "\\\\1.0.0.0\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://0x0/a",
+   "win32": "\\\\0.0.0.0\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://0x00/a",
+   "win32": "\\\\0.0.0.0\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://1.2.0x/a",
+   "win32": "\\\\1.2.0.0\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://abc.08/a",
+   "win32": "<ERR_INVALID_URL>",
+   "posix": "<ERR_INVALID_URL>"
+  },
+  {
+   "input": "file://08abc/a",
+   "win32": "\\\\08abc\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://1.2.3.4a/a",
+   "win32": "\\\\1.2.3.4a\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://0x1f.0x1f/a",
+   "win32": "\\\\31.0.0.31\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://00.08/a",
+   "win32": "<ERR_INVALID_URL>",
+   "posix": "<ERR_INVALID_URL>"
+  },
+  {
+   "input": "file://1.2.3.4./a",
+   "win32": "\\\\1.2.3.4\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://1.2.3.4../a",
+   "win32": "\\\\1.2.3.4..\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://0xG/a",
+   "win32": "\\\\0xg\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://9/a",
+   "win32": "\\\\0.0.0.9\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://09/a",
+   "win32": "<ERR_INVALID_URL>",
+   "posix": "<ERR_INVALID_URL>"
+  },
+  {
+   "input": "file://0b1/a",
+   "win32": "\\\\0b1\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://1_0/a",
+   "win32": "\\\\1_0\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://+1/a",
+   "win32": "\\\\+1\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://-1/a",
+   "win32": "\\\\-1\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://1 /a",
+   "win32": "<ERR_INVALID_URL>",
+   "posix": "<ERR_INVALID_URL>"
+  },
+  {
+   "input": "file:// 1/a",
+   "win32": "<ERR_INVALID_URL>",
+   "posix": "<ERR_INVALID_URL>"
+  },
+  {
+   "input": "file://1e2/a",
+   "win32": "\\\\1e2\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://1..2/a",
+   "win32": "<ERR_INVALID_URL>",
+   "posix": "<ERR_INVALID_URL>"
+  },
+  {
+   "input": "file://.1/a",
+   "win32": "<ERR_INVALID_URL>",
+   "posix": "<ERR_INVALID_URL>"
+  },
+  {
+   "input": "file://1.2.3.4.5/a",
+   "win32": "<ERR_INVALID_URL>",
+   "posix": "<ERR_INVALID_URL>"
+  },
+  {
+   "input": "file://4294967295/a",
+   "win32": "\\\\255.255.255.255\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://4294967296/a",
+   "win32": "<ERR_INVALID_URL>",
+   "posix": "<ERR_INVALID_URL>"
+  },
+  {
+   "input": "file://a.1/a",
+   "win32": "<ERR_INVALID_URL>",
+   "posix": "<ERR_INVALID_URL>"
+  },
+  {
+   "input": "file://0.0.0.0/a",
+   "win32": "\\\\0.0.0.0\\a",
+   "posix": "<ERR_INVALID_FILE_URL_HOST>"
+  },
+  {
+   "input": "file://256.1.1.1/a",
+   "win32": "<ERR_INVALID_URL>",
+   "posix": "<ERR_INVALID_URL>"
+  },
+  {
+   "input": "file://1.1.1.256/a",
+   "win32": "<ERR_INVALID_URL>",
+   "posix": "<ERR_INVALID_URL>"
+  },
+  {
+   "input": "file://999.1.1.1/a",
+   "win32": "<ERR_INVALID_URL>",
+   "posix": "<ERR_INVALID_URL>"
+  }
+ ],
+ "fileUrlToPathDivergence": [
+  {
+   "input": "file://xn--fsqu00a/a",
+   "reason": "Node runs the host through ICU's UTS#46 domainToUnicode; the port keeps the A-label.",
+   "port": {
+    "win32": "\\\\xn--fsqu00a\\a",
+    "posix": "<ERR_INVALID_FILE_URL_HOST>"
+   },
+   "node": {
+    "win32": "\\\\例子\\a",
+    "posix": "<ERR_INVALID_FILE_URL_HOST>"
+   }
+  },
+  {
+   "input": "file://xn--fsqu00a/a/b",
+   "reason": "Node runs the host through ICU's UTS#46 domainToUnicode; the port keeps the A-label.",
+   "port": {
+    "win32": "\\\\xn--fsqu00a\\a\\b",
+    "posix": "<ERR_INVALID_FILE_URL_HOST>"
+   },
+   "node": {
+    "win32": "\\\\例子\\a\\b",
+    "posix": "<ERR_INVALID_FILE_URL_HOST>"
+   }
+  },
+  {
+   "input": "file://[::ffff:1.2.3.4]/a",
+   "reason": "Node serializes an IPv4-embedded IPv6 literal as hex pairs; the port uses .NET's dotted-quad form.",
+   "port": {
+    "win32": "\\\\[::ffff:1.2.3.4]\\a",
+    "posix": "<ERR_INVALID_FILE_URL_HOST>"
+   },
+   "node": {
+    "win32": "\\\\[::ffff:102:304]\\a",
+    "posix": "<ERR_INVALID_FILE_URL_HOST>"
+   }
+  },
+  {
+   "input": "file://[::1.2.3.4]/a",
+   "reason": "Node serializes an IPv4-embedded IPv6 literal as hex pairs; the port uses .NET's dotted-quad form.",
+   "port": {
+    "win32": "\\\\[::1.2.3.4]\\a",
+    "posix": "<ERR_INVALID_FILE_URL_HOST>"
+   },
+   "node": {
+    "win32": "\\\\[::102:304]\\a",
+    "posix": "<ERR_INVALID_FILE_URL_HOST>"
+   }
+  }
+ ],
+ "semverValid": [
+  {
+   "input": "1.2.3",
+   "expected": "1.2.3"
+  },
+  {
+   "input": "0.0.0",
+   "expected": "0.0.0"
+  },
+  {
+   "input": "v1.2.3",
+   "expected": "1.2.3"
+  },
+  {
+   "input": "=1.2.3",
+   "expected": null
+  },
+  {
+   "input": " 1.2.3 ",
+   "expected": "1.2.3"
+  },
+  {
+   "input": "1.2",
+   "expected": null
+  },
+  {
+   "input": "1",
+   "expected": null
+  },
+  {
+   "input": "1.2.3.4",
+   "expected": null
+  },
+  {
+   "input": "01.2.3",
+   "expected": null
+  },
+  {
+   "input": "1.02.3",
+   "expected": null
+  },
+  {
+   "input": "1.2.03",
+   "expected": null
+  },
+  {
+   "input": "1.2.3-",
+   "expected": null
+  },
+  {
+   "input": "1.2.3-alpha",
+   "expected": "1.2.3-alpha"
+  },
+  {
+   "input": "1.2.3-alpha.1",
+   "expected": "1.2.3-alpha.1"
+  },
+  {
+   "input": "1.2.3-0",
+   "expected": "1.2.3-0"
+  },
+  {
+   "input": "1.2.3-0.3.7",
+   "expected": "1.2.3-0.3.7"
+  },
+  {
+   "input": "1.2.3-x.7.z.92",
+   "expected": "1.2.3-x.7.z.92"
+  },
+  {
+   "input": "1.2.3+build",
+   "expected": "1.2.3"
+  },
+  {
+   "input": "1.2.3-alpha+build.1",
+   "expected": "1.2.3-alpha"
+  },
+  {
+   "input": "1.2.3-rc.1+build.123",
+   "expected": "1.2.3-rc.1"
+  },
+  {
+   "input": "1.2.3-alpha..1",
+   "expected": null
+  },
+  {
+   "input": "1.2.3-alpha.",
+   "expected": null
+  },
+  {
+   "input": "1.2.3-alpha_beta",
+   "expected": null
+  },
+  {
+   "input": "1.2.3-01",
+   "expected": null
+  },
+  {
+   "input": "1.2.3-alpha01",
+   "expected": "1.2.3-alpha01"
+  },
+  {
+   "input": "1.2.3+",
+   "expected": null
+  },
+  {
+   "input": "1.2.3+bu!ild",
+   "expected": null
+  },
+  {
+   "input": "9007199254740991.0.0",
+   "expected": "9007199254740991.0.0"
+  },
+  {
+   "input": "9007199254740992.0.0",
+   "expected": null
+  },
+  {
+   "input": "99999999999999999999.0.0",
+   "expected": null
+  },
+  {
+   "input": "1.2.3\n",
+   "expected": "1.2.3"
+  },
+  {
+   "input": "1.2.3\t",
+   "expected": "1.2.3"
+  },
+  {
+   "input": "1.2.3-0.0.0",
+   "expected": "1.2.3-0.0.0"
+  },
+  {
+   "input": "1.2.3-0.a",
+   "expected": "1.2.3-0.a"
+  },
+  {
+   "input": "1.2.3-alpha.-1",
+   "expected": "1.2.3-alpha.-1"
+  },
+  {
+   "input": "1.2.3--",
+   "expected": "1.2.3--"
+  },
+  {
+   "input": "1.2.3-a-b",
+   "expected": "1.2.3-a-b"
+  },
+  {
+   "input": "1.2.3-a+b",
+   "expected": "1.2.3-a"
+  },
+  {
+   "input": "1.2.3+a-b",
+   "expected": "1.2.3"
+  },
+  {
+   "input": "v",
+   "expected": null
+  },
+  {
+   "input": "V1.2.3",
+   "expected": null
+  },
+  {
+   "input": "0.0.0-0",
+   "expected": "0.0.0-0"
+  },
+  {
+   "input": "1.0.0-alpha",
+   "expected": "1.0.0-alpha"
+  },
+  {
+   "input": "1.0.0-alpha.1",
+   "expected": "1.0.0-alpha.1"
+  },
+  {
+   "input": "1.0.0-alpha.beta",
+   "expected": "1.0.0-alpha.beta"
+  },
+  {
+   "input": "1.0.0-beta",
+   "expected": "1.0.0-beta"
+  },
+  {
+   "input": "1.0.0-beta.2",
+   "expected": "1.0.0-beta.2"
+  },
+  {
+   "input": "1.0.0-beta.11",
+   "expected": "1.0.0-beta.11"
+  },
+  {
+   "input": "1.0.0-rc.1",
+   "expected": "1.0.0-rc.1"
+  },
+  {
+   "input": "1.0.0",
+   "expected": "1.0.0"
+  },
+  {
+   "input": "1.2.3-0a",
+   "expected": "1.2.3-0a"
+  },
+  {
+   "input": "1.2.3-a.0",
+   "expected": "1.2.3-a.0"
+  },
+  {
+   "input": "1.2.3-0.0",
+   "expected": "1.2.3-0.0"
+  },
+  {
+   "input": "1.2.3--a",
+   "expected": "1.2.3--a"
+  },
+  {
+   "input": "1.2.3-.a",
+   "expected": null
+  },
+  {
+   "input": "1.2.3.a",
+   "expected": null
+  },
+  {
+   "input": "1.2.3-",
+   "expected": null
+  },
+  {
+   "input": "1.2.3-alpha.0valid",
+   "expected": "1.2.3-alpha.0valid"
+  },
+  {
+   "input": "1.2.3+0",
+   "expected": "1.2.3"
+  },
+  {
+   "input": "1.2.3+00",
+   "expected": "1.2.3"
+  },
+  {
+   "input": "1.2.3+-",
+   "expected": "1.2.3"
+  },
+  {
+   "input": "1.2.3+.",
+   "expected": null
+  },
+  {
+   "input": "1.2.3+a..b",
+   "expected": null
+  },
+  {
+   "input": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.0.0",
+   "expected": null
+  },
+  {
+   "input": "1.2.3                                                                                                                                                                                                                                                                                                            ",
+   "expected": null
+  }
+ ],
+ "semverCompare": [
+  {
+   "left": "1.2.3",
+   "right": "1.2.3",
+   "expected": 0
+  },
+  {
+   "left": "1.2.3",
+   "right": "1.2.4",
+   "expected": -1
+  },
+  {
+   "left": "1.2.4",
+   "right": "1.2.3",
+   "expected": 1
+  },
+  {
+   "left": "1.2.3",
+   "right": "1.3.0",
+   "expected": -1
+  },
+  {
+   "left": "2.0.0",
+   "right": "1.9.9",
+   "expected": 1
+  },
+  {
+   "left": "v1.2.3",
+   "right": "1.2.3",
+   "expected": 0
+  },
+  {
+   "left": "1.2.3+b1",
+   "right": "1.2.3+b2",
+   "expected": 0
+  },
+  {
+   "left": "1.2.3+a",
+   "right": "1.2.3",
+   "expected": 0
+  },
+  {
+   "left": "1.0.0-alpha",
+   "right": "1.0.0",
+   "expected": -1
+  },
+  {
+   "left": "1.0.0",
+   "right": "1.0.0-alpha",
+   "expected": 1
+  },
+  {
+   "left": "1.0.0-alpha",
+   "right": "1.0.0-alpha.1",
+   "expected": -1
+  },
+  {
+   "left": "1.0.0-alpha.1",
+   "right": "1.0.0-alpha.beta",
+   "expected": -1
+  },
+  {
+   "left": "1.0.0-alpha.beta",
+   "right": "1.0.0-beta",
+   "expected": -1
+  },
+  {
+   "left": "1.0.0-beta",
+   "right": "1.0.0-beta.2",
+   "expected": -1
+  },
+  {
+   "left": "1.0.0-beta.2",
+   "right": "1.0.0-beta.11",
+   "expected": -1
+  },
+  {
+   "left": "1.0.0-beta.11",
+   "right": "1.0.0-rc.1",
+   "expected": -1
+  },
+  {
+   "left": "1.0.0-rc.1",
+   "right": "1.0.0",
+   "expected": -1
+  },
+  {
+   "left": "1.0.0-1",
+   "right": "1.0.0-alpha",
+   "expected": -1
+  },
+  {
+   "left": "1.0.0-alpha",
+   "right": "1.0.0-1",
+   "expected": 1
+  },
+  {
+   "left": "1.0.0-2",
+   "right": "1.0.0-10",
+   "expected": -1
+  },
+  {
+   "left": "1.0.0-10",
+   "right": "1.0.0-2",
+   "expected": 1
+  },
+  {
+   "left": "1.0.0-a.b.c",
+   "right": "1.0.0-a.b",
+   "expected": 1
+  },
+  {
+   "left": "1.0.0-a.b",
+   "right": "1.0.0-a.b.c",
+   "expected": -1
+  },
+  {
+   "left": "1.0.0-0",
+   "right": "1.0.0-0",
+   "expected": 0
+  },
+  {
+   "left": "0.0.0",
+   "right": "0.0.0-0",
+   "expected": 1
+  },
+  {
+   "left": "1.2.3",
+   "right": "not-a-version",
+   "expected": null
+  },
+  {
+   "left": "not-a-version",
+   "right": "1.2.3",
+   "expected": null
+  },
+  {
+   "left": "",
+   "right": "",
+   "expected": null
+  },
+  {
+   "left": "1.2.3",
+   "right": "",
+   "expected": null
+  },
+  {
+   "left": "9007199254740991.0.0",
+   "right": "9007199254740990.0.0",
+   "expected": 1
+  }
+ ],
+ "versionCheckCompare": [
+  {
+   "left": "1.2.3",
+   "right": "1.2.4",
+   "expected": -1
+  },
+  {
+   "left": "1.2.4",
+   "right": "1.2.3",
+   "expected": 1
+  },
+  {
+   "left": "1.2.3",
+   "right": "1.2.3",
+   "expected": 0
+  },
+  {
+   "left": "1.2.3",
+   "right": " 1.2.3 ",
+   "expected": 0
+  },
+  {
+   "left": "1.2.3",
+   "right": "bogus",
+   "expected": null
+  },
+  {
+   "left": "bogus",
+   "right": "1.2.3",
+   "expected": null
+  },
+  {
+   "left": "v1.0.0",
+   "right": "1.0.0",
+   "expected": 0
+  },
+  {
+   "left": "1.0.0",
+   "right": "v1.0.0",
+   "expected": 0
+  }
+ ],
+ "versionCheckIsNewer": [
+  {
+   "candidate": "1.2.4",
+   "current": "1.2.3",
+   "expected": true
+  },
+  {
+   "candidate": "1.2.3",
+   "current": "1.2.4",
+   "expected": false
+  },
+  {
+   "candidate": "1.2.3",
+   "current": "1.2.3",
+   "expected": false
+  },
+  {
+   "candidate": "nightly",
+   "current": "1.2.3",
+   "expected": true
+  },
+  {
+   "candidate": "1.2.3",
+   "current": "nightly",
+   "expected": true
+  },
+  {
+   "candidate": " 1.2.4 ",
+   "current": "1.2.3",
+   "expected": true
+  },
+  {
+   "candidate": "1.2.3",
+   "current": "1.2.3 ",
+   "expected": false
+  },
+  {
+   "candidate": "nightly",
+   "current": "nightly",
+   "expected": false
+  }
+ ],
+ "versionCheckFormatError": [
+  {
+   "name": "plain",
+   "message": "fetch failed",
+   "causes": [],
+   "aggregate": false,
+   "expected": "fetch failed"
+  },
+  {
+   "name": "empty-message",
+   "message": "",
+   "causes": [],
+   "aggregate": false,
+   "expected": "Error"
+  },
+  {
+   "name": "cause-with-code",
+   "message": "fetch failed",
+   "causes": [
+    {
+     "message": "connect ECONNREFUSED 127.0.0.1:443",
+     "code": "ECONNREFUSED"
+    }
+   ],
+   "aggregate": false,
+   "expected": "fetch failed (ECONNREFUSED)"
+  },
+  {
+   "name": "cause-without-code",
+   "message": "fetch failed",
+   "causes": [
+    {
+     "message": "socket hang up"
+    }
+   ],
+   "aggregate": false,
+   "expected": "fetch failed (cause: socket hang up)"
+  },
+  {
+   "name": "aggregate-one-code",
+   "message": "fetch failed",
+   "causes": [
+    {
+     "message": "connect ECONNREFUSED",
+     "code": "ECONNREFUSED"
+    }
+   ],
+   "aggregate": true,
+   "expected": "fetch failed (ECONNREFUSED)"
+  },
+  {
+   "name": "aggregate-mixed",
+   "message": "fetch failed",
+   "causes": [
+    {
+     "message": "connect ENETUNREACH",
+     "code": "ENETUNREACH"
+    },
+    {
+     "message": "connect ECONNREFUSED",
+     "code": "ECONNREFUSED"
+    }
+   ],
+   "aggregate": true,
+   "expected": "fetch failed (ENETUNREACH, ECONNREFUSED)"
+  },
+  {
+   "name": "aggregate-duplicate-codes",
+   "message": "fetch failed",
+   "causes": [
+    {
+     "message": "a",
+     "code": "ECONNREFUSED"
+    },
+    {
+     "message": "b",
+     "code": "ECONNREFUSED"
+    }
+   ],
+   "aggregate": true,
+   "expected": "fetch failed (ECONNREFUSED)"
+  },
+  {
+   "name": "aggregate-code-and-no-message",
+   "message": "fetch failed",
+   "causes": [
+    {
+     "message": "",
+     "code": "EAI_AGAIN"
+    },
+    {
+     "message": "lookup failed"
+    }
+   ],
+   "aggregate": true,
+   "expected": "fetch failed (EAI_AGAIN)"
+  },
+  {
+   "name": "aggregate-empty",
+   "message": "fetch failed",
+   "causes": [],
+   "aggregate": true,
+   "expected": "fetch failed"
+  },
+  {
+   "name": "empty-message-with-cause",
+   "message": "",
+   "causes": [
+    {
+     "message": "boom"
+    }
+   ],
+   "aggregate": false,
+   "expected": "Error (cause: boom)"
+  }
+ ],
+ "versionCheckRelease": [
+  {
+   "name": "ok",
+   "status": 200,
+   "body": "{\"version\":\"1.2.3\",\"packageName\":\"@x/y\",\"note\":\"hello\"}",
+   "retry": false,
+   "result": {
+    "version": "1.2.3",
+    "packageName": "@x/y",
+    "note": "hello"
+   },
+   "fetchCalls": 1
+  },
+  {
+   "name": "ok-no-extras",
+   "status": 200,
+   "body": "{\"version\":\"1.2.3\"}",
+   "retry": false,
+   "result": {
+    "version": "1.2.3",
+    "packageName": null,
+    "note": null
+   },
+   "fetchCalls": 1
+  },
+  {
+   "name": "ok-whitespace",
+   "status": 200,
+   "body": "{\"version\":\"  1.2.3  \",\"packageName\":\"  @x/y  \",\"note\":\"  n  \"}",
+   "retry": false,
+   "result": {
+    "version": "1.2.3",
+    "packageName": "@x/y",
+    "note": "n"
+   },
+   "fetchCalls": 1
+  },
+  {
+   "name": "ok-blank-extras",
+   "status": 200,
+   "body": "{\"version\":\"1.2.3\",\"packageName\":\"   \",\"note\":\"\"}",
+   "retry": false,
+   "result": {
+    "version": "1.2.3",
+    "packageName": null,
+    "note": null
+   },
+   "fetchCalls": 1
+  },
+  {
+   "name": "ok-non-string-extras",
+   "status": 200,
+   "body": "{\"version\":\"1.2.3\",\"packageName\":42,\"note\":null}",
+   "retry": false,
+   "result": {
+    "version": "1.2.3",
+    "packageName": null,
+    "note": null
+   },
+   "fetchCalls": 1
+  },
+  {
+   "name": "ok-non-string-version",
+   "status": 200,
+   "body": "{\"version\":42}",
+   "retry": false,
+   "result": null,
+   "fetchCalls": 1
+  },
+  {
+   "name": "ok-blank-version",
+   "status": 200,
+   "body": "{\"version\":\"   \"}",
+   "retry": false,
+   "result": null,
+   "fetchCalls": 1
+  },
+  {
+   "name": "ok-missing-version",
+   "status": 200,
+   "body": "{\"packageName\":\"@x/y\"}",
+   "retry": false,
+   "result": null,
+   "fetchCalls": 1
+  },
+  {
+   "name": "ok-not-an-object",
+   "status": 200,
+   "body": "\"nope\"",
+   "retry": false,
+   "result": null,
+   "fetchCalls": 1
+  },
+  {
+   "name": "ok-empty-object",
+   "status": 200,
+   "body": "{}",
+   "retry": false,
+   "result": null,
+   "fetchCalls": 1
+  },
+  {
+   "name": "not-found",
+   "status": 404,
+   "body": "{}",
+   "retry": false,
+   "result": null,
+   "fetchCalls": 1
+  },
+  {
+   "name": "server-error-no-retry",
+   "status": 503,
+   "body": "{}",
+   "retry": false,
+   "result": null,
+   "fetchCalls": 1
+  },
+  {
+   "name": "server-error-retry",
+   "status": 503,
+   "body": "{\"version\":\"9.9.9\"}",
+   "retry": true,
+   "result": null,
+   "fetchCalls": 3
+  },
+  {
+   "name": "rate-limited-retry",
+   "status": 429,
+   "body": "{\"version\":\"9.9.9\"}",
+   "retry": true,
+   "result": null,
+   "fetchCalls": 3
+  },
+  {
+   "name": "teapot-not-retried",
+   "status": 418,
+   "body": "{}",
+   "retry": true,
+   "result": null,
+   "fetchCalls": 1
+  },
+  {
+   "name": "request-timeout-retried",
+   "status": 408,
+   "body": "{}",
+   "retry": true,
+   "result": null,
+   "fetchCalls": 3
+  },
+  {
+   "name": "offline",
+   "status": 200,
+   "body": "{\"version\":\"1.2.3\"}",
+   "retry": false,
+   "env": {
+    "PI_OFFLINE": "1"
+   },
+   "result": null,
+   "fetchCalls": 0
+  }
+ ],
+ "versionCheckCheck": [
+  {
+   "name": "newer",
+   "status": 200,
+   "body": "{\"version\":\"2.0.0\"}",
+   "check": true,
+   "currentVersion": "1.0.0",
+   "result": {
+    "version": "2.0.0",
+    "packageName": null,
+    "note": null
+   },
+   "fetchCalls": 1
+  },
+  {
+   "name": "same",
+   "status": 200,
+   "body": "{\"version\":\"1.0.0\"}",
+   "check": true,
+   "currentVersion": "1.0.0",
+   "result": null,
+   "fetchCalls": 1
+  },
+  {
+   "name": "older",
+   "status": 200,
+   "body": "{\"version\":\"0.9.0\"}",
+   "check": true,
+   "currentVersion": "1.0.0",
+   "result": null,
+   "fetchCalls": 1
+  },
+  {
+   "name": "skipped",
+   "status": 200,
+   "body": "{\"version\":\"2.0.0\"}",
+   "check": true,
+   "currentVersion": "1.0.0",
+   "env": {
+    "PI_SKIP_VERSION_CHECK": "1"
+   },
+   "result": null,
+   "fetchCalls": 0
+  },
+  {
+   "name": "unparseable-newer",
+   "status": 200,
+   "body": "{\"version\":\"nightly\"}",
+   "check": true,
+   "currentVersion": "1.0.0",
+   "result": {
+    "version": "nightly",
+    "packageName": null,
+    "note": null
+   },
+   "fetchCalls": 1
+  },
+  {
+   "name": "not-found",
+   "status": 500,
+   "body": "{}",
+   "check": true,
+   "currentVersion": "1.0.0",
+   "result": null,
+   "fetchCalls": 1
+  }
+ ],
+ "clipboardRead": [
+  {
+   "platform": "linux",
+   "env": {},
+   "native": false,
+   "results": {},
+   "text": null,
+   "calls": []
+  },
+  {
+   "platform": "linux",
+   "env": {
+    "TERMUX_VERSION": "0.118"
+   },
+   "native": false,
+   "results": {},
+   "text": null,
+   "calls": [
+    {
+     "command": "termux-clipboard-get",
+     "args": [],
+     "input": null,
+     "timeoutMs": 5000
+    }
+   ]
+  },
+  {
+   "platform": "linux",
+   "env": {
+    "WAYLAND_DISPLAY": "wayland-0"
+   },
+   "native": false,
+   "results": {},
+   "text": null,
+   "calls": [
+    {
+     "command": "wl-paste",
+     "args": [
+      "--no-newline",
+      "--type",
+      "text"
+     ],
+     "input": null,
+     "timeoutMs": 5000
+    }
+   ]
+  },
+  {
+   "platform": "linux",
+   "env": {
+    "DISPLAY": ":0"
+   },
+   "native": false,
+   "results": {},
+   "text": null,
+   "calls": [
+    {
+     "command": "xclip",
+     "args": [
+      "-selection",
+      "clipboard",
+      "-out"
+     ],
+     "input": null,
+     "timeoutMs": 5000
+    },
+    {
+     "command": "xsel",
+     "args": [
+      "--clipboard",
+      "--output"
+     ],
+     "input": null,
+     "timeoutMs": 5000
+    }
+   ]
+  },
+  {
+   "platform": "linux",
+   "env": {
+    "DISPLAY": ":0",
+    "WAYLAND_DISPLAY": "wayland-0"
+   },
+   "native": false,
+   "results": {},
+   "text": null,
+   "calls": [
+    {
+     "command": "wl-paste",
+     "args": [
+      "--no-newline",
+      "--type",
+      "text"
+     ],
+     "input": null,
+     "timeoutMs": 5000
+    },
+    {
+     "command": "xclip",
+     "args": [
+      "-selection",
+      "clipboard",
+      "-out"
+     ],
+     "input": null,
+     "timeoutMs": 5000
+    },
+    {
+     "command": "xsel",
+     "args": [
+      "--clipboard",
+      "--output"
+     ],
+     "input": null,
+     "timeoutMs": 5000
+    }
+   ]
+  },
+  {
+   "platform": "linux",
+   "env": {
+    "DISPLAY": ":0",
+    "WAYLAND_DISPLAY": "w",
+    "TERMUX_VERSION": "1"
+   },
+   "native": false,
+   "results": {},
+   "text": null,
+   "calls": [
+    {
+     "command": "termux-clipboard-get",
+     "args": [],
+     "input": null,
+     "timeoutMs": 5000
+    },
+    {
+     "command": "wl-paste",
+     "args": [
+      "--no-newline",
+      "--type",
+      "text"
+     ],
+     "input": null,
+     "timeoutMs": 5000
+    },
+    {
+     "command": "xclip",
+     "args": [
+      "-selection",
+      "clipboard",
+      "-out"
+     ],
+     "input": null,
+     "timeoutMs": 5000
+    },
+    {
+     "command": "xsel",
+     "args": [
+      "--clipboard",
+      "--output"
+     ],
+     "input": null,
+     "timeoutMs": 5000
+    }
+   ]
+  },
+  {
+   "platform": "linux",
+   "env": {
+    "SSH_CONNECTION": "1 2 3 4"
+   },
+   "native": false,
+   "results": {},
+   "text": null,
+   "calls": []
+  },
+  {
+   "platform": "linux",
+   "env": {
+    "MOSH_CONNECTION": "1 2 3 4"
+   },
+   "native": false,
+   "results": {},
+   "text": null,
+   "calls": []
+  },
+  {
+   "platform": "linux",
+   "env": {
+    "SSH_CLIENT": "1 2 3"
+   },
+   "native": false,
+   "results": {},
+   "text": null,
+   "calls": []
+  },
+  {
+   "platform": "darwin",
+   "env": {},
+   "native": false,
+   "results": {},
+   "text": null,
+   "calls": []
+  },
+  {
+   "platform": "win32",
+   "env": {},
+   "native": false,
+   "results": {},
+   "text": null,
+   "calls": []
+  },
+  {
+   "platform": "linux",
+   "env": {
+    "DISPLAY": ":0"
+   },
+   "native": false,
+   "results": {
+    "xclip -selection clipboard -out": "ZnJvbS14Y2xpcCDkuK3mloc="
+   },
+   "text": "from-xclip 中文",
+   "calls": [
+    {
+     "command": "xclip",
+     "args": [
+      "-selection",
+      "clipboard",
+      "-out"
+     ],
+     "input": null,
+     "timeoutMs": 5000
+    }
+   ]
+  },
+  {
+   "platform": "linux",
+   "env": {
+    "DISPLAY": ":0"
+   },
+   "native": false,
+   "results": {
+    "xclip -selection clipboard -out": ""
+   },
+   "text": null,
+   "calls": [
+    {
+     "command": "xclip",
+     "args": [
+      "-selection",
+      "clipboard",
+      "-out"
+     ],
+     "input": null,
+     "timeoutMs": 5000
+    }
+   ]
+  },
+  {
+   "platform": "linux",
+   "env": {
+    "DISPLAY": ":0"
+   },
+   "native": false,
+   "results": {
+    "xsel --clipboard --output": "ZnJvbS14c2Vs"
+   },
+   "text": "from-xsel",
+   "calls": [
+    {
+     "command": "xclip",
+     "args": [
+      "-selection",
+      "clipboard",
+      "-out"
+     ],
+     "input": null,
+     "timeoutMs": 5000
+    },
+    {
+     "command": "xsel",
+     "args": [
+      "--clipboard",
+      "--output"
+     ],
+     "input": null,
+     "timeoutMs": 5000
+    }
+   ]
+  },
+  {
+   "platform": "linux",
+   "env": {
+    "DISPLAY": ":0",
+    "WAYLAND_DISPLAY": "w"
+   },
+   "native": false,
+   "results": {
+    "wl-paste --no-newline --type text": "ZnJvbS13bA=="
+   },
+   "text": "from-wl",
+   "calls": [
+    {
+     "command": "wl-paste",
+     "args": [
+      "--no-newline",
+      "--type",
+      "text"
+     ],
+     "input": null,
+     "timeoutMs": 5000
+    }
+   ]
+  },
+  {
+   "platform": "linux",
+   "env": {
+    "TERMUX_VERSION": "1",
+    "DISPLAY": ":0"
+   },
+   "native": false,
+   "results": {
+    "termux-clipboard-get": "ZnJvbS10ZXJtdXg="
+   },
+   "text": "from-termux",
+   "calls": [
+    {
+     "command": "termux-clipboard-get",
+     "args": [],
+     "input": null,
+     "timeoutMs": 5000
+    }
+   ]
+  },
+  {
+   "platform": "darwin",
+   "env": {},
+   "native": "native-text",
+   "results": {},
+   "text": "native-text",
+   "calls": []
+  },
+  {
+   "platform": "darwin",
+   "env": {},
+   "native": "",
+   "results": {},
+   "text": null,
+   "calls": []
+  },
+  {
+   "platform": "darwin",
+   "env": {},
+   "native": null,
+   "results": {},
+   "text": null,
+   "calls": []
+  }
+ ],
+ "clipboardCopy": [
+  {
+   "platform": "linux",
+   "env": {},
+   "native": false,
+   "results": {},
+   "outcome": "ok",
+   "calls": [],
+   "osc52": [
+    24
+   ]
+  },
+  {
+   "platform": "linux",
+   "env": {
+    "DISPLAY": ":0"
+   },
+   "native": false,
+   "results": {
+    "xclip -selection clipboard": ""
+   },
+   "outcome": "ok",
+   "calls": [
+    {
+     "command": "xclip",
+     "args": [
+      "-selection",
+      "clipboard"
+     ],
+     "input": "hello 中文",
+     "timeoutMs": 5000
+    }
+   ],
+   "osc52": []
+  },
+  {
+   "platform": "linux",
+   "env": {
+    "DISPLAY": ":0"
+   },
+   "native": false,
+   "results": {
+    "xsel --clipboard --input": ""
+   },
+   "outcome": "ok",
+   "calls": [
+    {
+     "command": "xclip",
+     "args": [
+      "-selection",
+      "clipboard"
+     ],
+     "input": "hello 中文",
+     "timeoutMs": 5000
+    },
+    {
+     "command": "xsel",
+     "args": [
+      "--clipboard",
+      "--input"
+     ],
+     "input": "hello 中文",
+     "timeoutMs": 5000
+    }
+   ],
+   "osc52": []
+  },
+  {
+   "platform": "linux",
+   "env": {
+    "WAYLAND_DISPLAY": "w"
+   },
+   "native": false,
+   "results": {
+    "wl-copy": ""
+   },
+   "outcome": "ok",
+   "calls": [
+    {
+     "command": "wl-copy",
+     "args": [],
+     "input": "hello 中文",
+     "timeoutMs": 5000
+    }
+   ],
+   "osc52": []
+  },
+  {
+   "platform": "linux",
+   "env": {
+    "TERMUX_VERSION": "1"
+   },
+   "native": false,
+   "results": {
+    "termux-clipboard-set": ""
+   },
+   "outcome": "ok",
+   "calls": [
+    {
+     "command": "termux-clipboard-set",
+     "args": [],
+     "input": "hello 中文",
+     "timeoutMs": 5000
+    }
+   ],
+   "osc52": []
+  },
+  {
+   "platform": "linux",
+   "env": {
+    "SSH_CONNECTION": "1 2 3 4"
+   },
+   "native": false,
+   "results": {},
+   "outcome": "ok",
+   "calls": [],
+   "osc52": [
+    24
+   ]
+  },
+  {
+   "platform": "linux",
+   "env": {
+    "WSL_DISTRO_NAME": "Ubuntu",
+    "WT_SESSION": "abc"
+   },
+   "native": false,
+   "results": {},
+   "outcome": "ok",
+   "calls": [],
+   "osc52": [
+    24
+   ]
+  },
+  {
+   "platform": "darwin",
+   "env": {},
+   "native": true,
+   "results": {},
+   "outcome": "ok",
+   "calls": [
+    {
+     "command": "<native>",
+     "args": [],
+     "input": "hello 中文",
+     "timeoutMs": null
+    }
+   ],
+   "osc52": []
+  },
+  {
+   "platform": "darwin",
+   "env": {},
+   "native": false,
+   "results": {
+    "pbcopy": ""
+   },
+   "outcome": "ok",
+   "calls": [
+    {
+     "command": "pbcopy",
+     "args": [],
+     "input": "hello 中文",
+     "timeoutMs": 5000
+    }
+   ],
+   "osc52": []
+  },
+  {
+   "platform": "win32",
+   "env": {},
+   "native": false,
+   "results": {
+    "clip": ""
+   },
+   "outcome": "ok",
+   "calls": [
+    {
+     "command": "clip",
+     "args": [],
+     "input": "hello 中文",
+     "timeoutMs": 5000
+    }
+   ],
+   "osc52": []
+  },
+  {
+   "platform": "linux",
+   "env": {
+    "DISPLAY": ":0"
+   },
+   "native": false,
+   "results": {},
+   "outcome": "<Error: Clipboard unavailable: install `xclip` or `xsel`, or check X11 access>",
+   "calls": [
+    {
+     "command": "xclip",
+     "args": [
+      "-selection",
+      "clipboard"
+     ],
+     "input": "hello 中文",
+     "timeoutMs": 5000
+    },
+    {
+     "command": "xsel",
+     "args": [
+      "--clipboard",
+      "--input"
+     ],
+     "input": "hello 中文",
+     "timeoutMs": 5000
+    }
+   ],
+   "osc52": []
+  },
+  {
+   "platform": "linux",
+   "env": {
+    "WAYLAND_DISPLAY": "w"
+   },
+   "native": false,
+   "results": {},
+   "outcome": "<Error: Clipboard unavailable: install `wl-clipboard` (`wl-copy`) or check Wayland access>",
+   "calls": [
+    {
+     "command": "wl-copy",
+     "args": [],
+     "input": "hello 中文",
+     "timeoutMs": 5000
+    }
+   ],
+   "osc52": []
+  },
+  {
+   "platform": "linux",
+   "env": {
+    "TERMUX_VERSION": "1"
+   },
+   "native": false,
+   "results": {},
+   "outcome": "<Error: Clipboard unavailable: install the Termux:API app and `termux-api` package>",
+   "calls": [
+    {
+     "command": "termux-clipboard-set",
+     "args": [],
+     "input": "hello 中文",
+     "timeoutMs": 5000
+    }
+   ],
+   "osc52": []
+  },
+  {
+   "platform": "linux",
+   "env": {
+    "SSH_CLIENT": "1 2 3"
+   },
+   "native": false,
+   "results": {},
+   "outcome": "ok",
+   "calls": [],
+   "osc52": [
+    24
+   ]
+  }
+ ],
+ "clipboardCopyText": "hello 中文",
+ "configUpdate": [
+  {
+   "name": "npm-unconfigured",
+   "method": "npm",
+   "detected": "npm",
+   "packageDir": "<ROOT>/npm/lib/node_modules/@earendil-works/pi-coding-agent",
+   "resolvedPath": "<ROOT>/npm/lib/node_modules/@earendil-works/pi-coding-agent\u0000C:/Program Files/nodejs/node.exe",
+   "resolvedDir": "<ROOT>/npm/lib/node_modules/@earendil-works/pi-coding-agent",
+   "resolvedExec": "C:/Program Files/nodejs/node.exe",
+   "outputs": {
+    "npm root -g": {
+     "status": 0,
+     "stdout": "<ROOT>/npm/lib/node_modules\n"
+    }
+   },
+   "npmCommand": null,
+   "target": {
+    "packageName": "@earendil-works/pi-coding-agent",
+    "installSpec": null,
+    "installed": "@earendil-works/pi-coding-agent"
+   },
+   "updateInstruction": "Run: npm --prefix <ROOT>\\npm install -g --ignore-scripts --min-release-age=0 @earendil-works/pi-coding-agent",
+   "command": {
+    "command": "npm",
+    "args": [
+     "--prefix",
+     "<ROOT>\\npm",
+     "install",
+     "-g",
+     "--ignore-scripts",
+     "--min-release-age=0",
+     "@earendil-works/pi-coding-agent"
+    ],
+    "display": "npm --prefix <ROOT>\\npm install -g --ignore-scripts --min-release-age=0 @earendil-works/pi-coding-agent",
+    "steps": null
+   },
+   "unavailable": "This installation is not managed by a global npm install. Update it with the package manager, wrapper, or source checkout that provides it."
+  },
+  {
+   "name": "npm-unconfigured",
+   "method": "npm",
+   "detected": "npm",
+   "packageDir": "<ROOT>/npm/lib/node_modules/@earendil-works/pi-coding-agent",
+   "resolvedPath": "<ROOT>/npm/lib/node_modules/@earendil-works/pi-coding-agent\u0000C:/Program Files/nodejs/node.exe",
+   "resolvedDir": "<ROOT>/npm/lib/node_modules/@earendil-works/pi-coding-agent",
+   "resolvedExec": "C:/Program Files/nodejs/node.exe",
+   "outputs": {
+    "npm root -g": {
+     "status": 0,
+     "stdout": "<ROOT>/npm/lib/node_modules\n"
+    }
+   },
+   "npmCommand": null,
+   "target": {
+    "packageName": "@new/name",
+    "installSpec": "@new/name@1.2.3",
+    "installed": "@earendil-works/pi-coding-agent"
+   },
+   "updateInstruction": "Run: npm --prefix <ROOT>\\npm install -g --ignore-scripts --min-release-age=0 @earendil-works/pi-coding-agent",
+   "command": {
+    "command": "npm",
+    "args": [
+     "--prefix",
+     "<ROOT>\\npm",
+     "install",
+     "-g",
+     "--ignore-scripts",
+     "--min-release-age=0",
+     "@new/name@1.2.3"
+    ],
+    "display": "npm --prefix <ROOT>\\npm uninstall -g @earendil-works/pi-coding-agent && npm --prefix <ROOT>\\npm install -g --ignore-scripts --min-release-age=0 @new/name@1.2.3",
+    "steps": [
+     {
+      "command": "npm",
+      "args": [
+       "--prefix",
+       "<ROOT>\\npm",
+       "uninstall",
+       "-g",
+       "@earendil-works/pi-coding-agent"
+      ],
+      "display": "npm --prefix <ROOT>\\npm uninstall -g @earendil-works/pi-coding-agent"
+     },
+     {
+      "command": "npm",
+      "args": [
+       "--prefix",
+       "<ROOT>\\npm",
+       "install",
+       "-g",
+       "--ignore-scripts",
+       "--min-release-age=0",
+       "@new/name@1.2.3"
+      ],
+      "display": "npm --prefix <ROOT>\\npm install -g --ignore-scripts --min-release-age=0 @new/name@1.2.3"
+     }
+    ]
+   },
+   "unavailable": "This installation is not managed by a global npm install. Update it with the package manager, wrapper, or source checkout that provides it."
+  },
+  {
+   "name": "npm-unconfigured",
+   "method": "npm",
+   "detected": "npm",
+   "packageDir": "<ROOT>/npm/lib/node_modules/@earendil-works/pi-coding-agent",
+   "resolvedPath": "<ROOT>/npm/lib/node_modules/@earendil-works/pi-coding-agent\u0000C:/Program Files/nodejs/node.exe",
+   "resolvedDir": "<ROOT>/npm/lib/node_modules/@earendil-works/pi-coding-agent",
+   "resolvedExec": "C:/Program Files/nodejs/node.exe",
+   "outputs": {
+    "npm root -g": {
+     "status": 0,
+     "stdout": "<ROOT>/npm/lib/node_modules\n"
+    }
+   },
+   "npmCommand": null,
+   "target": {
+    "packageName": "@new/name",
+    "installSpec": null,
+    "installed": "@earendil-works/pi-coding-agent"
+   },
+   "updateInstruction": "Run: npm --prefix <ROOT>\\npm install -g --ignore-scripts --min-release-age=0 @earendil-works/pi-coding-agent",
+   "command": {
+    "command": "npm",
+    "args": [
+     "--prefix",
+     "<ROOT>\\npm",
+     "install",
+     "-g",
+     "--ignore-scripts",
+     "--min-release-age=0",
+     "@new/name"
+    ],
+    "display": "npm --prefix <ROOT>\\npm uninstall -g @earendil-works/pi-coding-agent && npm --prefix <ROOT>\\npm install -g --ignore-scripts --min-release-age=0 @new/name",
+    "steps": [
+     {
+      "command": "npm",
+      "args": [
+       "--prefix",
+       "<ROOT>\\npm",
+       "uninstall",
+       "-g",
+       "@earendil-works/pi-coding-agent"
+      ],
+      "display": "npm --prefix <ROOT>\\npm uninstall -g @earendil-works/pi-coding-agent"
+     },
+     {
+      "command": "npm",
+      "args": [
+       "--prefix",
+       "<ROOT>\\npm",
+       "install",
+       "-g",
+       "--ignore-scripts",
+       "--min-release-age=0",
+       "@new/name"
+      ],
+      "display": "npm --prefix <ROOT>\\npm install -g --ignore-scripts --min-release-age=0 @new/name"
+     }
+    ]
+   },
+   "unavailable": "This installation is not managed by a global npm install. Update it with the package manager, wrapper, or source checkout that provides it."
+  },
+  {
+   "name": "npm-configured",
+   "method": "npm",
+   "detected": "npm",
+   "packageDir": "<ROOT>/npmc/lib/node_modules/@earendil-works/pi-coding-agent",
+   "resolvedPath": "/usr/lib/node_modules/@x/y/dist/config.js\u0000/usr/bin/node",
+   "resolvedDir": "/usr/lib/node_modules/@x/y/dist/config.js",
+   "resolvedExec": "/usr/bin/node",
+   "outputs": {
+    "npm --registry https://r.example root -g": {
+     "status": 0,
+     "stdout": "<ROOT>/npmc/lib/node_modules\n"
+    }
+   },
+   "npmCommand": [
+    "npm",
+    "--registry",
+    "https://r.example"
+   ],
+   "target": {
+    "packageName": "@earendil-works/pi-coding-agent",
+    "installSpec": null,
+    "installed": "@earendil-works/pi-coding-agent"
+   },
+   "updateInstruction": "Run: npm --prefix <ROOT>\\npmc install -g --ignore-scripts --min-release-age=0 @earendil-works/pi-coding-agent",
+   "command": {
+    "command": "npm",
+    "args": [
+     "--registry",
+     "https://r.example",
+     "install",
+     "-g",
+     "--ignore-scripts",
+     "--min-release-age=0",
+     "@earendil-works/pi-coding-agent"
+    ],
+    "display": "npm --registry https://r.example install -g --ignore-scripts --min-release-age=0 @earendil-works/pi-coding-agent",
+    "steps": null
+   },
+   "unavailable": "This installation is not managed by a global npm install. Update it with the package manager, wrapper, or source checkout that provides it."
+  },
+  {
+   "name": "npm-configured",
+   "method": "npm",
+   "detected": "npm",
+   "packageDir": "<ROOT>/npmc/lib/node_modules/@earendil-works/pi-coding-agent",
+   "resolvedPath": "/usr/lib/node_modules/@x/y/dist/config.js\u0000/usr/bin/node",
+   "resolvedDir": "/usr/lib/node_modules/@x/y/dist/config.js",
+   "resolvedExec": "/usr/bin/node",
+   "outputs": {
+    "npm --registry https://r.example root -g": {
+     "status": 0,
+     "stdout": "<ROOT>/npmc/lib/node_modules\n"
+    }
+   },
+   "npmCommand": [
+    "npm",
+    "--registry",
+    "https://r.example"
+   ],
+   "target": {
+    "packageName": "@new/name",
+    "installSpec": "@new/name@1.2.3",
+    "installed": "@earendil-works/pi-coding-agent"
+   },
+   "updateInstruction": "Run: npm --prefix <ROOT>\\npmc install -g --ignore-scripts --min-release-age=0 @earendil-works/pi-coding-agent",
+   "command": {
+    "command": "npm",
+    "args": [
+     "--registry",
+     "https://r.example",
+     "install",
+     "-g",
+     "--ignore-scripts",
+     "--min-release-age=0",
+     "@new/name@1.2.3"
+    ],
+    "display": "npm --registry https://r.example uninstall -g @earendil-works/pi-coding-agent && npm --registry https://r.example install -g --ignore-scripts --min-release-age=0 @new/name@1.2.3",
+    "steps": [
+     {
+      "command": "npm",
+      "args": [
+       "--registry",
+       "https://r.example",
+       "uninstall",
+       "-g",
+       "@earendil-works/pi-coding-agent"
+      ],
+      "display": "npm --registry https://r.example uninstall -g @earendil-works/pi-coding-agent"
+     },
+     {
+      "command": "npm",
+      "args": [
+       "--registry",
+       "https://r.example",
+       "install",
+       "-g",
+       "--ignore-scripts",
+       "--min-release-age=0",
+       "@new/name@1.2.3"
+      ],
+      "display": "npm --registry https://r.example install -g --ignore-scripts --min-release-age=0 @new/name@1.2.3"
+     }
+    ]
+   },
+   "unavailable": "This installation is not managed by a global npm install. Update it with the package manager, wrapper, or source checkout that provides it."
+  },
+  {
+   "name": "npm-configured",
+   "method": "npm",
+   "detected": "npm",
+   "packageDir": "<ROOT>/npmc/lib/node_modules/@earendil-works/pi-coding-agent",
+   "resolvedPath": "/usr/lib/node_modules/@x/y/dist/config.js\u0000/usr/bin/node",
+   "resolvedDir": "/usr/lib/node_modules/@x/y/dist/config.js",
+   "resolvedExec": "/usr/bin/node",
+   "outputs": {
+    "npm --registry https://r.example root -g": {
+     "status": 0,
+     "stdout": "<ROOT>/npmc/lib/node_modules\n"
+    }
+   },
+   "npmCommand": [
+    "npm",
+    "--registry",
+    "https://r.example"
+   ],
+   "target": {
+    "packageName": "@new/name",
+    "installSpec": null,
+    "installed": "@earendil-works/pi-coding-agent"
+   },
+   "updateInstruction": "Run: npm --prefix <ROOT>\\npmc install -g --ignore-scripts --min-release-age=0 @earendil-works/pi-coding-agent",
+   "command": {
+    "command": "npm",
+    "args": [
+     "--registry",
+     "https://r.example",
+     "install",
+     "-g",
+     "--ignore-scripts",
+     "--min-release-age=0",
+     "@new/name"
+    ],
+    "display": "npm --registry https://r.example uninstall -g @earendil-works/pi-coding-agent && npm --registry https://r.example install -g --ignore-scripts --min-release-age=0 @new/name",
+    "steps": [
+     {
+      "command": "npm",
+      "args": [
+       "--registry",
+       "https://r.example",
+       "uninstall",
+       "-g",
+       "@earendil-works/pi-coding-agent"
+      ],
+      "display": "npm --registry https://r.example uninstall -g @earendil-works/pi-coding-agent"
+     },
+     {
+      "command": "npm",
+      "args": [
+       "--registry",
+       "https://r.example",
+       "install",
+       "-g",
+       "--ignore-scripts",
+       "--min-release-age=0",
+       "@new/name"
+      ],
+      "display": "npm --registry https://r.example install -g --ignore-scripts --min-release-age=0 @new/name"
+     }
+    ]
+   },
+   "unavailable": "This installation is not managed by a global npm install. Update it with the package manager, wrapper, or source checkout that provides it."
+  },
+  {
+   "name": "npm-bun-command",
+   "method": "npm",
+   "detected": "npm",
+   "packageDir": "<ROOT>/npmbun/bunbin/install/global/node_modules/@earendil-works/pi-coding-agent",
+   "resolvedPath": "/usr/lib/node_modules/@x/y\u0000/usr/bin/node",
+   "resolvedDir": "/usr/lib/node_modules/@x/y",
+   "resolvedExec": "/usr/bin/node",
+   "outputs": {
+    "bun pm bin -g": {
+     "status": 0,
+     "stdout": "<ROOT>/npmbun/bunbin/bin\n"
+    }
+   },
+   "npmCommand": [
+    "bun"
+   ],
+   "target": {
+    "packageName": "@earendil-works/pi-coding-agent",
+    "installSpec": null,
+    "installed": "@earendil-works/pi-coding-agent"
+   },
+   "updateInstruction": "Run: npm install -g --ignore-scripts --min-release-age=0 @earendil-works/pi-coding-agent",
+   "command": {
+    "command": "bun",
+    "args": [
+     "install",
+     "-g",
+     "--ignore-scripts",
+     "--min-release-age=0",
+     "@earendil-works/pi-coding-agent"
+    ],
+    "display": "bun install -g --ignore-scripts --min-release-age=0 @earendil-works/pi-coding-agent",
+    "steps": null
+   },
+   "unavailable": "This installation is not managed by a global npm install. Update it with the package manager, wrapper, or source checkout that provides it."
+  },
+  {
+   "name": "npm-bun-command",
+   "method": "npm",
+   "detected": "npm",
+   "packageDir": "<ROOT>/npmbun/bunbin/install/global/node_modules/@earendil-works/pi-coding-agent",
+   "resolvedPath": "/usr/lib/node_modules/@x/y\u0000/usr/bin/node",
+   "resolvedDir": "/usr/lib/node_modules/@x/y",
+   "resolvedExec": "/usr/bin/node",
+   "outputs": {
+    "bun pm bin -g": {
+     "status": 0,
+     "stdout": "<ROOT>/npmbun/bunbin/bin\n"
+    }
+   },
+   "npmCommand": [
+    "bun"
+   ],
+   "target": {
+    "packageName": "@new/name",
+    "installSpec": "@new/name@1.2.3",
+    "installed": "@earendil-works/pi-coding-agent"
+   },
+   "updateInstruction": "Run: npm install -g --ignore-scripts --min-release-age=0 @earendil-works/pi-coding-agent",
+   "command": {
+    "command": "bun",
+    "args": [
+     "install",
+     "-g",
+     "--ignore-scripts",
+     "--min-release-age=0",
+     "@new/name@1.2.3"
+    ],
+    "display": "bun uninstall -g @earendil-works/pi-coding-agent && bun install -g --ignore-scripts --min-release-age=0 @new/name@1.2.3",
+    "steps": [
+     {
+      "command": "bun",
+      "args": [
+       "uninstall",
+       "-g",
+       "@earendil-works/pi-coding-agent"
+      ],
+      "display": "bun uninstall -g @earendil-works/pi-coding-agent"
+     },
+     {
+      "command": "bun",
+      "args": [
+       "install",
+       "-g",
+       "--ignore-scripts",
+       "--min-release-age=0",
+       "@new/name@1.2.3"
+      ],
+      "display": "bun install -g --ignore-scripts --min-release-age=0 @new/name@1.2.3"
+     }
+    ]
+   },
+   "unavailable": "This installation is not managed by a global npm install. Update it with the package manager, wrapper, or source checkout that provides it."
+  },
+  {
+   "name": "npm-bun-command",
+   "method": "npm",
+   "detected": "npm",
+   "packageDir": "<ROOT>/npmbun/bunbin/install/global/node_modules/@earendil-works/pi-coding-agent",
+   "resolvedPath": "/usr/lib/node_modules/@x/y\u0000/usr/bin/node",
+   "resolvedDir": "/usr/lib/node_modules/@x/y",
+   "resolvedExec": "/usr/bin/node",
+   "outputs": {
+    "bun pm bin -g": {
+     "status": 0,
+     "stdout": "<ROOT>/npmbun/bunbin/bin\n"
+    }
+   },
+   "npmCommand": [
+    "bun"
+   ],
+   "target": {
+    "packageName": "@new/name",
+    "installSpec": null,
+    "installed": "@earendil-works/pi-coding-agent"
+   },
+   "updateInstruction": "Run: npm install -g --ignore-scripts --min-release-age=0 @earendil-works/pi-coding-agent",
+   "command": {
+    "command": "bun",
+    "args": [
+     "install",
+     "-g",
+     "--ignore-scripts",
+     "--min-release-age=0",
+     "@new/name"
+    ],
+    "display": "bun uninstall -g @earendil-works/pi-coding-agent && bun install -g --ignore-scripts --min-release-age=0 @new/name",
+    "steps": [
+     {
+      "command": "bun",
+      "args": [
+       "uninstall",
+       "-g",
+       "@earendil-works/pi-coding-agent"
+      ],
+      "display": "bun uninstall -g @earendil-works/pi-coding-agent"
+     },
+     {
+      "command": "bun",
+      "args": [
+       "install",
+       "-g",
+       "--ignore-scripts",
+       "--min-release-age=0",
+       "@new/name"
+      ],
+      "display": "bun install -g --ignore-scripts --min-release-age=0 @new/name"
+     }
+    ]
+   },
+   "unavailable": "This installation is not managed by a global npm install. Update it with the package manager, wrapper, or source checkout that provides it."
+  },
+  {
+   "name": "pnpm-root",
+   "method": "pnpm",
+   "detected": "pnpm",
+   "packageDir": "<ROOT>/pnpm/global/5/node_modules/@earendil-works/pi-coding-agent",
+   "resolvedPath": "<ROOT>/pnpm/global/5/node_modules/@earendil-works/pi-coding-agent\u0000/usr/bin/node",
+   "resolvedDir": "<ROOT>/pnpm/global/5/node_modules/@earendil-works/pi-coding-agent",
+   "resolvedExec": "/usr/bin/node",
+   "outputs": {
+    "pnpm root -g": {
+     "status": 0,
+     "stdout": "<ROOT>/pnpm/global/5/node_modules\n"
+    }
+   },
+   "npmCommand": null,
+   "target": {
+    "packageName": "@earendil-works/pi-coding-agent",
+    "installSpec": null,
+    "installed": "@earendil-works/pi-coding-agent"
+   },
+   "updateInstruction": "Run: pnpm install -g --ignore-scripts --config.minimumReleaseAge=0 @earendil-works/pi-coding-agent",
+   "command": {
+    "command": "pnpm",
+    "args": [
+     "install",
+     "-g",
+     "--ignore-scripts",
+     "--config.minimumReleaseAge=0",
+     "@earendil-works/pi-coding-agent"
+    ],
+    "display": "pnpm install -g --ignore-scripts --config.minimumReleaseAge=0 @earendil-works/pi-coding-agent",
+    "steps": null
+   },
+   "unavailable": "This installation is not managed by a global pnpm install. Update it with the package manager, wrapper, or source checkout that provides it."
+  },
+  {
+   "name": "pnpm-root",
+   "method": "pnpm",
+   "detected": "pnpm",
+   "packageDir": "<ROOT>/pnpm/global/5/node_modules/@earendil-works/pi-coding-agent",
+   "resolvedPath": "<ROOT>/pnpm/global/5/node_modules/@earendil-works/pi-coding-agent\u0000/usr/bin/node",
+   "resolvedDir": "<ROOT>/pnpm/global/5/node_modules/@earendil-works/pi-coding-agent",
+   "resolvedExec": "/usr/bin/node",
+   "outputs": {
+    "pnpm root -g": {
+     "status": 0,
+     "stdout": "<ROOT>/pnpm/global/5/node_modules\n"
+    }
+   },
+   "npmCommand": null,
+   "target": {
+    "packageName": "@new/name",
+    "installSpec": "@new/name@1.2.3",
+    "installed": "@earendil-works/pi-coding-agent"
+   },
+   "updateInstruction": "Run: pnpm install -g --ignore-scripts --config.minimumReleaseAge=0 @earendil-works/pi-coding-agent",
+   "command": {
+    "command": "pnpm",
+    "args": [
+     "install",
+     "-g",
+     "--ignore-scripts",
+     "--config.minimumReleaseAge=0",
+     "@new/name@1.2.3"
+    ],
+    "display": "pnpm remove -g @earendil-works/pi-coding-agent && pnpm install -g --ignore-scripts --config.minimumReleaseAge=0 @new/name@1.2.3",
+    "steps": [
+     {
+      "command": "pnpm",
+      "args": [
+       "remove",
+       "-g",
+       "@earendil-works/pi-coding-agent"
+      ],
+      "display": "pnpm remove -g @earendil-works/pi-coding-agent"
+     },
+     {
+      "command": "pnpm",
+      "args": [
+       "install",
+       "-g",
+       "--ignore-scripts",
+       "--config.minimumReleaseAge=0",
+       "@new/name@1.2.3"
+      ],
+      "display": "pnpm install -g --ignore-scripts --config.minimumReleaseAge=0 @new/name@1.2.3"
+     }
+    ]
+   },
+   "unavailable": "This installation is not managed by a global pnpm install. Update it with the package manager, wrapper, or source checkout that provides it."
+  },
+  {
+   "name": "pnpm-root",
+   "method": "pnpm",
+   "detected": "pnpm",
+   "packageDir": "<ROOT>/pnpm/global/5/node_modules/@earendil-works/pi-coding-agent",
+   "resolvedPath": "<ROOT>/pnpm/global/5/node_modules/@earendil-works/pi-coding-agent\u0000/usr/bin/node",
+   "resolvedDir": "<ROOT>/pnpm/global/5/node_modules/@earendil-works/pi-coding-agent",
+   "resolvedExec": "/usr/bin/node",
+   "outputs": {
+    "pnpm root -g": {
+     "status": 0,
+     "stdout": "<ROOT>/pnpm/global/5/node_modules\n"
+    }
+   },
+   "npmCommand": null,
+   "target": {
+    "packageName": "@new/name",
+    "installSpec": null,
+    "installed": "@earendil-works/pi-coding-agent"
+   },
+   "updateInstruction": "Run: pnpm install -g --ignore-scripts --config.minimumReleaseAge=0 @earendil-works/pi-coding-agent",
+   "command": {
+    "command": "pnpm",
+    "args": [
+     "install",
+     "-g",
+     "--ignore-scripts",
+     "--config.minimumReleaseAge=0",
+     "@new/name"
+    ],
+    "display": "pnpm remove -g @earendil-works/pi-coding-agent && pnpm install -g --ignore-scripts --config.minimumReleaseAge=0 @new/name",
+    "steps": [
+     {
+      "command": "pnpm",
+      "args": [
+       "remove",
+       "-g",
+       "@earendil-works/pi-coding-agent"
+      ],
+      "display": "pnpm remove -g @earendil-works/pi-coding-agent"
+     },
+     {
+      "command": "pnpm",
+      "args": [
+       "install",
+       "-g",
+       "--ignore-scripts",
+       "--config.minimumReleaseAge=0",
+       "@new/name"
+      ],
+      "display": "pnpm install -g --ignore-scripts --config.minimumReleaseAge=0 @new/name"
+     }
+    ]
+   },
+   "unavailable": "This installation is not managed by a global pnpm install. Update it with the package manager, wrapper, or source checkout that provides it."
+  },
+  {
+   "name": "pnpm-fallback",
+   "method": "pnpm",
+   "detected": "pnpm",
+   "packageDir": "<ROOT>/pnpmb/global/5/.pnpm/pi@1.0.0/node_modules/@earendil-works/pi-coding-agent",
+   "resolvedPath": "<ROOT>/pnpmb/global/5/.pnpm/pi@1.0.0/node_modules/@earendil-works/pi-coding-agent\u0000/usr/bin/node",
+   "resolvedDir": "<ROOT>/pnpmb/global/5/.pnpm/pi@1.0.0/node_modules/@earendil-works/pi-coding-agent",
+   "resolvedExec": "/usr/bin/node",
+   "outputs": {
+    "pnpm root -g": {
+     "status": 1,
+     "stdout": "",
+     "stderr": "boom"
+    }
+   },
+   "npmCommand": null,
+   "target": {
+    "packageName": "@earendil-works/pi-coding-agent",
+    "installSpec": null,
+    "installed": "@earendil-works/pi-coding-agent"
+   },
+   "updateInstruction": "Run: pnpm install -g --ignore-scripts --config.minimumReleaseAge=0 --config.global-bin-dir=<ROOT>\\pnpmb @earendil-works/pi-coding-agent",
+   "command": {
+    "command": "pnpm",
+    "args": [
+     "install",
+     "-g",
+     "--ignore-scripts",
+     "--config.minimumReleaseAge=0",
+     "--config.global-bin-dir=<ROOT>\\pnpmb",
+     "@earendil-works/pi-coding-agent"
+    ],
+    "display": "pnpm install -g --ignore-scripts --config.minimumReleaseAge=0 --config.global-bin-dir=<ROOT>\\pnpmb @earendil-works/pi-coding-agent",
+    "steps": null
+   },
+   "unavailable": "This installation is not managed by a global pnpm install. Update it with the package manager, wrapper, or source checkout that provides it."
+  },
+  {
+   "name": "pnpm-fallback",
+   "method": "pnpm",
+   "detected": "pnpm",
+   "packageDir": "<ROOT>/pnpmb/global/5/.pnpm/pi@1.0.0/node_modules/@earendil-works/pi-coding-agent",
+   "resolvedPath": "<ROOT>/pnpmb/global/5/.pnpm/pi@1.0.0/node_modules/@earendil-works/pi-coding-agent\u0000/usr/bin/node",
+   "resolvedDir": "<ROOT>/pnpmb/global/5/.pnpm/pi@1.0.0/node_modules/@earendil-works/pi-coding-agent",
+   "resolvedExec": "/usr/bin/node",
+   "outputs": {
+    "pnpm root -g": {
+     "status": 1,
+     "stdout": "",
+     "stderr": "boom"
+    }
+   },
+   "npmCommand": null,
+   "target": {
+    "packageName": "@new/name",
+    "installSpec": "@new/name@1.2.3",
+    "installed": "@earendil-works/pi-coding-agent"
+   },
+   "updateInstruction": "Run: pnpm install -g --ignore-scripts --config.minimumReleaseAge=0 --config.global-bin-dir=<ROOT>\\pnpmb @earendil-works/pi-coding-agent",
+   "command": {
+    "command": "pnpm",
+    "args": [
+     "install",
+     "-g",
+     "--ignore-scripts",
+     "--config.minimumReleaseAge=0",
+     "--config.global-bin-dir=<ROOT>\\pnpmb",
+     "@new/name@1.2.3"
+    ],
+    "display": "pnpm remove -g --config.global-bin-dir=<ROOT>\\pnpmb @earendil-works/pi-coding-agent && pnpm install -g --ignore-scripts --config.minimumReleaseAge=0 --config.global-bin-dir=<ROOT>\\pnpmb @new/name@1.2.3",
+    "steps": [
+     {
+      "command": "pnpm",
+      "args": [
+       "remove",
+       "-g",
+       "--config.global-bin-dir=<ROOT>\\pnpmb",
+       "@earendil-works/pi-coding-agent"
+      ],
+      "display": "pnpm remove -g --config.global-bin-dir=<ROOT>\\pnpmb @earendil-works/pi-coding-agent"
+     },
+     {
+      "command": "pnpm",
+      "args": [
+       "install",
+       "-g",
+       "--ignore-scripts",
+       "--config.minimumReleaseAge=0",
+       "--config.global-bin-dir=<ROOT>\\pnpmb",
+       "@new/name@1.2.3"
+      ],
+      "display": "pnpm install -g --ignore-scripts --config.minimumReleaseAge=0 --config.global-bin-dir=<ROOT>\\pnpmb @new/name@1.2.3"
+     }
+    ]
+   },
+   "unavailable": "This installation is not managed by a global pnpm install. Update it with the package manager, wrapper, or source checkout that provides it."
+  },
+  {
+   "name": "pnpm-fallback",
+   "method": "pnpm",
+   "detected": "pnpm",
+   "packageDir": "<ROOT>/pnpmb/global/5/.pnpm/pi@1.0.0/node_modules/@earendil-works/pi-coding-agent",
+   "resolvedPath": "<ROOT>/pnpmb/global/5/.pnpm/pi@1.0.0/node_modules/@earendil-works/pi-coding-agent\u0000/usr/bin/node",
+   "resolvedDir": "<ROOT>/pnpmb/global/5/.pnpm/pi@1.0.0/node_modules/@earendil-works/pi-coding-agent",
+   "resolvedExec": "/usr/bin/node",
+   "outputs": {
+    "pnpm root -g": {
+     "status": 1,
+     "stdout": "",
+     "stderr": "boom"
+    }
+   },
+   "npmCommand": null,
+   "target": {
+    "packageName": "@new/name",
+    "installSpec": null,
+    "installed": "@earendil-works/pi-coding-agent"
+   },
+   "updateInstruction": "Run: pnpm install -g --ignore-scripts --config.minimumReleaseAge=0 --config.global-bin-dir=<ROOT>\\pnpmb @earendil-works/pi-coding-agent",
+   "command": {
+    "command": "pnpm",
+    "args": [
+     "install",
+     "-g",
+     "--ignore-scripts",
+     "--config.minimumReleaseAge=0",
+     "--config.global-bin-dir=<ROOT>\\pnpmb",
+     "@new/name"
+    ],
+    "display": "pnpm remove -g --config.global-bin-dir=<ROOT>\\pnpmb @earendil-works/pi-coding-agent && pnpm install -g --ignore-scripts --config.minimumReleaseAge=0 --config.global-bin-dir=<ROOT>\\pnpmb @new/name",
+    "steps": [
+     {
+      "command": "pnpm",
+      "args": [
+       "remove",
+       "-g",
+       "--config.global-bin-dir=<ROOT>\\pnpmb",
+       "@earendil-works/pi-coding-agent"
+      ],
+      "display": "pnpm remove -g --config.global-bin-dir=<ROOT>\\pnpmb @earendil-works/pi-coding-agent"
+     },
+     {
+      "command": "pnpm",
+      "args": [
+       "install",
+       "-g",
+       "--ignore-scripts",
+       "--config.minimumReleaseAge=0",
+       "--config.global-bin-dir=<ROOT>\\pnpmb",
+       "@new/name"
+      ],
+      "display": "pnpm install -g --ignore-scripts --config.minimumReleaseAge=0 --config.global-bin-dir=<ROOT>\\pnpmb @new/name"
+     }
+    ]
+   },
+   "unavailable": "This installation is not managed by a global pnpm install. Update it with the package manager, wrapper, or source checkout that provides it."
+  },
+  {
+   "name": "pnpm-unmanaged",
+   "method": "pnpm",
+   "detected": "pnpm",
+   "packageDir": "<ROOT>/pnpm/u/node_modules/@earendil-works/pi-coding-agent",
+   "resolvedPath": "<ROOT>/pnpm/u/node_modules/@earendil-works/pi-coding-agent\u0000/usr/bin/node",
+   "resolvedDir": "<ROOT>/pnpm/u/node_modules/@earendil-works/pi-coding-agent",
+   "resolvedExec": "/usr/bin/node",
+   "outputs": {
+    "pnpm root -g": {
+     "status": 0,
+     "stdout": "<ROOT>/elsewhere/global/5/node_modules\n"
+    }
+   },
+   "npmCommand": null,
+   "target": {
+    "packageName": "@earendil-works/pi-coding-agent",
+    "installSpec": null,
+    "installed": "@earendil-works/pi-coding-agent"
+   },
+   "updateInstruction": "Run: pnpm install -g --ignore-scripts --config.minimumReleaseAge=0 @earendil-works/pi-coding-agent",
+   "command": null,
+   "unavailable": "This installation is not managed by a global pnpm install. Update it with the package manager, wrapper, or source checkout that provides it."
+  },
+  {
+   "name": "pnpm-unmanaged",
+   "method": "pnpm",
+   "detected": "pnpm",
+   "packageDir": "<ROOT>/pnpm/u/node_modules/@earendil-works/pi-coding-agent",
+   "resolvedPath": "<ROOT>/pnpm/u/node_modules/@earendil-works/pi-coding-agent\u0000/usr/bin/node",
+   "resolvedDir": "<ROOT>/pnpm/u/node_modules/@earendil-works/pi-coding-agent",
+   "resolvedExec": "/usr/bin/node",
+   "outputs": {
+    "pnpm root -g": {
+     "status": 0,
+     "stdout": "<ROOT>/elsewhere/global/5/node_modules\n"
+    }
+   },
+   "npmCommand": null,
+   "target": {
+    "packageName": "@new/name",
+    "installSpec": "@new/name@1.2.3",
+    "installed": "@earendil-works/pi-coding-agent"
+   },
+   "updateInstruction": "Run: pnpm install -g --ignore-scripts --config.minimumReleaseAge=0 @earendil-works/pi-coding-agent",
+   "command": null,
+   "unavailable": "This installation is not managed by a global pnpm install. Update it with the package manager, wrapper, or source checkout that provides it."
+  },
+  {
+   "name": "pnpm-unmanaged",
+   "method": "pnpm",
+   "detected": "pnpm",
+   "packageDir": "<ROOT>/pnpm/u/node_modules/@earendil-works/pi-coding-agent",
+   "resolvedPath": "<ROOT>/pnpm/u/node_modules/@earendil-works/pi-coding-agent\u0000/usr/bin/node",
+   "resolvedDir": "<ROOT>/pnpm/u/node_modules/@earendil-works/pi-coding-agent",
+   "resolvedExec": "/usr/bin/node",
+   "outputs": {
+    "pnpm root -g": {
+     "status": 0,
+     "stdout": "<ROOT>/elsewhere/global/5/node_modules\n"
+    }
+   },
+   "npmCommand": null,
+   "target": {
+    "packageName": "@new/name",
+    "installSpec": null,
+    "installed": "@earendil-works/pi-coding-agent"
+   },
+   "updateInstruction": "Run: pnpm install -g --ignore-scripts --config.minimumReleaseAge=0 @earendil-works/pi-coding-agent",
+   "command": null,
+   "unavailable": "This installation is not managed by a global pnpm install. Update it with the package manager, wrapper, or source checkout that provides it."
+  },
+  {
+   "name": "yarn-managed",
+   "method": "yarn",
+   "detected": "yarn",
+   "packageDir": "<ROOT>/yarn/global/node_modules/@earendil-works/pi-coding-agent",
+   "resolvedPath": "<ROOT>/yarn/global/node_modules/@earendil-works/pi-coding-agent\u0000/usr/bin/node",
+   "resolvedDir": "<ROOT>/yarn/global/node_modules/@earendil-works/pi-coding-agent",
+   "resolvedExec": "/usr/bin/node",
+   "outputs": {
+    "yarn global dir": {
+     "status": 0,
+     "stdout": "<ROOT>/yarn/global\n"
+    }
+   },
+   "npmCommand": null,
+   "target": {
+    "packageName": "@earendil-works/pi-coding-agent",
+    "installSpec": null,
+    "installed": "@earendil-works/pi-coding-agent"
+   },
+   "updateInstruction": "Run: yarn global add --ignore-scripts @earendil-works/pi-coding-agent",
+   "command": {
+    "command": "yarn",
+    "args": [
+     "global",
+     "add",
+     "--ignore-scripts",
+     "@earendil-works/pi-coding-agent"
+    ],
+    "display": "yarn global add --ignore-scripts @earendil-works/pi-coding-agent",
+    "steps": null
+   },
+   "unavailable": "This installation is not managed by a global yarn install. Update it with the package manager, wrapper, or source checkout that provides it."
+  },
+  {
+   "name": "yarn-managed",
+   "method": "yarn",
+   "detected": "yarn",
+   "packageDir": "<ROOT>/yarn/global/node_modules/@earendil-works/pi-coding-agent",
+   "resolvedPath": "<ROOT>/yarn/global/node_modules/@earendil-works/pi-coding-agent\u0000/usr/bin/node",
+   "resolvedDir": "<ROOT>/yarn/global/node_modules/@earendil-works/pi-coding-agent",
+   "resolvedExec": "/usr/bin/node",
+   "outputs": {
+    "yarn global dir": {
+     "status": 0,
+     "stdout": "<ROOT>/yarn/global\n"
+    }
+   },
+   "npmCommand": null,
+   "target": {
+    "packageName": "@new/name",
+    "installSpec": "@new/name@1.2.3",
+    "installed": "@earendil-works/pi-coding-agent"
+   },
+   "updateInstruction": "Run: yarn global add --ignore-scripts @earendil-works/pi-coding-agent",
+   "command": {
+    "command": "yarn",
+    "args": [
+     "global",
+     "add",
+     "--ignore-scripts",
+     "@new/name@1.2.3"
+    ],
+    "display": "yarn global remove @earendil-works/pi-coding-agent && yarn global add --ignore-scripts @new/name@1.2.3",
+    "steps": [
+     {
+      "command": "yarn",
+      "args": [
+       "global",
+       "remove",
+       "@earendil-works/pi-coding-agent"
+      ],
+      "display": "yarn global remove @earendil-works/pi-coding-agent"
+     },
+     {
+      "command": "yarn",
+      "args": [
+       "global",
+       "add",
+       "--ignore-scripts",
+       "@new/name@1.2.3"
+      ],
+      "display": "yarn global add --ignore-scripts @new/name@1.2.3"
+     }
+    ]
+   },
+   "unavailable": "This installation is not managed by a global yarn install. Update it with the package manager, wrapper, or source checkout that provides it."
+  },
+  {
+   "name": "yarn-managed",
+   "method": "yarn",
+   "detected": "yarn",
+   "packageDir": "<ROOT>/yarn/global/node_modules/@earendil-works/pi-coding-agent",
+   "resolvedPath": "<ROOT>/yarn/global/node_modules/@earendil-works/pi-coding-agent\u0000/usr/bin/node",
+   "resolvedDir": "<ROOT>/yarn/global/node_modules/@earendil-works/pi-coding-agent",
+   "resolvedExec": "/usr/bin/node",
+   "outputs": {
+    "yarn global dir": {
+     "status": 0,
+     "stdout": "<ROOT>/yarn/global\n"
+    }
+   },
+   "npmCommand": null,
+   "target": {
+    "packageName": "@new/name",
+    "installSpec": null,
+    "installed": "@earendil-works/pi-coding-agent"
+   },
+   "updateInstruction": "Run: yarn global add --ignore-scripts @earendil-works/pi-coding-agent",
+   "command": {
+    "command": "yarn",
+    "args": [
+     "global",
+     "add",
+     "--ignore-scripts",
+     "@new/name"
+    ],
+    "display": "yarn global remove @earendil-works/pi-coding-agent && yarn global add --ignore-scripts @new/name",
+    "steps": [
+     {
+      "command": "yarn",
+      "args": [
+       "global",
+       "remove",
+       "@earendil-works/pi-coding-agent"
+      ],
+      "display": "yarn global remove @earendil-works/pi-coding-agent"
+     },
+     {
+      "command": "yarn",
+      "args": [
+       "global",
+       "add",
+       "--ignore-scripts",
+       "@new/name"
+      ],
+      "display": "yarn global add --ignore-scripts @new/name"
+     }
+    ]
+   },
+   "unavailable": "This installation is not managed by a global yarn install. Update it with the package manager, wrapper, or source checkout that provides it."
+  },
+  {
+   "name": "bun-managed",
+   "method": "bun",
+   "detected": "bun",
+   "packageDir": "<ROOT>/bunb/install/global/node_modules/@earendil-works/pi-coding-agent",
+   "resolvedPath": "<ROOT>/bunb/install/global/node_modules/@earendil-works/pi-coding-agent\u0000/usr/bin/node",
+   "resolvedDir": "<ROOT>/bunb/install/global/node_modules/@earendil-works/pi-coding-agent",
+   "resolvedExec": "/usr/bin/node",
+   "outputs": {
+    "bun pm bin -g": {
+     "status": 0,
+     "stdout": "<ROOT>/bunb/bin\n"
+    }
+   },
+   "npmCommand": null,
+   "target": {
+    "packageName": "@earendil-works/pi-coding-agent",
+    "installSpec": null,
+    "installed": "@earendil-works/pi-coding-agent"
+   },
+   "updateInstruction": "Run: bun install -g --ignore-scripts --minimum-release-age=0 @earendil-works/pi-coding-agent",
+   "command": {
+    "command": "bun",
+    "args": [
+     "install",
+     "-g",
+     "--ignore-scripts",
+     "--minimum-release-age=0",
+     "@earendil-works/pi-coding-agent"
+    ],
+    "display": "bun install -g --ignore-scripts --minimum-release-age=0 @earendil-works/pi-coding-agent",
+    "steps": null
+   },
+   "unavailable": "This installation is not managed by a global bun install. Update it with the package manager, wrapper, or source checkout that provides it."
+  },
+  {
+   "name": "bun-managed",
+   "method": "bun",
+   "detected": "bun",
+   "packageDir": "<ROOT>/bunb/install/global/node_modules/@earendil-works/pi-coding-agent",
+   "resolvedPath": "<ROOT>/bunb/install/global/node_modules/@earendil-works/pi-coding-agent\u0000/usr/bin/node",
+   "resolvedDir": "<ROOT>/bunb/install/global/node_modules/@earendil-works/pi-coding-agent",
+   "resolvedExec": "/usr/bin/node",
+   "outputs": {
+    "bun pm bin -g": {
+     "status": 0,
+     "stdout": "<ROOT>/bunb/bin\n"
+    }
+   },
+   "npmCommand": null,
+   "target": {
+    "packageName": "@new/name",
+    "installSpec": "@new/name@1.2.3",
+    "installed": "@earendil-works/pi-coding-agent"
+   },
+   "updateInstruction": "Run: bun install -g --ignore-scripts --minimum-release-age=0 @earendil-works/pi-coding-agent",
+   "command": {
+    "command": "bun",
+    "args": [
+     "install",
+     "-g",
+     "--ignore-scripts",
+     "--minimum-release-age=0",
+     "@new/name@1.2.3"
+    ],
+    "display": "bun uninstall -g @earendil-works/pi-coding-agent && bun install -g --ignore-scripts --minimum-release-age=0 @new/name@1.2.3",
+    "steps": [
+     {
+      "command": "bun",
+      "args": [
+       "uninstall",
+       "-g",
+       "@earendil-works/pi-coding-agent"
+      ],
+      "display": "bun uninstall -g @earendil-works/pi-coding-agent"
+     },
+     {
+      "command": "bun",
+      "args": [
+       "install",
+       "-g",
+       "--ignore-scripts",
+       "--minimum-release-age=0",
+       "@new/name@1.2.3"
+      ],
+      "display": "bun install -g --ignore-scripts --minimum-release-age=0 @new/name@1.2.3"
+     }
+    ]
+   },
+   "unavailable": "This installation is not managed by a global bun install. Update it with the package manager, wrapper, or source checkout that provides it."
+  },
+  {
+   "name": "bun-managed",
+   "method": "bun",
+   "detected": "bun",
+   "packageDir": "<ROOT>/bunb/install/global/node_modules/@earendil-works/pi-coding-agent",
+   "resolvedPath": "<ROOT>/bunb/install/global/node_modules/@earendil-works/pi-coding-agent\u0000/usr/bin/node",
+   "resolvedDir": "<ROOT>/bunb/install/global/node_modules/@earendil-works/pi-coding-agent",
+   "resolvedExec": "/usr/bin/node",
+   "outputs": {
+    "bun pm bin -g": {
+     "status": 0,
+     "stdout": "<ROOT>/bunb/bin\n"
+    }
+   },
+   "npmCommand": null,
+   "target": {
+    "packageName": "@new/name",
+    "installSpec": null,
+    "installed": "@earendil-works/pi-coding-agent"
+   },
+   "updateInstruction": "Run: bun install -g --ignore-scripts --minimum-release-age=0 @earendil-works/pi-coding-agent",
+   "command": {
+    "command": "bun",
+    "args": [
+     "install",
+     "-g",
+     "--ignore-scripts",
+     "--minimum-release-age=0",
+     "@new/name"
+    ],
+    "display": "bun uninstall -g @earendil-works/pi-coding-agent && bun install -g --ignore-scripts --minimum-release-age=0 @new/name",
+    "steps": [
+     {
+      "command": "bun",
+      "args": [
+       "uninstall",
+       "-g",
+       "@earendil-works/pi-coding-agent"
+      ],
+      "display": "bun uninstall -g @earendil-works/pi-coding-agent"
+     },
+     {
+      "command": "bun",
+      "args": [
+       "install",
+       "-g",
+       "--ignore-scripts",
+       "--minimum-release-age=0",
+       "@new/name"
+      ],
+      "display": "bun install -g --ignore-scripts --minimum-release-age=0 @new/name"
+     }
+    ]
+   },
+   "unavailable": "This installation is not managed by a global bun install. Update it with the package manager, wrapper, or source checkout that provides it."
+  },
+  {
+   "name": "unknown",
+   "method": "unknown",
+   "detected": "unknown",
+   "packageDir": "<ROOT>/opt/pi",
+   "resolvedPath": "/opt/pi\u0000/opt/pi/pi",
+   "resolvedDir": "/opt/pi",
+   "resolvedExec": "/opt/pi/pi",
+   "outputs": {},
+   "npmCommand": null,
+   "target": {
+    "packageName": "@earendil-works/pi-coding-agent",
+    "installSpec": null,
+    "installed": "@earendil-works/pi-coding-agent"
+   },
+   "updateInstruction": "Update @earendil-works/pi-coding-agent using the package manager, wrapper, or source checkout that provides this installation.",
+   "command": null,
+   "unavailable": "Update @earendil-works/pi-coding-agent using the package manager, wrapper, or source checkout that provides this installation."
+  },
+  {
+   "name": "unknown",
+   "method": "unknown",
+   "detected": "unknown",
+   "packageDir": "<ROOT>/opt/pi",
+   "resolvedPath": "/opt/pi\u0000/opt/pi/pi",
+   "resolvedDir": "/opt/pi",
+   "resolvedExec": "/opt/pi/pi",
+   "outputs": {},
+   "npmCommand": null,
+   "target": {
+    "packageName": "@new/name",
+    "installSpec": "@new/name@1.2.3",
+    "installed": "@earendil-works/pi-coding-agent"
+   },
+   "updateInstruction": "Update @earendil-works/pi-coding-agent using the package manager, wrapper, or source checkout that provides this installation.",
+   "command": null,
+   "unavailable": "Update @new/name@1.2.3 using the package manager, wrapper, or source checkout that provides this installation."
+  },
+  {
+   "name": "unknown",
+   "method": "unknown",
+   "detected": "unknown",
+   "packageDir": "<ROOT>/opt/pi",
+   "resolvedPath": "/opt/pi\u0000/opt/pi/pi",
+   "resolvedDir": "/opt/pi",
+   "resolvedExec": "/opt/pi/pi",
+   "outputs": {},
+   "npmCommand": null,
+   "target": {
+    "packageName": "@new/name",
+    "installSpec": null,
+    "installed": "@earendil-works/pi-coding-agent"
+   },
+   "updateInstruction": "Update @earendil-works/pi-coding-agent using the package manager, wrapper, or source checkout that provides this installation.",
+   "command": null,
+   "unavailable": "Update @new/name using the package manager, wrapper, or source checkout that provides this installation."
+  }
+ ],
+ "configClassify": [
+  {
+   "probe": "/usr/lib/node_modules/@x/y/dist/config.js\u0000/usr/bin/node",
+   "expected": "npm"
+  },
+  {
+   "probe": "/usr/local/lib/node_modules/@x/y\u0000/usr/bin/node",
+   "expected": "npm"
+  },
+  {
+   "probe": "C:/Users/u/AppData/Roaming/npm/node_modules/@x/y\u0000C:/Program Files/nodejs/node.exe",
+   "expected": "npm"
+  },
+  {
+   "probe": "/home/u/.pnpm/@x+y/node_modules/@x/y\u0000/usr/bin/node",
+   "expected": "pnpm"
+  },
+  {
+   "probe": "/home/u/.local/share/pnpm/global/5/.pnpm/@x+y/node_modules/@x/y\u0000/usr/bin/node",
+   "expected": "pnpm"
+  },
+  {
+   "probe": "/home/u/.config/yarn/global/node_modules/@x/y\u0000/usr/bin/node",
+   "expected": "yarn"
+  },
+  {
+   "probe": "/home/u/.yarn/global/node_modules/@x/y\u0000/usr/bin/node",
+   "expected": "yarn"
+  },
+  {
+   "probe": "/home/u/.bun/install/global/node_modules/@x/y\u0000/usr/bin/node",
+   "expected": "bun"
+  },
+  {
+   "probe": "/opt/pi\u0000/opt/pi/pi",
+   "expected": "unknown"
+  },
+  {
+   "probe": "\u0000",
+   "expected": "unknown"
+  },
+  {
+   "probe": "/tmp/pnpm/node_modules/@x/y\u0000/tmp/node",
+   "expected": "pnpm"
+  },
+  {
+   "probe": "/tmp/npm/@x/y\u0000/tmp/node",
+   "expected": "npm"
+  }
+ ],
+ "configCommandStep": [
+  {
+   "command": "npm",
+   "args": [
+    "install",
+    "-g",
+    "@x/y"
+   ],
+   "expected": {
+    "command": "npm",
+    "args": [
+     "install",
+     "-g",
+     "@x/y"
+    ],
+    "display": "npm install -g @x/y"
+   }
+  },
+  {
+   "command": "npm",
+   "args": [
+    "--prefix",
+    "C:\\Program Files\\node",
+    "install",
+    "-g",
+    "@x/y"
+   ],
+   "expected": {
+    "command": "npm",
+    "args": [
+     "--prefix",
+     "C:\\Program Files\\node",
+     "install",
+     "-g",
+     "@x/y"
+    ],
+    "display": "npm --prefix \"C:\\Program Files\\node\" install -g @x/y"
+   }
+  },
+  {
+   "command": "pnpm",
+   "args": [
+    "install",
+    "-g",
+    "--config.global-bin-dir=/home/u/.local/share/pnpm"
+   ],
+   "expected": {
+    "command": "pnpm",
+    "args": [
+     "install",
+     "-g",
+     "--config.global-bin-dir=/home/u/.local/share/pnpm"
+    ],
+    "display": "pnpm install -g --config.global-bin-dir=/home/u/.local/share/pnpm"
+   }
+  },
+  {
+   "command": "bun",
+   "args": [],
+   "expected": {
+    "command": "bun",
+    "args": [],
+    "display": "bun"
+   }
+  },
+  {
+   "command": "cmd.exe",
+   "args": [
+    "/d",
+    "/s",
+    "/c",
+    "\"a b\""
+   ],
+   "expected": {
+    "command": "cmd.exe",
+    "args": [
+     "/d",
+     "/s",
+     "/c",
+     "\"a b\""
+    ],
+    "display": "cmd.exe /d /s /c \"\"a b\"\""
+   }
+  },
+  {
+   "command": "",
+   "args": [
+    "a\tb"
+   ],
+   "expected": {
+    "command": "",
+    "args": [
+     "a\tb"
+    ],
+    "display": " \"a\tb\""
+   }
+  },
+  {
+   "command": "npm",
+   "args": [
+    "has space",
+    "has\ttab",
+    "no-space",
+    ""
+   ],
+   "expected": {
+    "command": "npm",
+    "args": [
+     "has space",
+     "has\ttab",
+     "no-space",
+     ""
+    ],
+    "display": "npm \"has space\" \"has\ttab\" no-space "
+   }
+  },
+  {
+   "command": "npm",
+   "args": [
+    "\n"
+   ],
+   "expected": {
+    "command": "npm",
+    "args": [
+     "\n"
+    ],
+    "display": "npm \"\n\""
+   }
+  }
+ ],
+ "configNormalizeTarget": [
+  {
+   "packageName": "@x/y",
+   "expected": {
+    "packageName": "@x/y",
+    "installSpec": "@x/y"
+   }
+  },
+  {
+   "packageName": "@x/y",
+   "installSpec": "@x/y@1.2.3",
+   "expected": {
+    "packageName": "@x/y",
+    "installSpec": "@x/y@1.2.3"
+   }
+  },
+  {
+   "packageName": "@x/y",
+   "installSpec": "",
+   "expected": {
+    "packageName": "@x/y",
+    "installSpec": ""
+   }
+  },
+  {
+   "packageName": "",
+   "expected": {
+    "packageName": "",
+    "installSpec": ""
+   }
+  }
+ ],
+ "configShareUrl": [
+  {
+   "env": {},
+   "gistId": "abc123",
+   "expected": "https://pi.dev/session/#abc123"
+  },
+  {
+   "env": {
+    "PI_SHARE_VIEWER_URL": "https://example.com/s/"
+   },
+   "gistId": "abc123",
+   "expected": "https://example.com/s/#abc123"
+  },
+  {
+   "env": {
+    "PI_SHARE_VIEWER_URL": ""
+   },
+   "gistId": "abc123",
+   "expected": "https://pi.dev/session/#abc123"
+  },
+  {
+   "env": {
+    "PI_SHARE_VIEWER_URL": "https://example.com/s/#"
+   },
+   "gistId": "x y",
+   "expected": "https://example.com/s/##x y"
+  }
+ ],
+ "hostPlatform": "win32",
+ "shellSanitizeBinaryOutput": [
+  {
+   "input": "",
+   "expected": ""
+  },
+  {
+   "input": "plain",
+   "expected": "plain"
+  },
+  {
+   "input": "a\tb",
+   "expected": "a\tb"
+  },
+  {
+   "input": "a\nb",
+   "expected": "a\nb"
+  },
+  {
+   "input": "a\rb",
+   "expected": "a\rb"
+  },
+  {
+   "input": "a\u0000b",
+   "expected": "ab"
+  },
+  {
+   "input": "a\u0001b",
+   "expected": "ab"
+  },
+  {
+   "input": "a\u0007b",
+   "expected": "ab"
+  },
+  {
+   "input": "a\bb",
+   "expected": "ab"
+  },
+  {
+   "input": "a\u000bb",
+   "expected": "ab"
+  },
+  {
+   "input": "a\fb",
+   "expected": "ab"
+  },
+  {
+   "input": "a\u000eb",
+   "expected": "ab"
+  },
+  {
+   "input": "a\u001fb",
+   "expected": "ab"
+  },
+  {
+   "input": "a b",
+   "expected": "a b"
+  },
+  {
+   "input": "ab",
+   "expected": "ab"
+  },
+  {
+   "input": "ab",
+   "expected": "ab"
+  },
+  {
+   "input": "a￹b",
+   "expected": "ab"
+  },
+  {
+   "input": "a￺b",
+   "expected": "ab"
+  },
+  {
+   "input": "a￻b",
+   "expected": "ab"
+  },
+  {
+   "input": "a￼b",
+   "expected": "a￼b"
+  },
+  {
+   "input": "�",
+   "expected": "�"
+  },
+  {
+   "input": "中文\u0000中文",
+   "expected": "中文中文"
+  },
+  {
+   "input": "a😀b",
+   "expected": "a😀b"
+  },
+  {
+   "input": "😀\u0000",
+   "expected": "😀"
+  },
+  {
+   "input": "bell\u0007and\u001bescape",
+   "expected": "bellandescape"
+  },
+  {
+   "input": "\u0000\u0001\u0002",
+   "expected": ""
+  },
+  {
+   "input": "tab\tkept",
+   "expected": "tab\tkept"
+  },
+  {
+   "input": "cr\rkept",
+   "expected": "cr\rkept"
+  },
+  {
+   "input": "lf\nkept",
+   "expected": "lf\nkept"
+  },
+  {
+   "input": "ansi\u001b[31mred",
+   "expected": "ansi[31mred"
+  }
+ ],
+ "shellIsLegacyWslBashPath": [
+  {
+   "input": "C:\\Windows\\System32\\bash.exe",
+   "expected": true
+  },
+  {
+   "input": "c:\\windows\\system32\\bash.exe",
+   "expected": true
+  },
+  {
+   "input": "C:/Windows/System32/bash.exe",
+   "expected": true
+  },
+  {
+   "input": "C:\\WINDOWS\\SYSTEM32\\BASH.EXE",
+   "expected": true
+  },
+  {
+   "input": "C:\\Windows\\Sysnative\\bash.exe",
+   "expected": true
+  },
+  {
+   "input": "C:\\Windows\\System32\\bash",
+   "expected": false
+  },
+  {
+   "input": "C:\\Windows\\System32\\bash.exe.exe",
+   "expected": false
+  },
+  {
+   "input": "C:\\Windows\\System32\\wsl.exe",
+   "expected": false
+  },
+  {
+   "input": "C:\\Program Files\\Git\\bin\\bash.exe",
+   "expected": false
+  },
+  {
+   "input": "C:\\Windows\\System32\\sub\\bash.exe",
+   "expected": false
+  },
+  {
+   "input": "bash.exe",
+   "expected": false
+  },
+  {
+   "input": "",
+   "expected": false
+  },
+  {
+   "input": "C:\\Windows\\System32\\bash.exe ",
+   "expected": false
+  },
+  {
+   "input": "x:\\windows\\system32\\bash.exe",
+   "expected": true
+  },
+  {
+   "input": "1:\\windows\\system32\\bash.exe",
+   "expected": false
+  }
+ ],
+ "escapeCmdCommand": [
+  {
+   "input": "",
+   "expected": ""
+  },
+  {
+   "input": "a",
+   "expected": "a"
+  },
+  {
+   "input": "a b",
+   "expected": "a^ b"
+  },
+  {
+   "input": "a\tb",
+   "expected": "a\tb"
+  },
+  {
+   "input": "a\nb",
+   "expected": "a\nb"
+  },
+  {
+   "input": "a'b",
+   "expected": "a'b"
+  },
+  {
+   "input": "a\"b",
+   "expected": "a^\"b"
+  },
+  {
+   "input": "a\"\"b",
+   "expected": "a^\"^\"b"
+  },
+  {
+   "input": "a\"\"\"b",
+   "expected": "a^\"^\"^\"b"
+  },
+  {
+   "input": "a\\",
+   "expected": "a\\"
+  },
+  {
+   "input": "a\\\\",
+   "expected": "a\\\\"
+  },
+  {
+   "input": "a\\\"b",
+   "expected": "a\\^\"b"
+  },
+  {
+   "input": "a\\\\\"b",
+   "expected": "a\\\\^\"b"
+  },
+  {
+   "input": "a\\",
+   "expected": "a\\"
+  },
+  {
+   "input": "\\\\",
+   "expected": "\\\\"
+  },
+  {
+   "input": "\\a",
+   "expected": "\\a"
+  },
+  {
+   "input": "a\\b",
+   "expected": "a\\b"
+  },
+  {
+   "input": "C:\\Program Files\\node",
+   "expected": "C:\\Program^ Files\\node"
+  },
+  {
+   "input": "C:\\Program Files\\node\\",
+   "expected": "C:\\Program^ Files\\node\\"
+  },
+  {
+   "input": "C:\\a\\",
+   "expected": "C:\\a\\"
+  },
+  {
+   "input": "(",
+   "expected": "^("
+  },
+  {
+   "input": ")",
+   "expected": "^)"
+  },
+  {
+   "input": "]",
+   "expected": "^]"
+  },
+  {
+   "input": "[",
+   "expected": "^["
+  },
+  {
+   "input": "%",
+   "expected": "^%"
+  },
+  {
+   "input": "!",
+   "expected": "^!"
+  },
+  {
+   "input": "^",
+   "expected": "^^"
+  },
+  {
+   "input": "`",
+   "expected": "^`"
+  },
+  {
+   "input": "<",
+   "expected": "^<"
+  },
+  {
+   "input": ">",
+   "expected": "^>"
+  },
+  {
+   "input": "&",
+   "expected": "^&"
+  },
+  {
+   "input": "|",
+   "expected": "^|"
+  },
+  {
+   "input": ";",
+   "expected": "^;"
+  },
+  {
+   "input": ",",
+   "expected": "^,"
+  },
+  {
+   "input": "*",
+   "expected": "^*"
+  },
+  {
+   "input": "?",
+   "expected": "^?"
+  },
+  {
+   "input": "@",
+   "expected": "@"
+  },
+  {
+   "input": "$",
+   "expected": "$"
+  },
+  {
+   "input": "#",
+   "expected": "#"
+  },
+  {
+   "input": "a(b)c",
+   "expected": "a^(b^)c"
+  },
+  {
+   "input": "a]b",
+   "expected": "a^]b"
+  },
+  {
+   "input": "a[b",
+   "expected": "a^[b"
+  },
+  {
+   "input": "a%b",
+   "expected": "a^%b"
+  },
+  {
+   "input": "a!b",
+   "expected": "a^!b"
+  },
+  {
+   "input": "a^b",
+   "expected": "a^^b"
+  },
+  {
+   "input": "a`b",
+   "expected": "a^`b"
+  },
+  {
+   "input": "a<b",
+   "expected": "a^<b"
+  },
+  {
+   "input": "a>b",
+   "expected": "a^>b"
+  },
+  {
+   "input": "a&b",
+   "expected": "a^&b"
+  },
+  {
+   "input": "a|b",
+   "expected": "a^|b"
+  },
+  {
+   "input": "a;b",
+   "expected": "a^;b"
+  },
+  {
+   "input": "a,b",
+   "expected": "a^,b"
+  },
+  {
+   "input": "a*b",
+   "expected": "a^*b"
+  },
+  {
+   "input": "a?b",
+   "expected": "a^?b"
+  },
+  {
+   "input": "%PATH%",
+   "expected": "^%PATH^%"
+  },
+  {
+   "input": "%%",
+   "expected": "^%^%"
+  },
+  {
+   "input": "^^",
+   "expected": "^^^^"
+  },
+  {
+   "input": "a^b^c",
+   "expected": "a^^b^^c"
+  },
+  {
+   "input": "--prefix",
+   "expected": "--prefix"
+  },
+  {
+   "input": "@earendil-works/pi-coding-agent",
+   "expected": "@earendil-works/pi-coding-agent"
+  },
+  {
+   "input": "@new/name@1.2.3",
+   "expected": "@new/name@1.2.3"
+  },
+  {
+   "input": "--config.global-bin-dir=/home/u/.local/share/pnpm",
+   "expected": "--config.global-bin-dir=/home/u/.local/share/pnpm"
+  },
+  {
+   "input": "中文 参数",
+   "expected": "中文^ 参数"
+  },
+  {
+   "input": "  ",
+   "expected": "^ ^ "
+  },
+  {
+   "input": "a b c",
+   "expected": "a^ b^ c"
+  },
+  {
+   "input": "\"quoted\"",
+   "expected": "^\"quoted^\""
+  },
+  {
+   "input": "'single'",
+   "expected": "'single'"
+  },
+  {
+   "input": "back\\slash\\",
+   "expected": "back\\slash\\"
+  },
+  {
+   "input": "trail\\\\",
+   "expected": "trail\\\\"
+  },
+  {
+   "input": "mix\\\"end",
+   "expected": "mix\\^\"end"
+  }
+ ],
+ "escapeCmdArgument": [
+  {
+   "input": "",
+   "single": "^\"^\"",
+   "double": "^^^\"^^^\""
+  },
+  {
+   "input": "a",
+   "single": "^\"a^\"",
+   "double": "^^^\"a^^^\""
+  },
+  {
+   "input": "a b",
+   "single": "^\"a^ b^\"",
+   "double": "^^^\"a^^^ b^^^\""
+  },
+  {
+   "input": "a\tb",
+   "single": "^\"a\tb^\"",
+   "double": "^^^\"a\tb^^^\""
+  },
+  {
+   "input": "a\nb",
+   "single": "^\"a\nb^\"",
+   "double": "^^^\"a\nb^^^\""
+  },
+  {
+   "input": "a'b",
+   "single": "^\"a'b^\"",
+   "double": "^^^\"a'b^^^\""
+  },
+  {
+   "input": "a\"b",
+   "single": "^\"a\\^\"b^\"",
+   "double": "^^^\"a\\^^^\"b^^^\""
+  },
+  {
+   "input": "a\"\"b",
+   "single": "^\"a\\^\"\\^\"b^\"",
+   "double": "^^^\"a\\^^^\"\\^^^\"b^^^\""
+  },
+  {
+   "input": "a\"\"\"b",
+   "single": "^\"a\\^\"\\^\"\\^\"b^\"",
+   "double": "^^^\"a\\^^^\"\\^^^\"\\^^^\"b^^^\""
+  },
+  {
+   "input": "a\\",
+   "single": "^\"a\\\\^\"",
+   "double": "^^^\"a\\\\^^^\""
+  },
+  {
+   "input": "a\\\\",
+   "single": "^\"a\\\\\\^\"",
+   "double": "^^^\"a\\\\\\^^^\""
+  },
+  {
+   "input": "a\\\"b",
+   "single": "^\"a\\\\\\^\"b^\"",
+   "double": "^^^\"a\\\\\\^^^\"b^^^\""
+  },
+  {
+   "input": "a\\\\\"b",
+   "single": "^\"a\\\\\\\\^\"b^\"",
+   "double": "^^^\"a\\\\\\\\^^^\"b^^^\""
+  },
+  {
+   "input": "a\\",
+   "single": "^\"a\\\\^\"",
+   "double": "^^^\"a\\\\^^^\""
+  },
+  {
+   "input": "\\\\",
+   "single": "^\"\\\\\\^\"",
+   "double": "^^^\"\\\\\\^^^\""
+  },
+  {
+   "input": "\\a",
+   "single": "^\"\\a^\"",
+   "double": "^^^\"\\a^^^\""
+  },
+  {
+   "input": "a\\b",
+   "single": "^\"a\\b^\"",
+   "double": "^^^\"a\\b^^^\""
+  },
+  {
+   "input": "C:\\Program Files\\node",
+   "single": "^\"C:\\Program^ Files\\node^\"",
+   "double": "^^^\"C:\\Program^^^ Files\\node^^^\""
+  },
+  {
+   "input": "C:\\Program Files\\node\\",
+   "single": "^\"C:\\Program^ Files\\node\\\\^\"",
+   "double": "^^^\"C:\\Program^^^ Files\\node\\\\^^^\""
+  },
+  {
+   "input": "C:\\a\\",
+   "single": "^\"C:\\a\\\\^\"",
+   "double": "^^^\"C:\\a\\\\^^^\""
+  },
+  {
+   "input": "(",
+   "single": "^\"^(^\"",
+   "double": "^^^\"^^^(^^^\""
+  },
+  {
+   "input": ")",
+   "single": "^\"^)^\"",
+   "double": "^^^\"^^^)^^^\""
+  },
+  {
+   "input": "]",
+   "single": "^\"^]^\"",
+   "double": "^^^\"^^^]^^^\""
+  },
+  {
+   "input": "[",
+   "single": "^\"^[^\"",
+   "double": "^^^\"^^^[^^^\""
+  },
+  {
+   "input": "%",
+   "single": "^\"^%^\"",
+   "double": "^^^\"^^^%^^^\""
+  },
+  {
+   "input": "!",
+   "single": "^\"^!^\"",
+   "double": "^^^\"^^^!^^^\""
+  },
+  {
+   "input": "^",
+   "single": "^\"^^^\"",
+   "double": "^^^\"^^^^^^^\""
+  },
+  {
+   "input": "`",
+   "single": "^\"^`^\"",
+   "double": "^^^\"^^^`^^^\""
+  },
+  {
+   "input": "<",
+   "single": "^\"^<^\"",
+   "double": "^^^\"^^^<^^^\""
+  },
+  {
+   "input": ">",
+   "single": "^\"^>^\"",
+   "double": "^^^\"^^^>^^^\""
+  },
+  {
+   "input": "&",
+   "single": "^\"^&^\"",
+   "double": "^^^\"^^^&^^^\""
+  },
+  {
+   "input": "|",
+   "single": "^\"^|^\"",
+   "double": "^^^\"^^^|^^^\""
+  },
+  {
+   "input": ";",
+   "single": "^\"^;^\"",
+   "double": "^^^\"^^^;^^^\""
+  },
+  {
+   "input": ",",
+   "single": "^\"^,^\"",
+   "double": "^^^\"^^^,^^^\""
+  },
+  {
+   "input": "*",
+   "single": "^\"^*^\"",
+   "double": "^^^\"^^^*^^^\""
+  },
+  {
+   "input": "?",
+   "single": "^\"^?^\"",
+   "double": "^^^\"^^^?^^^\""
+  },
+  {
+   "input": "@",
+   "single": "^\"@^\"",
+   "double": "^^^\"@^^^\""
+  },
+  {
+   "input": "$",
+   "single": "^\"$^\"",
+   "double": "^^^\"$^^^\""
+  },
+  {
+   "input": "#",
+   "single": "^\"#^\"",
+   "double": "^^^\"#^^^\""
+  },
+  {
+   "input": "a(b)c",
+   "single": "^\"a^(b^)c^\"",
+   "double": "^^^\"a^^^(b^^^)c^^^\""
+  },
+  {
+   "input": "a]b",
+   "single": "^\"a^]b^\"",
+   "double": "^^^\"a^^^]b^^^\""
+  },
+  {
+   "input": "a[b",
+   "single": "^\"a^[b^\"",
+   "double": "^^^\"a^^^[b^^^\""
+  },
+  {
+   "input": "a%b",
+   "single": "^\"a^%b^\"",
+   "double": "^^^\"a^^^%b^^^\""
+  },
+  {
+   "input": "a!b",
+   "single": "^\"a^!b^\"",
+   "double": "^^^\"a^^^!b^^^\""
+  },
+  {
+   "input": "a^b",
+   "single": "^\"a^^b^\"",
+   "double": "^^^\"a^^^^b^^^\""
+  },
+  {
+   "input": "a`b",
+   "single": "^\"a^`b^\"",
+   "double": "^^^\"a^^^`b^^^\""
+  },
+  {
+   "input": "a<b",
+   "single": "^\"a^<b^\"",
+   "double": "^^^\"a^^^<b^^^\""
+  },
+  {
+   "input": "a>b",
+   "single": "^\"a^>b^\"",
+   "double": "^^^\"a^^^>b^^^\""
+  },
+  {
+   "input": "a&b",
+   "single": "^\"a^&b^\"",
+   "double": "^^^\"a^^^&b^^^\""
+  },
+  {
+   "input": "a|b",
+   "single": "^\"a^|b^\"",
+   "double": "^^^\"a^^^|b^^^\""
+  },
+  {
+   "input": "a;b",
+   "single": "^\"a^;b^\"",
+   "double": "^^^\"a^^^;b^^^\""
+  },
+  {
+   "input": "a,b",
+   "single": "^\"a^,b^\"",
+   "double": "^^^\"a^^^,b^^^\""
+  },
+  {
+   "input": "a*b",
+   "single": "^\"a^*b^\"",
+   "double": "^^^\"a^^^*b^^^\""
+  },
+  {
+   "input": "a?b",
+   "single": "^\"a^?b^\"",
+   "double": "^^^\"a^^^?b^^^\""
+  },
+  {
+   "input": "%PATH%",
+   "single": "^\"^%PATH^%^\"",
+   "double": "^^^\"^^^%PATH^^^%^^^\""
+  },
+  {
+   "input": "%%",
+   "single": "^\"^%^%^\"",
+   "double": "^^^\"^^^%^^^%^^^\""
+  },
+  {
+   "input": "^^",
+   "single": "^\"^^^^^\"",
+   "double": "^^^\"^^^^^^^^^^^\""
+  },
+  {
+   "input": "a^b^c",
+   "single": "^\"a^^b^^c^\"",
+   "double": "^^^\"a^^^^b^^^^c^^^\""
+  },
+  {
+   "input": "--prefix",
+   "single": "^\"--prefix^\"",
+   "double": "^^^\"--prefix^^^\""
+  },
+  {
+   "input": "@earendil-works/pi-coding-agent",
+   "single": "^\"@earendil-works/pi-coding-agent^\"",
+   "double": "^^^\"@earendil-works/pi-coding-agent^^^\""
+  },
+  {
+   "input": "@new/name@1.2.3",
+   "single": "^\"@new/name@1.2.3^\"",
+   "double": "^^^\"@new/name@1.2.3^^^\""
+  },
+  {
+   "input": "--config.global-bin-dir=/home/u/.local/share/pnpm",
+   "single": "^\"--config.global-bin-dir=/home/u/.local/share/pnpm^\"",
+   "double": "^^^\"--config.global-bin-dir=/home/u/.local/share/pnpm^^^\""
+  },
+  {
+   "input": "中文 参数",
+   "single": "^\"中文^ 参数^\"",
+   "double": "^^^\"中文^^^ 参数^^^\""
+  },
+  {
+   "input": "  ",
+   "single": "^\"^ ^ ^\"",
+   "double": "^^^\"^^^ ^^^ ^^^\""
+  },
+  {
+   "input": "a b c",
+   "single": "^\"a^ b^ c^\"",
+   "double": "^^^\"a^^^ b^^^ c^^^\""
+  },
+  {
+   "input": "\"quoted\"",
+   "single": "^\"\\^\"quoted\\^\"^\"",
+   "double": "^^^\"\\^^^\"quoted\\^^^\"^^^\""
+  },
+  {
+   "input": "'single'",
+   "single": "^\"'single'^\"",
+   "double": "^^^\"'single'^^^\""
+  },
+  {
+   "input": "back\\slash\\",
+   "single": "^\"back\\slash\\\\^\"",
+   "double": "^^^\"back\\slash\\\\^^^\""
+  },
+  {
+   "input": "trail\\\\",
+   "single": "^\"trail\\\\\\^\"",
+   "double": "^^^\"trail\\\\\\^^^\""
+  },
+  {
+   "input": "mix\\\"end",
+   "single": "^\"mix\\\\\\^\"end^\"",
+   "double": "^^^\"mix\\\\\\^^^\"end^^^\""
+  }
+ ],
+ "hostCwd": "D:\\AI\\参考项目\\pi.net"
+}

@@ -14,6 +14,8 @@
   <ItemGroup>
     <!-- Differential test vectors captured from the TypeScript utils reference implementations. -->
     <None Include="utils-corpus.json" CopyToOutputDirectory="PreserveNewest" />
+    <!-- Second slice: node path semantics, semver, version checks, clipboard routing, config/self-update. -->
+    <None Include="core-utils-corpus.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Pi.CodingAgent\Pi.CodingAgent.csproj" />
