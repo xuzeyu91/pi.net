@@ -10,6 +10,7 @@
     <Project Path="src/Pi.Protocol/Pi.Protocol.csproj" />
     <Project Path="src/Pi.Server/Pi.Server.csproj" />
     <Project Path="src/Pi.Telemetry/Pi.Telemetry.csproj" />
+    <Project Path="src/Pi.Tui/Pi.Tui.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Pi.Agent.Tests/Pi.Agent.Tests.csproj" />
@@ -21,5 +22,6 @@
     <Project Path="tests/Pi.Protocol.Tests/Pi.Protocol.Tests.csproj" />
     <Project Path="tests/Pi.Server.Tests/Pi.Server.Tests.csproj" />
     <Project Path="tests/Pi.Telemetry.Tests/Pi.Telemetry.Tests.csproj" />
+    <Project Path="tests/Pi.Tui.Tests/Pi.Tui.Tests.csproj" />
   </Folder>
 </Solution>
