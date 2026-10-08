@@ -8,7 +8,7 @@ namespace Pi.Tui;
 /// whitespace set used by <c>trim</c>/<c>\s</c>, the clamping rules of <c>slice</c>, and the
 /// Unicode full case mapping used by <c>toLowerCase</c>.
 /// </summary>
-internal static class JsString
+public static class JsString
 {
     /// <summary>
     /// The JavaScript <c>String.prototype.trim</c> whitespace set. Note this is deliberately not

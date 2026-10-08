@@ -50,10 +50,12 @@
 |---|---|---|---:|---|
 | P0 | ~~tui~~ | ~~`components/markdown.ts`、`settings-list.ts`、`image.ts`、`mouse-region.ts`、`alt-screen-flash.ts`、`alt-screen-search.ts`~~ ✅ P63 完成 | ~1,930 行 | latex / colors / select-list / terminal-image |
 | P0 | ~~tui~~ | ~~`tui-alt-screen.ts`（备用屏渲染器，含 `tui.ts` 屏幕级鼠标路由 + SGR 解码）~~ ✅ P64 完成 | 1,784 行 | 上述全部 + layout |
-| P1 | tui | `index.ts`（桶文件，C# 无对应概念，公开面由类型可见性决定） | 192 行 | — |
-| P1 | durable | 补齐各 `harness-*.test.ts` 的差分测试覆盖 | ~25,671 行测试 | — |
-| P2 | coding-agent | 全包移植（会话 / 工具系统 / 技能 / 主题 / RPC 模式 / TUI 交互） | 19,427 行 | ai / agent / mcp / durable / tui |
+| P1 | tui | `index.ts`（桶文件，C# 无对应概念，公开面由类型可见性决定）—— 公开面已逐条核对完毕，无需额外代码 | 192 行 | — |
+| P1 | coding-agent | 全包移植（会话 / 工具系统 / 技能 / 主题 / RPC 模式 / TUI 交互）。**实测 85,536 行 / 299 文件**（早期写的 19,427 行有误），拆成七个子阶段，见 [coding-agent-porting-status.md](coding-agent-porting-status.md) | 85,536 行 | ai / agent / mcp / durable / tui |
+| P2 | durable | 补齐各 `harness-*.test.ts` 的差分测试覆盖（源码已 100% 移植；**用户决定顺延到 coding-agent 之后**） | ~8,900 行测试 | — |
 | P3 | evals | 全包移植（评测 harness，依赖 coding-agent） | 1,446 行 | coding-agent |
+
+> **2026-10-09 顺序调整**：原计划「Phase 3 durable 测试 → Phase 4 coding-agent」。经评估，durable **源码**已 100% 移植且已有 11,859 行 C# 测试，补测试只增加验证深度而不改变迁移完成度；coding-agent 则是 0% 移植的主产品且是 evals 的硬前置。用户确认后改为**直接推进 coding-agent**（Phase 4），durable 测试顺延。
 
 ### 1.4 当前工作区状态（本次会话开始时）
 
@@ -89,25 +91,29 @@
   - 修复 1 处**真实缺陷**（`ShowOverlay` / `HideOverlay` / `OverlayHandleImpl.Hide` 在 `stop()` 后仍写 `HideCursor`，应经 `hideTerminalCursor()` 守卫）与 2 处 TS 语义偏差（`ViewportHeight / 3`、稳定排序）。
   - 一致性校验：上游 `test/tui-alt-screen.test.ts` **64/64 通过**；`Pi.Tui.Tests` 全量 23,812 项全绿。
 
-### 阶段 3 — durable 测试覆盖补齐
+### 阶段 3 — durable 测试覆盖补齐 ⏸ 顺延（2026-10-09 决定）
 
 - **目标**：把 `packages/durable/test/harness-*.test.ts` 中尚未移植的用例补齐为 C# 差分测试。
 - **文件范围**：`tests/Pi.Durable.Tests/*`。
 - **验收标准**：`Pi.Durable.Tests` 全绿（含已知的沙箱环境相关间歇性挂起已隔离）。
 - **一致性检查点**：逐测试文件核对断言集合与 TS 对齐。
+- **顺延原因**：durable **源码**已 100% 移植，且已有 11,859 行 C# 测试覆盖 events / generation / inbox / inspect / lifecycle / output(+skip) / prompt / registry / submissions / task-graph / tools / view / context / scheduler / types / session / env / storage-conformance。补测试只增加验证深度，不改变迁移完成度；coding-agent 是 0% 移植的主产品且是 evals 的硬前置。
+- **剩余缺口**（约 8,900 行 TS）：`harness-compaction`（2,304）、`harness-structured`（1,712）、`harness-tasks`（1,404）、`harness-ownership`（965）、`harness-tasks-recovery`（886）、`harness-conversations`（476）、`harness-live-deltas`（454）、`harness-tools-recovery`（405）、`harness-generation-recovery`（289）。
 
-### 阶段 4 — coding-agent（最大单项）
+### 阶段 4 — coding-agent（最大单项）🚧 进行中
 
-- **目标**：移植交互式 CLI 主产品。
+- **目标**：移植交互式 CLI 主产品。**实测 85,536 行 / 299 文件**（早期写的 19,427 行有误）。
 - **子阶段（按依赖顺序）**：
-  1. `core/` 基础（config / session manager / model runtime / services）
-  2. `core/tools/` + `core/tools/renderers/`（工具系统）
-  3. `core/extensions/` + `extensions/*`（插件 / mcp / codemode / llama / tool-search）
-  4. `modes/rpc/`（RPC 模式）
-  5. `modes/interactive/`（交互模式 + components + theme）
-  6. `core/compaction/`、`core/export-html/`、`cli/`、`experimental/`
+  1. **4a `src/utils/*` + 无依赖根级模块** —— 🚧 进行中：utils 12/37 文件 + 409 条差分向量
+  2. 4b 配置 / 信任 / 模型层（settings-manager / trust-manager / auth-storage / model-* / models-store / radius / mcp-servers / keybindings）
+  3. 4c 工具系统（`core/tools/*` + `core/tools/renderers/*`）
+  4. 4d 扩展系统（`core/extensions/*` + `extensions/*`：codemode / llama / mcp / tool-search）
+  5. 4e 会话与资源（agent-session / session-manager / resource-loader / package-manager / compaction / export-html / system-prompt / telemetry / sdk）
+  6. 4f 模式层（`modes/rpc/*`、`modes/interactive/*`，含 7,082 行的 `interactive-mode.ts`）
+  7. 4g 入口与实验层（`cli/*`、`main.ts`、`cli.ts`、`rpc-entry.ts`、`bun/*`、`client/*`、`experimental/*`）
 - **验收标准**：逐子阶段构建 0 警告 0 错误 + 测试通过。
 - **一致性检查点**：会话生命周期、工具调用与渲染、扩展加载（C# 原生插件路线）、主题与键位。
+- **详细进度与设计差异**见 [coding-agent-porting-status.md](coding-agent-porting-status.md)。
 
 ### 阶段 5 — evals
 

@@ -1,0 +1,3213 @@
+{
+ "stripJsonComments": [
+  {
+   "input": "{\"a\":1}",
+   "expected": "{\"a\":1}"
+  },
+  {
+   "input": "{\"a\":1,}",
+   "expected": "{\"a\":1}"
+  },
+  {
+   "input": "{\"a\":1, }",
+   "expected": "{\"a\":1 }"
+  },
+  {
+   "input": "{\"a\":1,\n}",
+   "expected": "{\"a\":1\n}"
+  },
+  {
+   "input": "{\"a\":1,\r\n}",
+   "expected": "{\"a\":1\r\n}"
+  },
+  {
+   "input": "{ // comment\n\"a\":1}",
+   "expected": "{ \n\"a\":1}"
+  },
+  {
+   "input": "{\"a\":1 // trailing\n}",
+   "expected": "{\"a\":1 \n}"
+  },
+  {
+   "input": "{\"a\":\"// not a comment\"}",
+   "expected": "{\"a\":\"// not a comment\"}"
+  },
+  {
+   "input": "{\"a\":\"http://x\",\"b\":2,}",
+   "expected": "{\"a\":\"http://x\",\"b\":2}"
+  },
+  {
+   "input": "{\"a\":\"has ,} inside\"}",
+   "expected": "{\"a\":\"has ,} inside\"}"
+  },
+  {
+   "input": "{\"a\":\"esc \\\" quote\",}",
+   "expected": "{\"a\":\"esc \\\" quote\"}"
+  },
+  {
+   "input": "{\"a\":\"back\\\\slash\",}",
+   "expected": "{\"a\":\"back\\\\slash\"}"
+  },
+  {
+   "input": "[1,2,3,]",
+   "expected": "[1,2,3]"
+  },
+  {
+   "input": "[1,2,3 ,\t]",
+   "expected": "[1,2,3 \t]"
+  },
+  {
+   "input": "[ // c\n1, 2,\n]",
+   "expected": "[ \n1, 2\n]"
+  },
+  {
+   "input": "{\"nested\":{\"x\":1,},\"y\":[1,],}",
+   "expected": "{\"nested\":{\"x\":1},\"y\":[1]}"
+  },
+  {
+   "input": "// only a comment",
+   "expected": ""
+  },
+  {
+   "input": "{\"a\":1}//eof",
+   "expected": "{\"a\":1}"
+  },
+  {
+   "input": "{\"a\":\"unterminated",
+   "expected": "{\"a\":\"unterminated"
+  },
+  {
+   "input": "{\"a\":\"\\u00e9\",}",
+   "expected": "{\"a\":\"\\u00e9\"}"
+  },
+  {
+   "input": "{ \"a\" : \"b\" , }",
+   "expected": "{ \"a\" : \"b\"  }"
+  },
+  {
+   "input": "{\"a\":1,/*block*/}",
+   "expected": "{\"a\":1,/*block*/}"
+  },
+  {
+   "input": "{\"a\":1,},\"b\":2,}",
+   "expected": "{\"a\":1},\"b\":2}"
+  }
+ ],
+ "text": [
+  {
+   "input": "",
+   "split": {
+    "bom": "",
+    "text": ""
+   },
+   "strip": ""
+  },
+  {
+   "input": "hello",
+   "split": {
+    "bom": "",
+    "text": "hello"
+   },
+   "strip": "hello"
+  },
+  {
+   "input": "﻿hello",
+   "split": {
+    "bom": "﻿",
+    "text": "hello"
+   },
+   "strip": "hello"
+  },
+  {
+   "input": "﻿",
+   "split": {
+    "bom": "﻿",
+    "text": ""
+   },
+   "strip": ""
+  },
+  {
+   "input": "a﻿b",
+   "split": {
+    "bom": "",
+    "text": "a﻿b"
+   },
+   "strip": "a﻿b"
+  },
+  {
+   "input": "﻿﻿x",
+   "split": {
+    "bom": "﻿",
+    "text": "﻿x"
+   },
+   "strip": "﻿x"
+  },
+  {
+   "input": "​x",
+   "split": {
+    "bom": "",
+    "text": "​x"
+   },
+   "strip": "​x"
+  }
+ ],
+ "decodeHtmlEntity": [
+  {
+   "entity": "amp",
+   "expectedUnits": [
+    38
+   ]
+  },
+  {
+   "entity": "lt",
+   "expectedUnits": [
+    60
+   ]
+  },
+  {
+   "entity": "gt",
+   "expectedUnits": [
+    62
+   ]
+  },
+  {
+   "entity": "quot",
+   "expectedUnits": [
+    34
+   ]
+  },
+  {
+   "entity": "apos",
+   "expectedUnits": [
+    39
+   ]
+  },
+  {
+   "entity": "AMP",
+   "expectedUnits": null
+  },
+  {
+   "entity": "nbsp",
+   "expectedUnits": null
+  },
+  {
+   "entity": "",
+   "expectedUnits": null
+  },
+  {
+   "entity": "#",
+   "expectedUnits": null
+  },
+  {
+   "entity": "#x41",
+   "expectedUnits": [
+    65
+   ]
+  },
+  {
+   "entity": "#X41",
+   "expectedUnits": [
+    65
+   ]
+  },
+  {
+   "entity": "#x4a",
+   "expectedUnits": [
+    74
+   ]
+  },
+  {
+   "entity": "#XA9",
+   "expectedUnits": [
+    169
+   ]
+  },
+  {
+   "entity": "#x1F600",
+   "expectedUnits": [
+    55357,
+    56832
+   ]
+  },
+  {
+   "entity": "#x0",
+   "expectedUnits": [
+    0
+   ]
+  },
+  {
+   "entity": "#x10FFFF",
+   "expectedUnits": [
+    56319,
+    57343
+   ]
+  },
+  {
+   "entity": "#x110000",
+   "expectedUnits": null
+  },
+  {
+   "entity": "#65",
+   "expectedUnits": [
+    65
+   ]
+  },
+  {
+   "entity": "#0065",
+   "expectedUnits": [
+    65
+   ]
+  },
+  {
+   "entity": "#0",
+   "expectedUnits": [
+    0
+   ]
+  },
+  {
+   "entity": "#1114111",
+   "expectedUnits": [
+    56319,
+    57343
+   ]
+  },
+  {
+   "entity": "#1114112",
+   "expectedUnits": null
+  },
+  {
+   "entity": "#xzz",
+   "expectedUnits": null
+  },
+  {
+   "entity": "#x",
+   "expectedUnits": null
+  },
+  {
+   "entity": "#",
+   "expectedUnits": null
+  },
+  {
+   "entity": "#xZZ",
+   "expectedUnits": null
+  },
+  {
+   "entity": "#zz",
+   "expectedUnits": null
+  },
+  {
+   "entity": "#-5",
+   "expectedUnits": null
+  },
+  {
+   "entity": "#x-5",
+   "expectedUnits": null
+  },
+  {
+   "entity": "#+65",
+   "expectedUnits": [
+    65
+   ]
+  },
+  {
+   "entity": "#x+41",
+   "expectedUnits": [
+    65
+   ]
+  },
+  {
+   "entity": "#x00000041",
+   "expectedUnits": [
+    65
+   ]
+  },
+  {
+   "entity": "#000000000065",
+   "expectedUnits": [
+    65
+   ]
+  },
+  {
+   "entity": "#x FFFF",
+   "expectedUnits": [
+    65535
+   ]
+  },
+  {
+   "entity": "# 65",
+   "expectedUnits": [
+    65
+   ]
+  },
+  {
+   "entity": "#x41 ",
+   "expectedUnits": [
+    65
+   ]
+  },
+  {
+   "entity": "#x41extra",
+   "expectedUnits": [
+    1054
+   ]
+  },
+  {
+   "entity": "amp;",
+   "expectedUnits": null
+  },
+  {
+   "entity": "#x41;",
+   "expectedUnits": [
+    65
+   ]
+  },
+  {
+   "entity": "#x1f4a9",
+   "expectedUnits": [
+    55357,
+    56489
+   ]
+  },
+  {
+   "entity": "#xFFFFFFFFFFFF",
+   "expectedUnits": null
+  },
+  {
+   "entity": "#999999999999999999999",
+   "expectedUnits": null
+  },
+  {
+   "entity": "#x7f",
+   "expectedUnits": [
+    127
+   ]
+  },
+  {
+   "entity": "#x1b",
+   "expectedUnits": [
+    27
+   ]
+  },
+  {
+   "entity": "#x9c",
+   "expectedUnits": [
+    156
+   ]
+  },
+  {
+   "entity": "#xd800",
+   "expectedUnits": [
+    55296
+   ]
+  },
+  {
+   "entity": "#xdfff",
+   "expectedUnits": [
+    57343
+   ]
+  },
+  {
+   "entity": "#xdfFF",
+   "expectedUnits": [
+    57343
+   ]
+  }
+ ],
+ "decodeHtmlEntityAt": [
+  {
+   "input": "&amp;",
+   "index": 0,
+   "expectedUnits": [
+    38
+   ],
+   "expectedLength": 5
+  },
+  {
+   "input": "x&amp;",
+   "index": 1,
+   "expectedUnits": [
+    38
+   ],
+   "expectedLength": 5
+  },
+  {
+   "input": "&amp",
+   "index": 0,
+   "expectedUnits": null,
+   "expectedLength": null
+  },
+  {
+   "input": "&amp;",
+   "index": 4,
+   "expectedUnits": null,
+   "expectedLength": null
+  },
+  {
+   "input": "&#x41;",
+   "index": 0,
+   "expectedUnits": [
+    65
+   ],
+   "expectedLength": 6
+  },
+  {
+   "input": "&#65;",
+   "index": 0,
+   "expectedUnits": [
+    65
+   ],
+   "expectedLength": 5
+  },
+  {
+   "input": "&unknown;",
+   "index": 0,
+   "expectedUnits": null,
+   "expectedLength": null
+  },
+  {
+   "input": "&;",
+   "index": 0,
+   "expectedUnits": null,
+   "expectedLength": null
+  },
+  {
+   "input": "&verylongentityname;",
+   "index": 0,
+   "expectedUnits": null,
+   "expectedLength": null
+  },
+  {
+   "input": "&verylongentityname1;",
+   "index": 0,
+   "expectedUnits": null,
+   "expectedLength": null
+  },
+  {
+   "input": "",
+   "index": 0,
+   "expectedUnits": null,
+   "expectedLength": null
+  },
+  {
+   "input": "&",
+   "index": 0,
+   "expectedUnits": null,
+   "expectedLength": null
+  },
+  {
+   "input": "&;",
+   "index": 1,
+   "expectedUnits": null,
+   "expectedLength": null
+  },
+  {
+   "input": "abc",
+   "index": 5,
+   "expectedUnits": null,
+   "expectedLength": null
+  },
+  {
+   "input": "&amp;&lt;",
+   "index": 0,
+   "expectedUnits": [
+    38
+   ],
+   "expectedLength": 5
+  },
+  {
+   "input": "&amp;&lt;",
+   "index": 5,
+   "expectedUnits": [
+    60
+   ],
+   "expectedLength": 4
+  },
+  {
+   "input": "&#x1F600;",
+   "index": 0,
+   "expectedUnits": [
+    55357,
+    56832
+   ],
+   "expectedLength": 9
+  },
+  {
+   "input": "&#x1F600;",
+   "index": 1,
+   "expectedUnits": null,
+   "expectedLength": null
+  },
+  {
+   "input": "&quot;x&quot;",
+   "index": 0,
+   "expectedUnits": [
+    34
+   ],
+   "expectedLength": 6
+  }
+ ],
+ "stripAnsi": [
+  {
+   "input": "",
+   "expected": ""
+  },
+  {
+   "input": "plain text",
+   "expected": "plain text"
+  },
+  {
+   "input": "\u001b[31mred\u001b[39m",
+   "expected": "red"
+  },
+  {
+   "input": "\u001b[1;32mbold green\u001b[0m",
+   "expected": "bold green"
+  },
+  {
+   "input": "a\u001b[0mb",
+   "expected": "ab"
+  },
+  {
+   "input": "\u001b]8;;http://example.com\u001b\\link\u001b]8;;\u001b\\",
+   "expected": "link"
+  },
+  {
+   "input": "\u001b]0;title\u0007after",
+   "expected": "after"
+  },
+  {
+   "input": "\u001b]0;titleafter",
+   "expected": "after"
+  },
+  {
+   "input": "\u001b[38;5;196m256color\u001b[0m",
+   "expected": "256color"
+  },
+  {
+   "input": "\u001b[38;2;1;2;3mtruecolor\u001b[0m",
+   "expected": "truecolor"
+  },
+  {
+   "input": "\u001b[?25lhidden\u001b[?25h",
+   "expected": "hidden"
+  },
+  {
+   "input": "\u001bMreverse index",
+   "expected": "reverse index"
+  },
+  {
+   "input": "\u001b[Kerase",
+   "expected": "erase"
+  },
+  {
+   "input": "\u001b[1Aup",
+   "expected": "up"
+  },
+  {
+   "input": "31m8bit red",
+   "expected": "8bit red"
+  },
+  {
+   "input": "\u001b[31m",
+   "expected": ""
+  },
+  {
+   "input": "\u001b]8;;\u0007",
+   "expected": ""
+  },
+  {
+   "input": "text \u001b[4:3munder\u001b[0m more",
+   "expected": "text under more"
+  },
+  {
+   "input": "\u001b[31mred\u001b]8;;u\u0007mid\u001b[0m",
+   "expected": "redmid"
+  },
+  {
+   "input": "no escape but ]8;;http://x\u0007",
+   "expected": "no escape but ]8;;http://x\u0007"
+  },
+  {
+   "input": "\u001b[",
+   "expected": "\u001b["
+  },
+  {
+   "input": "\u001b][",
+   "expected": "\u001b]["
+  },
+  {
+   "input": "multi\n\u001b[31mline\u001b[0m\nend",
+   "expected": "multi\nline\nend"
+  }
+ ],
+ "parseInt": [
+  {
+   "input": "",
+   "radix": 10,
+   "expected": "NaN"
+  },
+  {
+   "input": "0",
+   "radix": 10,
+   "expected": "0"
+  },
+  {
+   "input": "5",
+   "radix": 10,
+   "expected": "5"
+  },
+  {
+   "input": "42",
+   "radix": 10,
+   "expected": "42"
+  },
+  {
+   "input": "007",
+   "radix": 10,
+   "expected": "7"
+  },
+  {
+   "input": " 42",
+   "radix": 10,
+   "expected": "42"
+  },
+  {
+   "input": "\t42",
+   "radix": 10,
+   "expected": "42"
+  },
+  {
+   "input": "\n42",
+   "radix": 10,
+   "expected": "42"
+  },
+  {
+   "input": " 42",
+   "radix": 10,
+   "expected": "42"
+  },
+  {
+   "input": "﻿42",
+   "radix": 10,
+   "expected": "42"
+  },
+  {
+   "input": "  42  ",
+   "radix": 10,
+   "expected": "42"
+  },
+  {
+   "input": "+42",
+   "radix": 10,
+   "expected": "42"
+  },
+  {
+   "input": "-42",
+   "radix": 10,
+   "expected": "-42"
+  },
+  {
+   "input": "-0",
+   "radix": 10,
+   "expected": "0"
+  },
+  {
+   "input": "+0",
+   "radix": 10,
+   "expected": "0"
+  },
+  {
+   "input": "3.9",
+   "radix": 10,
+   "expected": "3"
+  },
+  {
+   "input": "3e2",
+   "radix": 10,
+   "expected": "3"
+  },
+  {
+   "input": "0x1f",
+   "radix": 10,
+   "expected": "0"
+  },
+  {
+   "input": "1f",
+   "radix": 10,
+   "expected": "1"
+  },
+  {
+   "input": "1F",
+   "radix": 10,
+   "expected": "1"
+  },
+  {
+   "input": "zz",
+   "radix": 10,
+   "expected": "NaN"
+  },
+  {
+   "input": "12ab",
+   "radix": 10,
+   "expected": "12"
+  },
+  {
+   "input": "ab12",
+   "radix": 10,
+   "expected": "NaN"
+  },
+  {
+   "input": "  -0x10",
+   "radix": 10,
+   "expected": "0"
+  },
+  {
+   "input": "65",
+   "radix": 10,
+   "expected": "65"
+  },
+  {
+   "input": "1114111",
+   "radix": 10,
+   "expected": "1114111"
+  },
+  {
+   "input": "1114112",
+   "radix": 10,
+   "expected": "1114112"
+  },
+  {
+   "input": "999999999999999999999999",
+   "radix": 10,
+   "expected": "1e+24"
+  },
+  {
+   "input": "42",
+   "radix": 10,
+   "expected": "NaN"
+  },
+  {
+   "input": "42 ",
+   "radix": 10,
+   "expected": "42"
+  },
+  {
+   "input": "  + 42",
+   "radix": 10,
+   "expected": "NaN"
+  },
+  {
+   "input": "--42",
+   "radix": 10,
+   "expected": "NaN"
+  },
+  {
+   "input": "++42",
+   "radix": 10,
+   "expected": "NaN"
+  },
+  {
+   "input": "0X1f",
+   "radix": 10,
+   "expected": "0"
+  },
+  {
+   "input": "0x",
+   "radix": 10,
+   "expected": "0"
+  },
+  {
+   "input": "0x0",
+   "radix": 10,
+   "expected": "0"
+  },
+  {
+   "input": "0xzz",
+   "radix": 10,
+   "expected": "0"
+  },
+  {
+   "input": "-0x10",
+   "radix": 10,
+   "expected": "0"
+  },
+  {
+   "input": "+0x10",
+   "radix": 10,
+   "expected": "0"
+  },
+  {
+   "input": "0x10",
+   "radix": 10,
+   "expected": "0"
+  },
+  {
+   "input": "00x10",
+   "radix": 10,
+   "expected": "0"
+  },
+  {
+   "input": "999999999999999999999999",
+   "radix": 10,
+   "expected": "1e+24"
+  },
+  {
+   "input": "999999999999999999999999999999",
+   "radix": 10,
+   "expected": "1e+30"
+  },
+  {
+   "input": "100000000000000000000",
+   "radix": 10,
+   "expected": "100000000000000000000"
+  },
+  {
+   "input": "1000000000000000000000000000000",
+   "radix": 10,
+   "expected": "1e+30"
+  },
+  {
+   "input": "11111111111111111",
+   "radix": 10,
+   "expected": "11111111111111112"
+  },
+  {
+   "input": "111111111111111111",
+   "radix": 10,
+   "expected": "111111111111111100"
+  },
+  {
+   "input": "11111111111111111111111111111111111111111111111111111",
+   "radix": 10,
+   "expected": "1.1111111111111111e+52"
+  },
+  {
+   "input": "1111111111111111111111111111111111111111111111111111111111111111",
+   "radix": 10,
+   "expected": "1.1111111111111112e+63"
+  },
+  {
+   "input": "100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+   "radix": 10,
+   "expected": "1e+308"
+  },
+  {
+   "input": "1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+   "radix": 10,
+   "expected": "Infinity"
+  },
+  {
+   "input": "10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+   "radix": 10,
+   "expected": "Infinity"
+  },
+  {
+   "input": "ffffffffffffffff",
+   "radix": 10,
+   "expected": "NaN"
+  },
+  {
+   "input": "ffffffffffffffffffffffffffffffff",
+   "radix": 10,
+   "expected": "NaN"
+  },
+  {
+   "input": "7fffffffffffffff",
+   "radix": 10,
+   "expected": "7"
+  },
+  {
+   "input": "",
+   "radix": 16,
+   "expected": "NaN"
+  },
+  {
+   "input": "0",
+   "radix": 16,
+   "expected": "0"
+  },
+  {
+   "input": "5",
+   "radix": 16,
+   "expected": "5"
+  },
+  {
+   "input": "42",
+   "radix": 16,
+   "expected": "66"
+  },
+  {
+   "input": "007",
+   "radix": 16,
+   "expected": "7"
+  },
+  {
+   "input": " 42",
+   "radix": 16,
+   "expected": "66"
+  },
+  {
+   "input": "\t42",
+   "radix": 16,
+   "expected": "66"
+  },
+  {
+   "input": "\n42",
+   "radix": 16,
+   "expected": "66"
+  },
+  {
+   "input": " 42",
+   "radix": 16,
+   "expected": "66"
+  },
+  {
+   "input": "﻿42",
+   "radix": 16,
+   "expected": "66"
+  },
+  {
+   "input": "  42  ",
+   "radix": 16,
+   "expected": "66"
+  },
+  {
+   "input": "+42",
+   "radix": 16,
+   "expected": "66"
+  },
+  {
+   "input": "-42",
+   "radix": 16,
+   "expected": "-66"
+  },
+  {
+   "input": "-0",
+   "radix": 16,
+   "expected": "0"
+  },
+  {
+   "input": "+0",
+   "radix": 16,
+   "expected": "0"
+  },
+  {
+   "input": "3.9",
+   "radix": 16,
+   "expected": "3"
+  },
+  {
+   "input": "3e2",
+   "radix": 16,
+   "expected": "994"
+  },
+  {
+   "input": "0x1f",
+   "radix": 16,
+   "expected": "31"
+  },
+  {
+   "input": "1f",
+   "radix": 16,
+   "expected": "31"
+  },
+  {
+   "input": "1F",
+   "radix": 16,
+   "expected": "31"
+  },
+  {
+   "input": "zz",
+   "radix": 16,
+   "expected": "NaN"
+  },
+  {
+   "input": "12ab",
+   "radix": 16,
+   "expected": "4779"
+  },
+  {
+   "input": "ab12",
+   "radix": 16,
+   "expected": "43794"
+  },
+  {
+   "input": "  -0x10",
+   "radix": 16,
+   "expected": "-16"
+  },
+  {
+   "input": "65",
+   "radix": 16,
+   "expected": "101"
+  },
+  {
+   "input": "1114111",
+   "radix": 16,
+   "expected": "17907985"
+  },
+  {
+   "input": "1114112",
+   "radix": 16,
+   "expected": "17907986"
+  },
+  {
+   "input": "999999999999999999999999",
+   "radix": 16,
+   "expected": "4.75368975085586e+28"
+  },
+  {
+   "input": "42",
+   "radix": 16,
+   "expected": "NaN"
+  },
+  {
+   "input": "42 ",
+   "radix": 16,
+   "expected": "66"
+  },
+  {
+   "input": "  + 42",
+   "radix": 16,
+   "expected": "NaN"
+  },
+  {
+   "input": "--42",
+   "radix": 16,
+   "expected": "NaN"
+  },
+  {
+   "input": "++42",
+   "radix": 16,
+   "expected": "NaN"
+  },
+  {
+   "input": "0X1f",
+   "radix": 16,
+   "expected": "31"
+  },
+  {
+   "input": "0x",
+   "radix": 16,
+   "expected": "NaN"
+  },
+  {
+   "input": "0x0",
+   "radix": 16,
+   "expected": "0"
+  },
+  {
+   "input": "0xzz",
+   "radix": 16,
+   "expected": "NaN"
+  },
+  {
+   "input": "-0x10",
+   "radix": 16,
+   "expected": "-16"
+  },
+  {
+   "input": "+0x10",
+   "radix": 16,
+   "expected": "16"
+  },
+  {
+   "input": "0x10",
+   "radix": 16,
+   "expected": "16"
+  },
+  {
+   "input": "00x10",
+   "radix": 16,
+   "expected": "0"
+  },
+  {
+   "input": "999999999999999999999999",
+   "radix": 16,
+   "expected": "4.75368975085586e+28"
+  },
+  {
+   "input": "999999999999999999999999999999",
+   "radix": 16,
+   "expected": "7.975367974709495e+35"
+  },
+  {
+   "input": "100000000000000000000",
+   "radix": 16,
+   "expected": "1.2089258196146292e+24"
+  },
+  {
+   "input": "1000000000000000000000000000000",
+   "radix": 16,
+   "expected": "1.329227995784916e+36"
+  },
+  {
+   "input": "11111111111111111",
+   "radix": 16,
+   "expected": "19676527011956855000"
+  },
+  {
+   "input": "111111111111111111",
+   "radix": 16,
+   "expected": "314824432191309700000"
+  },
+  {
+   "input": "11111111111111111111111111111111111111111111111111111",
+   "radix": 16,
+   "expected": "4.388012152856549e+62"
+  },
+  {
+   "input": "1111111111111111111111111111111111111111111111111111111111111111",
+   "radix": 16,
+   "expected": "7.71947261582108e+75"
+  },
+  {
+   "input": "100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+   "radix": 16,
+   "expected": "Infinity"
+  },
+  {
+   "input": "1000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+   "radix": 16,
+   "expected": "Infinity"
+  },
+  {
+   "input": "10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+   "radix": 16,
+   "expected": "Infinity"
+  },
+  {
+   "input": "ffffffffffffffff",
+   "radix": 16,
+   "expected": "18446744073709552000"
+  },
+  {
+   "input": "ffffffffffffffffffffffffffffffff",
+   "radix": 16,
+   "expected": "3.402823669209385e+38"
+  },
+  {
+   "input": "7fffffffffffffff",
+   "radix": 16,
+   "expected": "9223372036854776000"
+  }
+ ],
+ "chalk": {
+  "level": 1,
+  "vectors": [
+   {
+    "style": "red",
+    "input": "plain",
+    "expected": "\u001b[31mplain\u001b[39m"
+   },
+   {
+    "style": "red",
+    "input": "",
+    "expected": ""
+   },
+   {
+    "style": "red",
+    "input": "line1\nline2",
+    "expected": "\u001b[31mline1\u001b[39m\n\u001b[31mline2\u001b[39m"
+   },
+   {
+    "style": "red",
+    "input": "line1\r\nline2",
+    "expected": "\u001b[31mline1\u001b[39m\r\n\u001b[31mline2\u001b[39m"
+   },
+   {
+    "style": "red",
+    "input": "a\r\nb\nc",
+    "expected": "\u001b[31ma\u001b[39m\r\n\u001b[31mb\u001b[39m\n\u001b[31mc\u001b[39m"
+   },
+   {
+    "style": "red",
+    "input": "trailing\n",
+    "expected": "\u001b[31mtrailing\u001b[39m\n\u001b[31m\u001b[39m"
+   },
+   {
+    "style": "red",
+    "input": "\nleading",
+    "expected": "\u001b[31m\u001b[39m\n\u001b[31mleading\u001b[39m"
+   },
+   {
+    "style": "red",
+    "input": "\n",
+    "expected": "\u001b[31m\u001b[39m\n\u001b[31m\u001b[39m"
+   },
+   {
+    "style": "red",
+    "input": "\r\n",
+    "expected": "\u001b[31m\u001b[39m\r\n\u001b[31m\u001b[39m"
+   },
+   {
+    "style": "red",
+    "input": "a\n\nb",
+    "expected": "\u001b[31ma\u001b[39m\n\u001b[31m\u001b[39m\n\u001b[31mb\u001b[39m"
+   },
+   {
+    "style": "red",
+    "input": "nested \u001b[31minner\u001b[39m outer",
+    "expected": "\u001b[31mnested \u001b[31minner\u001b[39m\u001b[31m outer\u001b[39m"
+   },
+   {
+    "style": "red",
+    "input": "nested \u001b[2minner\u001b[22m outer",
+    "expected": "\u001b[31mnested \u001b[2minner\u001b[22m outer\u001b[39m"
+   },
+   {
+    "style": "red",
+    "input": "with \u001b[39m existing close",
+    "expected": "\u001b[31mwith \u001b[39m\u001b[31m existing close\u001b[39m"
+   },
+   {
+    "style": "red",
+    "input": "multi\nwith \u001b[39m close",
+    "expected": "\u001b[31mmulti\u001b[39m\n\u001b[31mwith \u001b[39m\u001b[31m close\u001b[39m"
+   },
+   {
+    "style": "red",
+    "input": "unicode 中文 émoji 😀",
+    "expected": "\u001b[31municode 中文 émoji 😀\u001b[39m"
+   },
+   {
+    "style": "green",
+    "input": "plain",
+    "expected": "\u001b[32mplain\u001b[39m"
+   },
+   {
+    "style": "green",
+    "input": "",
+    "expected": ""
+   },
+   {
+    "style": "green",
+    "input": "line1\nline2",
+    "expected": "\u001b[32mline1\u001b[39m\n\u001b[32mline2\u001b[39m"
+   },
+   {
+    "style": "green",
+    "input": "line1\r\nline2",
+    "expected": "\u001b[32mline1\u001b[39m\r\n\u001b[32mline2\u001b[39m"
+   },
+   {
+    "style": "green",
+    "input": "a\r\nb\nc",
+    "expected": "\u001b[32ma\u001b[39m\r\n\u001b[32mb\u001b[39m\n\u001b[32mc\u001b[39m"
+   },
+   {
+    "style": "green",
+    "input": "trailing\n",
+    "expected": "\u001b[32mtrailing\u001b[39m\n\u001b[32m\u001b[39m"
+   },
+   {
+    "style": "green",
+    "input": "\nleading",
+    "expected": "\u001b[32m\u001b[39m\n\u001b[32mleading\u001b[39m"
+   },
+   {
+    "style": "green",
+    "input": "\n",
+    "expected": "\u001b[32m\u001b[39m\n\u001b[32m\u001b[39m"
+   },
+   {
+    "style": "green",
+    "input": "\r\n",
+    "expected": "\u001b[32m\u001b[39m\r\n\u001b[32m\u001b[39m"
+   },
+   {
+    "style": "green",
+    "input": "a\n\nb",
+    "expected": "\u001b[32ma\u001b[39m\n\u001b[32m\u001b[39m\n\u001b[32mb\u001b[39m"
+   },
+   {
+    "style": "green",
+    "input": "nested \u001b[31minner\u001b[39m outer",
+    "expected": "\u001b[32mnested \u001b[31minner\u001b[39m\u001b[32m outer\u001b[39m"
+   },
+   {
+    "style": "green",
+    "input": "nested \u001b[2minner\u001b[22m outer",
+    "expected": "\u001b[32mnested \u001b[2minner\u001b[22m outer\u001b[39m"
+   },
+   {
+    "style": "green",
+    "input": "with \u001b[39m existing close",
+    "expected": "\u001b[32mwith \u001b[39m\u001b[32m existing close\u001b[39m"
+   },
+   {
+    "style": "green",
+    "input": "multi\nwith \u001b[39m close",
+    "expected": "\u001b[32mmulti\u001b[39m\n\u001b[32mwith \u001b[39m\u001b[32m close\u001b[39m"
+   },
+   {
+    "style": "green",
+    "input": "unicode 中文 émoji 😀",
+    "expected": "\u001b[32municode 中文 émoji 😀\u001b[39m"
+   },
+   {
+    "style": "yellow",
+    "input": "plain",
+    "expected": "\u001b[33mplain\u001b[39m"
+   },
+   {
+    "style": "yellow",
+    "input": "",
+    "expected": ""
+   },
+   {
+    "style": "yellow",
+    "input": "line1\nline2",
+    "expected": "\u001b[33mline1\u001b[39m\n\u001b[33mline2\u001b[39m"
+   },
+   {
+    "style": "yellow",
+    "input": "line1\r\nline2",
+    "expected": "\u001b[33mline1\u001b[39m\r\n\u001b[33mline2\u001b[39m"
+   },
+   {
+    "style": "yellow",
+    "input": "a\r\nb\nc",
+    "expected": "\u001b[33ma\u001b[39m\r\n\u001b[33mb\u001b[39m\n\u001b[33mc\u001b[39m"
+   },
+   {
+    "style": "yellow",
+    "input": "trailing\n",
+    "expected": "\u001b[33mtrailing\u001b[39m\n\u001b[33m\u001b[39m"
+   },
+   {
+    "style": "yellow",
+    "input": "\nleading",
+    "expected": "\u001b[33m\u001b[39m\n\u001b[33mleading\u001b[39m"
+   },
+   {
+    "style": "yellow",
+    "input": "\n",
+    "expected": "\u001b[33m\u001b[39m\n\u001b[33m\u001b[39m"
+   },
+   {
+    "style": "yellow",
+    "input": "\r\n",
+    "expected": "\u001b[33m\u001b[39m\r\n\u001b[33m\u001b[39m"
+   },
+   {
+    "style": "yellow",
+    "input": "a\n\nb",
+    "expected": "\u001b[33ma\u001b[39m\n\u001b[33m\u001b[39m\n\u001b[33mb\u001b[39m"
+   },
+   {
+    "style": "yellow",
+    "input": "nested \u001b[31minner\u001b[39m outer",
+    "expected": "\u001b[33mnested \u001b[31minner\u001b[39m\u001b[33m outer\u001b[39m"
+   },
+   {
+    "style": "yellow",
+    "input": "nested \u001b[2minner\u001b[22m outer",
+    "expected": "\u001b[33mnested \u001b[2minner\u001b[22m outer\u001b[39m"
+   },
+   {
+    "style": "yellow",
+    "input": "with \u001b[39m existing close",
+    "expected": "\u001b[33mwith \u001b[39m\u001b[33m existing close\u001b[39m"
+   },
+   {
+    "style": "yellow",
+    "input": "multi\nwith \u001b[39m close",
+    "expected": "\u001b[33mmulti\u001b[39m\n\u001b[33mwith \u001b[39m\u001b[33m close\u001b[39m"
+   },
+   {
+    "style": "yellow",
+    "input": "unicode 中文 émoji 😀",
+    "expected": "\u001b[33municode 中文 émoji 😀\u001b[39m"
+   },
+   {
+    "style": "cyan",
+    "input": "plain",
+    "expected": "\u001b[36mplain\u001b[39m"
+   },
+   {
+    "style": "cyan",
+    "input": "",
+    "expected": ""
+   },
+   {
+    "style": "cyan",
+    "input": "line1\nline2",
+    "expected": "\u001b[36mline1\u001b[39m\n\u001b[36mline2\u001b[39m"
+   },
+   {
+    "style": "cyan",
+    "input": "line1\r\nline2",
+    "expected": "\u001b[36mline1\u001b[39m\r\n\u001b[36mline2\u001b[39m"
+   },
+   {
+    "style": "cyan",
+    "input": "a\r\nb\nc",
+    "expected": "\u001b[36ma\u001b[39m\r\n\u001b[36mb\u001b[39m\n\u001b[36mc\u001b[39m"
+   },
+   {
+    "style": "cyan",
+    "input": "trailing\n",
+    "expected": "\u001b[36mtrailing\u001b[39m\n\u001b[36m\u001b[39m"
+   },
+   {
+    "style": "cyan",
+    "input": "\nleading",
+    "expected": "\u001b[36m\u001b[39m\n\u001b[36mleading\u001b[39m"
+   },
+   {
+    "style": "cyan",
+    "input": "\n",
+    "expected": "\u001b[36m\u001b[39m\n\u001b[36m\u001b[39m"
+   },
+   {
+    "style": "cyan",
+    "input": "\r\n",
+    "expected": "\u001b[36m\u001b[39m\r\n\u001b[36m\u001b[39m"
+   },
+   {
+    "style": "cyan",
+    "input": "a\n\nb",
+    "expected": "\u001b[36ma\u001b[39m\n\u001b[36m\u001b[39m\n\u001b[36mb\u001b[39m"
+   },
+   {
+    "style": "cyan",
+    "input": "nested \u001b[31minner\u001b[39m outer",
+    "expected": "\u001b[36mnested \u001b[31minner\u001b[39m\u001b[36m outer\u001b[39m"
+   },
+   {
+    "style": "cyan",
+    "input": "nested \u001b[2minner\u001b[22m outer",
+    "expected": "\u001b[36mnested \u001b[2minner\u001b[22m outer\u001b[39m"
+   },
+   {
+    "style": "cyan",
+    "input": "with \u001b[39m existing close",
+    "expected": "\u001b[36mwith \u001b[39m\u001b[36m existing close\u001b[39m"
+   },
+   {
+    "style": "cyan",
+    "input": "multi\nwith \u001b[39m close",
+    "expected": "\u001b[36mmulti\u001b[39m\n\u001b[36mwith \u001b[39m\u001b[36m close\u001b[39m"
+   },
+   {
+    "style": "cyan",
+    "input": "unicode 中文 émoji 😀",
+    "expected": "\u001b[36municode 中文 émoji 😀\u001b[39m"
+   },
+   {
+    "style": "dim",
+    "input": "plain",
+    "expected": "\u001b[2mplain\u001b[22m"
+   },
+   {
+    "style": "dim",
+    "input": "",
+    "expected": ""
+   },
+   {
+    "style": "dim",
+    "input": "line1\nline2",
+    "expected": "\u001b[2mline1\u001b[22m\n\u001b[2mline2\u001b[22m"
+   },
+   {
+    "style": "dim",
+    "input": "line1\r\nline2",
+    "expected": "\u001b[2mline1\u001b[22m\r\n\u001b[2mline2\u001b[22m"
+   },
+   {
+    "style": "dim",
+    "input": "a\r\nb\nc",
+    "expected": "\u001b[2ma\u001b[22m\r\n\u001b[2mb\u001b[22m\n\u001b[2mc\u001b[22m"
+   },
+   {
+    "style": "dim",
+    "input": "trailing\n",
+    "expected": "\u001b[2mtrailing\u001b[22m\n\u001b[2m\u001b[22m"
+   },
+   {
+    "style": "dim",
+    "input": "\nleading",
+    "expected": "\u001b[2m\u001b[22m\n\u001b[2mleading\u001b[22m"
+   },
+   {
+    "style": "dim",
+    "input": "\n",
+    "expected": "\u001b[2m\u001b[22m\n\u001b[2m\u001b[22m"
+   },
+   {
+    "style": "dim",
+    "input": "\r\n",
+    "expected": "\u001b[2m\u001b[22m\r\n\u001b[2m\u001b[22m"
+   },
+   {
+    "style": "dim",
+    "input": "a\n\nb",
+    "expected": "\u001b[2ma\u001b[22m\n\u001b[2m\u001b[22m\n\u001b[2mb\u001b[22m"
+   },
+   {
+    "style": "dim",
+    "input": "nested \u001b[31minner\u001b[39m outer",
+    "expected": "\u001b[2mnested \u001b[31minner\u001b[39m outer\u001b[22m"
+   },
+   {
+    "style": "dim",
+    "input": "nested \u001b[2minner\u001b[22m outer",
+    "expected": "\u001b[2mnested \u001b[2minner\u001b[22m\u001b[2m outer\u001b[22m"
+   },
+   {
+    "style": "dim",
+    "input": "with \u001b[39m existing close",
+    "expected": "\u001b[2mwith \u001b[39m existing close\u001b[22m"
+   },
+   {
+    "style": "dim",
+    "input": "multi\nwith \u001b[39m close",
+    "expected": "\u001b[2mmulti\u001b[22m\n\u001b[2mwith \u001b[39m close\u001b[22m"
+   },
+   {
+    "style": "dim",
+    "input": "unicode 中文 émoji 😀",
+    "expected": "\u001b[2municode 中文 émoji 😀\u001b[22m"
+   },
+   {
+    "style": "bold",
+    "input": "plain",
+    "expected": "\u001b[1mplain\u001b[22m"
+   },
+   {
+    "style": "bold",
+    "input": "",
+    "expected": ""
+   },
+   {
+    "style": "bold",
+    "input": "line1\nline2",
+    "expected": "\u001b[1mline1\u001b[22m\n\u001b[1mline2\u001b[22m"
+   },
+   {
+    "style": "bold",
+    "input": "line1\r\nline2",
+    "expected": "\u001b[1mline1\u001b[22m\r\n\u001b[1mline2\u001b[22m"
+   },
+   {
+    "style": "bold",
+    "input": "a\r\nb\nc",
+    "expected": "\u001b[1ma\u001b[22m\r\n\u001b[1mb\u001b[22m\n\u001b[1mc\u001b[22m"
+   },
+   {
+    "style": "bold",
+    "input": "trailing\n",
+    "expected": "\u001b[1mtrailing\u001b[22m\n\u001b[1m\u001b[22m"
+   },
+   {
+    "style": "bold",
+    "input": "\nleading",
+    "expected": "\u001b[1m\u001b[22m\n\u001b[1mleading\u001b[22m"
+   },
+   {
+    "style": "bold",
+    "input": "\n",
+    "expected": "\u001b[1m\u001b[22m\n\u001b[1m\u001b[22m"
+   },
+   {
+    "style": "bold",
+    "input": "\r\n",
+    "expected": "\u001b[1m\u001b[22m\r\n\u001b[1m\u001b[22m"
+   },
+   {
+    "style": "bold",
+    "input": "a\n\nb",
+    "expected": "\u001b[1ma\u001b[22m\n\u001b[1m\u001b[22m\n\u001b[1mb\u001b[22m"
+   },
+   {
+    "style": "bold",
+    "input": "nested \u001b[31minner\u001b[39m outer",
+    "expected": "\u001b[1mnested \u001b[31minner\u001b[39m outer\u001b[22m"
+   },
+   {
+    "style": "bold",
+    "input": "nested \u001b[2minner\u001b[22m outer",
+    "expected": "\u001b[1mnested \u001b[2minner\u001b[22m\u001b[1m outer\u001b[22m"
+   },
+   {
+    "style": "bold",
+    "input": "with \u001b[39m existing close",
+    "expected": "\u001b[1mwith \u001b[39m existing close\u001b[22m"
+   },
+   {
+    "style": "bold",
+    "input": "multi\nwith \u001b[39m close",
+    "expected": "\u001b[1mmulti\u001b[22m\n\u001b[1mwith \u001b[39m close\u001b[22m"
+   },
+   {
+    "style": "bold",
+    "input": "unicode 中文 émoji 😀",
+    "expected": "\u001b[1municode 中文 émoji 😀\u001b[22m"
+   },
+   {
+    "style": "italic",
+    "input": "plain",
+    "expected": "\u001b[3mplain\u001b[23m"
+   },
+   {
+    "style": "italic",
+    "input": "",
+    "expected": ""
+   },
+   {
+    "style": "italic",
+    "input": "line1\nline2",
+    "expected": "\u001b[3mline1\u001b[23m\n\u001b[3mline2\u001b[23m"
+   },
+   {
+    "style": "italic",
+    "input": "line1\r\nline2",
+    "expected": "\u001b[3mline1\u001b[23m\r\n\u001b[3mline2\u001b[23m"
+   },
+   {
+    "style": "italic",
+    "input": "a\r\nb\nc",
+    "expected": "\u001b[3ma\u001b[23m\r\n\u001b[3mb\u001b[23m\n\u001b[3mc\u001b[23m"
+   },
+   {
+    "style": "italic",
+    "input": "trailing\n",
+    "expected": "\u001b[3mtrailing\u001b[23m\n\u001b[3m\u001b[23m"
+   },
+   {
+    "style": "italic",
+    "input": "\nleading",
+    "expected": "\u001b[3m\u001b[23m\n\u001b[3mleading\u001b[23m"
+   },
+   {
+    "style": "italic",
+    "input": "\n",
+    "expected": "\u001b[3m\u001b[23m\n\u001b[3m\u001b[23m"
+   },
+   {
+    "style": "italic",
+    "input": "\r\n",
+    "expected": "\u001b[3m\u001b[23m\r\n\u001b[3m\u001b[23m"
+   },
+   {
+    "style": "italic",
+    "input": "a\n\nb",
+    "expected": "\u001b[3ma\u001b[23m\n\u001b[3m\u001b[23m\n\u001b[3mb\u001b[23m"
+   },
+   {
+    "style": "italic",
+    "input": "nested \u001b[31minner\u001b[39m outer",
+    "expected": "\u001b[3mnested \u001b[31minner\u001b[39m outer\u001b[23m"
+   },
+   {
+    "style": "italic",
+    "input": "nested \u001b[2minner\u001b[22m outer",
+    "expected": "\u001b[3mnested \u001b[2minner\u001b[22m outer\u001b[23m"
+   },
+   {
+    "style": "italic",
+    "input": "with \u001b[39m existing close",
+    "expected": "\u001b[3mwith \u001b[39m existing close\u001b[23m"
+   },
+   {
+    "style": "italic",
+    "input": "multi\nwith \u001b[39m close",
+    "expected": "\u001b[3mmulti\u001b[23m\n\u001b[3mwith \u001b[39m close\u001b[23m"
+   },
+   {
+    "style": "italic",
+    "input": "unicode 中文 émoji 😀",
+    "expected": "\u001b[3municode 中文 émoji 😀\u001b[23m"
+   },
+   {
+    "style": "underline",
+    "input": "plain",
+    "expected": "\u001b[4mplain\u001b[24m"
+   },
+   {
+    "style": "underline",
+    "input": "",
+    "expected": ""
+   },
+   {
+    "style": "underline",
+    "input": "line1\nline2",
+    "expected": "\u001b[4mline1\u001b[24m\n\u001b[4mline2\u001b[24m"
+   },
+   {
+    "style": "underline",
+    "input": "line1\r\nline2",
+    "expected": "\u001b[4mline1\u001b[24m\r\n\u001b[4mline2\u001b[24m"
+   },
+   {
+    "style": "underline",
+    "input": "a\r\nb\nc",
+    "expected": "\u001b[4ma\u001b[24m\r\n\u001b[4mb\u001b[24m\n\u001b[4mc\u001b[24m"
+   },
+   {
+    "style": "underline",
+    "input": "trailing\n",
+    "expected": "\u001b[4mtrailing\u001b[24m\n\u001b[4m\u001b[24m"
+   },
+   {
+    "style": "underline",
+    "input": "\nleading",
+    "expected": "\u001b[4m\u001b[24m\n\u001b[4mleading\u001b[24m"
+   },
+   {
+    "style": "underline",
+    "input": "\n",
+    "expected": "\u001b[4m\u001b[24m\n\u001b[4m\u001b[24m"
+   },
+   {
+    "style": "underline",
+    "input": "\r\n",
+    "expected": "\u001b[4m\u001b[24m\r\n\u001b[4m\u001b[24m"
+   },
+   {
+    "style": "underline",
+    "input": "a\n\nb",
+    "expected": "\u001b[4ma\u001b[24m\n\u001b[4m\u001b[24m\n\u001b[4mb\u001b[24m"
+   },
+   {
+    "style": "underline",
+    "input": "nested \u001b[31minner\u001b[39m outer",
+    "expected": "\u001b[4mnested \u001b[31minner\u001b[39m outer\u001b[24m"
+   },
+   {
+    "style": "underline",
+    "input": "nested \u001b[2minner\u001b[22m outer",
+    "expected": "\u001b[4mnested \u001b[2minner\u001b[22m outer\u001b[24m"
+   },
+   {
+    "style": "underline",
+    "input": "with \u001b[39m existing close",
+    "expected": "\u001b[4mwith \u001b[39m existing close\u001b[24m"
+   },
+   {
+    "style": "underline",
+    "input": "multi\nwith \u001b[39m close",
+    "expected": "\u001b[4mmulti\u001b[24m\n\u001b[4mwith \u001b[39m close\u001b[24m"
+   },
+   {
+    "style": "underline",
+    "input": "unicode 中文 émoji 😀",
+    "expected": "\u001b[4municode 中文 émoji 😀\u001b[24m"
+   },
+   {
+    "style": "inverse",
+    "input": "plain",
+    "expected": "\u001b[7mplain\u001b[27m"
+   },
+   {
+    "style": "inverse",
+    "input": "",
+    "expected": ""
+   },
+   {
+    "style": "inverse",
+    "input": "line1\nline2",
+    "expected": "\u001b[7mline1\u001b[27m\n\u001b[7mline2\u001b[27m"
+   },
+   {
+    "style": "inverse",
+    "input": "line1\r\nline2",
+    "expected": "\u001b[7mline1\u001b[27m\r\n\u001b[7mline2\u001b[27m"
+   },
+   {
+    "style": "inverse",
+    "input": "a\r\nb\nc",
+    "expected": "\u001b[7ma\u001b[27m\r\n\u001b[7mb\u001b[27m\n\u001b[7mc\u001b[27m"
+   },
+   {
+    "style": "inverse",
+    "input": "trailing\n",
+    "expected": "\u001b[7mtrailing\u001b[27m\n\u001b[7m\u001b[27m"
+   },
+   {
+    "style": "inverse",
+    "input": "\nleading",
+    "expected": "\u001b[7m\u001b[27m\n\u001b[7mleading\u001b[27m"
+   },
+   {
+    "style": "inverse",
+    "input": "\n",
+    "expected": "\u001b[7m\u001b[27m\n\u001b[7m\u001b[27m"
+   },
+   {
+    "style": "inverse",
+    "input": "\r\n",
+    "expected": "\u001b[7m\u001b[27m\r\n\u001b[7m\u001b[27m"
+   },
+   {
+    "style": "inverse",
+    "input": "a\n\nb",
+    "expected": "\u001b[7ma\u001b[27m\n\u001b[7m\u001b[27m\n\u001b[7mb\u001b[27m"
+   },
+   {
+    "style": "inverse",
+    "input": "nested \u001b[31minner\u001b[39m outer",
+    "expected": "\u001b[7mnested \u001b[31minner\u001b[39m outer\u001b[27m"
+   },
+   {
+    "style": "inverse",
+    "input": "nested \u001b[2minner\u001b[22m outer",
+    "expected": "\u001b[7mnested \u001b[2minner\u001b[22m outer\u001b[27m"
+   },
+   {
+    "style": "inverse",
+    "input": "with \u001b[39m existing close",
+    "expected": "\u001b[7mwith \u001b[39m existing close\u001b[27m"
+   },
+   {
+    "style": "inverse",
+    "input": "multi\nwith \u001b[39m close",
+    "expected": "\u001b[7mmulti\u001b[27m\n\u001b[7mwith \u001b[39m close\u001b[27m"
+   },
+   {
+    "style": "inverse",
+    "input": "unicode 中文 émoji 😀",
+    "expected": "\u001b[7municode 中文 émoji 😀\u001b[27m"
+   },
+   {
+    "style": "strikethrough",
+    "input": "plain",
+    "expected": "\u001b[9mplain\u001b[29m"
+   },
+   {
+    "style": "strikethrough",
+    "input": "",
+    "expected": ""
+   },
+   {
+    "style": "strikethrough",
+    "input": "line1\nline2",
+    "expected": "\u001b[9mline1\u001b[29m\n\u001b[9mline2\u001b[29m"
+   },
+   {
+    "style": "strikethrough",
+    "input": "line1\r\nline2",
+    "expected": "\u001b[9mline1\u001b[29m\r\n\u001b[9mline2\u001b[29m"
+   },
+   {
+    "style": "strikethrough",
+    "input": "a\r\nb\nc",
+    "expected": "\u001b[9ma\u001b[29m\r\n\u001b[9mb\u001b[29m\n\u001b[9mc\u001b[29m"
+   },
+   {
+    "style": "strikethrough",
+    "input": "trailing\n",
+    "expected": "\u001b[9mtrailing\u001b[29m\n\u001b[9m\u001b[29m"
+   },
+   {
+    "style": "strikethrough",
+    "input": "\nleading",
+    "expected": "\u001b[9m\u001b[29m\n\u001b[9mleading\u001b[29m"
+   },
+   {
+    "style": "strikethrough",
+    "input": "\n",
+    "expected": "\u001b[9m\u001b[29m\n\u001b[9m\u001b[29m"
+   },
+   {
+    "style": "strikethrough",
+    "input": "\r\n",
+    "expected": "\u001b[9m\u001b[29m\r\n\u001b[9m\u001b[29m"
+   },
+   {
+    "style": "strikethrough",
+    "input": "a\n\nb",
+    "expected": "\u001b[9ma\u001b[29m\n\u001b[9m\u001b[29m\n\u001b[9mb\u001b[29m"
+   },
+   {
+    "style": "strikethrough",
+    "input": "nested \u001b[31minner\u001b[39m outer",
+    "expected": "\u001b[9mnested \u001b[31minner\u001b[39m outer\u001b[29m"
+   },
+   {
+    "style": "strikethrough",
+    "input": "nested \u001b[2minner\u001b[22m outer",
+    "expected": "\u001b[9mnested \u001b[2minner\u001b[22m outer\u001b[29m"
+   },
+   {
+    "style": "strikethrough",
+    "input": "with \u001b[39m existing close",
+    "expected": "\u001b[9mwith \u001b[39m existing close\u001b[29m"
+   },
+   {
+    "style": "strikethrough",
+    "input": "multi\nwith \u001b[39m close",
+    "expected": "\u001b[9mmulti\u001b[29m\n\u001b[9mwith \u001b[39m close\u001b[29m"
+   },
+   {
+    "style": "strikethrough",
+    "input": "unicode 中文 émoji 😀",
+    "expected": "\u001b[9municode 中文 émoji 😀\u001b[29m"
+   }
+  ]
+ },
+ "deprecation": {
+  "messages": [
+   "old api",
+   "old api",
+   "unicode 中文",
+   ""
+  ],
+  "emitted": [
+   "\u001b[33mDeprecation warning: old api\u001b[39m",
+   "\u001b[33mDeprecation warning: unicode 中文\u001b[39m",
+   "\u001b[33mDeprecation warning: \u001b[39m"
+  ]
+ },
+ "mime": [
+  {
+   "name": "empty",
+   "bytes": [],
+   "expected": null
+  },
+  {
+   "name": "random",
+   "bytes": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+   ],
+   "expected": null
+  },
+  {
+   "name": "jpeg",
+   "bytes": [
+    255,
+    216,
+    255,
+    224,
+    0,
+    16
+   ],
+   "expected": "image/jpeg"
+  },
+  {
+   "name": "jpeg-jfif-f7",
+   "bytes": [
+    255,
+    216,
+    255,
+    247,
+    0,
+    16
+   ],
+   "expected": null
+  },
+  {
+   "name": "jpeg-short",
+   "bytes": [
+    255,
+    216,
+    255
+   ],
+   "expected": "image/jpeg"
+  },
+  {
+   "name": "png-minimal",
+   "bytes": [
+    137,
+    80,
+    78,
+    71,
+    13,
+    10,
+    26,
+    10,
+    0,
+    0,
+    0,
+    13,
+    73,
+    72,
+    68,
+    82
+   ],
+   "expected": "image/png"
+  },
+  {
+   "name": "png-with-idat",
+   "bytes": [
+    137,
+    80,
+    78,
+    71,
+    13,
+    10,
+    26,
+    10,
+    0,
+    0,
+    0,
+    13,
+    73,
+    72,
+    68,
+    82,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    3,
+    73,
+    68,
+    65,
+    84,
+    1,
+    2,
+    3,
+    0,
+    0,
+    0,
+    0
+   ],
+   "expected": "image/png"
+  },
+  {
+   "name": "png-animated",
+   "bytes": [
+    137,
+    80,
+    78,
+    71,
+    13,
+    10,
+    26,
+    10,
+    0,
+    0,
+    0,
+    13,
+    73,
+    72,
+    68,
+    82,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    2,
+    97,
+    99,
+    84,
+    76,
+    1,
+    2,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    73,
+    68,
+    65,
+    84,
+    0,
+    0,
+    0,
+    0
+   ],
+   "expected": null
+  },
+  {
+   "name": "png-wrong-ihdr-length",
+   "bytes": [
+    137,
+    80,
+    78,
+    71,
+    13,
+    10,
+    26,
+    10,
+    0,
+    0,
+    0,
+    12,
+    73,
+    72,
+    68,
+    82
+   ],
+   "expected": null
+  },
+  {
+   "name": "png-too-short",
+   "bytes": [
+    137,
+    80,
+    78,
+    71,
+    13,
+    10,
+    26,
+    10,
+    0,
+    0
+   ],
+   "expected": null
+  },
+  {
+   "name": "png-truncated-chunk",
+   "bytes": [
+    137,
+    80,
+    78,
+    71,
+    13,
+    10,
+    26,
+    10,
+    0,
+    0,
+    3,
+    232,
+    73,
+    72,
+    68,
+    82
+   ],
+   "expected": null
+  },
+  {
+   "name": "png-huge-chunk-length",
+   "bytes": [
+    137,
+    80,
+    78,
+    71,
+    13,
+    10,
+    26,
+    10,
+    255,
+    255,
+    255,
+    255,
+    73,
+    72,
+    68,
+    82
+   ],
+   "expected": null
+  },
+  {
+   "name": "gif87a",
+   "bytes": [
+    71,
+    73,
+    70,
+    56,
+    55,
+    97,
+    0,
+    0
+   ],
+   "expected": "image/gif"
+  },
+  {
+   "name": "gif89a",
+   "bytes": [
+    71,
+    73,
+    70,
+    56,
+    57,
+    97,
+    0,
+    0
+   ],
+   "expected": "image/gif"
+  },
+  {
+   "name": "gif-short",
+   "bytes": [
+    71,
+    73,
+    70
+   ],
+   "expected": null
+  },
+  {
+   "name": "webp",
+   "bytes": [
+    82,
+    73,
+    70,
+    70,
+    100,
+    0,
+    0,
+    0,
+    87,
+    69,
+    66,
+    80
+   ],
+   "expected": "image/webp"
+  },
+  {
+   "name": "riff-not-webp",
+   "bytes": [
+    82,
+    73,
+    70,
+    70,
+    100,
+    0,
+    0,
+    0,
+    87,
+    65,
+    86,
+    69
+   ],
+   "expected": null
+  },
+  {
+   "name": "bmp-valid-40",
+   "bytes": [
+    66,
+    77,
+    70,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    54,
+    0,
+    0,
+    0,
+    40,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    24,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "expected": "image/bmp"
+  },
+  {
+   "name": "bmp-valid-12",
+   "bytes": [
+    66,
+    77,
+    30,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    26,
+    0,
+    0,
+    0,
+    12,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    24,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "expected": "image/bmp"
+  },
+  {
+   "name": "bmp-planes-2",
+   "bytes": [
+    66,
+    77,
+    70,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    54,
+    0,
+    0,
+    0,
+    40,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    2,
+    0,
+    24,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "expected": null
+  },
+  {
+   "name": "bmp-bits-3",
+   "bytes": [
+    66,
+    77,
+    70,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    54,
+    0,
+    0,
+    0,
+    40,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    3,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "expected": null
+  },
+  {
+   "name": "bmp-bits-32",
+   "bytes": [
+    66,
+    77,
+    70,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    54,
+    0,
+    0,
+    0,
+    40,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    32,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "expected": "image/bmp"
+  },
+  {
+   "name": "bmp-size-under-26",
+   "bytes": [
+    66,
+    77,
+    20,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    54,
+    0,
+    0,
+    0,
+    40,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    24,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "expected": null
+  },
+  {
+   "name": "bmp-offset-too-small",
+   "bytes": [
+    66,
+    77,
+    70,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    20,
+    0,
+    0,
+    0,
+    40,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    24,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "expected": null
+  },
+  {
+   "name": "bmp-offset-past-size",
+   "bytes": [
+    66,
+    77,
+    70,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    200,
+    0,
+    0,
+    0,
+    40,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    24,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "expected": null
+  },
+  {
+   "name": "bmp-dib-125",
+   "bytes": [
+    66,
+    77,
+    70,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    54,
+    0,
+    0,
+    0,
+    125,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    24,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "expected": null
+  },
+  {
+   "name": "bmp-dib-124",
+   "bytes": [
+    66,
+    77,
+    160,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    140,
+    0,
+    0,
+    0,
+    124,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    24,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "expected": "image/bmp"
+  },
+  {
+   "name": "bmp-zero-size",
+   "bytes": [
+    66,
+    77,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    54,
+    0,
+    0,
+    0,
+    40,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    0,
+    24,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "expected": "image/bmp"
+  },
+  {
+   "name": "bmp-short-buffer",
+   "bytes": [
+    66,
+    77,
+    0,
+    0,
+    0,
+    0
+   ],
+   "expected": null
+  }
+ ]
+}

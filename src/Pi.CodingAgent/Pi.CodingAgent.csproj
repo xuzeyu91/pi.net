@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Port of packages/coding-agent: the interactive coding agent CLI (sessions, tools, skills,
+       themes, RPC mode). See docs/porting-status.md for the per-subphase progress. -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="Pi.CodingAgent.Tests" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Pi.Agent\Pi.Agent.csproj" />
+    <ProjectReference Include="..\Pi.Ai\Pi.Ai.csproj" />
+    <ProjectReference Include="..\Pi.Chord\Pi.Chord.csproj" />
+    <ProjectReference Include="..\Pi.Codemode\Pi.Codemode.csproj" />
+    <ProjectReference Include="..\Pi.Durable\Pi.Durable.csproj" />
+    <ProjectReference Include="..\Pi.Mcp\Pi.Mcp.csproj" />
+    <ProjectReference Include="..\Pi.Tui\Pi.Tui.csproj" />
+  </ItemGroup>
+</Project>

@@ -4,6 +4,7 @@
     <Project Path="src/Pi.Ai/Pi.Ai.csproj" />
     <Project Path="src/Pi.Chord/Pi.Chord.csproj" />
     <Project Path="src/Pi.Codemode/Pi.Codemode.csproj" />
+    <Project Path="src/Pi.CodingAgent/Pi.CodingAgent.csproj" />
     <Project Path="src/Pi.Client/Pi.Client.csproj" />
     <Project Path="src/Pi.Durable/Pi.Durable.csproj" />
     <Project Path="src/Pi.Mcp/Pi.Mcp.csproj" />
@@ -17,6 +18,7 @@
     <Project Path="tests/Pi.Ai.Tests/Pi.Ai.Tests.csproj" />
     <Project Path="tests/Pi.Chord.Tests/Pi.Chord.Tests.csproj" />
     <Project Path="tests/Pi.Codemode.Tests/Pi.Codemode.Tests.csproj" />
+    <Project Path="tests/Pi.CodingAgent.Tests/Pi.CodingAgent.Tests.csproj" />
     <Project Path="tests/Pi.Durable.Tests/Pi.Durable.Tests.csproj" />
     <Project Path="tests/Pi.Mcp.Tests/Pi.Mcp.Tests.csproj" />
     <Project Path="tests/Pi.Protocol.Tests/Pi.Protocol.Tests.csproj" />

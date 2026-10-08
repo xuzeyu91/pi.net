@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 namespace Pi.Tui;
 
 /// <summary>JavaScript-compatible numeric helpers (the TS sources use <c>Math.round</c> semantics).</summary>
-internal static class JsMath
+public static class JsMath
 {
     /// <summary>
     /// Equivalent of JS <c>Math.round</c>: rounds half towards positive infinity. .NET's
