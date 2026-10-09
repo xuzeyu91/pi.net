@@ -88,10 +88,12 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 
 | 分组 | 文件 | 行数 | 备注 |
 |---|---|---:|---|
-| 图像处理 | `clipboard-image.ts`、`exif-orientation.ts`、`image-convert.ts`、`image-process.ts`、`image-resize-core.ts`、`image-resize-worker.ts`、`image-resize.ts`、`photon.ts`、`tool-result-images.ts` | 1,265 | 依赖 `@silvia-odwyer/photon-node`（Rust/wasm）。**需选型**：托管图像库（SkiaSharp / ImageSharp）或注入点外置 |
-| 需第三方库 | `frontmatter.ts`、`syntax-highlight.ts`、`zip.ts` | 231 | 分别依赖 `yaml`、`highlight.js`、归档库；**需选型**。注：`zip.ts` 只用到 `crc32` + `deflateRawSync`，`System.IO.Compression` 足以覆盖，实际选型成本低于另外两个 |
+| 图像处理 | `clipboard-image.ts`、`exif-orientation.ts`、`image-convert.ts`、`image-process.ts`、`image-resize-core.ts`、`image-resize-worker.ts`、`image-resize.ts`、`photon.ts`、`tool-result-images.ts` | 1,165 | 依赖 `@silvia-odwyer/photon-node`（Rust/wasm）。**需选型**：托管图像库（SkiaSharp / ImageSharp）或注入点外置 |
+| 需第三方库 | `frontmatter.ts`、`syntax-highlight.ts`、`zip.ts` | 331 | 分别依赖 `yaml`、`highlight.js`、归档库；**需选型**。注：`zip.ts` 只用到 `crc32` + `deflateRawSync`，`System.IO.Compression` 足以覆盖，实际选型成本低于另外两个 |
 
 另 `utils/highlight-js.d.ts` 是纯类型声明，无运行时代码，不需要移植。
+
+> 计数口径：上表两行相加 = 1,165 + 331 = **1,496**，与 `wc -l` 实测一致。早前记的「图像处理 1,265」多算了 100 行（导致 1,265+484+331=2,080 与总数 1,980 对不上），本批已按实测更正。
 
 ## 关键设计差异（TS → C#）
 
