@@ -27,7 +27,7 @@
 
 | 子阶段 | 范围 | 行数 | 状态 |
 |---|---|---:|---|
-| **4a** | `src/utils/*`（37 文件）+ 无依赖的根级模块（`config.ts` / `migrations.ts` / `core/defaults.ts` 等） | ~4,500 | 🚧 进行中（26/36 utils + `config.ts`） |
+| **4a** | `src/utils/*`（37 文件）+ 无依赖的根级模块（`config.ts` / `migrations.ts` / `core/defaults.ts` 等） | ~4,500 | ✅ utils 36/36 + `config.ts` 完成（2026-10-09） |
 | **4b** | 配置 / 信任 / 模型层：settings-manager、trust-manager、project-trust、auth-storage、model-config/registry/resolver、models-store、radius、virtual-models、mcp-servers、keybindings | ~12,000 | ⏳ |
 | **4c** | 工具系统：`core/tools/*` + `core/tools/renderers/*` | ~9,000 | ⏳ |
 | **4d** | 扩展系统：`core/extensions/*`（types / runner / loader）+ `extensions/*`（codemode / llama / mcp / tool-search） | ~12,000 | ⏳ |
@@ -37,7 +37,7 @@
 
 ## 4a 进度（utils 层）
 
-### ✅ 已完成（26/36 个 utils 代码文件 + 根级 `config.ts`）
+### ✅ 已完成（36/36 个 utils 代码文件 + 根级 `config.ts`，4a 收口）
 
 | TS 文件 | 行数 | .NET | 说明 |
 |---|---:|---|---|
@@ -67,6 +67,16 @@
 | `utils/windows-self-update.ts` | 118 | `Utils/WindowsSelfUpdate.cs` | `cleanupQuarantine` / `quarantineNativeDependencies`：把仍被加载的 `.node` 挪进 `.pi-native-quarantine` 再删。加载列表经 `LoadedSharedObjectsOverride` 注入——`process.report.getReport().sharedObjects` 在 .NET 无对应物（差异 C21） |
 | `utils/zip.ts` | 72 | `Utils/Zip.cs` | `writeZipArchive`：手写经典 ZIP（版本 20 / UTF-8 名标志 `0x0800` / 方法 8 / 无数据描述符 / 无扩展字段），供 bug report 打包。压缩流用 `DeflateStream`（裸 RFC 1951），CRC-32 自实现（与 `zlib.crc32` 逐位一致）。`ZipEntry.FromText` / `FromBytes` 对应 TS 的 `string \| Uint8Array` 两态（差异 C22） |
 | `utils/syntax-highlight.ts` | 219 | `Utils/SyntaxHighlight.cs` | `renderHighlightedHtml`（把 `hljs-*` span 栈映射到主题格式化器：精确 → `.` 前缀 → `-` 前缀 → `default`，逐行格式化且**空行不套格式**，实体在出口解码）为逐行忠实移植；`highlight` / `supportsLanguage` / `loadAllHighlightLanguages` 的 tokenizer 收进 `IHighlighter` 缝（差异 C23） |
+| `utils/frontmatter.ts` | 40 | `Utils/Frontmatter.cs` | `parseFrontmatter` / `stripFrontmatter`：定界符处理逐行移植（仅识别起始 `---`、首个 `\n---` 收口、空块短路），YAML 走 YamlDotNet（差异 C25），936 条差分语料 |
+| `utils/exif-orientation.ts` | 183 | `Utils/Image/ExifOrientation.cs` | 字节级 EXIF 解析逐行移植（JPEG APP1 扫描跳过 XMP 段、WebP RIFF EXIF 块含 `Exif\0\0` 前缀、TIFF IFD tag 0x0112）；`rotate90` 按原 dstIndex 映射做像素拷贝并交换宽高，fliph/flipv 原地翻转（差异 C26/C28） |
+| `utils/photon.ts` | 140 | `Utils/Image/SkiaImage.cs` | photon wasm 模块的 SkiaSharp 等价层：`new_from_byteslice` → 解码钉死 Rgba8888/Unpremul、`get_bytes` → PNG 编码、`get_bytes_jpeg(quality)` → JPEG 编码、`resize(..., Lanczos3)` → `SKPixmap.ScalePixels` + CatmullRom。wasm 路径烘焙垫片与 `.node` 隔离不适用（差异 C26） |
+| `utils/image-convert.ts` | 90 | `Utils/Image/ImageConvert.cs` | `convertToPng`（PNG 透传，其余解码→EXIF→重编码）、`loadPngTranscoder`（pi-tui 的 `ImageTranscoder` 委托）、`ensurePngTranscoder`（Kitty 能力检查 + 单次注册 + 注册后回调） |
+| `utils/image-resize-core.ts` | 165 | `Utils/Image/ImageResizeCore.cs` | 缩放算法全量：尺寸限额 → PNG/JPEG 质量阶梯（去重保序）取首个达标者 → 0.75 渐进收缩至 1×1；`Math.round` 语义钉 AwayFromZero（差异 C28） |
+| `utils/image-resize.ts` | 124 | `Utils/Image/ImageResize.cs` | worker 编排 → 线程池卸载（差异 C27）；`formatDimensionNote` 的 `toFixed(2)` 语义 |
+| `utils/image-resize-worker.ts` | 43 | — | worker 入口文件：只做「消息端口后面跑 `resizeImageInProcess`」，C# 由 `Task.Run` 承载，无对应物（差异 C27） |
+| `utils/image-process.ts` | 120 | `Utils/Image/ImageProcess.cs` | `processImage`：归一（png/jpeg+jpg/gif/webp）→ 转换提示 → 自动缩放 + 维度注记；不可转换/不可缩放的省略文案逐字保留 |
+| `utils/clipboard-image.ts` | 241 | `Utils/Image/ClipboardImage.cs` | 类名取 `ClipboardImageApi`（与 payload record `ClipboardImage` 撞名）。三态探测（TS undefined=后端失败继续回退 / null=无图像停止）→ `ImageProbe`；wl-paste / xclip / PowerShell(wsl) / 原生剪贴板全矩阵；BMP 等不支持格式转 PNG（不做 EXIF，与 TS 同）；命令与原生剪贴板经注入缝（差异 C29/C31） |
+| `utils/tool-result-images.ts` | 68 | `Utils/Image/ToolResultImages.cs` | 工具产出图像块归一：无变化返回原数组实例、不可处理保留原块、提示落 text 块；`ModelImageResizeOptions` → `ImageResizeOptions` 显式桥接（差异 C30）。`Buffer.from(x,"base64")` 宽容解码见差异 C29 |
 | `config.ts`（根级） | 656 | `Config.cs` | 安装方式判定、自更新命令拼装、分享链接、资产路径。`ConfigSeams` 集中 9 个注入点 |
 
 C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶段复用）：
@@ -86,16 +96,11 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 
 ### ⏳ 待移植
 
-`utils/` 余下 **10 个文件 / 1,205 行**：
+**4a 无剩余文件**（36/36 个 utils 代码文件 + 根级 `config.ts`，2026-10-09 收口）。图像批次的
+`photon.ts` 不逐行移植（Bun wasm 路径烘焙垫片，.NET 的 SkiaSharp NuGet 走正规原生资产分发，差异 C26）；
+`utils/highlight-js.d.ts` 是纯类型声明，无运行时代码，不需要移植。
 
-| 分组 | 文件 | 行数 | 备注 |
-|---|---|---:|---|
-| 图像处理 | `clipboard-image.ts`、`exif-orientation.ts`、`image-convert.ts`、`image-process.ts`、`image-resize-core.ts`、`image-resize-worker.ts`、`image-resize.ts`、`photon.ts`、`tool-result-images.ts` | 1,165 | 已选型 **SkiaSharp**（MIT）。`photon.ts` 是 Bun 的 wasm 路径烘焙垫片，.NET 无对应物，不逐行移植 |
-| 需第三方库 | `frontmatter.ts` | 40 | 已选型 **YamlDotNet**（MIT） |
-
-另 `utils/highlight-js.d.ts` 是纯类型声明，无运行时代码，不需要移植。
-
-> 计数口径：上表两行相加 = 1,165 + 40 = **1,205**，与 `wc -l` 实测一致。早前记的「图像处理 1,265」多算了 100 行（导致 1,265+484+331=2,080 与总数 1,980 对不上），本批已按实测更正。
+> 计数口径：图像处理 1,165 行 + frontmatter 40 行 = 1,205 行，与 `wc -l` 实测一致。
 
 ## 关键设计差异（TS → C#）
 
@@ -125,6 +130,13 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 | C22 | **`Zip` 的压缩字节不逐字节复刻，接受标准改为「结构等价 + 双向互操作」** | Node 的 zlib 与 .NET 的 zlib-ng 在小载荷上**逐字节相同**，在较大载荷上会选出不同的匹配编码——1000 个 `'A'` 时 Node 出 11 字节、.NET 出 12 字节。因此 `compressedSize` 以及由它派生的 `localOffset` / `centralDirectoryOffset` **不能**与 TS 对齐，语料改为：①逐字段比对全部编码无关字段（签名、版本 20、flags `0x0800`、method 8、DOS 时间/日期、CRC-32、**未压缩**长度、名字节、中央目录尺寸、条目数）；②把 `localOffset` 断言成「指向同名局部记录」的**链接关系**而非具体数字；③断言 deflate 往返回原字节；④用 BCL `ZipArchive` 读 Node 写的归档。另外**独立**用 Python `zipfile`（第三方实现，读取时校验 CRC）双向验证了 12 组归档 × 2 侧全部通过，含 UTF-8 名 `报告-📄.md`。副作用：`zip.ts` 原本是「需第三方归档库」的待选型项，实际只用 `crc32` + `deflateRawSync`，`System.IO.Compression` 全覆盖，无需新增依赖。 |
 | C23 | **`syntax-highlight.ts` 的 tokenizer 收进 `IHighlighter` 缝** | 原文件 eager 注册 21 种语言、懒加载其余约 180 种，`hljs.highlight` 是一台约 1 MB 的状态机。属于本仓的那半——把 `hljs-*` span 栈改写成主题格式化器——逐行移植并用 `syntax-highlight-corpus.json` 覆盖（含 `.`/`-` 前缀回退、空行不套格式、未闭合 span、`<spanner>` 不算标签、实体解码）；tokenizer 本身改为 `SyntaxHighlight.HighlighterOverride` 可注入。默认实现 `PlainTextHighlighter` 输出 highlight.js 的 plaintext 结果（同一套 `escapeHTML`），`SupportsLanguage` 对一切返回 `false`。**后果是未配置注入时没有任何语法配色**，但转义与 `theme.default` 仍然正确；TUI 调用点本来就用 `supportsLanguage(lang) ? lang : undefined` 守卫，因此会走 `highlightAuto` 而不是抛错。语料里的 `plaintext` 向量取自真实 highlight.js，用来把回退实现钉在真实行为上。 |
 | C24 | **本解决方案首次引入 NuGet 依赖（SkiaSharp / YamlDotNet）** | 此前 `src/` 只有 `Pi.Durable` 引了 `DiffPlex`，其余全部手写（`NodePath` / `FileUrl` / `JsUrl` / `Semver` / `JsRegex` / `JsUri` / `Chalk` / `Zip` 都是零依赖）。本批为 4a 余下 1,205 行引入两个库：**SkiaSharp**（MIT，JPEG/PNG/GIF/WebP 编解码，图像处理 1,165 行必需——手写 JPEG 解码器不现实）与 **YamlDotNet**（MIT，`frontmatter.ts` 的 `yaml@2.9.0` 的 `parse` 对应物）。选 MIT 而非 ImageSharp 是避开 Six Labors 的分裂授权。SkiaSharp 带按 RID 的原生资产，这与原项目 `photon.ts` 折腾的「Bun 单文件二进制里 wasm 路径被烘焙」是同一类问题的 .NET 形态，但 .NET 对原生资产有正规分发机制，不需要路径补丁。 |
+| C25 | **YamlDotNet 不是 `yaml@2.9.0` 的逐字节替身** | YamlDotNet 没有 schema 选择，标量解析更接近 YAML 1.1：`yes`/`no`、时间戳、前导零数字、merge key 等输入会产生不同结果。定界符处理（起始 `---`、首个 `\n---` 收口、空块短路、BOM/换行归一）逐行移植，重复键按 `yaml@2.9.0` 的语义拒绝（`WithDuplicateKeyChecking`）。分歧由 `frontmatter-corpus.json`（936 条）钉住。 |
+| C26 | **photon → SkiaSharp 是编码器级替换，不是字节级移植** | 两边的行为契约（解码成功/失败、尺寸、格式选择算法、预算循环）一致，但 Skia 的 PNG/JPEG 编码器与 photon 的 Rust image crate 不逐字节相同：`encodedSize` 不同，恰好在 `maxBytes` 边界上的图像可能翻转 PNG/JPEG 选择；缩放像素值有细微差异（CatmullRom ≈ Lanczos3 类，Skia 无 Lanczos）；解码支持矩阵随 Skia codec registry。photon 的 RGBA8 unpremul 光栅形状由 `SkiaImage.Decode` 钉死（Rgba8888/Unpremul）保证旋转/翻转逐像素语义一致。 |
+| C27 | **`worker_threads` → 线程池卸载** | TS 把缩放跑在 worker 里避免 WASM 阻塞 TUI 事件循环，Bun 编译产物加载失败时回退进程内。C# 没有 worker 文件概念：同一目标用 `Task.Run` 达成，「worker 加载失败」没有失败模式可复现，`image-resize-worker.ts` 无对应物。 |
+| C28 | **JS `Math.round` / `toFixed` 是「半值远离零」，.NET 默认是银行家舍入** | 缩放目标尺寸的 `Math.round` 用 `MidpointRounding.AwayFromZero`（.5 比例处是真实行为分歧）；`formatDimensionNote` 的 `toFixed(2)` 用 Round(AwayFromZero)+Invariant `F2`。 |
+| C29 | **`Buffer.from(x, "base64")` 是宽容解码，.NET 会抛** | JS 跳过字母表外字符（含空白）、1 mod 4 的悬尾字符丢弃、容忍缺 padding；`Convert.FromBase64String` 全都要抛。`LenientBase64.Decode` 复刻宽容前半，再交给 BCL。工具产出的 payload 不保证干净，宽容语义保证「不可解码图像 → 保留原块」而不是异常冒泡。 |
+| C30 | **`ModelImageResizeOptions` 是 Pi.Ai 的名义类型，与 coding-agent 的 `ImageResizeOptions` 结构相同但语义独立** | TS 靠结构类型把模型档案直接传进 `processImage`；C# 在 `ToolResultImages` 里显式字段映射桥接，两个类型都保留（模型目录下发档位 vs 通用默认，后续 4b/4c 消费）。`types.ts` 的 `ModelInputLimits` / `ModelImageInputLimits` / `BaseModel.inputLimits` 一并补进 Pi.Ai（此前无消费者）。 |
+| C31 | **C# 原生剪贴板接口把 TS 的 `undefined`/`null` 折叠成 `null`** | pi-tui TS 的 `getImage()` 三态（undefined=不可用、null=无图像、数组=有图像）；C# `INativeClipboard.GetImageAsync()` 的契约是 null=不可用、空数组=无图像。`ClipboardImageApi` 的 `ImageProbe` 保留三态语义：null→继续回退、空→停止。原生剪贴板恒为最后一站，折叠不可观察；命令行后端的三态照原样保留（Wayland 空剪贴板不得回退到陈旧 X11 内容）。 |
 
 ## 差分验证（utils 层）
 

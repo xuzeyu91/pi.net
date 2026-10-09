@@ -76,4 +76,65 @@ public class ModelCatalogTests
         // 未识别字段保留。
         Assert.Equal("kept", catalog.ChatModels["m1"].Extra!["custom"]!.GetValue<string>());
     }
+
+    [Fact]
+    public void InputLimitsParsed()
+    {
+        var parsed = System.Text.Json.Nodes.JsonNode.Parse(
+            """
+            {
+              "openai-completions": {
+                "chat:m1": {
+                  "id":"m1","name":"M1","api":"openai-completions","provider":"p","baseUrl":"https://x",
+                  "input":["text","image"],
+                  "inputLimits": {
+                    "maxRequestBytes": 20971520,
+                    "images": {
+                      "resize": {"maxWidth": 1234, "maxHeight": 1000, "maxBytes": 500000, "jpegQuality": 70},
+                      "maxPerMessage": 5,
+                      "maxPerRequest": 8
+                    }
+                  }
+                }
+              }
+            }
+            """);
+        var groups = Assert.IsType<System.Text.Json.Nodes.JsonObject>(parsed);
+        var catalog = ModelCatalog.Load("p", groups);
+
+        var model = catalog.ChatModels["m1"];
+        Assert.NotNull(model.InputLimits);
+        Assert.Equal(20971520, model.InputLimits.MaxRequestBytes);
+
+        var images = model.InputLimits.Images;
+        Assert.NotNull(images);
+        Assert.Equal(5, images.MaxPerMessage);
+        Assert.Equal(8, images.MaxPerRequest);
+
+        var resize = images.Resize;
+        Assert.NotNull(resize);
+        Assert.Equal(1234, resize.MaxWidth);
+        Assert.Equal(1000, resize.MaxHeight);
+        Assert.Equal(500000, resize.MaxBytes);
+        Assert.Equal(70, resize.JpegQuality);
+
+        // inputLimits 已被消费，不再落 Extra。
+        Assert.Null(model.Extra);
+    }
+
+    [Fact]
+    public void InputLimitsAbsentYieldsNull()
+    {
+        var parsed = System.Text.Json.Nodes.JsonNode.Parse(
+            """
+            {
+              "openai-completions": {
+                "chat:m1": {"id":"m1","name":"M1","api":"openai-completions","provider":"p","baseUrl":"https://x","input":["text"]}
+              }
+            }
+            """);
+        var groups = Assert.IsType<System.Text.Json.Nodes.JsonObject>(parsed);
+        var catalog = ModelCatalog.Load("p", groups);
+        Assert.Null(catalog.ChatModels["m1"].InputLimits);
+    }
 }

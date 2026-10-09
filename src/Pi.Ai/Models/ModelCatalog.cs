@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using Pi.Ai.Types;
 
 namespace Pi.Ai.Models;
 
@@ -97,6 +98,9 @@ public sealed record ModelSpec
 
     /// <summary>API 兼容设置（原样保留；各 API 用扩展方法取强类型视图）。对应 TS <c>compat</c>。</summary>
     public JsonObject? Compat { get; init; }
+
+    /// <summary>provider 输入限制与缓存安全预处理元数据。对应 TS <c>BaseModel.inputLimits</c>。</summary>
+    public ModelInputLimits? InputLimits { get; init; }
 
     /// <summary>未识别字段原样保留（前向兼容）。</summary>
     public JsonObject? Extra { get; init; }
@@ -210,7 +214,7 @@ public sealed class ModelCatalog
         {
             "id", "name", "api", "provider", "baseUrl", "input", "cost", "type", "reasoning",
             "contextWindow", "maxTokens", "headers", "thinkingLevelMap", "samplingParams",
-            "samplingParamsByThinkingLevel", "compat",
+            "samplingParamsByThinkingLevel", "compat", "inputLimits",
         };
         var extra = new JsonObject();
         foreach (var (key, value) in spec)
@@ -249,6 +253,10 @@ public sealed class ModelCatalog
             samplingByLevel = map;
         }
 
+        ModelInputLimits? inputLimits = spec["inputLimits"] is JsonObject limitsObject
+            ? ParseInputLimits(limitsObject)
+            : null;
+
         return new ModelSpec
         {
             Id = GetString("id") ?? throw new ArgumentException("model spec requires id"),
@@ -267,7 +275,47 @@ public sealed class ModelCatalog
             Reasoning = spec["reasoning"] is JsonValue { } reasoning && reasoning.TryGetValue<bool>(out var flag) && flag,
             ContextWindow = GetLong("contextWindow"),
             MaxTokens = GetLong("maxTokens"),
+            InputLimits = inputLimits,
             Extra = extra.Count > 0 ? extra : null,
+        };
+    }
+
+    /// <summary>解析 <c>inputLimits</c> 子树（resize/maxPerMessage/maxPerRequest/maxRequestBytes）。</summary>
+    private static ModelInputLimits ParseInputLimits(JsonObject limits)
+    {
+        static long? GetLongValue(JsonObject owner, string key)
+            => owner[key] is JsonValue { } number && number.TryGetValue<long>(out var parsed) ? parsed : null;
+
+        static int? GetIntValue(JsonObject owner, string key)
+            => owner[key] is JsonValue { } number && number.TryGetValue<int>(out var parsed) ? parsed : null;
+
+        ModelImageInputLimits? images = null;
+        if (limits["images"] is JsonObject imagesObject)
+        {
+            ModelImageResizeOptions? resize = null;
+            if (imagesObject["resize"] is JsonObject resizeObject)
+            {
+                resize = new ModelImageResizeOptions
+                {
+                    MaxWidth = GetIntValue(resizeObject, "maxWidth"),
+                    MaxHeight = GetIntValue(resizeObject, "maxHeight"),
+                    MaxBytes = GetLongValue(resizeObject, "maxBytes"),
+                    JpegQuality = GetIntValue(resizeObject, "jpegQuality"),
+                };
+            }
+
+            images = new ModelImageInputLimits
+            {
+                Resize = resize,
+                MaxPerMessage = GetIntValue(imagesObject, "maxPerMessage"),
+                MaxPerRequest = GetIntValue(imagesObject, "maxPerRequest"),
+            };
+        }
+
+        return new ModelInputLimits
+        {
+            MaxRequestBytes = GetLongValue(limits, "maxRequestBytes"),
+            Images = images,
         };
     }
 
