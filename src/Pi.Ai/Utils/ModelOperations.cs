@@ -13,6 +13,22 @@ public static class ModelOperations
 
     public static bool IsModelType(ModelSpec model, ModelType type) => model.Type == type;
 
+    /// <summary>
+    /// 两个模型是否同一实体：类别、id、provider 三项全等。任一侧为 <c>null</c> 即 false。
+    /// 对应 TS <c>modelsAreEqual</c>（<c>models.ts</c>）。
+    /// </summary>
+    /// <remarks>
+    /// TS 的 <c>if (!a || !b) return false</c> 用真值判断，但 <c>Model</c> 是对象、永不为假值，
+    /// 故「null/undefined」与「假值」在这里是同一集合。id / provider 是 JS 的 <c>===</c>
+    /// 字符串比较，对应序号比较。
+    /// </remarks>
+    public static bool ModelsAreEqual(ModelSpec? a, ModelSpec? b)
+        => a is not null
+            && b is not null
+            && a.Type == b.Type
+            && string.Equals(a.Id, b.Id, StringComparison.Ordinal)
+            && string.Equals(a.Provider, b.Provider, StringComparison.Ordinal);
+
     public static void AssertChatModel(ModelSpec model)
     {
         if (model.Type != ModelType.Chat)

@@ -28,7 +28,7 @@
 | 子阶段 | 范围 | 行数 | 状态 |
 |---|---|---:|---|
 | **4a** | `src/utils/*`（37 文件）+ 无依赖的根级模块（`config.ts` / `migrations.ts` / `core/defaults.ts` 等） | ~4,500 | ✅ utils 36/36 + `config.ts` 完成（2026-10-09） |
-| **4b** | 配置 / 信任 / 模型层：settings-manager、trust-manager、project-trust、auth-storage、model-config/registry/resolver、models-store、radius、virtual-models、mcp-servers、keybindings | 6,844（实测） | 🚧 15/16 文件（6,061 行）完成；余 model-resolver（783 行） |
+| **4b** | 配置 / 信任 / 模型层：settings-manager、trust-manager、project-trust、auth-storage、model-config/registry/resolver、models-store、radius、virtual-models、mcp-servers、keybindings | 6,844（实测） | ✅ 16/16 文件（6,844 行）完成（2026-10-09） |
 | **4c** | 工具系统：`core/tools/*` + `core/tools/renderers/*` | ~9,000 | ⏳ |
 | **4d** | 扩展系统：`core/extensions/*`（types / runner / loader）+ `extensions/*`（codemode / llama / mcp / tool-search） | ~12,000 | ⏳ |
 | **4e** | 会话与资源：agent-session、session-manager、resource-loader、package-manager、compaction、export-html、system-prompt、telemetry、sdk | ~20,000 | ⏳ |
@@ -104,7 +104,7 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 
 ## 4b 进度（配置 / 信任 / 模型层）
 
-### ✅ 已完成（15/16 文件，6,061 行）
+### ✅ 已完成（16/16 文件，6,844 行）
 
 | TS 文件 | 行数 | .NET | 说明 |
 |---|---:|---|---|
@@ -123,6 +123,7 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 | `core/provider-composer.ts` | 732 | `Core/ProviderComposer.cs`（1,213）+ `Core/ProviderConfig.cs`（190） | 组合内置 / `models.json` / 扩展三层，产出不读凭据的 `IProvider`。公开面：`ComposeModelProvider`、`ValidateExtensionProvider`、`ResolveConfiguredModelHeaders`、`ResolveCompatibilityRequestConfig`、`ConfiguredRequestAuthStatus`、`ClearApiKeyCache`；类型面：`ProviderModelConfig`（抽象基类 + chat/image/classifier 三态）、`ProviderConfigInput`、`ExtensionOAuthConfig`、`AuthStatus` / `AuthStatusSource`。差异 C50–C56。 |
 | `core/model-runtime.ts` | 1,032 | `Core/ModelRuntime.cs`（约 1,180） | 配置 pi-ai `Models` 集合、组合 provider（内置 → `models.json` → 扩展 → 虚拟模型）、维护可用性快照、串行化凭据操作、虚拟模型路由与错误上报。`Models` 在 C# 是 sealed class（非接口），故改为**组合**一个 `Models` 实例而非继承（差异 C57）；其余差异 C58–C61。 |
 | `core/model-registry.ts` | 244 | `Core/ModelRegistry.cs`（约 300）+ `ResolvedRequestAuth` | 面向扩展的**同步兼容门面**：全部成员转发到 `ModelRuntime`，自身不持状态。手写部分只有两处——目录访问器返回副本（对齐 TS 的展开），以及 `getApiKeyAndHeaders` 的四条分支（已配置认证 / 未配置时回落到兼容头 / `authHeader` 缺 key 报错 / 把组合器抛出的 `authHeader requires a resolved API key` 翻译成用户可见文案）。差异 C62–C65。 |
+| `core/model-resolver.ts` | 783 | `Core/ModelResolver.cs`（约 780）+ Pi.Ai 的 `ModelOperations.ModelsAreEqual` | 模型串解析：`defaultModelPerProvider`（41 项，`Object.keys` 顺序 load-bearing，用有序 `KeyValuePair` 列表承载）、`findExactModelReferenceMatch`、`parseModelPattern`（严格/宽松两模式，`:thinking` 后缀）、`resolveModelScopeFromModels`（glob + 大小写折叠 + `modelsAreEqual` 去重）、`resolveCliModel`、`findInitialModel`、`restoreModelFromSession`、`resolveModelScope`。新增 `IModelResolverRuntime` 把 resolver 实际读到的五个成员切片出来（差异 C81）。差异 C74–C81。 |
 | 根级 `migrations.ts` | 315 | `Migrations.cs` | 启动时一次性迁移（auth → auth.json、会话目录、commands → prompts、keybindings、tools → bin、扩展系统）。TS 归 4a 的「根级模块」，随 4b 一并收口。差异 C42。 |
 
 ### minimatch 依赖（`Utils/Glob/`，为 `model-resolver` 而移植）
@@ -140,12 +141,6 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 
 > `windowsPathsNoEscape` 的取值链值得单独记一笔：`Minimatch` 把它算成 `!!options.windowsPathsNoEscape \|\| options.allowWindowsEscape === false`（上游用 `'allowWindow' + 'sEscape'` 拼出已废弃的键名来绕开类型检查），而 `escape` / `unescape` 只读前者。平台默认取 `process.platform`（可被 `__MINIMATCH_TESTING_PLATFORM__` 覆盖，本移植沿用该覆盖点以便在任何宿主上跑 Windows 分支）。
 > `brace-expansion` 的哨兵串由 `Math.random()` 改为定值 NUL 字面量；`NumericToString` 只覆盖 JS 打印为纯数字的整数范围（`|n| < 1e21`），指数形态不复制（glob 不可达）。另：上游注释称 `{},a}b` 会「展开成空」，但实现返回原串——本移植跟实现走。
-
-### ⏳ 未移植（1 文件，783 行）
-
-| TS 文件 | 行数 | 阻塞点 |
-|---|---:|---|
-| `core/model-resolver.ts` | 783 | 需 `isValidThinkingLevel`；其所在 `cli/args.ts` 属 4g。`minimatch` 依赖已就绪（见上）。 |
 
 ### Pi.Ai 侧补齐（4b 的运行时依赖）
 
@@ -175,6 +170,10 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 > **本轮测试发现并修复的真实缺陷**：`Models.GetModelsOfType` 用的是 chat-only 的 `SafeModels`，而 TS 是 `getAllModels(provider).filter(isModelType)`。后果是 image / classifier 模型一律取不到（`classifier` 更糟——`getModels` 的默认实现会过滤掉非 chat 模型）。已按 TS 修正（改为遍历 `SafeAllModels`），`Pi.Ai.Tests` 全量 286 项仍全绿。顺带记一笔：既有用例 `GetModelsOfTypeFiltersByType` 用的替身同时实现了 `GetModels()` 与 `GetAllModels()`，而 TS 的默认 `getAllModels` 会把后者退回成前者，因此该用例本身与 TS 不符——本移植按 TS 收紧后它仍然通过，属「假阴性恰好被修正的语义掩盖」，无需改动。
 
 > **本轮测试发现并修复的真实缺陷**：`ModelConfig.LoadAsync` 迭代的是 JSON **根对象**而非 `config.providers`（TS 为 `Object.entries(config.providers)`），导致任何 `models.json` 都解析出空 provider 表——`models` / `modelOverrides` / `headers` / `oauth` / `authHeader` 全部静默失效。已修正，并新增「无认证方式时组合出的 api-key 认证 resolve 为未配置」用例（TS 的 `no authentication method configured` 分支在两侧都实际不可达）。
+
+`tests/Pi.CodingAgent.Tests/ModelResolverCorpusTests.cs`（9 项）：`model-resolver-corpus.json` 的七个区段逐条回放——`defaultModelPerProvider` 的 41 项顺序与逐项查找、`findExactModelReferenceMatch`（记命中索引，`-1` 表示未命中）、`parseModelPattern`（1,206 条，含空 pattern、`:thinking` 后缀、非法思考级别告警）、`resolveModelScopeFromModels`（279 条 scope）、`resolveCliModel`（1,440 条）、`findInitialModel`（24 条）、`restoreModelFromSession`（12 条）、`resolveModelScope`（含 12 条 stderr 诊断）。回放经 `FixtureRuntime`（`IModelResolverRuntime` 的鸭子实现）注入语料里的模型集与认证集，stdout/stderr 用 `Chalk.EnabledOverride` + `ModelResolver.OutWriterOverride/ErrorWriterOverride` 捕获。
+
+`tests/Pi.CodingAgent.Tests/ModelResolverTests.cs`（28 项）：语料表达不了的部分。①`ModelRuntime` 真的满足 C81 的五个成员（`GetModels()` 恒带 42 个内置 provider——这正是抽接口的原因）；②`GetModels(provider)` 过滤仍在；③真实 runtime 上跑 `ResolveCliModel` / `FindInitialModel` / `RestoreModelFromSession`；④**「第一可用模型」回退**（语料故意省略，见「差分验证」的顺序不可复现说明）；⑤`ModelResolutionException` 携带未上色的消息；⑥别名启发式；⑦日期后缀 `-YYYYMMDD` 的四个反例（7 位 / 9 位 / 全角数字 / 带分隔符）；⑧glob 大小写折叠、去重、`modelsAreEqual` 的**类型维度**（同 id 不同类别都保留）；⑨超大 pattern；⑩stderr 一行一诊断；⑪取消传播。
 
 > 其余 4b 文件（settings-manager / trust-manager / auth-storage / model-config / models-store / mcp-servers / keybindings / virtual-models）目前**只有编译与人工核对**，尚无自动化测试；记为待办。
 
@@ -214,7 +213,7 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 | C30 | **`ModelImageResizeOptions` 是 Pi.Ai 的名义类型，与 coding-agent 的 `ImageResizeOptions` 结构相同但语义独立** | TS 靠结构类型把模型档案直接传进 `processImage`；C# 在 `ToolResultImages` 里显式字段映射桥接，两个类型都保留（模型目录下发档位 vs 通用默认，后续 4b/4c 消费）。`types.ts` 的 `ModelInputLimits` / `ModelImageInputLimits` / `BaseModel.inputLimits` 一并补进 Pi.Ai（此前无消费者）。 |
 | C31 | **C# 原生剪贴板接口把 TS 的 `undefined`/`null` 折叠成 `null`** | pi-tui TS 的 `getImage()` 三态（undefined=不可用、null=无图像、数组=有图像）；C# `INativeClipboard.GetImageAsync()` 的契约是 null=不可用、空数组=无图像。`ClipboardImageApi` 的 `ImageProbe` 保留三态语义：null→继续回退、空→停止。原生剪贴板恒为最后一站，折叠不可观察；命令行后端的三态照原样保留（Wayland 空剪贴板不得回退到陈旧 X11 内容）。 |
 
-### 4b 阶段差异（C32–C73）
+### 4b 阶段差异（C32–C81）
 
 > 编号说明：C33–C36 是 4b 期间预留但最终未使用的空号（相关结论并入了 C37 与 C39），此处不跳号补位以免与代码注释失配。C66 起是 `minimatch` 移植带来的差异。
 
@@ -258,6 +257,14 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 | C71 | **`debug()` 轨迹与 `u` 正则标志省略** | `debug(...)` 与 `Symbol.for('nodejs.util.inspect.custom')` 只用于诊断，不参与判定。`u` 标志只在 JS 里为了让 `\p{…}` 生效；.NET 的 `Regex` 原生支持 `\p{…}`，因此 `MatchRegexPart` 只保留 `IgnoreCase`。 |
 | C72 | **`parse()` 已不可能返回 `false`，相关死代码删除** | 上游 `make()` 的 `set.filter(s => s.indexOf(false) === -1)` 与 `#matchOne` 的 `p === false` 分支都是 9.x 之前的遗留：`toMMPattern()` 只返回字符串或 `RegExp`。C# 里保留它们需要为一个不可能的值发明表示，故删除并留注释。另：`makeRe()` 的裸 `catch` 收敛为 `catch (ArgumentException)`——那里唯一可能失败的就是 `Regex` 构造。 |
 | C73 | **`firstPhasePreProcess` 的外层循环改用下标遍历** | 上游用 `for...of` 遍历数组，**同时在循环体里向同一数组 push 新备选**，于是循环会继续访问刚创建的数组——这就是它的工作列表语义。C# 的 `foreach` 遇到同样的改动会抛异常，故改为 `for (k = 0; k < globParts.Count; k++)`。 |
+| C74 | **`defaultModelPerProvider` 用有序 `KeyValuePair` 列表承载** | TS 是对象字面量，`Object.keys` 的顺序（插入序）是 load-bearing——`findInitialModel` 的候选遍历与 `buildFallbackModel` 都依赖它。C# 的 `Dictionary` 不保证枚举顺序，故保留 `IReadOnlyList<KeyValuePair<string, string>>`（41 项）作为唯一真源，查找用的 `DefaultModelIds` 只是它的投影（`ToDictionary`）。 |
+| C75 | **`Model` / `ModelTypeMap` 折叠为 `ModelSpec`，`modelsAreEqual` 落到 Pi.Ai** | TS 的 `availableModels: Model[]` 靠 `model.type` 判别类别；C# 的目录是单一具名记录 `ModelSpec`（`Type` 字段承载类别，同 C62）。`modelsAreEqual`（去重与 `rawExactMatches` 过滤都要用）在 Pi.Ai 侧此前无等价物，本批补上 `ModelOperations.ModelsAreEqual`：类别 + id + provider 三项全等，id / provider 是 JS 的 `===` 字符串比较，对应序号比较。 |
+| C76 | **`AbortSignal` → `CancellationToken`** | 与 C2 / C44 一致：取消归一为 `OperationCanceledException`。`resolveModelScope` 把 signal 透传给 `runtime.getAvailable()`。 |
+| C77 | **`isValidThinkingLevel` 就地复用 `ThinkingLevels.Parse`** | TS 从 `../cli/args.ts` 引 `isValidThinkingLevel`，而 `cli/args.ts` 属 4g（尚未移植）。它的取值集合与 `Pi.CodingAgent.Core.ThinkingLevels` 的解析集**逐项一致**（含 `off`），故直接复用而不为此提前搬运 4g 的文件。`DEFAULT_THINKING_LEVEL` 同理走既有的 `Defaults.DefaultThinkingLevel`。 |
+| C78 | **`findInitialModel` 的退出改写成被拒绝的 `Task`** | TS 的 `findInitialModel` 是 `async` 函数，`process.exit(1)` 之前的分支会变成**被拒绝的 promise** 而非同步抛出。C# 里若同步 `throw`，只观察返回任务、不 try/catch 调用点的调用方就看不到异常。故用 `Task.FromException<InitialModelResult>(new ModelResolutionException(error))` 保持同一形状。 |
+| C79 | **`localeCompare` → `CompareInfo.Compare`，`toLowerCase` → `JsString.ToLowerCase`** | 两处 JS 语义都要显式对应：①模型排序用 `CultureInfo.CurrentCulture.CompareInfo.Compare(a, b, CompareOptions.None)`（Node 与 .NET 都走 ICU，等价——沿用 `Pi.Tui.Autocomplete` 的既有结论）；②JS 的 `toLowerCase()` 是**全量**映射，与 .NET 的 `ToLowerInvariant`（简单映射）在 U+0130 等码点上不同，故一律用全仓既有的 `JsString.ToLowerCase`（语料里的 `caseFolding` 模型集就是为钉住这一条）。 |
+| C80 | **TS 的字符串字面量联合 → `string` + 常量类** | `ModelScopeDiagnostic` 的 `type` / `code` 在 TS 是字面量联合，C# 收敛为 `string`，全部取值由 `ModelScopeDiagnostic.Types` / `ModelScopeDiagnostic.Codes` 两个常量类给出（同 `VirtualModels.RouteReasons` 的既有做法）。 |
+| C81 | **`IModelResolverRuntime` 是新增的运行时切片** | `model-resolver` 只用到 `ModelRuntime` 的五个成员（`getModels` / `getModel` / `hasConfiguredAuth` / `getAvailableSnapshot` / `getAvailable`），而 `ModelRuntime` 恒带 42 个内置 provider——语料无法表达「只有 mock 模型」的 runtime。故把这五个成员抽成 `IModelResolverRuntime`，`ModelRuntime` 实现它；`GetModels()` 的接口无参签名与类的可选 provider 过滤参数不匹配，用**显式接口实现**桥接（`IReadOnlyList<ModelSpec> IModelResolverRuntime.GetModels() => GetModels();`）。 |
 
 ## 差分验证（utils 层）
 
@@ -274,6 +281,8 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 > `ERR_MODULE_NOT_FOUND`；要装就用 `npm install --prefix "D:/AI/参考项目" --no-save --no-package-lock`。
 > ②同一个包**不能**同时存在于 `tools/node_modules` 与父目录——`highlight.js` 会变成两个实例，生成器注册的
 > 语言落在另一个实例上，原模块仍报 `Unknown language`。
+> ③`model-resolver-corpus` 的生成器额外依赖 **Node 的 TS 类型剥离**（Node ≥ 22.18 / 23.6 可直接 `node file.ts`），
+> 因此不需要 tsc / tsx——它把**真实的** `model-resolver.ts` 原样 stage 出来、只重写 import 头（见下）。
 
 | 语料 | 生成器 | 条数 | 覆盖 |
 |---|---|---:|---|
@@ -358,9 +367,37 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 
 > **语料抓到的两处移植缺陷**（都不是 glob 算法本身，而是选项语义）：①`Glob.Escape` / `Glob.Unescape` 首版把 `allowWindowsEscape === false` 也算进 `windowsPathsNoEscape`，但上游只有 `Minimatch` 构造器读那个键——`escape` / `unescape` 只解构 `windowsPathsNoEscape`，于是 23 条 `allowWindowsEscape:false` 向量全部不符（差异 C67）。②`magicalBraces` 在 `escape` 里默认 `false`、在 `unescape` 里默认 `true`，首版用统一的 `bool` 默认值导致 `{a}` 的解转义全错——改为 `bool?` 后由各处自取默认（差异 C66）。两处都是**只看代码读不出来**的：`escape.js` 与 `unescape.js` 的解构默认值写在同一行的花括号里，很容易当作同一个值。
 
+`tests/Pi.CodingAgent.Tests/model-resolver-corpus.json`（由 `tools/gen-coding-agent-model-resolver-corpus.mjs` 生成，约 558 KB）——4b 的最后一文件：
+
+| 区段 | 条数 | 内容 |
+|---|---:|---|
+| `defaultModelPerProvider` / `providers` | 41 | 41 个内置 provider 的**顺序**与逐项 `getDefaultModelId` 查找 |
+| `parsePatterns` | 1,206 | `parseModelPattern` 的模型 / 思考级别 / 告警三元组，覆盖严格与宽松两模式 |
+| `exactMatches` | 270 | `findExactModelReferenceMatch` 的命中索引（`-1` = 未命中） |
+| `scopes` | 279 | `resolveModelScopeFromModels` 的 scoped 列表与告警 |
+| `cliModels` | 1,440 | `resolveCliModel` 的模型 / 来源 / 错误 |
+| `initialModels` | 24 | `findInitialModel` 的结果 |
+| `restoredModels` | 12 | `restoreModelFromSession` 的结果 |
+| `scopeWarnings` | 12 | `resolveModelScope` 写到 stderr 的逐行诊断 |
+
+> **本语料的三条要点**：
+> ①**生成器 stage 的是真实源码**——把 `packages/coding-agent/src/core/model-resolver.ts` 原样拷到临时目录，
+> **只重写 import 头**（正则替换 5 条 import），用 4 个 shim 顶掉不可达依赖（`@earendil-works/pi-ai` 的
+> `modelsAreEqual`、`chalk`、`../cli/args.ts` 的 `isValidThinkingLevel`、`./defaults.ts` 的 `DEFAULT_THINKING_LEVEL`）。
+> 每个 shim 都是从原文件**逐行抄来**并注明出处，因此语料反映的是上游**同一份代码**，包括文档注释里没写明的行为。
+> ②**Node 24 的原生 TS 类型剥离**让生成器可以直接 `node model-resolver.ts`（无需 tsc / tsx），代价是 stage 出来的
+> 源码里**不能残留任何未重写的 import**——生成器最后用 `^import\b[^\n]*from "([^"]*)"` 只扫**真的 import 语句**
+> （首版用宽松正则把文档注释里的 `from "<pattern>:<thinking>"` 也当成 import，误报泄漏）。
+> ③**跨 provider 的顺序不可复现**：`ModelRuntime.ProviderIds()` 返回 `HashSet<string>`，而 .NET 的字符串哈希
+> **逐进程随机化**，所以「按 provider 分组后的跨组顺序」在 .NET 侧不稳定。凡依赖它的向量（`findInitialModel` 的
+> 「第一可用模型」回退、`buildFallbackModel` 的部分分支）**已从语料中剔除**，改在 `ModelResolverTests` 里用
+> **单一 provider 的 runtime** 覆盖——这是 4b 唯一一处「语料表达不了、只能手写」的行为。组**内**顺序是稳定的
+> （`ModelRuntime` 是按 provider 过滤后的扁平列表），所以 `resolveModelScopeFromModels` 那类不经过 runtime 的
+> 向量仍可全量回放。
+
 ## 测试覆盖
 
-`tests/Pi.CodingAgent.Tests` 的 utils 层部分（下表，共 121 项；4b 的 5 个测试类见「4b 进度 → 测试覆盖」）：
+`tests/Pi.CodingAgent.Tests` 的 utils 层部分（下表，共 121 项；4b 的 6 个测试类见「4b 进度 → 测试覆盖」）：
 
 | 测试类 | 项数 | 覆盖 |
 |---|---:|---|

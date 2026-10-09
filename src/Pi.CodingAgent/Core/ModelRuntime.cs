@@ -177,10 +177,12 @@ internal sealed record ModelRuntimeSnapshot
 /// <item>C61：图片/分类请求同样解析认证并应用 <c>transformHeaders</c>（与 TS 一致），但这与 C# 既有
 /// <see cref="Models.GenerateImagesAsync"/>/<see cref="Models.ClassifyAsync"/> 的「不解析认证」行为不同——
 /// 本类是图片/分类的认证边界，<c>Models</c> 那一层保持原样。</item>
+/// <item>C81（记在 <c>model-resolver.ts</c> 名下）：实现 <see cref="IModelResolverRuntime"/>，即
+/// <c>model-resolver.ts</c> 实际读到的五个成员的具名切片。</item>
 /// </list>
 /// </para>
 /// </remarks>
-public sealed class ModelRuntime
+public sealed class ModelRuntime : IModelResolverRuntime
 {
     private sealed record RegisteredVirtualModel(ModelSpec Model, Func<ModelRouteRequest, Task<ModelRoute>> Route);
 
@@ -519,6 +521,12 @@ public sealed class ModelRuntime
     public IProvider? GetProvider(string providerId) => _models.GetProvider(providerId);
 
     public IReadOnlyList<ModelSpec> GetModels(string? providerId = null) => _models.GetModels(providerId);
+
+    /// <summary>
+    /// The resolver only ever asks for the whole catalog, so <see cref="IModelResolverRuntime"/> declares the
+    /// parameterless form while this class's accessor keeps its optional provider filter.
+    /// </summary>
+    IReadOnlyList<ModelSpec> IModelResolverRuntime.GetModels() => GetModels();
 
     public ModelSpec? GetModel(string providerId, string modelId) => _models.GetModel(providerId, modelId);
 

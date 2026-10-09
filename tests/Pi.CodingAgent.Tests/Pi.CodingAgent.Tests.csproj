@@ -27,6 +27,9 @@
     <!-- Fifth slice: minimatch@10.2.6 (glob matching), which the model resolver's case-insensitive
          model-id globs depend on. -->
     <None Include="minimatch-corpus.json" CopyToOutputDirectory="PreserveNewest" />
+    <!-- Sixth slice: core/model-resolver.ts, captured by importing the real source (the generator only
+         rewrites its import header; see tools/gen-coding-agent-model-resolver-corpus.mjs). -->
+    <None Include="model-resolver-corpus.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Pi.CodingAgent\Pi.CodingAgent.csproj" />
