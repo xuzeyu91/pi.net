@@ -1,0 +1,3167 @@
+{
+  "formatterIds": [
+    "upper",
+    "bracket",
+    "len",
+    "star"
+  ],
+  "supportsLanguage": [
+    {
+      "name": "python",
+      "supported": true
+    },
+    {
+      "name": "javascript",
+      "supported": true
+    },
+    {
+      "name": "plaintext",
+      "supported": true
+    },
+    {
+      "name": "not-a-language",
+      "supported": false
+    },
+    {
+      "name": "Python",
+      "supported": true
+    },
+    {
+      "name": "JSON",
+      "supported": true
+    },
+    {
+      "name": "csharp",
+      "supported": true
+    }
+  ],
+  "crafted": [
+    {
+      "label": "no spans at all / empty",
+      "html": "plain text",
+      "theme": {},
+      "output": "plain text"
+    },
+    {
+      "label": "no spans at all / defaultOnly",
+      "html": "plain text",
+      "theme": {
+        "default": "bracket"
+      },
+      "output": "[plain text]"
+    },
+    {
+      "label": "no spans at all / keywordsAndStrings",
+      "html": "plain text",
+      "theme": {
+        "keyword": "upper",
+        "string": "bracket",
+        "default": "len"
+      },
+      "output": "<10>plain text"
+    },
+    {
+      "label": "no spans at all / dotPrefix",
+      "html": "plain text",
+      "theme": {
+        "title.function": "star",
+        "default": "len"
+      },
+      "output": "<10>plain text"
+    },
+    {
+      "label": "no spans at all / dashPrefix",
+      "html": "plain text",
+      "theme": {
+        "title-class": "star",
+        "default": "len"
+      },
+      "output": "<10>plain text"
+    },
+    {
+      "label": "no spans at all / exactBeatsPrefix",
+      "html": "plain text",
+      "theme": {
+        "title": "bracket",
+        "title.function": "upper"
+      },
+      "output": "plain text"
+    },
+    {
+      "label": "no spans at all / nestedPrecedence",
+      "html": "plain text",
+      "theme": {
+        "keyword": "upper",
+        "default": "len"
+      },
+      "output": "<10>plain text"
+    },
+    {
+      "label": "one scope / empty",
+      "html": "<span class=\"hljs-keyword\">if</span>",
+      "theme": {},
+      "output": "if"
+    },
+    {
+      "label": "one scope / defaultOnly",
+      "html": "<span class=\"hljs-keyword\">if</span>",
+      "theme": {
+        "default": "bracket"
+      },
+      "output": "[if]"
+    },
+    {
+      "label": "one scope / keywordsAndStrings",
+      "html": "<span class=\"hljs-keyword\">if</span>",
+      "theme": {
+        "keyword": "upper",
+        "string": "bracket",
+        "default": "len"
+      },
+      "output": "IF"
+    },
+    {
+      "label": "one scope / dotPrefix",
+      "html": "<span class=\"hljs-keyword\">if</span>",
+      "theme": {
+        "title.function": "star",
+        "default": "len"
+      },
+      "output": "<2>if"
+    },
+    {
+      "label": "one scope / dashPrefix",
+      "html": "<span class=\"hljs-keyword\">if</span>",
+      "theme": {
+        "title-class": "star",
+        "default": "len"
+      },
+      "output": "<2>if"
+    },
+    {
+      "label": "one scope / exactBeatsPrefix",
+      "html": "<span class=\"hljs-keyword\">if</span>",
+      "theme": {
+        "title": "bracket",
+        "title.function": "upper"
+      },
+      "output": "if"
+    },
+    {
+      "label": "one scope / nestedPrecedence",
+      "html": "<span class=\"hljs-keyword\">if</span>",
+      "theme": {
+        "keyword": "upper",
+        "default": "len"
+      },
+      "output": "IF"
+    },
+    {
+      "label": "two sibling scopes / empty",
+      "html": "<span class=\"hljs-keyword\">if</span> x <span class=\"hljs-string\">\"s\"</span>",
+      "theme": {},
+      "output": "if x \"s\""
+    },
+    {
+      "label": "two sibling scopes / defaultOnly",
+      "html": "<span class=\"hljs-keyword\">if</span> x <span class=\"hljs-string\">\"s\"</span>",
+      "theme": {
+        "default": "bracket"
+      },
+      "output": "[if][ x ][\"s\"]"
+    },
+    {
+      "label": "two sibling scopes / keywordsAndStrings",
+      "html": "<span class=\"hljs-keyword\">if</span> x <span class=\"hljs-string\">\"s\"</span>",
+      "theme": {
+        "keyword": "upper",
+        "string": "bracket",
+        "default": "len"
+      },
+      "output": "IF<3> x [\"s\"]"
+    },
+    {
+      "label": "two sibling scopes / dotPrefix",
+      "html": "<span class=\"hljs-keyword\">if</span> x <span class=\"hljs-string\">\"s\"</span>",
+      "theme": {
+        "title.function": "star",
+        "default": "len"
+      },
+      "output": "<2>if<3> x <3>\"s\""
+    },
+    {
+      "label": "two sibling scopes / dashPrefix",
+      "html": "<span class=\"hljs-keyword\">if</span> x <span class=\"hljs-string\">\"s\"</span>",
+      "theme": {
+        "title-class": "star",
+        "default": "len"
+      },
+      "output": "<2>if<3> x <3>\"s\""
+    },
+    {
+      "label": "two sibling scopes / exactBeatsPrefix",
+      "html": "<span class=\"hljs-keyword\">if</span> x <span class=\"hljs-string\">\"s\"</span>",
+      "theme": {
+        "title": "bracket",
+        "title.function": "upper"
+      },
+      "output": "if x \"s\""
+    },
+    {
+      "label": "two sibling scopes / nestedPrecedence",
+      "html": "<span class=\"hljs-keyword\">if</span> x <span class=\"hljs-string\">\"s\"</span>",
+      "theme": {
+        "keyword": "upper",
+        "default": "len"
+      },
+      "output": "IF<3> x <3>\"s\""
+    },
+    {
+      "label": "nested scopes / empty",
+      "html": "<span class=\"hljs-title\">a<span class=\"hljs-keyword\">b</span>c</span>",
+      "theme": {},
+      "output": "abc"
+    },
+    {
+      "label": "nested scopes / defaultOnly",
+      "html": "<span class=\"hljs-title\">a<span class=\"hljs-keyword\">b</span>c</span>",
+      "theme": {
+        "default": "bracket"
+      },
+      "output": "[a][b][c]"
+    },
+    {
+      "label": "nested scopes / keywordsAndStrings",
+      "html": "<span class=\"hljs-title\">a<span class=\"hljs-keyword\">b</span>c</span>",
+      "theme": {
+        "keyword": "upper",
+        "string": "bracket",
+        "default": "len"
+      },
+      "output": "<1>aB<1>c"
+    },
+    {
+      "label": "nested scopes / dotPrefix",
+      "html": "<span class=\"hljs-title\">a<span class=\"hljs-keyword\">b</span>c</span>",
+      "theme": {
+        "title.function": "star",
+        "default": "len"
+      },
+      "output": "<1>a<1>b<1>c"
+    },
+    {
+      "label": "nested scopes / dashPrefix",
+      "html": "<span class=\"hljs-title\">a<span class=\"hljs-keyword\">b</span>c</span>",
+      "theme": {
+        "title-class": "star",
+        "default": "len"
+      },
+      "output": "<1>a<1>b<1>c"
+    },
+    {
+      "label": "nested scopes / exactBeatsPrefix",
+      "html": "<span class=\"hljs-title\">a<span class=\"hljs-keyword\">b</span>c</span>",
+      "theme": {
+        "title": "bracket",
+        "title.function": "upper"
+      },
+      "output": "[a][b][c]"
+    },
+    {
+      "label": "nested scopes / nestedPrecedence",
+      "html": "<span class=\"hljs-title\">a<span class=\"hljs-keyword\">b</span>c</span>",
+      "theme": {
+        "keyword": "upper",
+        "default": "len"
+      },
+      "output": "<1>aB<1>c"
+    },
+    {
+      "label": "single-quoted class / empty",
+      "html": "<span class='hljs-keyword'>k</span>",
+      "theme": {},
+      "output": "k"
+    },
+    {
+      "label": "single-quoted class / defaultOnly",
+      "html": "<span class='hljs-keyword'>k</span>",
+      "theme": {
+        "default": "bracket"
+      },
+      "output": "[k]"
+    },
+    {
+      "label": "single-quoted class / keywordsAndStrings",
+      "html": "<span class='hljs-keyword'>k</span>",
+      "theme": {
+        "keyword": "upper",
+        "string": "bracket",
+        "default": "len"
+      },
+      "output": "K"
+    },
+    {
+      "label": "single-quoted class / dotPrefix",
+      "html": "<span class='hljs-keyword'>k</span>",
+      "theme": {
+        "title.function": "star",
+        "default": "len"
+      },
+      "output": "<1>k"
+    },
+    {
+      "label": "single-quoted class / dashPrefix",
+      "html": "<span class='hljs-keyword'>k</span>",
+      "theme": {
+        "title-class": "star",
+        "default": "len"
+      },
+      "output": "<1>k"
+    },
+    {
+      "label": "single-quoted class / exactBeatsPrefix",
+      "html": "<span class='hljs-keyword'>k</span>",
+      "theme": {
+        "title": "bracket",
+        "title.function": "upper"
+      },
+      "output": "k"
+    },
+    {
+      "label": "single-quoted class / nestedPrecedence",
+      "html": "<span class='hljs-keyword'>k</span>",
+      "theme": {
+        "keyword": "upper",
+        "default": "len"
+      },
+      "output": "K"
+    },
+    {
+      "label": "class with several names / empty",
+      "html": "<span class=\"foo hljs-keyword bar\">k</span>",
+      "theme": {},
+      "output": "k"
+    },
+    {
+      "label": "class with several names / defaultOnly",
+      "html": "<span class=\"foo hljs-keyword bar\">k</span>",
+      "theme": {
+        "default": "bracket"
+      },
+      "output": "[k]"
+    },
+    {
+      "label": "class with several names / keywordsAndStrings",
+      "html": "<span class=\"foo hljs-keyword bar\">k</span>",
+      "theme": {
+        "keyword": "upper",
+        "string": "bracket",
+        "default": "len"
+      },
+      "output": "K"
+    },
+    {
+      "label": "class with several names / dotPrefix",
+      "html": "<span class=\"foo hljs-keyword bar\">k</span>",
+      "theme": {
+        "title.function": "star",
+        "default": "len"
+      },
+      "output": "<1>k"
+    },
+    {
+      "label": "class with several names / dashPrefix",
+      "html": "<span class=\"foo hljs-keyword bar\">k</span>",
+      "theme": {
+        "title-class": "star",
+        "default": "len"
+      },
+      "output": "<1>k"
+    },
+    {
+      "label": "class with several names / exactBeatsPrefix",
+      "html": "<span class=\"foo hljs-keyword bar\">k</span>",
+      "theme": {
+        "title": "bracket",
+        "title.function": "upper"
+      },
+      "output": "k"
+    },
+    {
+      "label": "class with several names / nestedPrecedence",
+      "html": "<span class=\"foo hljs-keyword bar\">k</span>",
+      "theme": {
+        "keyword": "upper",
+        "default": "len"
+      },
+      "output": "K"
+    },
+    {
+      "label": "hljs class not first / empty",
+      "html": "<span class=\"x hljs-string\">s</span>",
+      "theme": {},
+      "output": "s"
+    },
+    {
+      "label": "hljs class not first / defaultOnly",
+      "html": "<span class=\"x hljs-string\">s</span>",
+      "theme": {
+        "default": "bracket"
+      },
+      "output": "[s]"
+    },
+    {
+      "label": "hljs class not first / keywordsAndStrings",
+      "html": "<span class=\"x hljs-string\">s</span>",
+      "theme": {
+        "keyword": "upper",
+        "string": "bracket",
+        "default": "len"
+      },
+      "output": "[s]"
+    },
+    {
+      "label": "hljs class not first / dotPrefix",
+      "html": "<span class=\"x hljs-string\">s</span>",
+      "theme": {
+        "title.function": "star",
+        "default": "len"
+      },
+      "output": "<1>s"
+    },
+    {
+      "label": "hljs class not first / dashPrefix",
+      "html": "<span class=\"x hljs-string\">s</span>",
+      "theme": {
+        "title-class": "star",
+        "default": "len"
+      },
+      "output": "<1>s"
+    },
+    {
+      "label": "hljs class not first / exactBeatsPrefix",
+      "html": "<span class=\"x hljs-string\">s</span>",
+      "theme": {
+        "title": "bracket",
+        "title.function": "upper"
+      },
+      "output": "s"
+    },
+    {
+      "label": "hljs class not first / nestedPrecedence",
+      "html": "<span class=\"x hljs-string\">s</span>",
+      "theme": {
+        "keyword": "upper",
+        "default": "len"
+      },
+      "output": "<1>s"
+    },
+    {
+      "label": "no class attribute / empty",
+      "html": "<span>n</span>",
+      "theme": {},
+      "output": "n"
+    },
+    {
+      "label": "no class attribute / defaultOnly",
+      "html": "<span>n</span>",
+      "theme": {
+        "default": "bracket"
+      },
+      "output": "[n]"
+    },
+    {
+      "label": "no class attribute / keywordsAndStrings",
+      "html": "<span>n</span>",
+      "theme": {
+        "keyword": "upper",
+        "string": "bracket",
+        "default": "len"
+      },
+      "output": "<1>n"
+    },
+    {
+      "label": "no class attribute / dotPrefix",
+      "html": "<span>n</span>",
+      "theme": {
+        "title.function": "star",
+        "default": "len"
+      },
+      "output": "<1>n"
+    },
+    {
+      "label": "no class attribute / dashPrefix",
+      "html": "<span>n</span>",
+      "theme": {
+        "title-class": "star",
+        "default": "len"
+      },
+      "output": "<1>n"
+    },
+    {
+      "label": "no class attribute / exactBeatsPrefix",
+      "html": "<span>n</span>",
+      "theme": {
+        "title": "bracket",
+        "title.function": "upper"
+      },
+      "output": "n"
+    },
+    {
+      "label": "no class attribute / nestedPrecedence",
+      "html": "<span>n</span>",
+      "theme": {
+        "keyword": "upper",
+        "default": "len"
+      },
+      "output": "<1>n"
+    },
+    {
+      "label": "empty class value / empty",
+      "html": "<span class=\"\">e</span>",
+      "theme": {},
+      "output": "e"
+    },
+    {
+      "label": "empty class value / defaultOnly",
+      "html": "<span class=\"\">e</span>",
+      "theme": {
+        "default": "bracket"
+      },
+      "output": "[e]"
+    },
+    {
+      "label": "empty class value / keywordsAndStrings",
+      "html": "<span class=\"\">e</span>",
+      "theme": {
+        "keyword": "upper",
+        "string": "bracket",
+        "default": "len"
+      },
+      "output": "<1>e"
+    },
+    {
+      "label": "empty class value / dotPrefix",
+      "html": "<span class=\"\">e</span>",
+      "theme": {
+        "title.function": "star",
+        "default": "len"
+      },
+      "output": "<1>e"
+    },
+    {
+      "label": "empty class value / dashPrefix",
+      "html": "<span class=\"\">e</span>",
+      "theme": {
+        "title-class": "star",
+        "default": "len"
+      },
+      "output": "<1>e"
+    },
+    {
+      "label": "empty class value / exactBeatsPrefix",
+      "html": "<span class=\"\">e</span>",
+      "theme": {
+        "title": "bracket",
+        "title.function": "upper"
+      },
+      "output": "e"
+    },
+    {
+      "label": "empty class value / nestedPrecedence",
+      "html": "<span class=\"\">e</span>",
+      "theme": {
+        "keyword": "upper",
+        "default": "len"
+      },
+      "output": "<1>e"
+    },
+    {
+      "label": "class attribute first / empty",
+      "html": "<span class=\"hljs-keyword\" data-x=\"1\">k</span>",
+      "theme": {},
+      "output": "k"
+    },
+    {
+      "label": "class attribute first / defaultOnly",
+      "html": "<span class=\"hljs-keyword\" data-x=\"1\">k</span>",
+      "theme": {
+        "default": "bracket"
+      },
+      "output": "[k]"
+    },
+    {
+      "label": "class attribute first / keywordsAndStrings",
+      "html": "<span class=\"hljs-keyword\" data-x=\"1\">k</span>",
+      "theme": {
+        "keyword": "upper",
+        "string": "bracket",
+        "default": "len"
+      },
+      "output": "K"
+    },
+    {
+      "label": "class attribute first / dotPrefix",
+      "html": "<span class=\"hljs-keyword\" data-x=\"1\">k</span>",
+      "theme": {
+        "title.function": "star",
+        "default": "len"
+      },
+      "output": "<1>k"
+    },
+    {
+      "label": "class attribute first / dashPrefix",
+      "html": "<span class=\"hljs-keyword\" data-x=\"1\">k</span>",
+      "theme": {
+        "title-class": "star",
+        "default": "len"
+      },
+      "output": "<1>k"
+    },
+    {
+      "label": "class attribute first / exactBeatsPrefix",
+      "html": "<span class=\"hljs-keyword\" data-x=\"1\">k</span>",
+      "theme": {
+        "title": "bracket",
+        "title.function": "upper"
+      },
+      "output": "k"
+    },
+    {
+      "label": "class attribute first / nestedPrecedence",
+      "html": "<span class=\"hljs-keyword\" data-x=\"1\">k</span>",
+      "theme": {
+        "keyword": "upper",
+        "default": "len"
+      },
+      "output": "K"
+    },
+    {
+      "label": "attribute value contains > / empty",
+      "html": "<span class=\"hljs-string\" title=\"a>b\">s</span>",
+      "theme": {},
+      "output": "b\">s"
+    },
+    {
+      "label": "attribute value contains > / defaultOnly",
+      "html": "<span class=\"hljs-string\" title=\"a>b\">s</span>",
+      "theme": {
+        "default": "bracket"
+      },
+      "output": "[b\">s]"
+    },
+    {
+      "label": "attribute value contains > / keywordsAndStrings",
+      "html": "<span class=\"hljs-string\" title=\"a>b\">s</span>",
+      "theme": {
+        "keyword": "upper",
+        "string": "bracket",
+        "default": "len"
+      },
+      "output": "[b\">s]"
+    },
+    {
+      "label": "attribute value contains > / dotPrefix",
+      "html": "<span class=\"hljs-string\" title=\"a>b\">s</span>",
+      "theme": {
+        "title.function": "star",
+        "default": "len"
+      },
+      "output": "<4>b\">s"
+    },
+    {
+      "label": "attribute value contains > / dashPrefix",
+      "html": "<span class=\"hljs-string\" title=\"a>b\">s</span>",
+      "theme": {
+        "title-class": "star",
+        "default": "len"
+      },
+      "output": "<4>b\">s"
+    },
+    {
+      "label": "attribute value contains > / exactBeatsPrefix",
+      "html": "<span class=\"hljs-string\" title=\"a>b\">s</span>",
+      "theme": {
+        "title": "bracket",
+        "title.function": "upper"
+      },
+      "output": "b\">s"
+    },
+    {
+      "label": "attribute value contains > / nestedPrecedence",
+      "html": "<span class=\"hljs-string\" title=\"a>b\">s</span>",
+      "theme": {
+        "keyword": "upper",
+        "default": "len"
+      },
+      "output": "<4>b\">s"
+    },
+    {
+      "label": "spanner is not a span / empty",
+      "html": "<spanner>nope</spanner>",
+      "theme": {},
+      "output": "<spanner>nope</spanner>"
+    },
+    {
+      "label": "spanner is not a span / defaultOnly",
+      "html": "<spanner>nope</spanner>",
+      "theme": {
+        "default": "bracket"
+      },
+      "output": "[<spanner>nope</spanner>]"
+    },
+    {
+      "label": "spanner is not a span / keywordsAndStrings",
+      "html": "<spanner>nope</spanner>",
+      "theme": {
+        "keyword": "upper",
+        "string": "bracket",
+        "default": "len"
+      },
+      "output": "<23><spanner>nope</spanner>"
+    },
+    {
+      "label": "spanner is not a span / dotPrefix",
+      "html": "<spanner>nope</spanner>",
+      "theme": {
+        "title.function": "star",
+        "default": "len"
+      },
+      "output": "<23><spanner>nope</spanner>"
+    },
+    {
+      "label": "spanner is not a span / dashPrefix",
+      "html": "<spanner>nope</spanner>",
+      "theme": {
+        "title-class": "star",
+        "default": "len"
+      },
+      "output": "<23><spanner>nope</spanner>"
+    },
+    {
+      "label": "spanner is not a span / exactBeatsPrefix",
+      "html": "<spanner>nope</spanner>",
+      "theme": {
+        "title": "bracket",
+        "title.function": "upper"
+      },
+      "output": "<spanner>nope</spanner>"
+    },
+    {
+      "label": "spanner is not a span / nestedPrecedence",
+      "html": "<spanner>nope</spanner>",
+      "theme": {
+        "keyword": "upper",
+        "default": "len"
+      },
+      "output": "<23><spanner>nope</spanner>"
+    },
+    {
+      "label": "span without delimiter / empty",
+      "html": "<spantext>",
+      "theme": {},
+      "output": "<spantext>"
+    },
+    {
+      "label": "span without delimiter / defaultOnly",
+      "html": "<spantext>",
+      "theme": {
+        "default": "bracket"
+      },
+      "output": "[<spantext>]"
+    },
+    {
+      "label": "span without delimiter / keywordsAndStrings",
+      "html": "<spantext>",
+      "theme": {
+        "keyword": "upper",
+        "string": "bracket",
+        "default": "len"
+      },
+      "output": "<10><spantext>"
+    },
+    {
+      "label": "span without delimiter / dotPrefix",
+      "html": "<spantext>",
+      "theme": {
+        "title.function": "star",
+        "default": "len"
+      },
+      "output": "<10><spantext>"
+    },
+    {
+      "label": "span without delimiter / dashPrefix",
+      "html": "<spantext>",
+      "theme": {
+        "title-class": "star",
+        "default": "len"
+      },
+      "output": "<10><spantext>"
+    },
+    {
+      "label": "span without delimiter / exactBeatsPrefix",
+      "html": "<spantext>",
+      "theme": {
+        "title": "bracket",
+        "title.function": "upper"
+      },
+      "output": "<spantext>"
+    },
+    {
+      "label": "span without delimiter / nestedPrecedence",
+      "html": "<spantext>",
+      "theme": {
+        "keyword": "upper",
+        "default": "len"
+      },
+      "output": "<10><spantext>"
+    },
+    {
+      "label": "unclosed span / empty",
+      "html": "<span class=\"hljs-keyword\">k",
+      "theme": {},
+      "output": "k"
+    },
+    {
+      "label": "unclosed span / defaultOnly",
+      "html": "<span class=\"hljs-keyword\">k",
+      "theme": {
+        "default": "bracket"
+      },
+      "output": "[k]"
+    },
+    {
+      "label": "unclosed span / keywordsAndStrings",
+      "html": "<span class=\"hljs-keyword\">k",
+      "theme": {
+        "keyword": "upper",
+        "string": "bracket",
+        "default": "len"
+      },
+      "output": "K"
+    },
+    {
+      "label": "unclosed span / dotPrefix",
+      "html": "<span class=\"hljs-keyword\">k",
+      "theme": {
+        "title.function": "star",
+        "default": "len"
+      },
+      "output": "<1>k"
+    },
+    {
+      "label": "unclosed span / dashPrefix",
+      "html": "<span class=\"hljs-keyword\">k",
+      "theme": {
+        "title-class": "star",
+        "default": "len"
+      },
+      "output": "<1>k"
+    },
+    {
+      "label": "unclosed span / exactBeatsPrefix",
+      "html": "<span class=\"hljs-keyword\">k",
+      "theme": {
+        "title": "bracket",
+        "title.function": "upper"
+      },
+      "output": "k"
+    },
+    {
+      "label": "unclosed span / nestedPrecedence",
+      "html": "<span class=\"hljs-keyword\">k",
+      "theme": {
+        "keyword": "upper",
+        "default": "len"
+      },
+      "output": "K"
+    },
+    {
+      "label": "stray close / empty",
+      "html": "a</span>b",
+      "theme": {},
+      "output": "ab"
+    },
+    {
+      "label": "stray close / defaultOnly",
+      "html": "a</span>b",
+      "theme": {
+        "default": "bracket"
+      },
+      "output": "[a][b]"
+    },
+    {
+      "label": "stray close / keywordsAndStrings",
+      "html": "a</span>b",
+      "theme": {
+        "keyword": "upper",
+        "string": "bracket",
+        "default": "len"
+      },
+      "output": "<1>a<1>b"
+    },
+    {
+      "label": "stray close / dotPrefix",
+      "html": "a</span>b",
+      "theme": {
+        "title.function": "star",
+        "default": "len"
+      },
+      "output": "<1>a<1>b"
+    },
+    {
+      "label": "stray close / dashPrefix",
+      "html": "a</span>b",
+      "theme": {
+        "title-class": "star",
+        "default": "len"
+      },
+      "output": "<1>a<1>b"
+    },
+    {
+      "label": "stray close / exactBeatsPrefix",
+      "html": "a</span>b",
+      "theme": {
+        "title": "bracket",
+        "title.function": "upper"
+      },
+      "output": "ab"
+    },
+    {
+      "label": "stray close / nestedPrecedence",
+      "html": "a</span>b",
+      "theme": {
+        "keyword": "upper",
+        "default": "len"
+      },
+      "output": "<1>a<1>b"
+    },
+    {
+      "label": "close before open / empty",
+      "html": "</span>a",
+      "theme": {},
+      "output": "a"
+    },
+    {
+      "label": "close before open / defaultOnly",
+      "html": "</span>a",
+      "theme": {
+        "default": "bracket"
+      },
+      "output": "[a]"
+    },
+    {
+      "label": "close before open / keywordsAndStrings",
+      "html": "</span>a",
+      "theme": {
+        "keyword": "upper",
+        "string": "bracket",
+        "default": "len"
+      },
+      "output": "<1>a"
+    },
+    {
+      "label": "close before open / dotPrefix",
+      "html": "</span>a",
+      "theme": {
+        "title.function": "star",
+        "default": "len"
+      },
+      "output": "<1>a"
+    },
+    {
+      "label": "close before open / dashPrefix",
+      "html": "</span>a",
+      "theme": {
+        "title-class": "star",
+        "default": "len"
+      },
+      "output": "<1>a"
+    },
+    {
+      "label": "close before open / exactBeatsPrefix",
+      "html": "</span>a",
+      "theme": {
+        "title": "bracket",
+        "title.function": "upper"
+      },
+      "output": "a"
+    },
+    {
+      "label": "close before open / nestedPrecedence",
+      "html": "</span>a",
+      "theme": {
+        "keyword": "upper",
+        "default": "len"
+      },
+      "output": "<1>a"
+    },
+    {
+      "label": "entities outside spans / empty",
+      "html": "a &amp; b &lt; c &gt; d &quot;e&quot; &#39;f&#39;",
+      "theme": {},
+      "output": "a & b < c > d \"e\" 'f'"
+    },
+    {
+      "label": "entities outside spans / defaultOnly",
+      "html": "a &amp; b &lt; c &gt; d &quot;e&quot; &#39;f&#39;",
+      "theme": {
+        "default": "bracket"
+      },
+      "output": "[a & b < c > d \"e\" 'f']"
+    },
+    {
+      "label": "entities outside spans / keywordsAndStrings",
+      "html": "a &amp; b &lt; c &gt; d &quot;e&quot; &#39;f&#39;",
+      "theme": {
+        "keyword": "upper",
+        "string": "bracket",
+        "default": "len"
+      },
+      "output": "<21>a & b < c > d \"e\" 'f'"
+    },
+    {
+      "label": "entities outside spans / dotPrefix",
+      "html": "a &amp; b &lt; c &gt; d &quot;e&quot; &#39;f&#39;",
+      "theme": {
+        "title.function": "star",
+        "default": "len"
+      },
+      "output": "<21>a & b < c > d \"e\" 'f'"
+    },
+    {
+      "label": "entities outside spans / dashPrefix",
+      "html": "a &amp; b &lt; c &gt; d &quot;e&quot; &#39;f&#39;",
+      "theme": {
+        "title-class": "star",
+        "default": "len"
+      },
+      "output": "<21>a & b < c > d \"e\" 'f'"
+    },
+    {
+      "label": "entities outside spans / exactBeatsPrefix",
+      "html": "a &amp; b &lt; c &gt; d &quot;e&quot; &#39;f&#39;",
+      "theme": {
+        "title": "bracket",
+        "title.function": "upper"
+      },
+      "output": "a & b < c > d \"e\" 'f'"
+    },
+    {
+      "label": "entities outside spans / nestedPrecedence",
+      "html": "a &amp; b &lt; c &gt; d &quot;e&quot; &#39;f&#39;",
+      "theme": {
+        "keyword": "upper",
+        "default": "len"
+      },
+      "output": "<21>a & b < c > d \"e\" 'f'"
+    },
+    {
+      "label": "entities inside spans / empty",
+      "html": "<span class=\"hljs-string\">&lt;tag&gt; &amp; more</span>",
+      "theme": {},
+      "output": "<tag> & more"
+    },
+    {
+      "label": "entities inside spans / defaultOnly",
+      "html": "<span class=\"hljs-string\">&lt;tag&gt; &amp; more</span>",
+      "theme": {
+        "default": "bracket"
+      },
+      "output": "[<tag> & more]"
+    },
+    {
+      "label": "entities inside spans / keywordsAndStrings",
+      "html": "<span class=\"hljs-string\">&lt;tag&gt; &amp; more</span>",
+      "theme": {
+        "keyword": "upper",
+        "string": "bracket",
+        "default": "len"
+      },
+      "output": "[<tag> & more]"
+    },
+    {
+      "label": "entities inside spans / dotPrefix",
+      "html": "<span class=\"hljs-string\">&lt;tag&gt; &amp; more</span>",
+      "theme": {
+        "title.function": "star",
+        "default": "len"
+      },
+      "output": "<12><tag> & more"
+    },
+    {
+      "label": "entities inside spans / dashPrefix",
+      "html": "<span class=\"hljs-string\">&lt;tag&gt; &amp; more</span>",
+      "theme": {
+        "title-class": "star",
+        "default": "len"
+      },
+      "output": "<12><tag> & more"
+    },
+    {
+      "label": "entities inside spans / exactBeatsPrefix",
+      "html": "<span class=\"hljs-string\">&lt;tag&gt; &amp; more</span>",
+      "theme": {
+        "title": "bracket",
+        "title.function": "upper"
+      },
+      "output": "<tag> & more"
+    },
+    {
+      "label": "entities inside spans / nestedPrecedence",
+      "html": "<span class=\"hljs-string\">&lt;tag&gt; &amp; more</span>",
+      "theme": {
+        "keyword": "upper",
+        "default": "len"
+      },
+      "output": "<12><tag> & more"
+    },
+    {
+      "label": "unknown entity kept / empty",
+      "html": "a &nosuch; b",
+      "theme": {},
+      "output": "a &nosuch; b"
+    },
+    {
+      "label": "unknown entity kept / defaultOnly",
+      "html": "a &nosuch; b",
+      "theme": {
+        "default": "bracket"
+      },
+      "output": "[a &nosuch; b]"
+    },
+    {
+      "label": "unknown entity kept / keywordsAndStrings",
+      "html": "a &nosuch; b",
+      "theme": {
+        "keyword": "upper",
+        "string": "bracket",
+        "default": "len"
+      },
+      "output": "<12>a &nosuch; b"
+    },
+    {
+      "label": "unknown entity kept / dotPrefix",
+      "html": "a &nosuch; b",
+      "theme": {
+        "title.function": "star",
+        "default": "len"
+      },
+      "output": "<12>a &nosuch; b"
+    },
+    {
+      "label": "unknown entity kept / dashPrefix",
+      "html": "a &nosuch; b",
+      "theme": {
+        "title-class": "star",
+        "default": "len"
+      },
+      "output": "<12>a &nosuch; b"
+    },
+    {
+      "label": "unknown entity kept / exactBeatsPrefix",
+      "html": "a &nosuch; b",
+      "theme": {
+        "title": "bracket",
+        "title.function": "upper"
+      },
+      "output": "a &nosuch; b"
+    },
+    {
+      "label": "unknown entity kept / nestedPrecedence",
+      "html": "a &nosuch; b",
+      "theme": {
+        "keyword": "upper",
+        "default": "len"
+      },
+      "output": "<12>a &nosuch; b"
+    },
+    {
+      "label": "bare ampersand / empty",
+      "html": "a & b",
+      "theme": {},
+      "output": "a & b"
+    },
+    {
+      "label": "bare ampersand / defaultOnly",
+      "html": "a & b",
+      "theme": {
+        "default": "bracket"
+      },
+      "output": "[a & b]"
+    },
+    {
+      "label": "bare ampersand / keywordsAndStrings",
+      "html": "a & b",
+      "theme": {
+        "keyword": "upper",
+        "string": "bracket",
+        "default": "len"
+      },
+      "output": "<5>a & b"
+    },
+    {
+      "label": "bare ampersand / dotPrefix",
+      "html": "a & b",
+      "theme": {
+        "title.function": "star",
+        "default": "len"
+      },
+      "output": "<5>a & b"
+    },
+    {
+      "label": "bare ampersand / dashPrefix",
+      "html": "a & b",
+      "theme": {
+        "title-class": "star",
+        "default": "len"
+      },
+      "output": "<5>a & b"
+    },
+    {
+      "label": "bare ampersand / exactBeatsPrefix",
+      "html": "a & b",
+      "theme": {
+        "title": "bracket",
+        "title.function": "upper"
+      },
+      "output": "a & b"
+    },
+    {
+      "label": "bare ampersand / nestedPrecedence",
+      "html": "a & b",
+      "theme": {
+        "keyword": "upper",
+        "default": "len"
+      },
+      "output": "<5>a & b"
+    },
+    {
+      "label": "multiline span / empty",
+      "html": "<span class=\"hljs-comment\">line one\nline two\n</span>",
+      "theme": {},
+      "output": "line one\nline two\n"
+    },
+    {
+      "label": "multiline span / defaultOnly",
+      "html": "<span class=\"hljs-comment\">line one\nline two\n</span>",
+      "theme": {
+        "default": "bracket"
+      },
+      "output": "[line one]\n[line two]\n"
+    },
+    {
+      "label": "multiline span / keywordsAndStrings",
+      "html": "<span class=\"hljs-comment\">line one\nline two\n</span>",
+      "theme": {
+        "keyword": "upper",
+        "string": "bracket",
+        "default": "len"
+      },
+      "output": "<8>line one\n<8>line two\n"
+    },
+    {
+      "label": "multiline span / dotPrefix",
+      "html": "<span class=\"hljs-comment\">line one\nline two\n</span>",
+      "theme": {
+        "title.function": "star",
+        "default": "len"
+      },
+      "output": "<8>line one\n<8>line two\n"
+    },
+    {
+      "label": "multiline span / dashPrefix",
+      "html": "<span class=\"hljs-comment\">line one\nline two\n</span>",
+      "theme": {
+        "title-class": "star",
+        "default": "len"
+      },
+      "output": "<8>line one\n<8>line two\n"
+    },
+    {
+      "label": "multiline span / exactBeatsPrefix",
+      "html": "<span class=\"hljs-comment\">line one\nline two\n</span>",
+      "theme": {
+        "title": "bracket",
+        "title.function": "upper"
+      },
+      "output": "line one\nline two\n"
+    },
+    {
+      "label": "multiline span / nestedPrecedence",
+      "html": "<span class=\"hljs-comment\">line one\nline two\n</span>",
+      "theme": {
+        "keyword": "upper",
+        "default": "len"
+      },
+      "output": "<8>line one\n<8>line two\n"
+    },
+    {
+      "label": "multiline with empty line / empty",
+      "html": "<span class=\"hljs-comment\">a\n\nb</span>",
+      "theme": {},
+      "output": "a\n\nb"
+    },
+    {
+      "label": "multiline with empty line / defaultOnly",
+      "html": "<span class=\"hljs-comment\">a\n\nb</span>",
+      "theme": {
+        "default": "bracket"
+      },
+      "output": "[a]\n\n[b]"
+    },
+    {
+      "label": "multiline with empty line / keywordsAndStrings",
+      "html": "<span class=\"hljs-comment\">a\n\nb</span>",
+      "theme": {
+        "keyword": "upper",
+        "string": "bracket",
+        "default": "len"
+      },
+      "output": "<1>a\n\n<1>b"
+    },
+    {
+      "label": "multiline with empty line / dotPrefix",
+      "html": "<span class=\"hljs-comment\">a\n\nb</span>",
+      "theme": {
+        "title.function": "star",
+        "default": "len"
+      },
+      "output": "<1>a\n\n<1>b"
+    },
+    {
+      "label": "multiline with empty line / dashPrefix",
+      "html": "<span class=\"hljs-comment\">a\n\nb</span>",
+      "theme": {
+        "title-class": "star",
+        "default": "len"
+      },
+      "output": "<1>a\n\n<1>b"
+    },
+    {
+      "label": "multiline with empty line / exactBeatsPrefix",
+      "html": "<span class=\"hljs-comment\">a\n\nb</span>",
+      "theme": {
+        "title": "bracket",
+        "title.function": "upper"
+      },
+      "output": "a\n\nb"
+    },
+    {
+      "label": "multiline with empty line / nestedPrecedence",
+      "html": "<span class=\"hljs-comment\">a\n\nb</span>",
+      "theme": {
+        "keyword": "upper",
+        "default": "len"
+      },
+      "output": "<1>a\n\n<1>b"
+    },
+    {
+      "label": "crlf inside span / empty",
+      "html": "<span class=\"hljs-comment\">a\r\nb</span>",
+      "theme": {},
+      "output": "a\r\nb"
+    },
+    {
+      "label": "crlf inside span / defaultOnly",
+      "html": "<span class=\"hljs-comment\">a\r\nb</span>",
+      "theme": {
+        "default": "bracket"
+      },
+      "output": "[a\r]\n[b]"
+    },
+    {
+      "label": "crlf inside span / keywordsAndStrings",
+      "html": "<span class=\"hljs-comment\">a\r\nb</span>",
+      "theme": {
+        "keyword": "upper",
+        "string": "bracket",
+        "default": "len"
+      },
+      "output": "<2>a\r\n<1>b"
+    },
+    {
+      "label": "crlf inside span / dotPrefix",
+      "html": "<span class=\"hljs-comment\">a\r\nb</span>",
+      "theme": {
+        "title.function": "star",
+        "default": "len"
+      },
+      "output": "<2>a\r\n<1>b"
+    },
+    {
+      "label": "crlf inside span / dashPrefix",
+      "html": "<span class=\"hljs-comment\">a\r\nb</span>",
+      "theme": {
+        "title-class": "star",
+        "default": "len"
+      },
+      "output": "<2>a\r\n<1>b"
+    },
+    {
+      "label": "crlf inside span / exactBeatsPrefix",
+      "html": "<span class=\"hljs-comment\">a\r\nb</span>",
+      "theme": {
+        "title": "bracket",
+        "title.function": "upper"
+      },
+      "output": "a\r\nb"
+    },
+    {
+      "label": "crlf inside span / nestedPrecedence",
+      "html": "<span class=\"hljs-comment\">a\r\nb</span>",
+      "theme": {
+        "keyword": "upper",
+        "default": "len"
+      },
+      "output": "<2>a\r\n<1>b"
+    },
+    {
+      "label": "scope with dot / empty",
+      "html": "<span class=\"hljs-title.function\">f</span>",
+      "theme": {},
+      "output": "f"
+    },
+    {
+      "label": "scope with dot / defaultOnly",
+      "html": "<span class=\"hljs-title.function\">f</span>",
+      "theme": {
+        "default": "bracket"
+      },
+      "output": "[f]"
+    },
+    {
+      "label": "scope with dot / keywordsAndStrings",
+      "html": "<span class=\"hljs-title.function\">f</span>",
+      "theme": {
+        "keyword": "upper",
+        "string": "bracket",
+        "default": "len"
+      },
+      "output": "<1>f"
+    },
+    {
+      "label": "scope with dot / dotPrefix",
+      "html": "<span class=\"hljs-title.function\">f</span>",
+      "theme": {
+        "title.function": "star",
+        "default": "len"
+      },
+      "output": "*f*"
+    },
+    {
+      "label": "scope with dot / dashPrefix",
+      "html": "<span class=\"hljs-title.function\">f</span>",
+      "theme": {
+        "title-class": "star",
+        "default": "len"
+      },
+      "output": "<1>f"
+    },
+    {
+      "label": "scope with dot / exactBeatsPrefix",
+      "html": "<span class=\"hljs-title.function\">f</span>",
+      "theme": {
+        "title": "bracket",
+        "title.function": "upper"
+      },
+      "output": "F"
+    },
+    {
+      "label": "scope with dot / nestedPrecedence",
+      "html": "<span class=\"hljs-title.function\">f</span>",
+      "theme": {
+        "keyword": "upper",
+        "default": "len"
+      },
+      "output": "<1>f"
+    },
+    {
+      "label": "scope with dash / empty",
+      "html": "<span class=\"hljs-title-class\">c</span>",
+      "theme": {},
+      "output": "c"
+    },
+    {
+      "label": "scope with dash / defaultOnly",
+      "html": "<span class=\"hljs-title-class\">c</span>",
+      "theme": {
+        "default": "bracket"
+      },
+      "output": "[c]"
+    },
+    {
+      "label": "scope with dash / keywordsAndStrings",
+      "html": "<span class=\"hljs-title-class\">c</span>",
+      "theme": {
+        "keyword": "upper",
+        "string": "bracket",
+        "default": "len"
+      },
+      "output": "<1>c"
+    },
+    {
+      "label": "scope with dash / dotPrefix",
+      "html": "<span class=\"hljs-title-class\">c</span>",
+      "theme": {
+        "title.function": "star",
+        "default": "len"
+      },
+      "output": "<1>c"
+    },
+    {
+      "label": "scope with dash / dashPrefix",
+      "html": "<span class=\"hljs-title-class\">c</span>",
+      "theme": {
+        "title-class": "star",
+        "default": "len"
+      },
+      "output": "*c*"
+    },
+    {
+      "label": "scope with dash / exactBeatsPrefix",
+      "html": "<span class=\"hljs-title-class\">c</span>",
+      "theme": {
+        "title": "bracket",
+        "title.function": "upper"
+      },
+      "output": "[c]"
+    },
+    {
+      "label": "scope with dash / nestedPrecedence",
+      "html": "<span class=\"hljs-title-class\">c</span>",
+      "theme": {
+        "keyword": "upper",
+        "default": "len"
+      },
+      "output": "<1>c"
+    },
+    {
+      "label": "tab inside span tag / empty",
+      "html": "<span\tclass=\"hljs-keyword\">k</span>",
+      "theme": {},
+      "output": "k"
+    },
+    {
+      "label": "tab inside span tag / defaultOnly",
+      "html": "<span\tclass=\"hljs-keyword\">k</span>",
+      "theme": {
+        "default": "bracket"
+      },
+      "output": "[k]"
+    },
+    {
+      "label": "tab inside span tag / keywordsAndStrings",
+      "html": "<span\tclass=\"hljs-keyword\">k</span>",
+      "theme": {
+        "keyword": "upper",
+        "string": "bracket",
+        "default": "len"
+      },
+      "output": "K"
+    },
+    {
+      "label": "tab inside span tag / dotPrefix",
+      "html": "<span\tclass=\"hljs-keyword\">k</span>",
+      "theme": {
+        "title.function": "star",
+        "default": "len"
+      },
+      "output": "<1>k"
+    },
+    {
+      "label": "tab inside span tag / dashPrefix",
+      "html": "<span\tclass=\"hljs-keyword\">k</span>",
+      "theme": {
+        "title-class": "star",
+        "default": "len"
+      },
+      "output": "<1>k"
+    },
+    {
+      "label": "tab inside span tag / exactBeatsPrefix",
+      "html": "<span\tclass=\"hljs-keyword\">k</span>",
+      "theme": {
+        "title": "bracket",
+        "title.function": "upper"
+      },
+      "output": "k"
+    },
+    {
+      "label": "tab inside span tag / nestedPrecedence",
+      "html": "<span\tclass=\"hljs-keyword\">k</span>",
+      "theme": {
+        "keyword": "upper",
+        "default": "len"
+      },
+      "output": "K"
+    },
+    {
+      "label": "newline inside span tag / empty",
+      "html": "<span\nclass=\"hljs-keyword\">k</span>",
+      "theme": {},
+      "output": "k"
+    },
+    {
+      "label": "newline inside span tag / defaultOnly",
+      "html": "<span\nclass=\"hljs-keyword\">k</span>",
+      "theme": {
+        "default": "bracket"
+      },
+      "output": "[k]"
+    },
+    {
+      "label": "newline inside span tag / keywordsAndStrings",
+      "html": "<span\nclass=\"hljs-keyword\">k</span>",
+      "theme": {
+        "keyword": "upper",
+        "string": "bracket",
+        "default": "len"
+      },
+      "output": "K"
+    },
+    {
+      "label": "newline inside span tag / dotPrefix",
+      "html": "<span\nclass=\"hljs-keyword\">k</span>",
+      "theme": {
+        "title.function": "star",
+        "default": "len"
+      },
+      "output": "<1>k"
+    },
+    {
+      "label": "newline inside span tag / dashPrefix",
+      "html": "<span\nclass=\"hljs-keyword\">k</span>",
+      "theme": {
+        "title-class": "star",
+        "default": "len"
+      },
+      "output": "<1>k"
+    },
+    {
+      "label": "newline inside span tag / exactBeatsPrefix",
+      "html": "<span\nclass=\"hljs-keyword\">k</span>",
+      "theme": {
+        "title": "bracket",
+        "title.function": "upper"
+      },
+      "output": "k"
+    },
+    {
+      "label": "newline inside span tag / nestedPrecedence",
+      "html": "<span\nclass=\"hljs-keyword\">k</span>",
+      "theme": {
+        "keyword": "upper",
+        "default": "len"
+      },
+      "output": "K"
+    },
+    {
+      "label": "spaces around equals / empty",
+      "html": "<span class = \"hljs-keyword\">k</span>",
+      "theme": {},
+      "output": "k"
+    },
+    {
+      "label": "spaces around equals / defaultOnly",
+      "html": "<span class = \"hljs-keyword\">k</span>",
+      "theme": {
+        "default": "bracket"
+      },
+      "output": "[k]"
+    },
+    {
+      "label": "spaces around equals / keywordsAndStrings",
+      "html": "<span class = \"hljs-keyword\">k</span>",
+      "theme": {
+        "keyword": "upper",
+        "string": "bracket",
+        "default": "len"
+      },
+      "output": "K"
+    },
+    {
+      "label": "spaces around equals / dotPrefix",
+      "html": "<span class = \"hljs-keyword\">k</span>",
+      "theme": {
+        "title.function": "star",
+        "default": "len"
+      },
+      "output": "<1>k"
+    },
+    {
+      "label": "spaces around equals / dashPrefix",
+      "html": "<span class = \"hljs-keyword\">k</span>",
+      "theme": {
+        "title-class": "star",
+        "default": "len"
+      },
+      "output": "<1>k"
+    },
+    {
+      "label": "spaces around equals / exactBeatsPrefix",
+      "html": "<span class = \"hljs-keyword\">k</span>",
+      "theme": {
+        "title": "bracket",
+        "title.function": "upper"
+      },
+      "output": "k"
+    },
+    {
+      "label": "spaces around equals / nestedPrecedence",
+      "html": "<span class = \"hljs-keyword\">k</span>",
+      "theme": {
+        "keyword": "upper",
+        "default": "len"
+      },
+      "output": "K"
+    },
+    {
+      "label": "no space before class / empty",
+      "html": "<spanclass=\"hljs-keyword\">k</span>",
+      "theme": {},
+      "output": "<spanclass=\"hljs-keyword\">k"
+    },
+    {
+      "label": "no space before class / defaultOnly",
+      "html": "<spanclass=\"hljs-keyword\">k</span>",
+      "theme": {
+        "default": "bracket"
+      },
+      "output": "[<spanclass=\"hljs-keyword\">k]"
+    },
+    {
+      "label": "no space before class / keywordsAndStrings",
+      "html": "<spanclass=\"hljs-keyword\">k</span>",
+      "theme": {
+        "keyword": "upper",
+        "string": "bracket",
+        "default": "len"
+      },
+      "output": "<27><spanclass=\"hljs-keyword\">k"
+    },
+    {
+      "label": "no space before class / dotPrefix",
+      "html": "<spanclass=\"hljs-keyword\">k</span>",
+      "theme": {
+        "title.function": "star",
+        "default": "len"
+      },
+      "output": "<27><spanclass=\"hljs-keyword\">k"
+    },
+    {
+      "label": "no space before class / dashPrefix",
+      "html": "<spanclass=\"hljs-keyword\">k</span>",
+      "theme": {
+        "title-class": "star",
+        "default": "len"
+      },
+      "output": "<27><spanclass=\"hljs-keyword\">k"
+    },
+    {
+      "label": "no space before class / exactBeatsPrefix",
+      "html": "<spanclass=\"hljs-keyword\">k</span>",
+      "theme": {
+        "title": "bracket",
+        "title.function": "upper"
+      },
+      "output": "<spanclass=\"hljs-keyword\">k"
+    },
+    {
+      "label": "no space before class / nestedPrecedence",
+      "html": "<spanclass=\"hljs-keyword\">k</span>",
+      "theme": {
+        "keyword": "upper",
+        "default": "len"
+      },
+      "output": "<27><spanclass=\"hljs-keyword\">k"
+    },
+    {
+      "label": "text before and after / empty",
+      "html": "pre <span class=\"hljs-keyword\">k</span> post",
+      "theme": {},
+      "output": "pre k post"
+    },
+    {
+      "label": "text before and after / defaultOnly",
+      "html": "pre <span class=\"hljs-keyword\">k</span> post",
+      "theme": {
+        "default": "bracket"
+      },
+      "output": "[pre ][k][ post]"
+    },
+    {
+      "label": "text before and after / keywordsAndStrings",
+      "html": "pre <span class=\"hljs-keyword\">k</span> post",
+      "theme": {
+        "keyword": "upper",
+        "string": "bracket",
+        "default": "len"
+      },
+      "output": "<4>pre K<5> post"
+    },
+    {
+      "label": "text before and after / dotPrefix",
+      "html": "pre <span class=\"hljs-keyword\">k</span> post",
+      "theme": {
+        "title.function": "star",
+        "default": "len"
+      },
+      "output": "<4>pre <1>k<5> post"
+    },
+    {
+      "label": "text before and after / dashPrefix",
+      "html": "pre <span class=\"hljs-keyword\">k</span> post",
+      "theme": {
+        "title-class": "star",
+        "default": "len"
+      },
+      "output": "<4>pre <1>k<5> post"
+    },
+    {
+      "label": "text before and after / exactBeatsPrefix",
+      "html": "pre <span class=\"hljs-keyword\">k</span> post",
+      "theme": {
+        "title": "bracket",
+        "title.function": "upper"
+      },
+      "output": "pre k post"
+    },
+    {
+      "label": "text before and after / nestedPrecedence",
+      "html": "pre <span class=\"hljs-keyword\">k</span> post",
+      "theme": {
+        "keyword": "upper",
+        "default": "len"
+      },
+      "output": "<4>pre K<5> post"
+    }
+  ],
+  "highlighted": [
+    {
+      "label": "python / empty",
+      "language": "python",
+      "code": "def greet(name):\n    # say hi\n    return f\"hello {name}\"\n",
+      "rawHtml": "<span class=\"hljs-function\"><span class=\"hljs-keyword\">def</span> <span class=\"hljs-title\">greet</span>(<span class=\"hljs-params\">name</span>):</span>\n    <span class=\"hljs-comment\"># say hi</span>\n    <span class=\"hljs-keyword\">return</span> <span class=\"hljs-string\">f&quot;hello <span class=\"hljs-subst\">{name}</span>&quot;</span>\n",
+      "theme": {},
+      "output": "def greet(name):\n    # say hi\n    return f\"hello {name}\"\n",
+      "viaHighlight": "def greet(name):\n    # say hi\n    return f\"hello {name}\"\n"
+    },
+    {
+      "label": "python / defaultOnly",
+      "language": "python",
+      "code": "def greet(name):\n    # say hi\n    return f\"hello {name}\"\n",
+      "rawHtml": "<span class=\"hljs-function\"><span class=\"hljs-keyword\">def</span> <span class=\"hljs-title\">greet</span>(<span class=\"hljs-params\">name</span>):</span>\n    <span class=\"hljs-comment\"># say hi</span>\n    <span class=\"hljs-keyword\">return</span> <span class=\"hljs-string\">f&quot;hello <span class=\"hljs-subst\">{name}</span>&quot;</span>\n",
+      "theme": {
+        "default": "bracket"
+      },
+      "output": "[def][ ][greet][(][name][):]\n[    ][# say hi]\n[    ][return][ ][f\"hello ][{name}][\"]\n",
+      "viaHighlight": "[def][ ][greet][(][name][):]\n[    ][# say hi]\n[    ][return][ ][f\"hello ][{name}][\"]\n"
+    },
+    {
+      "label": "python / keywordsAndStrings",
+      "language": "python",
+      "code": "def greet(name):\n    # say hi\n    return f\"hello {name}\"\n",
+      "rawHtml": "<span class=\"hljs-function\"><span class=\"hljs-keyword\">def</span> <span class=\"hljs-title\">greet</span>(<span class=\"hljs-params\">name</span>):</span>\n    <span class=\"hljs-comment\"># say hi</span>\n    <span class=\"hljs-keyword\">return</span> <span class=\"hljs-string\">f&quot;hello <span class=\"hljs-subst\">{name}</span>&quot;</span>\n",
+      "theme": {
+        "keyword": "upper",
+        "string": "bracket",
+        "default": "len"
+      },
+      "output": "DEF<1> <5>greet<1>(<4>name<2>):\n<4>    <8># say hi\n<4>    RETURN<1> [f\"hello ][{name}][\"]\n",
+      "viaHighlight": "DEF<1> <5>greet<1>(<4>name<2>):\n<4>    <8># say hi\n<4>    RETURN<1> [f\"hello ][{name}][\"]\n"
+    },
+    {
+      "label": "python / dotPrefix",
+      "language": "python",
+      "code": "def greet(name):\n    # say hi\n    return f\"hello {name}\"\n",
+      "rawHtml": "<span class=\"hljs-function\"><span class=\"hljs-keyword\">def</span> <span class=\"hljs-title\">greet</span>(<span class=\"hljs-params\">name</span>):</span>\n    <span class=\"hljs-comment\"># say hi</span>\n    <span class=\"hljs-keyword\">return</span> <span class=\"hljs-string\">f&quot;hello <span class=\"hljs-subst\">{name}</span>&quot;</span>\n",
+      "theme": {
+        "title.function": "star",
+        "default": "len"
+      },
+      "output": "<3>def<1> <5>greet<1>(<4>name<2>):\n<4>    <8># say hi\n<4>    <6>return<1> <8>f\"hello <6>{name}<1>\"\n",
+      "viaHighlight": "<3>def<1> <5>greet<1>(<4>name<2>):\n<4>    <8># say hi\n<4>    <6>return<1> <8>f\"hello <6>{name}<1>\"\n"
+    },
+    {
+      "label": "python / dashPrefix",
+      "language": "python",
+      "code": "def greet(name):\n    # say hi\n    return f\"hello {name}\"\n",
+      "rawHtml": "<span class=\"hljs-function\"><span class=\"hljs-keyword\">def</span> <span class=\"hljs-title\">greet</span>(<span class=\"hljs-params\">name</span>):</span>\n    <span class=\"hljs-comment\"># say hi</span>\n    <span class=\"hljs-keyword\">return</span> <span class=\"hljs-string\">f&quot;hello <span class=\"hljs-subst\">{name}</span>&quot;</span>\n",
+      "theme": {
+        "title-class": "star",
+        "default": "len"
+      },
+      "output": "<3>def<1> <5>greet<1>(<4>name<2>):\n<4>    <8># say hi\n<4>    <6>return<1> <8>f\"hello <6>{name}<1>\"\n",
+      "viaHighlight": "<3>def<1> <5>greet<1>(<4>name<2>):\n<4>    <8># say hi\n<4>    <6>return<1> <8>f\"hello <6>{name}<1>\"\n"
+    },
+    {
+      "label": "python / exactBeatsPrefix",
+      "language": "python",
+      "code": "def greet(name):\n    # say hi\n    return f\"hello {name}\"\n",
+      "rawHtml": "<span class=\"hljs-function\"><span class=\"hljs-keyword\">def</span> <span class=\"hljs-title\">greet</span>(<span class=\"hljs-params\">name</span>):</span>\n    <span class=\"hljs-comment\"># say hi</span>\n    <span class=\"hljs-keyword\">return</span> <span class=\"hljs-string\">f&quot;hello <span class=\"hljs-subst\">{name}</span>&quot;</span>\n",
+      "theme": {
+        "title": "bracket",
+        "title.function": "upper"
+      },
+      "output": "def [greet](name):\n    # say hi\n    return f\"hello {name}\"\n",
+      "viaHighlight": "def [greet](name):\n    # say hi\n    return f\"hello {name}\"\n"
+    },
+    {
+      "label": "python / nestedPrecedence",
+      "language": "python",
+      "code": "def greet(name):\n    # say hi\n    return f\"hello {name}\"\n",
+      "rawHtml": "<span class=\"hljs-function\"><span class=\"hljs-keyword\">def</span> <span class=\"hljs-title\">greet</span>(<span class=\"hljs-params\">name</span>):</span>\n    <span class=\"hljs-comment\"># say hi</span>\n    <span class=\"hljs-keyword\">return</span> <span class=\"hljs-string\">f&quot;hello <span class=\"hljs-subst\">{name}</span>&quot;</span>\n",
+      "theme": {
+        "keyword": "upper",
+        "default": "len"
+      },
+      "output": "DEF<1> <5>greet<1>(<4>name<2>):\n<4>    <8># say hi\n<4>    RETURN<1> <8>f\"hello <6>{name}<1>\"\n",
+      "viaHighlight": "DEF<1> <5>greet<1>(<4>name<2>):\n<4>    <8># say hi\n<4>    RETURN<1> <8>f\"hello <6>{name}<1>\"\n"
+    },
+    {
+      "label": "javascript / empty",
+      "language": "javascript",
+      "code": "const x = 1; // note\nfunction f() { return `t${x}`; }\n",
+      "rawHtml": "<span class=\"hljs-keyword\">const</span> x = <span class=\"hljs-number\">1</span>; <span class=\"hljs-comment\">// note</span>\n<span class=\"hljs-function\"><span class=\"hljs-keyword\">function</span> <span class=\"hljs-title\">f</span>(<span class=\"hljs-params\"></span>) </span>{ <span class=\"hljs-keyword\">return</span> <span class=\"hljs-string\">`t<span class=\"hljs-subst\">${x}</span>`</span>; }\n",
+      "theme": {},
+      "output": "const x = 1; // note\nfunction f() { return `t${x}`; }\n",
+      "viaHighlight": "const x = 1; // note\nfunction f() { return `t${x}`; }\n"
+    },
+    {
+      "label": "javascript / defaultOnly",
+      "language": "javascript",
+      "code": "const x = 1; // note\nfunction f() { return `t${x}`; }\n",
+      "rawHtml": "<span class=\"hljs-keyword\">const</span> x = <span class=\"hljs-number\">1</span>; <span class=\"hljs-comment\">// note</span>\n<span class=\"hljs-function\"><span class=\"hljs-keyword\">function</span> <span class=\"hljs-title\">f</span>(<span class=\"hljs-params\"></span>) </span>{ <span class=\"hljs-keyword\">return</span> <span class=\"hljs-string\">`t<span class=\"hljs-subst\">${x}</span>`</span>; }\n",
+      "theme": {
+        "default": "bracket"
+      },
+      "output": "[const][ x = ][1][; ][// note]\n[function][ ][f][(][) ][{ ][return][ ][`t][${x}][`][; }]\n",
+      "viaHighlight": "[const][ x = ][1][; ][// note]\n[function][ ][f][(][) ][{ ][return][ ][`t][${x}][`][; }]\n"
+    },
+    {
+      "label": "javascript / keywordsAndStrings",
+      "language": "javascript",
+      "code": "const x = 1; // note\nfunction f() { return `t${x}`; }\n",
+      "rawHtml": "<span class=\"hljs-keyword\">const</span> x = <span class=\"hljs-number\">1</span>; <span class=\"hljs-comment\">// note</span>\n<span class=\"hljs-function\"><span class=\"hljs-keyword\">function</span> <span class=\"hljs-title\">f</span>(<span class=\"hljs-params\"></span>) </span>{ <span class=\"hljs-keyword\">return</span> <span class=\"hljs-string\">`t<span class=\"hljs-subst\">${x}</span>`</span>; }\n",
+      "theme": {
+        "keyword": "upper",
+        "string": "bracket",
+        "default": "len"
+      },
+      "output": "CONST<5> x = <1>1<2>; <7>// note\nFUNCTION<1> <1>f<1>(<2>) <2>{ RETURN<1> [`t][${x}][`]<3>; }\n",
+      "viaHighlight": "CONST<5> x = <1>1<2>; <7>// note\nFUNCTION<1> <1>f<1>(<2>) <2>{ RETURN<1> [`t][${x}][`]<3>; }\n"
+    },
+    {
+      "label": "javascript / dotPrefix",
+      "language": "javascript",
+      "code": "const x = 1; // note\nfunction f() { return `t${x}`; }\n",
+      "rawHtml": "<span class=\"hljs-keyword\">const</span> x = <span class=\"hljs-number\">1</span>; <span class=\"hljs-comment\">// note</span>\n<span class=\"hljs-function\"><span class=\"hljs-keyword\">function</span> <span class=\"hljs-title\">f</span>(<span class=\"hljs-params\"></span>) </span>{ <span class=\"hljs-keyword\">return</span> <span class=\"hljs-string\">`t<span class=\"hljs-subst\">${x}</span>`</span>; }\n",
+      "theme": {
+        "title.function": "star",
+        "default": "len"
+      },
+      "output": "<5>const<5> x = <1>1<2>; <7>// note\n<8>function<1> <1>f<1>(<2>) <2>{ <6>return<1> <2>`t<4>${x}<1>`<3>; }\n",
+      "viaHighlight": "<5>const<5> x = <1>1<2>; <7>// note\n<8>function<1> <1>f<1>(<2>) <2>{ <6>return<1> <2>`t<4>${x}<1>`<3>; }\n"
+    },
+    {
+      "label": "javascript / dashPrefix",
+      "language": "javascript",
+      "code": "const x = 1; // note\nfunction f() { return `t${x}`; }\n",
+      "rawHtml": "<span class=\"hljs-keyword\">const</span> x = <span class=\"hljs-number\">1</span>; <span class=\"hljs-comment\">// note</span>\n<span class=\"hljs-function\"><span class=\"hljs-keyword\">function</span> <span class=\"hljs-title\">f</span>(<span class=\"hljs-params\"></span>) </span>{ <span class=\"hljs-keyword\">return</span> <span class=\"hljs-string\">`t<span class=\"hljs-subst\">${x}</span>`</span>; }\n",
+      "theme": {
+        "title-class": "star",
+        "default": "len"
+      },
+      "output": "<5>const<5> x = <1>1<2>; <7>// note\n<8>function<1> <1>f<1>(<2>) <2>{ <6>return<1> <2>`t<4>${x}<1>`<3>; }\n",
+      "viaHighlight": "<5>const<5> x = <1>1<2>; <7>// note\n<8>function<1> <1>f<1>(<2>) <2>{ <6>return<1> <2>`t<4>${x}<1>`<3>; }\n"
+    },
+    {
+      "label": "javascript / exactBeatsPrefix",
+      "language": "javascript",
+      "code": "const x = 1; // note\nfunction f() { return `t${x}`; }\n",
+      "rawHtml": "<span class=\"hljs-keyword\">const</span> x = <span class=\"hljs-number\">1</span>; <span class=\"hljs-comment\">// note</span>\n<span class=\"hljs-function\"><span class=\"hljs-keyword\">function</span> <span class=\"hljs-title\">f</span>(<span class=\"hljs-params\"></span>) </span>{ <span class=\"hljs-keyword\">return</span> <span class=\"hljs-string\">`t<span class=\"hljs-subst\">${x}</span>`</span>; }\n",
+      "theme": {
+        "title": "bracket",
+        "title.function": "upper"
+      },
+      "output": "const x = 1; // note\nfunction [f]() { return `t${x}`; }\n",
+      "viaHighlight": "const x = 1; // note\nfunction [f]() { return `t${x}`; }\n"
+    },
+    {
+      "label": "javascript / nestedPrecedence",
+      "language": "javascript",
+      "code": "const x = 1; // note\nfunction f() { return `t${x}`; }\n",
+      "rawHtml": "<span class=\"hljs-keyword\">const</span> x = <span class=\"hljs-number\">1</span>; <span class=\"hljs-comment\">// note</span>\n<span class=\"hljs-function\"><span class=\"hljs-keyword\">function</span> <span class=\"hljs-title\">f</span>(<span class=\"hljs-params\"></span>) </span>{ <span class=\"hljs-keyword\">return</span> <span class=\"hljs-string\">`t<span class=\"hljs-subst\">${x}</span>`</span>; }\n",
+      "theme": {
+        "keyword": "upper",
+        "default": "len"
+      },
+      "output": "CONST<5> x = <1>1<2>; <7>// note\nFUNCTION<1> <1>f<1>(<2>) <2>{ RETURN<1> <2>`t<4>${x}<1>`<3>; }\n",
+      "viaHighlight": "CONST<5> x = <1>1<2>; <7>// note\nFUNCTION<1> <1>f<1>(<2>) <2>{ RETURN<1> <2>`t<4>${x}<1>`<3>; }\n"
+    },
+    {
+      "label": "json / empty",
+      "language": "json",
+      "code": "{\n  \"a\": [1, 2.5, true, null],\n  \"b\": \"s\"\n}\n",
+      "rawHtml": "{\n  <span class=\"hljs-attr\">&quot;a&quot;</span>: [<span class=\"hljs-number\">1</span>, <span class=\"hljs-number\">2.5</span>, <span class=\"hljs-literal\">true</span>, <span class=\"hljs-literal\">null</span>],\n  <span class=\"hljs-attr\">&quot;b&quot;</span>: <span class=\"hljs-string\">&quot;s&quot;</span>\n}\n",
+      "theme": {},
+      "output": "{\n  \"a\": [1, 2.5, true, null],\n  \"b\": \"s\"\n}\n",
+      "viaHighlight": "{\n  \"a\": [1, 2.5, true, null],\n  \"b\": \"s\"\n}\n"
+    },
+    {
+      "label": "json / defaultOnly",
+      "language": "json",
+      "code": "{\n  \"a\": [1, 2.5, true, null],\n  \"b\": \"s\"\n}\n",
+      "rawHtml": "{\n  <span class=\"hljs-attr\">&quot;a&quot;</span>: [<span class=\"hljs-number\">1</span>, <span class=\"hljs-number\">2.5</span>, <span class=\"hljs-literal\">true</span>, <span class=\"hljs-literal\">null</span>],\n  <span class=\"hljs-attr\">&quot;b&quot;</span>: <span class=\"hljs-string\">&quot;s&quot;</span>\n}\n",
+      "theme": {
+        "default": "bracket"
+      },
+      "output": "[{]\n[  ][\"a\"][: [][1][, ][2.5][, ][true][, ][null][],]\n[  ][\"b\"][: ][\"s\"]\n[}]\n",
+      "viaHighlight": "[{]\n[  ][\"a\"][: [][1][, ][2.5][, ][true][, ][null][],]\n[  ][\"b\"][: ][\"s\"]\n[}]\n"
+    },
+    {
+      "label": "json / keywordsAndStrings",
+      "language": "json",
+      "code": "{\n  \"a\": [1, 2.5, true, null],\n  \"b\": \"s\"\n}\n",
+      "rawHtml": "{\n  <span class=\"hljs-attr\">&quot;a&quot;</span>: [<span class=\"hljs-number\">1</span>, <span class=\"hljs-number\">2.5</span>, <span class=\"hljs-literal\">true</span>, <span class=\"hljs-literal\">null</span>],\n  <span class=\"hljs-attr\">&quot;b&quot;</span>: <span class=\"hljs-string\">&quot;s&quot;</span>\n}\n",
+      "theme": {
+        "keyword": "upper",
+        "string": "bracket",
+        "default": "len"
+      },
+      "output": "<1>{\n<2>  <3>\"a\"<3>: [<1>1<2>, <3>2.5<2>, <4>true<2>, <4>null<2>],\n<2>  <3>\"b\"<2>: [\"s\"]\n<1>}\n",
+      "viaHighlight": "<1>{\n<2>  <3>\"a\"<3>: [<1>1<2>, <3>2.5<2>, <4>true<2>, <4>null<2>],\n<2>  <3>\"b\"<2>: [\"s\"]\n<1>}\n"
+    },
+    {
+      "label": "json / dotPrefix",
+      "language": "json",
+      "code": "{\n  \"a\": [1, 2.5, true, null],\n  \"b\": \"s\"\n}\n",
+      "rawHtml": "{\n  <span class=\"hljs-attr\">&quot;a&quot;</span>: [<span class=\"hljs-number\">1</span>, <span class=\"hljs-number\">2.5</span>, <span class=\"hljs-literal\">true</span>, <span class=\"hljs-literal\">null</span>],\n  <span class=\"hljs-attr\">&quot;b&quot;</span>: <span class=\"hljs-string\">&quot;s&quot;</span>\n}\n",
+      "theme": {
+        "title.function": "star",
+        "default": "len"
+      },
+      "output": "<1>{\n<2>  <3>\"a\"<3>: [<1>1<2>, <3>2.5<2>, <4>true<2>, <4>null<2>],\n<2>  <3>\"b\"<2>: <3>\"s\"\n<1>}\n",
+      "viaHighlight": "<1>{\n<2>  <3>\"a\"<3>: [<1>1<2>, <3>2.5<2>, <4>true<2>, <4>null<2>],\n<2>  <3>\"b\"<2>: <3>\"s\"\n<1>}\n"
+    },
+    {
+      "label": "json / dashPrefix",
+      "language": "json",
+      "code": "{\n  \"a\": [1, 2.5, true, null],\n  \"b\": \"s\"\n}\n",
+      "rawHtml": "{\n  <span class=\"hljs-attr\">&quot;a&quot;</span>: [<span class=\"hljs-number\">1</span>, <span class=\"hljs-number\">2.5</span>, <span class=\"hljs-literal\">true</span>, <span class=\"hljs-literal\">null</span>],\n  <span class=\"hljs-attr\">&quot;b&quot;</span>: <span class=\"hljs-string\">&quot;s&quot;</span>\n}\n",
+      "theme": {
+        "title-class": "star",
+        "default": "len"
+      },
+      "output": "<1>{\n<2>  <3>\"a\"<3>: [<1>1<2>, <3>2.5<2>, <4>true<2>, <4>null<2>],\n<2>  <3>\"b\"<2>: <3>\"s\"\n<1>}\n",
+      "viaHighlight": "<1>{\n<2>  <3>\"a\"<3>: [<1>1<2>, <3>2.5<2>, <4>true<2>, <4>null<2>],\n<2>  <3>\"b\"<2>: <3>\"s\"\n<1>}\n"
+    },
+    {
+      "label": "json / exactBeatsPrefix",
+      "language": "json",
+      "code": "{\n  \"a\": [1, 2.5, true, null],\n  \"b\": \"s\"\n}\n",
+      "rawHtml": "{\n  <span class=\"hljs-attr\">&quot;a&quot;</span>: [<span class=\"hljs-number\">1</span>, <span class=\"hljs-number\">2.5</span>, <span class=\"hljs-literal\">true</span>, <span class=\"hljs-literal\">null</span>],\n  <span class=\"hljs-attr\">&quot;b&quot;</span>: <span class=\"hljs-string\">&quot;s&quot;</span>\n}\n",
+      "theme": {
+        "title": "bracket",
+        "title.function": "upper"
+      },
+      "output": "{\n  \"a\": [1, 2.5, true, null],\n  \"b\": \"s\"\n}\n",
+      "viaHighlight": "{\n  \"a\": [1, 2.5, true, null],\n  \"b\": \"s\"\n}\n"
+    },
+    {
+      "label": "json / nestedPrecedence",
+      "language": "json",
+      "code": "{\n  \"a\": [1, 2.5, true, null],\n  \"b\": \"s\"\n}\n",
+      "rawHtml": "{\n  <span class=\"hljs-attr\">&quot;a&quot;</span>: [<span class=\"hljs-number\">1</span>, <span class=\"hljs-number\">2.5</span>, <span class=\"hljs-literal\">true</span>, <span class=\"hljs-literal\">null</span>],\n  <span class=\"hljs-attr\">&quot;b&quot;</span>: <span class=\"hljs-string\">&quot;s&quot;</span>\n}\n",
+      "theme": {
+        "keyword": "upper",
+        "default": "len"
+      },
+      "output": "<1>{\n<2>  <3>\"a\"<3>: [<1>1<2>, <3>2.5<2>, <4>true<2>, <4>null<2>],\n<2>  <3>\"b\"<2>: <3>\"s\"\n<1>}\n",
+      "viaHighlight": "<1>{\n<2>  <3>\"a\"<3>: [<1>1<2>, <3>2.5<2>, <4>true<2>, <4>null<2>],\n<2>  <3>\"b\"<2>: <3>\"s\"\n<1>}\n"
+    },
+    {
+      "label": "bash / empty",
+      "language": "bash",
+      "code": "set -euo pipefail\nfor f in *.txt; do echo \"$f\"; done\n",
+      "rawHtml": "<span class=\"hljs-built_in\">set</span> -euo pipefail\n<span class=\"hljs-keyword\">for</span> f <span class=\"hljs-keyword\">in</span> *.txt; <span class=\"hljs-keyword\">do</span> <span class=\"hljs-built_in\">echo</span> <span class=\"hljs-string\">&quot;<span class=\"hljs-variable\">$f</span>&quot;</span>; <span class=\"hljs-keyword\">done</span>\n",
+      "theme": {},
+      "output": "set -euo pipefail\nfor f in *.txt; do echo \"$f\"; done\n",
+      "viaHighlight": "set -euo pipefail\nfor f in *.txt; do echo \"$f\"; done\n"
+    },
+    {
+      "label": "bash / defaultOnly",
+      "language": "bash",
+      "code": "set -euo pipefail\nfor f in *.txt; do echo \"$f\"; done\n",
+      "rawHtml": "<span class=\"hljs-built_in\">set</span> -euo pipefail\n<span class=\"hljs-keyword\">for</span> f <span class=\"hljs-keyword\">in</span> *.txt; <span class=\"hljs-keyword\">do</span> <span class=\"hljs-built_in\">echo</span> <span class=\"hljs-string\">&quot;<span class=\"hljs-variable\">$f</span>&quot;</span>; <span class=\"hljs-keyword\">done</span>\n",
+      "theme": {
+        "default": "bracket"
+      },
+      "output": "[set][ -euo pipefail]\n[for][ f ][in][ *.txt; ][do][ ][echo][ ][\"][$f][\"][; ][done]\n",
+      "viaHighlight": "[set][ -euo pipefail]\n[for][ f ][in][ *.txt; ][do][ ][echo][ ][\"][$f][\"][; ][done]\n"
+    },
+    {
+      "label": "bash / keywordsAndStrings",
+      "language": "bash",
+      "code": "set -euo pipefail\nfor f in *.txt; do echo \"$f\"; done\n",
+      "rawHtml": "<span class=\"hljs-built_in\">set</span> -euo pipefail\n<span class=\"hljs-keyword\">for</span> f <span class=\"hljs-keyword\">in</span> *.txt; <span class=\"hljs-keyword\">do</span> <span class=\"hljs-built_in\">echo</span> <span class=\"hljs-string\">&quot;<span class=\"hljs-variable\">$f</span>&quot;</span>; <span class=\"hljs-keyword\">done</span>\n",
+      "theme": {
+        "keyword": "upper",
+        "string": "bracket",
+        "default": "len"
+      },
+      "output": "<3>set<14> -euo pipefail\nFOR<3> f IN<8> *.txt; DO<1> <4>echo<1> [\"][$f][\"]<2>; DONE\n",
+      "viaHighlight": "<3>set<14> -euo pipefail\nFOR<3> f IN<8> *.txt; DO<1> <4>echo<1> [\"][$f][\"]<2>; DONE\n"
+    },
+    {
+      "label": "bash / dotPrefix",
+      "language": "bash",
+      "code": "set -euo pipefail\nfor f in *.txt; do echo \"$f\"; done\n",
+      "rawHtml": "<span class=\"hljs-built_in\">set</span> -euo pipefail\n<span class=\"hljs-keyword\">for</span> f <span class=\"hljs-keyword\">in</span> *.txt; <span class=\"hljs-keyword\">do</span> <span class=\"hljs-built_in\">echo</span> <span class=\"hljs-string\">&quot;<span class=\"hljs-variable\">$f</span>&quot;</span>; <span class=\"hljs-keyword\">done</span>\n",
+      "theme": {
+        "title.function": "star",
+        "default": "len"
+      },
+      "output": "<3>set<14> -euo pipefail\n<3>for<3> f <2>in<8> *.txt; <2>do<1> <4>echo<1> <1>\"<2>$f<1>\"<2>; <4>done\n",
+      "viaHighlight": "<3>set<14> -euo pipefail\n<3>for<3> f <2>in<8> *.txt; <2>do<1> <4>echo<1> <1>\"<2>$f<1>\"<2>; <4>done\n"
+    },
+    {
+      "label": "bash / dashPrefix",
+      "language": "bash",
+      "code": "set -euo pipefail\nfor f in *.txt; do echo \"$f\"; done\n",
+      "rawHtml": "<span class=\"hljs-built_in\">set</span> -euo pipefail\n<span class=\"hljs-keyword\">for</span> f <span class=\"hljs-keyword\">in</span> *.txt; <span class=\"hljs-keyword\">do</span> <span class=\"hljs-built_in\">echo</span> <span class=\"hljs-string\">&quot;<span class=\"hljs-variable\">$f</span>&quot;</span>; <span class=\"hljs-keyword\">done</span>\n",
+      "theme": {
+        "title-class": "star",
+        "default": "len"
+      },
+      "output": "<3>set<14> -euo pipefail\n<3>for<3> f <2>in<8> *.txt; <2>do<1> <4>echo<1> <1>\"<2>$f<1>\"<2>; <4>done\n",
+      "viaHighlight": "<3>set<14> -euo pipefail\n<3>for<3> f <2>in<8> *.txt; <2>do<1> <4>echo<1> <1>\"<2>$f<1>\"<2>; <4>done\n"
+    },
+    {
+      "label": "bash / exactBeatsPrefix",
+      "language": "bash",
+      "code": "set -euo pipefail\nfor f in *.txt; do echo \"$f\"; done\n",
+      "rawHtml": "<span class=\"hljs-built_in\">set</span> -euo pipefail\n<span class=\"hljs-keyword\">for</span> f <span class=\"hljs-keyword\">in</span> *.txt; <span class=\"hljs-keyword\">do</span> <span class=\"hljs-built_in\">echo</span> <span class=\"hljs-string\">&quot;<span class=\"hljs-variable\">$f</span>&quot;</span>; <span class=\"hljs-keyword\">done</span>\n",
+      "theme": {
+        "title": "bracket",
+        "title.function": "upper"
+      },
+      "output": "set -euo pipefail\nfor f in *.txt; do echo \"$f\"; done\n",
+      "viaHighlight": "set -euo pipefail\nfor f in *.txt; do echo \"$f\"; done\n"
+    },
+    {
+      "label": "bash / nestedPrecedence",
+      "language": "bash",
+      "code": "set -euo pipefail\nfor f in *.txt; do echo \"$f\"; done\n",
+      "rawHtml": "<span class=\"hljs-built_in\">set</span> -euo pipefail\n<span class=\"hljs-keyword\">for</span> f <span class=\"hljs-keyword\">in</span> *.txt; <span class=\"hljs-keyword\">do</span> <span class=\"hljs-built_in\">echo</span> <span class=\"hljs-string\">&quot;<span class=\"hljs-variable\">$f</span>&quot;</span>; <span class=\"hljs-keyword\">done</span>\n",
+      "theme": {
+        "keyword": "upper",
+        "default": "len"
+      },
+      "output": "<3>set<14> -euo pipefail\nFOR<3> f IN<8> *.txt; DO<1> <4>echo<1> <1>\"<2>$f<1>\"<2>; DONE\n",
+      "viaHighlight": "<3>set<14> -euo pipefail\nFOR<3> f IN<8> *.txt; DO<1> <4>echo<1> <1>\"<2>$f<1>\"<2>; DONE\n"
+    },
+    {
+      "label": "rust / empty",
+      "language": "rust",
+      "code": "fn main() {\n    let s = String::from(\"x\");\n    println!(\"{}\", s);\n}\n",
+      "rawHtml": "<span class=\"hljs-function\"><span class=\"hljs-keyword\">fn</span> <span class=\"hljs-title\">main</span></span>() {\n    <span class=\"hljs-keyword\">let</span> s = <span class=\"hljs-built_in\">String</span>::from(<span class=\"hljs-string\">&quot;x&quot;</span>);\n    <span class=\"hljs-built_in\">println!</span>(<span class=\"hljs-string\">&quot;{}&quot;</span>, s);\n}\n",
+      "theme": {},
+      "output": "fn main() {\n    let s = String::from(\"x\");\n    println!(\"{}\", s);\n}\n",
+      "viaHighlight": "fn main() {\n    let s = String::from(\"x\");\n    println!(\"{}\", s);\n}\n"
+    },
+    {
+      "label": "rust / defaultOnly",
+      "language": "rust",
+      "code": "fn main() {\n    let s = String::from(\"x\");\n    println!(\"{}\", s);\n}\n",
+      "rawHtml": "<span class=\"hljs-function\"><span class=\"hljs-keyword\">fn</span> <span class=\"hljs-title\">main</span></span>() {\n    <span class=\"hljs-keyword\">let</span> s = <span class=\"hljs-built_in\">String</span>::from(<span class=\"hljs-string\">&quot;x&quot;</span>);\n    <span class=\"hljs-built_in\">println!</span>(<span class=\"hljs-string\">&quot;{}&quot;</span>, s);\n}\n",
+      "theme": {
+        "default": "bracket"
+      },
+      "output": "[fn][ ][main][() {]\n[    ][let][ s = ][String][::from(][\"x\"][);]\n[    ][println!][(][\"{}\"][, s);]\n[}]\n",
+      "viaHighlight": "[fn][ ][main][() {]\n[    ][let][ s = ][String][::from(][\"x\"][);]\n[    ][println!][(][\"{}\"][, s);]\n[}]\n"
+    },
+    {
+      "label": "rust / keywordsAndStrings",
+      "language": "rust",
+      "code": "fn main() {\n    let s = String::from(\"x\");\n    println!(\"{}\", s);\n}\n",
+      "rawHtml": "<span class=\"hljs-function\"><span class=\"hljs-keyword\">fn</span> <span class=\"hljs-title\">main</span></span>() {\n    <span class=\"hljs-keyword\">let</span> s = <span class=\"hljs-built_in\">String</span>::from(<span class=\"hljs-string\">&quot;x&quot;</span>);\n    <span class=\"hljs-built_in\">println!</span>(<span class=\"hljs-string\">&quot;{}&quot;</span>, s);\n}\n",
+      "theme": {
+        "keyword": "upper",
+        "string": "bracket",
+        "default": "len"
+      },
+      "output": "FN<1> <4>main<4>() {\n<4>    LET<5> s = <6>String<7>::from([\"x\"]<2>);\n<4>    <8>println!<1>([\"{}\"]<5>, s);\n<1>}\n",
+      "viaHighlight": "FN<1> <4>main<4>() {\n<4>    LET<5> s = <6>String<7>::from([\"x\"]<2>);\n<4>    <8>println!<1>([\"{}\"]<5>, s);\n<1>}\n"
+    },
+    {
+      "label": "rust / dotPrefix",
+      "language": "rust",
+      "code": "fn main() {\n    let s = String::from(\"x\");\n    println!(\"{}\", s);\n}\n",
+      "rawHtml": "<span class=\"hljs-function\"><span class=\"hljs-keyword\">fn</span> <span class=\"hljs-title\">main</span></span>() {\n    <span class=\"hljs-keyword\">let</span> s = <span class=\"hljs-built_in\">String</span>::from(<span class=\"hljs-string\">&quot;x&quot;</span>);\n    <span class=\"hljs-built_in\">println!</span>(<span class=\"hljs-string\">&quot;{}&quot;</span>, s);\n}\n",
+      "theme": {
+        "title.function": "star",
+        "default": "len"
+      },
+      "output": "<2>fn<1> <4>main<4>() {\n<4>    <3>let<5> s = <6>String<7>::from(<3>\"x\"<2>);\n<4>    <8>println!<1>(<4>\"{}\"<5>, s);\n<1>}\n",
+      "viaHighlight": "<2>fn<1> <4>main<4>() {\n<4>    <3>let<5> s = <6>String<7>::from(<3>\"x\"<2>);\n<4>    <8>println!<1>(<4>\"{}\"<5>, s);\n<1>}\n"
+    },
+    {
+      "label": "rust / dashPrefix",
+      "language": "rust",
+      "code": "fn main() {\n    let s = String::from(\"x\");\n    println!(\"{}\", s);\n}\n",
+      "rawHtml": "<span class=\"hljs-function\"><span class=\"hljs-keyword\">fn</span> <span class=\"hljs-title\">main</span></span>() {\n    <span class=\"hljs-keyword\">let</span> s = <span class=\"hljs-built_in\">String</span>::from(<span class=\"hljs-string\">&quot;x&quot;</span>);\n    <span class=\"hljs-built_in\">println!</span>(<span class=\"hljs-string\">&quot;{}&quot;</span>, s);\n}\n",
+      "theme": {
+        "title-class": "star",
+        "default": "len"
+      },
+      "output": "<2>fn<1> <4>main<4>() {\n<4>    <3>let<5> s = <6>String<7>::from(<3>\"x\"<2>);\n<4>    <8>println!<1>(<4>\"{}\"<5>, s);\n<1>}\n",
+      "viaHighlight": "<2>fn<1> <4>main<4>() {\n<4>    <3>let<5> s = <6>String<7>::from(<3>\"x\"<2>);\n<4>    <8>println!<1>(<4>\"{}\"<5>, s);\n<1>}\n"
+    },
+    {
+      "label": "rust / exactBeatsPrefix",
+      "language": "rust",
+      "code": "fn main() {\n    let s = String::from(\"x\");\n    println!(\"{}\", s);\n}\n",
+      "rawHtml": "<span class=\"hljs-function\"><span class=\"hljs-keyword\">fn</span> <span class=\"hljs-title\">main</span></span>() {\n    <span class=\"hljs-keyword\">let</span> s = <span class=\"hljs-built_in\">String</span>::from(<span class=\"hljs-string\">&quot;x&quot;</span>);\n    <span class=\"hljs-built_in\">println!</span>(<span class=\"hljs-string\">&quot;{}&quot;</span>, s);\n}\n",
+      "theme": {
+        "title": "bracket",
+        "title.function": "upper"
+      },
+      "output": "fn [main]() {\n    let s = String::from(\"x\");\n    println!(\"{}\", s);\n}\n",
+      "viaHighlight": "fn [main]() {\n    let s = String::from(\"x\");\n    println!(\"{}\", s);\n}\n"
+    },
+    {
+      "label": "rust / nestedPrecedence",
+      "language": "rust",
+      "code": "fn main() {\n    let s = String::from(\"x\");\n    println!(\"{}\", s);\n}\n",
+      "rawHtml": "<span class=\"hljs-function\"><span class=\"hljs-keyword\">fn</span> <span class=\"hljs-title\">main</span></span>() {\n    <span class=\"hljs-keyword\">let</span> s = <span class=\"hljs-built_in\">String</span>::from(<span class=\"hljs-string\">&quot;x&quot;</span>);\n    <span class=\"hljs-built_in\">println!</span>(<span class=\"hljs-string\">&quot;{}&quot;</span>, s);\n}\n",
+      "theme": {
+        "keyword": "upper",
+        "default": "len"
+      },
+      "output": "FN<1> <4>main<4>() {\n<4>    LET<5> s = <6>String<7>::from(<3>\"x\"<2>);\n<4>    <8>println!<1>(<4>\"{}\"<5>, s);\n<1>}\n",
+      "viaHighlight": "FN<1> <4>main<4>() {\n<4>    LET<5> s = <6>String<7>::from(<3>\"x\"<2>);\n<4>    <8>println!<1>(<4>\"{}\"<5>, s);\n<1>}\n"
+    },
+    {
+      "label": "csharp / empty",
+      "language": "csharp",
+      "code": "public static int Add(int a, int b) => a + b; // sum\n",
+      "rawHtml": "<span class=\"hljs-function\"><span class=\"hljs-keyword\">public</span> <span class=\"hljs-keyword\">static</span> <span class=\"hljs-built_in\">int</span> <span class=\"hljs-title\">Add</span>(<span class=\"hljs-params\"><span class=\"hljs-built_in\">int</span> a, <span class=\"hljs-built_in\">int</span> b</span>)</span> =&gt; a + b; <span class=\"hljs-comment\">// sum</span>\n",
+      "theme": {},
+      "output": "public static int Add(int a, int b) => a + b; // sum\n",
+      "viaHighlight": "public static int Add(int a, int b) => a + b; // sum\n"
+    },
+    {
+      "label": "csharp / defaultOnly",
+      "language": "csharp",
+      "code": "public static int Add(int a, int b) => a + b; // sum\n",
+      "rawHtml": "<span class=\"hljs-function\"><span class=\"hljs-keyword\">public</span> <span class=\"hljs-keyword\">static</span> <span class=\"hljs-built_in\">int</span> <span class=\"hljs-title\">Add</span>(<span class=\"hljs-params\"><span class=\"hljs-built_in\">int</span> a, <span class=\"hljs-built_in\">int</span> b</span>)</span> =&gt; a + b; <span class=\"hljs-comment\">// sum</span>\n",
+      "theme": {
+        "default": "bracket"
+      },
+      "output": "[public][ ][static][ ][int][ ][Add][(][int][ a, ][int][ b][)][ => a + b; ][// sum]\n",
+      "viaHighlight": "[public][ ][static][ ][int][ ][Add][(][int][ a, ][int][ b][)][ => a + b; ][// sum]\n"
+    },
+    {
+      "label": "csharp / keywordsAndStrings",
+      "language": "csharp",
+      "code": "public static int Add(int a, int b) => a + b; // sum\n",
+      "rawHtml": "<span class=\"hljs-function\"><span class=\"hljs-keyword\">public</span> <span class=\"hljs-keyword\">static</span> <span class=\"hljs-built_in\">int</span> <span class=\"hljs-title\">Add</span>(<span class=\"hljs-params\"><span class=\"hljs-built_in\">int</span> a, <span class=\"hljs-built_in\">int</span> b</span>)</span> =&gt; a + b; <span class=\"hljs-comment\">// sum</span>\n",
+      "theme": {
+        "keyword": "upper",
+        "string": "bracket",
+        "default": "len"
+      },
+      "output": "PUBLIC<1> STATIC<1> <3>int<1> <3>Add<1>(<3>int<4> a, <3>int<2> b<1>)<11> => a + b; <6>// sum\n",
+      "viaHighlight": "PUBLIC<1> STATIC<1> <3>int<1> <3>Add<1>(<3>int<4> a, <3>int<2> b<1>)<11> => a + b; <6>// sum\n"
+    },
+    {
+      "label": "csharp / dotPrefix",
+      "language": "csharp",
+      "code": "public static int Add(int a, int b) => a + b; // sum\n",
+      "rawHtml": "<span class=\"hljs-function\"><span class=\"hljs-keyword\">public</span> <span class=\"hljs-keyword\">static</span> <span class=\"hljs-built_in\">int</span> <span class=\"hljs-title\">Add</span>(<span class=\"hljs-params\"><span class=\"hljs-built_in\">int</span> a, <span class=\"hljs-built_in\">int</span> b</span>)</span> =&gt; a + b; <span class=\"hljs-comment\">// sum</span>\n",
+      "theme": {
+        "title.function": "star",
+        "default": "len"
+      },
+      "output": "<6>public<1> <6>static<1> <3>int<1> <3>Add<1>(<3>int<4> a, <3>int<2> b<1>)<11> => a + b; <6>// sum\n",
+      "viaHighlight": "<6>public<1> <6>static<1> <3>int<1> <3>Add<1>(<3>int<4> a, <3>int<2> b<1>)<11> => a + b; <6>// sum\n"
+    },
+    {
+      "label": "csharp / dashPrefix",
+      "language": "csharp",
+      "code": "public static int Add(int a, int b) => a + b; // sum\n",
+      "rawHtml": "<span class=\"hljs-function\"><span class=\"hljs-keyword\">public</span> <span class=\"hljs-keyword\">static</span> <span class=\"hljs-built_in\">int</span> <span class=\"hljs-title\">Add</span>(<span class=\"hljs-params\"><span class=\"hljs-built_in\">int</span> a, <span class=\"hljs-built_in\">int</span> b</span>)</span> =&gt; a + b; <span class=\"hljs-comment\">// sum</span>\n",
+      "theme": {
+        "title-class": "star",
+        "default": "len"
+      },
+      "output": "<6>public<1> <6>static<1> <3>int<1> <3>Add<1>(<3>int<4> a, <3>int<2> b<1>)<11> => a + b; <6>// sum\n",
+      "viaHighlight": "<6>public<1> <6>static<1> <3>int<1> <3>Add<1>(<3>int<4> a, <3>int<2> b<1>)<11> => a + b; <6>// sum\n"
+    },
+    {
+      "label": "csharp / exactBeatsPrefix",
+      "language": "csharp",
+      "code": "public static int Add(int a, int b) => a + b; // sum\n",
+      "rawHtml": "<span class=\"hljs-function\"><span class=\"hljs-keyword\">public</span> <span class=\"hljs-keyword\">static</span> <span class=\"hljs-built_in\">int</span> <span class=\"hljs-title\">Add</span>(<span class=\"hljs-params\"><span class=\"hljs-built_in\">int</span> a, <span class=\"hljs-built_in\">int</span> b</span>)</span> =&gt; a + b; <span class=\"hljs-comment\">// sum</span>\n",
+      "theme": {
+        "title": "bracket",
+        "title.function": "upper"
+      },
+      "output": "public static int [Add](int a, int b) => a + b; // sum\n",
+      "viaHighlight": "public static int [Add](int a, int b) => a + b; // sum\n"
+    },
+    {
+      "label": "csharp / nestedPrecedence",
+      "language": "csharp",
+      "code": "public static int Add(int a, int b) => a + b; // sum\n",
+      "rawHtml": "<span class=\"hljs-function\"><span class=\"hljs-keyword\">public</span> <span class=\"hljs-keyword\">static</span> <span class=\"hljs-built_in\">int</span> <span class=\"hljs-title\">Add</span>(<span class=\"hljs-params\"><span class=\"hljs-built_in\">int</span> a, <span class=\"hljs-built_in\">int</span> b</span>)</span> =&gt; a + b; <span class=\"hljs-comment\">// sum</span>\n",
+      "theme": {
+        "keyword": "upper",
+        "default": "len"
+      },
+      "output": "PUBLIC<1> STATIC<1> <3>int<1> <3>Add<1>(<3>int<4> a, <3>int<2> b<1>)<11> => a + b; <6>// sum\n",
+      "viaHighlight": "PUBLIC<1> STATIC<1> <3>int<1> <3>Add<1>(<3>int<4> a, <3>int<2> b<1>)<11> => a + b; <6>// sum\n"
+    },
+    {
+      "label": "go / empty",
+      "language": "go",
+      "code": "package main\n\nimport \"fmt\"\n\nfunc main() { fmt.Println(\"hi\") }\n",
+      "rawHtml": "<span class=\"hljs-keyword\">package</span> main\n\n<span class=\"hljs-keyword\">import</span> <span class=\"hljs-string\">&quot;fmt&quot;</span>\n\n<span class=\"hljs-function\"><span class=\"hljs-keyword\">func</span> <span class=\"hljs-title\">main</span><span class=\"hljs-params\">()</span></span> { fmt.Println(<span class=\"hljs-string\">&quot;hi&quot;</span>) }\n",
+      "theme": {},
+      "output": "package main\n\nimport \"fmt\"\n\nfunc main() { fmt.Println(\"hi\") }\n",
+      "viaHighlight": "package main\n\nimport \"fmt\"\n\nfunc main() { fmt.Println(\"hi\") }\n"
+    },
+    {
+      "label": "go / defaultOnly",
+      "language": "go",
+      "code": "package main\n\nimport \"fmt\"\n\nfunc main() { fmt.Println(\"hi\") }\n",
+      "rawHtml": "<span class=\"hljs-keyword\">package</span> main\n\n<span class=\"hljs-keyword\">import</span> <span class=\"hljs-string\">&quot;fmt&quot;</span>\n\n<span class=\"hljs-function\"><span class=\"hljs-keyword\">func</span> <span class=\"hljs-title\">main</span><span class=\"hljs-params\">()</span></span> { fmt.Println(<span class=\"hljs-string\">&quot;hi&quot;</span>) }\n",
+      "theme": {
+        "default": "bracket"
+      },
+      "output": "[package][ main]\n\n[import][ ][\"fmt\"]\n\n[func][ ][main][()][ { fmt.Println(][\"hi\"][) }]\n",
+      "viaHighlight": "[package][ main]\n\n[import][ ][\"fmt\"]\n\n[func][ ][main][()][ { fmt.Println(][\"hi\"][) }]\n"
+    },
+    {
+      "label": "go / keywordsAndStrings",
+      "language": "go",
+      "code": "package main\n\nimport \"fmt\"\n\nfunc main() { fmt.Println(\"hi\") }\n",
+      "rawHtml": "<span class=\"hljs-keyword\">package</span> main\n\n<span class=\"hljs-keyword\">import</span> <span class=\"hljs-string\">&quot;fmt&quot;</span>\n\n<span class=\"hljs-function\"><span class=\"hljs-keyword\">func</span> <span class=\"hljs-title\">main</span><span class=\"hljs-params\">()</span></span> { fmt.Println(<span class=\"hljs-string\">&quot;hi&quot;</span>) }\n",
+      "theme": {
+        "keyword": "upper",
+        "string": "bracket",
+        "default": "len"
+      },
+      "output": "PACKAGE<5> main\n\nIMPORT<1> [\"fmt\"]\n\nFUNC<1> <4>main<2>()<15> { fmt.Println([\"hi\"]<3>) }\n",
+      "viaHighlight": "PACKAGE<5> main\n\nIMPORT<1> [\"fmt\"]\n\nFUNC<1> <4>main<2>()<15> { fmt.Println([\"hi\"]<3>) }\n"
+    },
+    {
+      "label": "go / dotPrefix",
+      "language": "go",
+      "code": "package main\n\nimport \"fmt\"\n\nfunc main() { fmt.Println(\"hi\") }\n",
+      "rawHtml": "<span class=\"hljs-keyword\">package</span> main\n\n<span class=\"hljs-keyword\">import</span> <span class=\"hljs-string\">&quot;fmt&quot;</span>\n\n<span class=\"hljs-function\"><span class=\"hljs-keyword\">func</span> <span class=\"hljs-title\">main</span><span class=\"hljs-params\">()</span></span> { fmt.Println(<span class=\"hljs-string\">&quot;hi&quot;</span>) }\n",
+      "theme": {
+        "title.function": "star",
+        "default": "len"
+      },
+      "output": "<7>package<5> main\n\n<6>import<1> <5>\"fmt\"\n\n<4>func<1> <4>main<2>()<15> { fmt.Println(<4>\"hi\"<3>) }\n",
+      "viaHighlight": "<7>package<5> main\n\n<6>import<1> <5>\"fmt\"\n\n<4>func<1> <4>main<2>()<15> { fmt.Println(<4>\"hi\"<3>) }\n"
+    },
+    {
+      "label": "go / dashPrefix",
+      "language": "go",
+      "code": "package main\n\nimport \"fmt\"\n\nfunc main() { fmt.Println(\"hi\") }\n",
+      "rawHtml": "<span class=\"hljs-keyword\">package</span> main\n\n<span class=\"hljs-keyword\">import</span> <span class=\"hljs-string\">&quot;fmt&quot;</span>\n\n<span class=\"hljs-function\"><span class=\"hljs-keyword\">func</span> <span class=\"hljs-title\">main</span><span class=\"hljs-params\">()</span></span> { fmt.Println(<span class=\"hljs-string\">&quot;hi&quot;</span>) }\n",
+      "theme": {
+        "title-class": "star",
+        "default": "len"
+      },
+      "output": "<7>package<5> main\n\n<6>import<1> <5>\"fmt\"\n\n<4>func<1> <4>main<2>()<15> { fmt.Println(<4>\"hi\"<3>) }\n",
+      "viaHighlight": "<7>package<5> main\n\n<6>import<1> <5>\"fmt\"\n\n<4>func<1> <4>main<2>()<15> { fmt.Println(<4>\"hi\"<3>) }\n"
+    },
+    {
+      "label": "go / exactBeatsPrefix",
+      "language": "go",
+      "code": "package main\n\nimport \"fmt\"\n\nfunc main() { fmt.Println(\"hi\") }\n",
+      "rawHtml": "<span class=\"hljs-keyword\">package</span> main\n\n<span class=\"hljs-keyword\">import</span> <span class=\"hljs-string\">&quot;fmt&quot;</span>\n\n<span class=\"hljs-function\"><span class=\"hljs-keyword\">func</span> <span class=\"hljs-title\">main</span><span class=\"hljs-params\">()</span></span> { fmt.Println(<span class=\"hljs-string\">&quot;hi&quot;</span>) }\n",
+      "theme": {
+        "title": "bracket",
+        "title.function": "upper"
+      },
+      "output": "package main\n\nimport \"fmt\"\n\nfunc [main]() { fmt.Println(\"hi\") }\n",
+      "viaHighlight": "package main\n\nimport \"fmt\"\n\nfunc [main]() { fmt.Println(\"hi\") }\n"
+    },
+    {
+      "label": "go / nestedPrecedence",
+      "language": "go",
+      "code": "package main\n\nimport \"fmt\"\n\nfunc main() { fmt.Println(\"hi\") }\n",
+      "rawHtml": "<span class=\"hljs-keyword\">package</span> main\n\n<span class=\"hljs-keyword\">import</span> <span class=\"hljs-string\">&quot;fmt&quot;</span>\n\n<span class=\"hljs-function\"><span class=\"hljs-keyword\">func</span> <span class=\"hljs-title\">main</span><span class=\"hljs-params\">()</span></span> { fmt.Println(<span class=\"hljs-string\">&quot;hi&quot;</span>) }\n",
+      "theme": {
+        "keyword": "upper",
+        "default": "len"
+      },
+      "output": "PACKAGE<5> main\n\nIMPORT<1> <5>\"fmt\"\n\nFUNC<1> <4>main<2>()<15> { fmt.Println(<4>\"hi\"<3>) }\n",
+      "viaHighlight": "PACKAGE<5> main\n\nIMPORT<1> <5>\"fmt\"\n\nFUNC<1> <4>main<2>()<15> { fmt.Println(<4>\"hi\"<3>) }\n"
+    },
+    {
+      "label": "typescript / empty",
+      "language": "typescript",
+      "code": "interface P<T> { v: T }\nconst f = (p: P<number>): number => p.v;\n",
+      "rawHtml": "<span class=\"hljs-keyword\">interface</span> P&lt;T&gt; { v: T }\n<span class=\"hljs-keyword\">const</span> f = (p: P&lt;<span class=\"hljs-built_in\">number</span>&gt;): <span class=\"hljs-function\"><span class=\"hljs-params\">number</span> =&gt;</span> p.v;\n",
+      "theme": {},
+      "output": "interface P<T> { v: T }\nconst f = (p: P<number>): number => p.v;\n",
+      "viaHighlight": "interface P<T> { v: T }\nconst f = (p: P<number>): number => p.v;\n"
+    },
+    {
+      "label": "typescript / defaultOnly",
+      "language": "typescript",
+      "code": "interface P<T> { v: T }\nconst f = (p: P<number>): number => p.v;\n",
+      "rawHtml": "<span class=\"hljs-keyword\">interface</span> P&lt;T&gt; { v: T }\n<span class=\"hljs-keyword\">const</span> f = (p: P&lt;<span class=\"hljs-built_in\">number</span>&gt;): <span class=\"hljs-function\"><span class=\"hljs-params\">number</span> =&gt;</span> p.v;\n",
+      "theme": {
+        "default": "bracket"
+      },
+      "output": "[interface][ P<T> { v: T }]\n[const][ f = (p: P<][number][>): ][number][ =>][ p.v;]\n",
+      "viaHighlight": "[interface][ P<T> { v: T }]\n[const][ f = (p: P<][number][>): ][number][ =>][ p.v;]\n"
+    },
+    {
+      "label": "typescript / keywordsAndStrings",
+      "language": "typescript",
+      "code": "interface P<T> { v: T }\nconst f = (p: P<number>): number => p.v;\n",
+      "rawHtml": "<span class=\"hljs-keyword\">interface</span> P&lt;T&gt; { v: T }\n<span class=\"hljs-keyword\">const</span> f = (p: P&lt;<span class=\"hljs-built_in\">number</span>&gt;): <span class=\"hljs-function\"><span class=\"hljs-params\">number</span> =&gt;</span> p.v;\n",
+      "theme": {
+        "keyword": "upper",
+        "string": "bracket",
+        "default": "len"
+      },
+      "output": "INTERFACE<14> P<T> { v: T }\nCONST<11> f = (p: P<<6>number<4>>): <6>number<3> =><5> p.v;\n",
+      "viaHighlight": "INTERFACE<14> P<T> { v: T }\nCONST<11> f = (p: P<<6>number<4>>): <6>number<3> =><5> p.v;\n"
+    },
+    {
+      "label": "typescript / dotPrefix",
+      "language": "typescript",
+      "code": "interface P<T> { v: T }\nconst f = (p: P<number>): number => p.v;\n",
+      "rawHtml": "<span class=\"hljs-keyword\">interface</span> P&lt;T&gt; { v: T }\n<span class=\"hljs-keyword\">const</span> f = (p: P&lt;<span class=\"hljs-built_in\">number</span>&gt;): <span class=\"hljs-function\"><span class=\"hljs-params\">number</span> =&gt;</span> p.v;\n",
+      "theme": {
+        "title.function": "star",
+        "default": "len"
+      },
+      "output": "<9>interface<14> P<T> { v: T }\n<5>const<11> f = (p: P<<6>number<4>>): <6>number<3> =><5> p.v;\n",
+      "viaHighlight": "<9>interface<14> P<T> { v: T }\n<5>const<11> f = (p: P<<6>number<4>>): <6>number<3> =><5> p.v;\n"
+    },
+    {
+      "label": "typescript / dashPrefix",
+      "language": "typescript",
+      "code": "interface P<T> { v: T }\nconst f = (p: P<number>): number => p.v;\n",
+      "rawHtml": "<span class=\"hljs-keyword\">interface</span> P&lt;T&gt; { v: T }\n<span class=\"hljs-keyword\">const</span> f = (p: P&lt;<span class=\"hljs-built_in\">number</span>&gt;): <span class=\"hljs-function\"><span class=\"hljs-params\">number</span> =&gt;</span> p.v;\n",
+      "theme": {
+        "title-class": "star",
+        "default": "len"
+      },
+      "output": "<9>interface<14> P<T> { v: T }\n<5>const<11> f = (p: P<<6>number<4>>): <6>number<3> =><5> p.v;\n",
+      "viaHighlight": "<9>interface<14> P<T> { v: T }\n<5>const<11> f = (p: P<<6>number<4>>): <6>number<3> =><5> p.v;\n"
+    },
+    {
+      "label": "typescript / exactBeatsPrefix",
+      "language": "typescript",
+      "code": "interface P<T> { v: T }\nconst f = (p: P<number>): number => p.v;\n",
+      "rawHtml": "<span class=\"hljs-keyword\">interface</span> P&lt;T&gt; { v: T }\n<span class=\"hljs-keyword\">const</span> f = (p: P&lt;<span class=\"hljs-built_in\">number</span>&gt;): <span class=\"hljs-function\"><span class=\"hljs-params\">number</span> =&gt;</span> p.v;\n",
+      "theme": {
+        "title": "bracket",
+        "title.function": "upper"
+      },
+      "output": "interface P<T> { v: T }\nconst f = (p: P<number>): number => p.v;\n",
+      "viaHighlight": "interface P<T> { v: T }\nconst f = (p: P<number>): number => p.v;\n"
+    },
+    {
+      "label": "typescript / nestedPrecedence",
+      "language": "typescript",
+      "code": "interface P<T> { v: T }\nconst f = (p: P<number>): number => p.v;\n",
+      "rawHtml": "<span class=\"hljs-keyword\">interface</span> P&lt;T&gt; { v: T }\n<span class=\"hljs-keyword\">const</span> f = (p: P&lt;<span class=\"hljs-built_in\">number</span>&gt;): <span class=\"hljs-function\"><span class=\"hljs-params\">number</span> =&gt;</span> p.v;\n",
+      "theme": {
+        "keyword": "upper",
+        "default": "len"
+      },
+      "output": "INTERFACE<14> P<T> { v: T }\nCONST<11> f = (p: P<<6>number<4>>): <6>number<3> =><5> p.v;\n",
+      "viaHighlight": "INTERFACE<14> P<T> { v: T }\nCONST<11> f = (p: P<<6>number<4>>): <6>number<3> =><5> p.v;\n"
+    },
+    {
+      "label": "plaintext / empty",
+      "language": "plaintext",
+      "code": "a < b & c > d\n",
+      "rawHtml": "a &lt; b &amp; c &gt; d\n",
+      "theme": {},
+      "output": "a < b & c > d\n",
+      "viaHighlight": "a < b & c > d\n"
+    },
+    {
+      "label": "plaintext / defaultOnly",
+      "language": "plaintext",
+      "code": "a < b & c > d\n",
+      "rawHtml": "a &lt; b &amp; c &gt; d\n",
+      "theme": {
+        "default": "bracket"
+      },
+      "output": "[a < b & c > d]\n",
+      "viaHighlight": "[a < b & c > d]\n"
+    },
+    {
+      "label": "plaintext / keywordsAndStrings",
+      "language": "plaintext",
+      "code": "a < b & c > d\n",
+      "rawHtml": "a &lt; b &amp; c &gt; d\n",
+      "theme": {
+        "keyword": "upper",
+        "string": "bracket",
+        "default": "len"
+      },
+      "output": "<13>a < b & c > d\n",
+      "viaHighlight": "<13>a < b & c > d\n"
+    },
+    {
+      "label": "plaintext / dotPrefix",
+      "language": "plaintext",
+      "code": "a < b & c > d\n",
+      "rawHtml": "a &lt; b &amp; c &gt; d\n",
+      "theme": {
+        "title.function": "star",
+        "default": "len"
+      },
+      "output": "<13>a < b & c > d\n",
+      "viaHighlight": "<13>a < b & c > d\n"
+    },
+    {
+      "label": "plaintext / dashPrefix",
+      "language": "plaintext",
+      "code": "a < b & c > d\n",
+      "rawHtml": "a &lt; b &amp; c &gt; d\n",
+      "theme": {
+        "title-class": "star",
+        "default": "len"
+      },
+      "output": "<13>a < b & c > d\n",
+      "viaHighlight": "<13>a < b & c > d\n"
+    },
+    {
+      "label": "plaintext / exactBeatsPrefix",
+      "language": "plaintext",
+      "code": "a < b & c > d\n",
+      "rawHtml": "a &lt; b &amp; c &gt; d\n",
+      "theme": {
+        "title": "bracket",
+        "title.function": "upper"
+      },
+      "output": "a < b & c > d\n",
+      "viaHighlight": "a < b & c > d\n"
+    },
+    {
+      "label": "plaintext / nestedPrecedence",
+      "language": "plaintext",
+      "code": "a < b & c > d\n",
+      "rawHtml": "a &lt; b &amp; c &gt; d\n",
+      "theme": {
+        "keyword": "upper",
+        "default": "len"
+      },
+      "output": "<13>a < b & c > d\n",
+      "viaHighlight": "<13>a < b & c > d\n"
+    },
+    {
+      "label": "empty source / empty",
+      "language": "python",
+      "code": "",
+      "rawHtml": "",
+      "theme": {},
+      "output": "",
+      "viaHighlight": ""
+    },
+    {
+      "label": "empty source / defaultOnly",
+      "language": "python",
+      "code": "",
+      "rawHtml": "",
+      "theme": {
+        "default": "bracket"
+      },
+      "output": "",
+      "viaHighlight": ""
+    },
+    {
+      "label": "empty source / keywordsAndStrings",
+      "language": "python",
+      "code": "",
+      "rawHtml": "",
+      "theme": {
+        "keyword": "upper",
+        "string": "bracket",
+        "default": "len"
+      },
+      "output": "",
+      "viaHighlight": ""
+    },
+    {
+      "label": "empty source / dotPrefix",
+      "language": "python",
+      "code": "",
+      "rawHtml": "",
+      "theme": {
+        "title.function": "star",
+        "default": "len"
+      },
+      "output": "",
+      "viaHighlight": ""
+    },
+    {
+      "label": "empty source / dashPrefix",
+      "language": "python",
+      "code": "",
+      "rawHtml": "",
+      "theme": {
+        "title-class": "star",
+        "default": "len"
+      },
+      "output": "",
+      "viaHighlight": ""
+    },
+    {
+      "label": "empty source / exactBeatsPrefix",
+      "language": "python",
+      "code": "",
+      "rawHtml": "",
+      "theme": {
+        "title": "bracket",
+        "title.function": "upper"
+      },
+      "output": "",
+      "viaHighlight": ""
+    },
+    {
+      "label": "empty source / nestedPrecedence",
+      "language": "python",
+      "code": "",
+      "rawHtml": "",
+      "theme": {
+        "keyword": "upper",
+        "default": "len"
+      },
+      "output": "",
+      "viaHighlight": ""
+    },
+    {
+      "label": "crlf source / empty",
+      "language": "python",
+      "code": "x = 1\r\ny = 2\r\n",
+      "rawHtml": "x = <span class=\"hljs-number\">1</span>\r\ny = <span class=\"hljs-number\">2</span>\r\n",
+      "theme": {},
+      "output": "x = 1\r\ny = 2\r\n",
+      "viaHighlight": "x = 1\r\ny = 2\r\n"
+    },
+    {
+      "label": "crlf source / defaultOnly",
+      "language": "python",
+      "code": "x = 1\r\ny = 2\r\n",
+      "rawHtml": "x = <span class=\"hljs-number\">1</span>\r\ny = <span class=\"hljs-number\">2</span>\r\n",
+      "theme": {
+        "default": "bracket"
+      },
+      "output": "[x = ][1][\r]\n[y = ][2][\r]\n",
+      "viaHighlight": "[x = ][1][\r]\n[y = ][2][\r]\n"
+    },
+    {
+      "label": "crlf source / keywordsAndStrings",
+      "language": "python",
+      "code": "x = 1\r\ny = 2\r\n",
+      "rawHtml": "x = <span class=\"hljs-number\">1</span>\r\ny = <span class=\"hljs-number\">2</span>\r\n",
+      "theme": {
+        "keyword": "upper",
+        "string": "bracket",
+        "default": "len"
+      },
+      "output": "<4>x = <1>1<1>\r\n<4>y = <1>2<1>\r\n",
+      "viaHighlight": "<4>x = <1>1<1>\r\n<4>y = <1>2<1>\r\n"
+    },
+    {
+      "label": "crlf source / dotPrefix",
+      "language": "python",
+      "code": "x = 1\r\ny = 2\r\n",
+      "rawHtml": "x = <span class=\"hljs-number\">1</span>\r\ny = <span class=\"hljs-number\">2</span>\r\n",
+      "theme": {
+        "title.function": "star",
+        "default": "len"
+      },
+      "output": "<4>x = <1>1<1>\r\n<4>y = <1>2<1>\r\n",
+      "viaHighlight": "<4>x = <1>1<1>\r\n<4>y = <1>2<1>\r\n"
+    },
+    {
+      "label": "crlf source / dashPrefix",
+      "language": "python",
+      "code": "x = 1\r\ny = 2\r\n",
+      "rawHtml": "x = <span class=\"hljs-number\">1</span>\r\ny = <span class=\"hljs-number\">2</span>\r\n",
+      "theme": {
+        "title-class": "star",
+        "default": "len"
+      },
+      "output": "<4>x = <1>1<1>\r\n<4>y = <1>2<1>\r\n",
+      "viaHighlight": "<4>x = <1>1<1>\r\n<4>y = <1>2<1>\r\n"
+    },
+    {
+      "label": "crlf source / exactBeatsPrefix",
+      "language": "python",
+      "code": "x = 1\r\ny = 2\r\n",
+      "rawHtml": "x = <span class=\"hljs-number\">1</span>\r\ny = <span class=\"hljs-number\">2</span>\r\n",
+      "theme": {
+        "title": "bracket",
+        "title.function": "upper"
+      },
+      "output": "x = 1\r\ny = 2\r\n",
+      "viaHighlight": "x = 1\r\ny = 2\r\n"
+    },
+    {
+      "label": "crlf source / nestedPrecedence",
+      "language": "python",
+      "code": "x = 1\r\ny = 2\r\n",
+      "rawHtml": "x = <span class=\"hljs-number\">1</span>\r\ny = <span class=\"hljs-number\">2</span>\r\n",
+      "theme": {
+        "keyword": "upper",
+        "default": "len"
+      },
+      "output": "<4>x = <1>1<1>\r\n<4>y = <1>2<1>\r\n",
+      "viaHighlight": "<4>x = <1>1<1>\r\n<4>y = <1>2<1>\r\n"
+    },
+    {
+      "label": "no trailing newline / empty",
+      "language": "javascript",
+      "code": "let z = 3",
+      "rawHtml": "<span class=\"hljs-keyword\">let</span> z = <span class=\"hljs-number\">3</span>",
+      "theme": {},
+      "output": "let z = 3",
+      "viaHighlight": "let z = 3"
+    },
+    {
+      "label": "no trailing newline / defaultOnly",
+      "language": "javascript",
+      "code": "let z = 3",
+      "rawHtml": "<span class=\"hljs-keyword\">let</span> z = <span class=\"hljs-number\">3</span>",
+      "theme": {
+        "default": "bracket"
+      },
+      "output": "[let][ z = ][3]",
+      "viaHighlight": "[let][ z = ][3]"
+    },
+    {
+      "label": "no trailing newline / keywordsAndStrings",
+      "language": "javascript",
+      "code": "let z = 3",
+      "rawHtml": "<span class=\"hljs-keyword\">let</span> z = <span class=\"hljs-number\">3</span>",
+      "theme": {
+        "keyword": "upper",
+        "string": "bracket",
+        "default": "len"
+      },
+      "output": "LET<5> z = <1>3",
+      "viaHighlight": "LET<5> z = <1>3"
+    },
+    {
+      "label": "no trailing newline / dotPrefix",
+      "language": "javascript",
+      "code": "let z = 3",
+      "rawHtml": "<span class=\"hljs-keyword\">let</span> z = <span class=\"hljs-number\">3</span>",
+      "theme": {
+        "title.function": "star",
+        "default": "len"
+      },
+      "output": "<3>let<5> z = <1>3",
+      "viaHighlight": "<3>let<5> z = <1>3"
+    },
+    {
+      "label": "no trailing newline / dashPrefix",
+      "language": "javascript",
+      "code": "let z = 3",
+      "rawHtml": "<span class=\"hljs-keyword\">let</span> z = <span class=\"hljs-number\">3</span>",
+      "theme": {
+        "title-class": "star",
+        "default": "len"
+      },
+      "output": "<3>let<5> z = <1>3",
+      "viaHighlight": "<3>let<5> z = <1>3"
+    },
+    {
+      "label": "no trailing newline / exactBeatsPrefix",
+      "language": "javascript",
+      "code": "let z = 3",
+      "rawHtml": "<span class=\"hljs-keyword\">let</span> z = <span class=\"hljs-number\">3</span>",
+      "theme": {
+        "title": "bracket",
+        "title.function": "upper"
+      },
+      "output": "let z = 3",
+      "viaHighlight": "let z = 3"
+    },
+    {
+      "label": "no trailing newline / nestedPrecedence",
+      "language": "javascript",
+      "code": "let z = 3",
+      "rawHtml": "<span class=\"hljs-keyword\">let</span> z = <span class=\"hljs-number\">3</span>",
+      "theme": {
+        "keyword": "upper",
+        "default": "len"
+      },
+      "output": "LET<5> z = <1>3",
+      "viaHighlight": "LET<5> z = <1>3"
+    },
+    {
+      "label": "unknown language",
+      "language": "not-a-language",
+      "code": "whatever\n",
+      "threw": "Unknown language: \"not-a-language\""
+    }
+  ],
+  "auto": [
+    {
+      "label": "no language / empty",
+      "code": "const x = 1;\ndef f():\n    return \"s\"\n",
+      "language": null,
+      "languageSubset": null,
+      "rawHtml": "const x = <span class=\"hljs-number\">1</span>;\n<span class=\"hljs-function\"><span class=\"hljs-keyword\">def</span> <span class=\"hljs-title\">f</span><span class=\"hljs-params\">()</span></span>:\n    <span class=\"hljs-keyword\">return</span> <span class=\"hljs-string\">&quot;s&quot;</span>\n",
+      "theme": {},
+      "output": "const x = 1;\ndef f():\n    return \"s\"\n"
+    },
+    {
+      "label": "no language / defaultOnly",
+      "code": "const x = 1;\ndef f():\n    return \"s\"\n",
+      "language": null,
+      "languageSubset": null,
+      "rawHtml": "const x = <span class=\"hljs-number\">1</span>;\n<span class=\"hljs-function\"><span class=\"hljs-keyword\">def</span> <span class=\"hljs-title\">f</span><span class=\"hljs-params\">()</span></span>:\n    <span class=\"hljs-keyword\">return</span> <span class=\"hljs-string\">&quot;s&quot;</span>\n",
+      "theme": {
+        "default": "bracket"
+      },
+      "output": "[const x = ][1][;]\n[def][ ][f][()][:]\n[    ][return][ ][\"s\"]\n"
+    },
+    {
+      "label": "no language / keywordsAndStrings",
+      "code": "const x = 1;\ndef f():\n    return \"s\"\n",
+      "language": null,
+      "languageSubset": null,
+      "rawHtml": "const x = <span class=\"hljs-number\">1</span>;\n<span class=\"hljs-function\"><span class=\"hljs-keyword\">def</span> <span class=\"hljs-title\">f</span><span class=\"hljs-params\">()</span></span>:\n    <span class=\"hljs-keyword\">return</span> <span class=\"hljs-string\">&quot;s&quot;</span>\n",
+      "theme": {
+        "keyword": "upper",
+        "string": "bracket",
+        "default": "len"
+      },
+      "output": "<10>const x = <1>1<1>;\nDEF<1> <1>f<2>()<1>:\n<4>    RETURN<1> [\"s\"]\n"
+    },
+    {
+      "label": "no language / dotPrefix",
+      "code": "const x = 1;\ndef f():\n    return \"s\"\n",
+      "language": null,
+      "languageSubset": null,
+      "rawHtml": "const x = <span class=\"hljs-number\">1</span>;\n<span class=\"hljs-function\"><span class=\"hljs-keyword\">def</span> <span class=\"hljs-title\">f</span><span class=\"hljs-params\">()</span></span>:\n    <span class=\"hljs-keyword\">return</span> <span class=\"hljs-string\">&quot;s&quot;</span>\n",
+      "theme": {
+        "title.function": "star",
+        "default": "len"
+      },
+      "output": "<10>const x = <1>1<1>;\n<3>def<1> <1>f<2>()<1>:\n<4>    <6>return<1> <3>\"s\"\n"
+    },
+    {
+      "label": "no language / dashPrefix",
+      "code": "const x = 1;\ndef f():\n    return \"s\"\n",
+      "language": null,
+      "languageSubset": null,
+      "rawHtml": "const x = <span class=\"hljs-number\">1</span>;\n<span class=\"hljs-function\"><span class=\"hljs-keyword\">def</span> <span class=\"hljs-title\">f</span><span class=\"hljs-params\">()</span></span>:\n    <span class=\"hljs-keyword\">return</span> <span class=\"hljs-string\">&quot;s&quot;</span>\n",
+      "theme": {
+        "title-class": "star",
+        "default": "len"
+      },
+      "output": "<10>const x = <1>1<1>;\n<3>def<1> <1>f<2>()<1>:\n<4>    <6>return<1> <3>\"s\"\n"
+    },
+    {
+      "label": "no language / exactBeatsPrefix",
+      "code": "const x = 1;\ndef f():\n    return \"s\"\n",
+      "language": null,
+      "languageSubset": null,
+      "rawHtml": "const x = <span class=\"hljs-number\">1</span>;\n<span class=\"hljs-function\"><span class=\"hljs-keyword\">def</span> <span class=\"hljs-title\">f</span><span class=\"hljs-params\">()</span></span>:\n    <span class=\"hljs-keyword\">return</span> <span class=\"hljs-string\">&quot;s&quot;</span>\n",
+      "theme": {
+        "title": "bracket",
+        "title.function": "upper"
+      },
+      "output": "const x = 1;\ndef [f]():\n    return \"s\"\n"
+    },
+    {
+      "label": "no language / nestedPrecedence",
+      "code": "const x = 1;\ndef f():\n    return \"s\"\n",
+      "language": null,
+      "languageSubset": null,
+      "rawHtml": "const x = <span class=\"hljs-number\">1</span>;\n<span class=\"hljs-function\"><span class=\"hljs-keyword\">def</span> <span class=\"hljs-title\">f</span><span class=\"hljs-params\">()</span></span>:\n    <span class=\"hljs-keyword\">return</span> <span class=\"hljs-string\">&quot;s&quot;</span>\n",
+      "theme": {
+        "keyword": "upper",
+        "default": "len"
+      },
+      "output": "<10>const x = <1>1<1>;\nDEF<1> <1>f<2>()<1>:\n<4>    RETURN<1> <3>\"s\"\n"
+    },
+    {
+      "label": "empty language / empty",
+      "code": "const x = 1;\ndef f():\n    return \"s\"\n",
+      "language": "",
+      "languageSubset": null,
+      "rawHtml": "const x = <span class=\"hljs-number\">1</span>;\n<span class=\"hljs-function\"><span class=\"hljs-keyword\">def</span> <span class=\"hljs-title\">f</span><span class=\"hljs-params\">()</span></span>:\n    <span class=\"hljs-keyword\">return</span> <span class=\"hljs-string\">&quot;s&quot;</span>\n",
+      "theme": {},
+      "output": "const x = 1;\ndef f():\n    return \"s\"\n"
+    },
+    {
+      "label": "empty language / defaultOnly",
+      "code": "const x = 1;\ndef f():\n    return \"s\"\n",
+      "language": "",
+      "languageSubset": null,
+      "rawHtml": "const x = <span class=\"hljs-number\">1</span>;\n<span class=\"hljs-function\"><span class=\"hljs-keyword\">def</span> <span class=\"hljs-title\">f</span><span class=\"hljs-params\">()</span></span>:\n    <span class=\"hljs-keyword\">return</span> <span class=\"hljs-string\">&quot;s&quot;</span>\n",
+      "theme": {
+        "default": "bracket"
+      },
+      "output": "[const x = ][1][;]\n[def][ ][f][()][:]\n[    ][return][ ][\"s\"]\n"
+    },
+    {
+      "label": "empty language / keywordsAndStrings",
+      "code": "const x = 1;\ndef f():\n    return \"s\"\n",
+      "language": "",
+      "languageSubset": null,
+      "rawHtml": "const x = <span class=\"hljs-number\">1</span>;\n<span class=\"hljs-function\"><span class=\"hljs-keyword\">def</span> <span class=\"hljs-title\">f</span><span class=\"hljs-params\">()</span></span>:\n    <span class=\"hljs-keyword\">return</span> <span class=\"hljs-string\">&quot;s&quot;</span>\n",
+      "theme": {
+        "keyword": "upper",
+        "string": "bracket",
+        "default": "len"
+      },
+      "output": "<10>const x = <1>1<1>;\nDEF<1> <1>f<2>()<1>:\n<4>    RETURN<1> [\"s\"]\n"
+    },
+    {
+      "label": "empty language / dotPrefix",
+      "code": "const x = 1;\ndef f():\n    return \"s\"\n",
+      "language": "",
+      "languageSubset": null,
+      "rawHtml": "const x = <span class=\"hljs-number\">1</span>;\n<span class=\"hljs-function\"><span class=\"hljs-keyword\">def</span> <span class=\"hljs-title\">f</span><span class=\"hljs-params\">()</span></span>:\n    <span class=\"hljs-keyword\">return</span> <span class=\"hljs-string\">&quot;s&quot;</span>\n",
+      "theme": {
+        "title.function": "star",
+        "default": "len"
+      },
+      "output": "<10>const x = <1>1<1>;\n<3>def<1> <1>f<2>()<1>:\n<4>    <6>return<1> <3>\"s\"\n"
+    },
+    {
+      "label": "empty language / dashPrefix",
+      "code": "const x = 1;\ndef f():\n    return \"s\"\n",
+      "language": "",
+      "languageSubset": null,
+      "rawHtml": "const x = <span class=\"hljs-number\">1</span>;\n<span class=\"hljs-function\"><span class=\"hljs-keyword\">def</span> <span class=\"hljs-title\">f</span><span class=\"hljs-params\">()</span></span>:\n    <span class=\"hljs-keyword\">return</span> <span class=\"hljs-string\">&quot;s&quot;</span>\n",
+      "theme": {
+        "title-class": "star",
+        "default": "len"
+      },
+      "output": "<10>const x = <1>1<1>;\n<3>def<1> <1>f<2>()<1>:\n<4>    <6>return<1> <3>\"s\"\n"
+    },
+    {
+      "label": "empty language / exactBeatsPrefix",
+      "code": "const x = 1;\ndef f():\n    return \"s\"\n",
+      "language": "",
+      "languageSubset": null,
+      "rawHtml": "const x = <span class=\"hljs-number\">1</span>;\n<span class=\"hljs-function\"><span class=\"hljs-keyword\">def</span> <span class=\"hljs-title\">f</span><span class=\"hljs-params\">()</span></span>:\n    <span class=\"hljs-keyword\">return</span> <span class=\"hljs-string\">&quot;s&quot;</span>\n",
+      "theme": {
+        "title": "bracket",
+        "title.function": "upper"
+      },
+      "output": "const x = 1;\ndef [f]():\n    return \"s\"\n"
+    },
+    {
+      "label": "empty language / nestedPrecedence",
+      "code": "const x = 1;\ndef f():\n    return \"s\"\n",
+      "language": "",
+      "languageSubset": null,
+      "rawHtml": "const x = <span class=\"hljs-number\">1</span>;\n<span class=\"hljs-function\"><span class=\"hljs-keyword\">def</span> <span class=\"hljs-title\">f</span><span class=\"hljs-params\">()</span></span>:\n    <span class=\"hljs-keyword\">return</span> <span class=\"hljs-string\">&quot;s&quot;</span>\n",
+      "theme": {
+        "keyword": "upper",
+        "default": "len"
+      },
+      "output": "<10>const x = <1>1<1>;\nDEF<1> <1>f<2>()<1>:\n<4>    RETURN<1> <3>\"s\"\n"
+    },
+    {
+      "label": "with subset / empty",
+      "code": "const x = 1;\ndef f():\n    return \"s\"\n",
+      "language": null,
+      "languageSubset": [
+        "python",
+        "json"
+      ],
+      "rawHtml": "const x = <span class=\"hljs-number\">1</span>;\n<span class=\"hljs-function\"><span class=\"hljs-keyword\">def</span> <span class=\"hljs-title\">f</span>():</span>\n    <span class=\"hljs-keyword\">return</span> <span class=\"hljs-string\">&quot;s&quot;</span>\n",
+      "theme": {},
+      "output": "const x = 1;\ndef f():\n    return \"s\"\n"
+    },
+    {
+      "label": "with subset / defaultOnly",
+      "code": "const x = 1;\ndef f():\n    return \"s\"\n",
+      "language": null,
+      "languageSubset": [
+        "python",
+        "json"
+      ],
+      "rawHtml": "const x = <span class=\"hljs-number\">1</span>;\n<span class=\"hljs-function\"><span class=\"hljs-keyword\">def</span> <span class=\"hljs-title\">f</span>():</span>\n    <span class=\"hljs-keyword\">return</span> <span class=\"hljs-string\">&quot;s&quot;</span>\n",
+      "theme": {
+        "default": "bracket"
+      },
+      "output": "[const x = ][1][;]\n[def][ ][f][():]\n[    ][return][ ][\"s\"]\n"
+    },
+    {
+      "label": "with subset / keywordsAndStrings",
+      "code": "const x = 1;\ndef f():\n    return \"s\"\n",
+      "language": null,
+      "languageSubset": [
+        "python",
+        "json"
+      ],
+      "rawHtml": "const x = <span class=\"hljs-number\">1</span>;\n<span class=\"hljs-function\"><span class=\"hljs-keyword\">def</span> <span class=\"hljs-title\">f</span>():</span>\n    <span class=\"hljs-keyword\">return</span> <span class=\"hljs-string\">&quot;s&quot;</span>\n",
+      "theme": {
+        "keyword": "upper",
+        "string": "bracket",
+        "default": "len"
+      },
+      "output": "<10>const x = <1>1<1>;\nDEF<1> <1>f<3>():\n<4>    RETURN<1> [\"s\"]\n"
+    },
+    {
+      "label": "with subset / dotPrefix",
+      "code": "const x = 1;\ndef f():\n    return \"s\"\n",
+      "language": null,
+      "languageSubset": [
+        "python",
+        "json"
+      ],
+      "rawHtml": "const x = <span class=\"hljs-number\">1</span>;\n<span class=\"hljs-function\"><span class=\"hljs-keyword\">def</span> <span class=\"hljs-title\">f</span>():</span>\n    <span class=\"hljs-keyword\">return</span> <span class=\"hljs-string\">&quot;s&quot;</span>\n",
+      "theme": {
+        "title.function": "star",
+        "default": "len"
+      },
+      "output": "<10>const x = <1>1<1>;\n<3>def<1> <1>f<3>():\n<4>    <6>return<1> <3>\"s\"\n"
+    },
+    {
+      "label": "with subset / dashPrefix",
+      "code": "const x = 1;\ndef f():\n    return \"s\"\n",
+      "language": null,
+      "languageSubset": [
+        "python",
+        "json"
+      ],
+      "rawHtml": "const x = <span class=\"hljs-number\">1</span>;\n<span class=\"hljs-function\"><span class=\"hljs-keyword\">def</span> <span class=\"hljs-title\">f</span>():</span>\n    <span class=\"hljs-keyword\">return</span> <span class=\"hljs-string\">&quot;s&quot;</span>\n",
+      "theme": {
+        "title-class": "star",
+        "default": "len"
+      },
+      "output": "<10>const x = <1>1<1>;\n<3>def<1> <1>f<3>():\n<4>    <6>return<1> <3>\"s\"\n"
+    },
+    {
+      "label": "with subset / exactBeatsPrefix",
+      "code": "const x = 1;\ndef f():\n    return \"s\"\n",
+      "language": null,
+      "languageSubset": [
+        "python",
+        "json"
+      ],
+      "rawHtml": "const x = <span class=\"hljs-number\">1</span>;\n<span class=\"hljs-function\"><span class=\"hljs-keyword\">def</span> <span class=\"hljs-title\">f</span>():</span>\n    <span class=\"hljs-keyword\">return</span> <span class=\"hljs-string\">&quot;s&quot;</span>\n",
+      "theme": {
+        "title": "bracket",
+        "title.function": "upper"
+      },
+      "output": "const x = 1;\ndef [f]():\n    return \"s\"\n"
+    },
+    {
+      "label": "with subset / nestedPrecedence",
+      "code": "const x = 1;\ndef f():\n    return \"s\"\n",
+      "language": null,
+      "languageSubset": [
+        "python",
+        "json"
+      ],
+      "rawHtml": "const x = <span class=\"hljs-number\">1</span>;\n<span class=\"hljs-function\"><span class=\"hljs-keyword\">def</span> <span class=\"hljs-title\">f</span>():</span>\n    <span class=\"hljs-keyword\">return</span> <span class=\"hljs-string\">&quot;s&quot;</span>\n",
+      "theme": {
+        "keyword": "upper",
+        "default": "len"
+      },
+      "output": "<10>const x = <1>1<1>;\nDEF<1> <1>f<3>():\n<4>    RETURN<1> <3>\"s\"\n"
+    },
+    {
+      "label": "empty subset / empty",
+      "code": "const x = 1;\ndef f():\n    return \"s\"\n",
+      "language": null,
+      "languageSubset": [],
+      "rawHtml": "const x = 1;\ndef f():\n    return &quot;s&quot;\n",
+      "theme": {},
+      "output": "const x = 1;\ndef f():\n    return \"s\"\n"
+    },
+    {
+      "label": "empty subset / defaultOnly",
+      "code": "const x = 1;\ndef f():\n    return \"s\"\n",
+      "language": null,
+      "languageSubset": [],
+      "rawHtml": "const x = 1;\ndef f():\n    return &quot;s&quot;\n",
+      "theme": {
+        "default": "bracket"
+      },
+      "output": "[const x = 1;]\n[def f():]\n[    return \"s\"]\n"
+    },
+    {
+      "label": "empty subset / keywordsAndStrings",
+      "code": "const x = 1;\ndef f():\n    return \"s\"\n",
+      "language": null,
+      "languageSubset": [],
+      "rawHtml": "const x = 1;\ndef f():\n    return &quot;s&quot;\n",
+      "theme": {
+        "keyword": "upper",
+        "string": "bracket",
+        "default": "len"
+      },
+      "output": "<12>const x = 1;\n<8>def f():\n<14>    return \"s\"\n"
+    },
+    {
+      "label": "empty subset / dotPrefix",
+      "code": "const x = 1;\ndef f():\n    return \"s\"\n",
+      "language": null,
+      "languageSubset": [],
+      "rawHtml": "const x = 1;\ndef f():\n    return &quot;s&quot;\n",
+      "theme": {
+        "title.function": "star",
+        "default": "len"
+      },
+      "output": "<12>const x = 1;\n<8>def f():\n<14>    return \"s\"\n"
+    },
+    {
+      "label": "empty subset / dashPrefix",
+      "code": "const x = 1;\ndef f():\n    return \"s\"\n",
+      "language": null,
+      "languageSubset": [],
+      "rawHtml": "const x = 1;\ndef f():\n    return &quot;s&quot;\n",
+      "theme": {
+        "title-class": "star",
+        "default": "len"
+      },
+      "output": "<12>const x = 1;\n<8>def f():\n<14>    return \"s\"\n"
+    },
+    {
+      "label": "empty subset / exactBeatsPrefix",
+      "code": "const x = 1;\ndef f():\n    return \"s\"\n",
+      "language": null,
+      "languageSubset": [],
+      "rawHtml": "const x = 1;\ndef f():\n    return &quot;s&quot;\n",
+      "theme": {
+        "title": "bracket",
+        "title.function": "upper"
+      },
+      "output": "const x = 1;\ndef f():\n    return \"s\"\n"
+    },
+    {
+      "label": "empty subset / nestedPrecedence",
+      "code": "const x = 1;\ndef f():\n    return \"s\"\n",
+      "language": null,
+      "languageSubset": [],
+      "rawHtml": "const x = 1;\ndef f():\n    return &quot;s&quot;\n",
+      "theme": {
+        "keyword": "upper",
+        "default": "len"
+      },
+      "output": "<12>const x = 1;\n<8>def f():\n<14>    return \"s\"\n"
+    }
+  ]
+}

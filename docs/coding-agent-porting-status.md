@@ -27,7 +27,7 @@
 
 | 子阶段 | 范围 | 行数 | 状态 |
 |---|---|---:|---|
-| **4a** | `src/utils/*`（37 文件）+ 无依赖的根级模块（`config.ts` / `migrations.ts` / `core/defaults.ts` 等） | ~4,500 | 🚧 进行中（25/36 utils + `config.ts`） |
+| **4a** | `src/utils/*`（37 文件）+ 无依赖的根级模块（`config.ts` / `migrations.ts` / `core/defaults.ts` 等） | ~4,500 | 🚧 进行中（26/36 utils + `config.ts`） |
 | **4b** | 配置 / 信任 / 模型层：settings-manager、trust-manager、project-trust、auth-storage、model-config/registry/resolver、models-store、radius、virtual-models、mcp-servers、keybindings | ~12,000 | ⏳ |
 | **4c** | 工具系统：`core/tools/*` + `core/tools/renderers/*` | ~9,000 | ⏳ |
 | **4d** | 扩展系统：`core/extensions/*`（types / runner / loader）+ `extensions/*`（codemode / llama / mcp / tool-search） | ~12,000 | ⏳ |
@@ -37,7 +37,7 @@
 
 ## 4a 进度（utils 层）
 
-### ✅ 已完成（25/36 个 utils 代码文件 + 根级 `config.ts`）
+### ✅ 已完成（26/36 个 utils 代码文件 + 根级 `config.ts`）
 
 | TS 文件 | 行数 | .NET | 说明 |
 |---|---:|---|---|
@@ -66,6 +66,7 @@
 | `utils/tools-manager.ts` | 366 | `Utils/ToolsManager.cs` | `getToolPath` / `getLatestVersion` / `ensureTool`：托管 `fd`/`rg` 的下载、解压（tar.gz / zip）、就位。五处注入缝（`EnvOverride` / `ToolsDirOverride` / `SpawnOverride` / `PlatformOverride` / `ArchOverride`），平台与架构**不经 `ProcessInfo`** 以免扰动 `NodePath`（差异 C19–C20） |
 | `utils/windows-self-update.ts` | 118 | `Utils/WindowsSelfUpdate.cs` | `cleanupQuarantine` / `quarantineNativeDependencies`：把仍被加载的 `.node` 挪进 `.pi-native-quarantine` 再删。加载列表经 `LoadedSharedObjectsOverride` 注入——`process.report.getReport().sharedObjects` 在 .NET 无对应物（差异 C21） |
 | `utils/zip.ts` | 72 | `Utils/Zip.cs` | `writeZipArchive`：手写经典 ZIP（版本 20 / UTF-8 名标志 `0x0800` / 方法 8 / 无数据描述符 / 无扩展字段），供 bug report 打包。压缩流用 `DeflateStream`（裸 RFC 1951），CRC-32 自实现（与 `zlib.crc32` 逐位一致）。`ZipEntry.FromText` / `FromBytes` 对应 TS 的 `string \| Uint8Array` 两态（差异 C22） |
+| `utils/syntax-highlight.ts` | 219 | `Utils/SyntaxHighlight.cs` | `renderHighlightedHtml`（把 `hljs-*` span 栈映射到主题格式化器：精确 → `.` 前缀 → `-` 前缀 → `default`，逐行格式化且**空行不套格式**，实体在出口解码）为逐行忠实移植；`highlight` / `supportsLanguage` / `loadAllHighlightLanguages` 的 tokenizer 收进 `IHighlighter` 缝（差异 C23） |
 | `config.ts`（根级） | 656 | `Config.cs` | 安装方式判定、自更新命令拼装、分享链接、资产路径。`ConfigSeams` 集中 9 个注入点 |
 
 C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶段复用）：
@@ -85,16 +86,16 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 
 ### ⏳ 待移植
 
-`utils/` 余下 **11 个文件 / 1,424 行**：
+`utils/` 余下 **10 个文件 / 1,205 行**：
 
 | 分组 | 文件 | 行数 | 备注 |
 |---|---|---:|---|
-| 图像处理 | `clipboard-image.ts`、`exif-orientation.ts`、`image-convert.ts`、`image-process.ts`、`image-resize-core.ts`、`image-resize-worker.ts`、`image-resize.ts`、`photon.ts`、`tool-result-images.ts` | 1,165 | 依赖 `@silvia-odwyer/photon-node`（Rust/wasm）。**需选型**：托管图像库（SkiaSharp / ImageSharp）或注入点外置 |
-| 需第三方库 | `frontmatter.ts`、`syntax-highlight.ts` | 259 | 分别依赖 `yaml`、`highlight.js`；**需选型** |
+| 图像处理 | `clipboard-image.ts`、`exif-orientation.ts`、`image-convert.ts`、`image-process.ts`、`image-resize-core.ts`、`image-resize-worker.ts`、`image-resize.ts`、`photon.ts`、`tool-result-images.ts` | 1,165 | 已选型 **SkiaSharp**（MIT）。`photon.ts` 是 Bun 的 wasm 路径烘焙垫片，.NET 无对应物，不逐行移植 |
+| 需第三方库 | `frontmatter.ts` | 40 | 已选型 **YamlDotNet**（MIT） |
 
 另 `utils/highlight-js.d.ts` 是纯类型声明，无运行时代码，不需要移植。
 
-> 计数口径：上表两行相加 = 1,165 + 259 = **1,424**，与 `wc -l` 实测一致。早前记的「图像处理 1,265」多算了 100 行（导致 1,265+484+331=2,080 与总数 1,980 对不上），本批已按实测更正。
+> 计数口径：上表两行相加 = 1,165 + 40 = **1,205**，与 `wc -l` 实测一致。早前记的「图像处理 1,265」多算了 100 行（导致 1,265+484+331=2,080 与总数 1,980 对不上），本批已按实测更正。
 
 ## 关键设计差异（TS → C#）
 
@@ -122,10 +123,24 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 | C20 | **`redirect: "manual"` → `FetchRetryOptions.AllowAutoRedirect`** | `getLatestVersion` 读的是 302 的 `Location` 头本身，必须关掉自动跟随。`ManagementHttp` 原来只有一个 `HttpClient`，现拆成 `_client` / `_manualRedirectClient` 两个（`HandlerOverride` 的 setter 同时处置两者），选项默认 `true` 以保持既有调用点行为不变。`Location` 的解析用 `JsUrl.Resolve("https://github.com", location)` 再取 `pathname` 最后一段——与 `new URL(location, "https://github.com")` 一致，相对 `Location` 也能解析。 |
 | C21 | **`process.report.getReport().sharedObjects` 在 .NET 没有对应物** | `windows-self-update.ts` 靠它拿到「当前进程已加载的原生模块」，据此判断哪些 `.node` 仍被占用。.NET 侧的近似物是 `Process.GetCurrentProcess().Modules`，但语义不同（它列的是模块而非 dlopen 的共享对象，且在非 Windows 上不可用）。因此 `DefaultLoadedSharedObjects()` 只在 Windows 上返回模块列表、其他平台返回 `null`，真实判定交给 `LoadedSharedObjectsOverride` 注入——语料用注入值回放全部 8 条向量。另外 `renameSync` 在同卷上是原子改名，落点用 `File.Move(overwrite: true)`。 |
 | C22 | **`Zip` 的压缩字节不逐字节复刻，接受标准改为「结构等价 + 双向互操作」** | Node 的 zlib 与 .NET 的 zlib-ng 在小载荷上**逐字节相同**，在较大载荷上会选出不同的匹配编码——1000 个 `'A'` 时 Node 出 11 字节、.NET 出 12 字节。因此 `compressedSize` 以及由它派生的 `localOffset` / `centralDirectoryOffset` **不能**与 TS 对齐，语料改为：①逐字段比对全部编码无关字段（签名、版本 20、flags `0x0800`、method 8、DOS 时间/日期、CRC-32、**未压缩**长度、名字节、中央目录尺寸、条目数）；②把 `localOffset` 断言成「指向同名局部记录」的**链接关系**而非具体数字；③断言 deflate 往返回原字节；④用 BCL `ZipArchive` 读 Node 写的归档。另外**独立**用 Python `zipfile`（第三方实现，读取时校验 CRC）双向验证了 12 组归档 × 2 侧全部通过，含 UTF-8 名 `报告-📄.md`。副作用：`zip.ts` 原本是「需第三方归档库」的待选型项，实际只用 `crc32` + `deflateRawSync`，`System.IO.Compression` 全覆盖，无需新增依赖。 |
+| C23 | **`syntax-highlight.ts` 的 tokenizer 收进 `IHighlighter` 缝** | 原文件 eager 注册 21 种语言、懒加载其余约 180 种，`hljs.highlight` 是一台约 1 MB 的状态机。属于本仓的那半——把 `hljs-*` span 栈改写成主题格式化器——逐行移植并用 `syntax-highlight-corpus.json` 覆盖（含 `.`/`-` 前缀回退、空行不套格式、未闭合 span、`<spanner>` 不算标签、实体解码）；tokenizer 本身改为 `SyntaxHighlight.HighlighterOverride` 可注入。默认实现 `PlainTextHighlighter` 输出 highlight.js 的 plaintext 结果（同一套 `escapeHTML`），`SupportsLanguage` 对一切返回 `false`。**后果是未配置注入时没有任何语法配色**，但转义与 `theme.default` 仍然正确；TUI 调用点本来就用 `supportsLanguage(lang) ? lang : undefined` 守卫，因此会走 `highlightAuto` 而不是抛错。语料里的 `plaintext` 向量取自真实 highlight.js，用来把回退实现钉在真实行为上。 |
+| C24 | **本解决方案首次引入 NuGet 依赖（SkiaSharp / YamlDotNet）** | 此前 `src/` 只有 `Pi.Durable` 引了 `DiffPlex`，其余全部手写（`NodePath` / `FileUrl` / `JsUrl` / `Semver` / `JsRegex` / `JsUri` / `Chalk` / `Zip` 都是零依赖）。本批为 4a 余下 1,205 行引入两个库：**SkiaSharp**（MIT，JPEG/PNG/GIF/WebP 编解码，图像处理 1,165 行必需——手写 JPEG 解码器不现实）与 **YamlDotNet**（MIT，`frontmatter.ts` 的 `yaml@2.9.0` 的 `parse` 对应物）。选 MIT 而非 ImageSharp 是避开 Six Labors 的分裂授权。SkiaSharp 带按 RID 的原生资产，这与原项目 `photon.ts` 折腾的「Bun 单文件二进制里 wasm 路径被烘焙」是同一类问题的 .NET 形态，但 .NET 对原生资产有正规分发机制，不需要路径补丁。 |
 
 ## 差分验证（utils 层）
 
-两份语料都由**原始 TypeScript 实现**实跑生成（生成器在 `tools/`，该目录已 gitignore）：
+各份语料都由**原始 TypeScript 实现**实跑生成（生成器在 `tools/`，该目录已 gitignore）：
+
+> **生成器的依赖根**：生成器直接 `import` 原 TS 源文件并以 Node 运行，原源码从**自身位置**向上解析裸包，
+> 所以必须能从 `D:\AI\参考项目\node_modules` 找到它们：`chalk@6.0.0`、`cross-spawn@7.0.6`、
+> `semver@7.8.5`、`hosted-git-info@8.1.0`（**不是** package.json 声明的 9.0.3——语料与移植都按 8.1.0
+> 采录）、`highlight.js@10.7.3`、`yaml@2.9.0`、`diff@8.0.4`、`ignore@7.0.8`、`minimatch@10.2.6`、
+> `jiti@2.7.0`、`proper-lockfile@4.1.2`、`quickjs-wasi@3.6.2`、`typebox@1.3.27`、`undici@8.10.2`、
+> `grok-mermaid@0.2.3`、`@silvia-odwyer/photon-node@0.3.4`。
+> 两条已踩过的坑：①**不要**在 `tools/` 里裸跑 `npm install`——npm 会向上把 `D:\AI\参考项目` 当成项目根，
+> 并把它那里的 `node_modules`（原本是指向依赖存储的 junction）替换成普通目录，导致所有生成器立刻
+> `ERR_MODULE_NOT_FOUND`；要装就用 `npm install --prefix "D:/AI/参考项目" --no-save --no-package-lock`。
+> ②同一个包**不能**同时存在于 `tools/node_modules` 与父目录——`highlight.js` 会变成两个实例，生成器注册的
+> 语言落在另一个实例上，原模块仍报 `Unknown language`。
 
 | 语料 | 生成器 | 条数 | 覆盖 |
 |---|---|---:|---|
@@ -184,9 +199,20 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 
 归档用例覆盖：单条小文本、bug report 的四文件形态（`report.json` / `diagnostics.json` / `session.jsonl` / `summary.md`）、空归档、空内容条目、空与非空混合、含高位字节的二进制、1000 字节近不可压、4096 字节高可压、UTF-8 名（`报告-📄.md`）、嵌套路径名、CRLF 内容、重名条目。
 
+`tests/Pi.CodingAgent.Tests/syntax-highlight-corpus.json`（由 `tools/gen-coding-agent-syntax-highlight-corpus.mjs` 生成，共 323 条）：
+
+| 区段 | 条数 | 内容 |
+|---|---:|---|
+| `crafted` | 210 | 手工构造的 highlight.js 形态 HTML × 7 套主题：嵌套 span、单引号 class、多类名、无 class、`>` 出现在属性值里、`<spanner>`、未闭合 span、游离 `</span>`、跨行 span、空行、CRLF、`.`/`-` 前缀作用域、标签内制表符/换行 |
+| `highlighted` | 85 | 9 种语言（含 `plaintext`）× 7 套主题的真实 highlight.js 输出与渲染结果；另含空源码、CRLF 源码、无尾换行、未知语言（记 `threw`） |
+| `auto` | 28 | `highlightAuto` 路径：无 language / **空字符串 language**（JS 真值测试会落到 auto）/ 带 subset / 空 subset |
+| `formatterIds` / `supportsLanguage` | 11 | 具名格式化器 id（`upper`/`bracket`/`len`/`star`，`len` 用来暴露逐行切分）与真实 `supportsLanguage` 答案（含大小写不敏感：`Python` / `JSON` 均为 true） |
+
+主题格式化器无法序列化，故语料存 id，两侧把同一 id 映射到同一变换。
+
 ## 测试覆盖
 
-`tests/Pi.CodingAgent.Tests`（62 项，已禁用并行化）：
+`tests/Pi.CodingAgent.Tests`（67 项，已禁用并行化）：
 
 | 测试类 | 项数 | 覆盖 |
 |---|---:|---|
@@ -197,3 +223,4 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 | `GitCorpusTests` | 2 | `git-corpus.json` 的 `hostedGitInfoFromUrl`（92 条）与 `parseGitUrl`（107 条）区段 |
 | `ToolsCorpusTests` | 7 | `tools-corpus.json` 的全部区段：`toNamespacedPath`、`getLatestVersion`、`getToolPath`、`ensureTool`、离线判定、`WindowsSelfUpdate` 布局回放（含清理缺失路径） |
 | `ZipCorpusTests` | 2 | `zip-corpus.json` 的 12 组归档：逐字段结构比对 + BCL `ZipArchive` 读 Node 归档 |
+| `SyntaxHighlightCorpusTests` | 5 | `syntax-highlight-corpus.json` 的 323 条：手工 HTML、真实 highlight.js 输出、`highlight` 的委派与分支选择、`supportsLanguage` 委派、plaintext 回退与真实 highlight.js 等价 |

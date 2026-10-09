@@ -22,6 +22,7 @@
          node:path.toNamespacedPath. -->
     <None Include="tools-corpus.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="zip-corpus.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="syntax-highlight-corpus.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Pi.CodingAgent\Pi.CodingAgent.csproj" />
