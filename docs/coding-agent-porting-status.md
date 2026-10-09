@@ -28,7 +28,7 @@
 | 子阶段 | 范围 | 行数 | 状态 |
 |---|---|---:|---|
 | **4a** | `src/utils/*`（37 文件）+ 无依赖的根级模块（`config.ts` / `migrations.ts` / `core/defaults.ts` 等） | ~4,500 | ✅ utils 36/36 + `config.ts` 完成（2026-10-09） |
-| **4b** | 配置 / 信任 / 模型层：settings-manager、trust-manager、project-trust、auth-storage、model-config/registry/resolver、models-store、radius、virtual-models、mcp-servers、keybindings | 6,844（实测） | 🚧 10/16 文件（3,843 行）完成；余 model-registry / model-resolver / model-runtime / provider-composer / runtime-credentials / remote-catalog-provider（3,001 行） |
+| **4b** | 配置 / 信任 / 模型层：settings-manager、trust-manager、project-trust、auth-storage、model-config/registry/resolver、models-store、radius、virtual-models、mcp-servers、keybindings | 6,844（实测） | 🚧 12/16 文件（4,053 行）完成；余 model-registry / model-resolver / model-runtime / provider-composer（2,791 行） |
 | **4c** | 工具系统：`core/tools/*` + `core/tools/renderers/*` | ~9,000 | ⏳ |
 | **4d** | 扩展系统：`core/extensions/*`（types / runner / loader）+ `extensions/*`（codemode / llama / mcp / tool-search） | ~12,000 | ⏳ |
 | **4e** | 会话与资源：agent-session、session-manager、resource-loader、package-manager、compaction、export-html、system-prompt、telemetry、sdk | ~20,000 | ⏳ |
@@ -104,7 +104,7 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 
 ## 4b 进度（配置 / 信任 / 模型层）
 
-### ✅ 已完成（10/16 文件，3,843 行）
+### ✅ 已完成（12/16 文件，4,053 行）
 
 | TS 文件 | 行数 | .NET | 说明 |
 |---|---:|---|---|
@@ -118,7 +118,18 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 | `core/virtual-models.ts` | 238 | `Core/VirtualModels.cs` | 虚拟模型路由：`VirtualModels`（`Api = "pi-virtual"`、`StateEntry`、`CreateVirtualModel`、`WithVirtualModels`、`UnroutedStream`、`RouteReasons`）、`VirtualModelDefinition`、`VirtualOnlyProvider`、`VirtualModelsProvider`。router state 见差异 C40；`findLatestResponse` / `getBranchSelection` / `getVirtualModelState` 未移植（gap **G-4b-VM**，待 4e）。 |
 | `core/mcp-servers.ts` | 319 | `Core/McpServers.cs` | 暴露面常量与别名（`exposures` / `allExposures` / `exposureAliases`）、`Namespace`、`IsLoopbackRedirectUri`、配置校验、OAuth 校验、别名解析、`McpServerRegistry`。`McpServerConfig` 见差异 C41。 |
 | `core/keybindings.ts` | 401 | `Core/Keybindings.cs` | 键位绑定解析/校验/冲突检测与用户覆盖。 |
+| `core/runtime-credentials.ts` | 52 | `Core/RuntimeCredentials.cs` | 非持久化运行时 API key 的凭据存储叠加层（`--api-key` 路径）。override 用有序列表复刻 JS `Map` 语义（差异 C49）。 |
+| `core/remote-catalog-provider.ts` | 158 | `Core/RemoteCatalogProvider.cs` | 给静态内置 provider 叠加持久化的 pi.dev 目录：三态目录体（数组 / `{models:[]}` / 对象 map）、新鲜度窗口、ETag 条件请求、404/501 与瞬时失败的差异化持久化策略。TS 用对象展开包装 provider，C# 显式转发全部成员并实现 `IImagesProvider` / `IClassifierProvider`（差异 C48）。 |
 | 根级 `migrations.ts` | 315 | `Migrations.cs` | 启动时一次性迁移（auth → auth.json、会话目录、commands → prompts、keybindings、tools → bin、扩展系统）。TS 归 4a 的「根级模块」，随 4b 一并收口。差异 C42。 |
+
+### ⏳ 未移植（4 文件，2,791 行）
+
+| TS 文件 | 行数 | 阻塞点 |
+|---|---:|---|
+| `core/model-registry.ts` | 244 | `ModelRuntime` 的同步兼容门面，依赖 `model-runtime.ts`。 |
+| `core/model-resolver.ts` | 783 | 需 `minimatch` 等价物与 `isValidThinkingLevel`；后者所在 `cli/args.ts` 属 4g。 |
+| `core/model-runtime.ts` | 1,032 | 依赖 `provider-composer`。 |
+| `core/provider-composer.ts` | 732 | 多 api provider 组合（`models.json` + 扩展 OAuth + 内置 provider 合成运行时 provider），拉入较大的 Pi.Ai provider/auth 表面。 |
 
 ### Pi.Ai 侧补齐（4b 的运行时依赖）
 
@@ -133,16 +144,11 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 | `Pi.Ai/Auth/AuthResolve.cs`（改） | 抽出 `RefreshStoredOAuthCredentialAsync`；语义修正：**已开始的刷新不随调用方 signal 取消**，只受超时约束（保证轮换的 refresh token 一定落盘）。 |
 | `Pi.Ai/Utils/AbortSignals.cs`（改） | 新增 `RaceWithAsync<T>` 与非泛型重载 + `Observe(Task)`（被放弃的操作仍被观察，不留未观察异常）。 |
 
-### ⏳ 未移植（6 文件，3,001 行）
+### 测试覆盖
 
-| TS 文件 | 行数 | 阻塞点 |
-|---|---:|---|
-| `core/model-registry.ts` | 244 | `ModelRuntime` 的同步兼容门面，依赖 `model-runtime.ts`。 |
-| `core/model-resolver.ts` | 783 | 需 `minimatch` 等价物与 `isValidThinkingLevel`；后者所在 `cli/args.ts` 属 4g。 |
-| `core/model-runtime.ts` | 1,032 | 依赖 `provider-composer` / `runtime-credentials` / `remote-catalog-provider`。 |
-| `core/provider-composer.ts` | 732 | 多 api provider 组合，会拉入较大的 Pi.Ai provider 表面。 |
-| `core/runtime-credentials.ts` | 52 | 小，随 `model-runtime` 一起。 |
-| `core/remote-catalog-provider.ts` | 158 | 远程目录 provider，随 `model-runtime` 一起。 |
+`tests/Pi.CodingAgent.Tests/CoreRuntimeTests.cs`（19 项）：`RuntimeCredentials` 的覆盖/回落/列表顺序/取消语义；`RemoteCatalogProvider` 的空叠加、类型+id 合并与顺序、`localGeneratedAt` 门槛、发布被取代、新鲜度窗口跳过、强制刷新的 `?types=` 与 `If-None-Match`、304 / 404 / 瞬时失败三条分支、三种目录体形状、畸形目录报错、能力转发。HTTP 经 `ManagementHttp.HandlerOverride` 注入（`InternalsVisibleTo` 已开）。
+
+> 其余 4b 文件（settings-manager / trust-manager / auth-storage / model-config / models-store / mcp-servers / keybindings / virtual-models）目前**只有编译与人工核对**，尚无自动化测试；记为待办。
 
 ## 关键设计差异（TS → C#）
 
@@ -180,7 +186,7 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 | C30 | **`ModelImageResizeOptions` 是 Pi.Ai 的名义类型，与 coding-agent 的 `ImageResizeOptions` 结构相同但语义独立** | TS 靠结构类型把模型档案直接传进 `processImage`；C# 在 `ToolResultImages` 里显式字段映射桥接，两个类型都保留（模型目录下发档位 vs 通用默认，后续 4b/4c 消费）。`types.ts` 的 `ModelInputLimits` / `ModelImageInputLimits` / `BaseModel.inputLimits` 一并补进 Pi.Ai（此前无消费者）。 |
 | C31 | **C# 原生剪贴板接口把 TS 的 `undefined`/`null` 折叠成 `null`** | pi-tui TS 的 `getImage()` 三态（undefined=不可用、null=无图像、数组=有图像）；C# `INativeClipboard.GetImageAsync()` 的契约是 null=不可用、空数组=无图像。`ClipboardImageApi` 的 `ImageProbe` 保留三态语义：null→继续回退、空→停止。原生剪贴板恒为最后一站，折叠不可观察；命令行后端的三态照原样保留（Wayland 空剪贴板不得回退到陈旧 X11 内容）。 |
 
-### 4b 阶段差异（C32–C46）
+### 4b 阶段差异（C32–C49）
 
 > 编号说明：C33–C36 是 4b 期间预留但最终未使用的空号（相关结论并入了 C37 与 C39），此处不跳号补位以免与代码注释失配。
 
@@ -198,6 +204,8 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 | C45 | **`transformHeaders` 走选项字典的键** | TS 是 `ModelsRequestTransforms` 的具名成员；C# 以选项字典的 `"transformHeaders"` 键承载（`Models.TransformHeadersOptionKey`），与本解决方案其余流选项的字典约定一致；`ApplyAuthAsync` 在返回前移除该键。 |
 | C46 | **`settings-manager.ts` 的写队列是 `Task` 续接链** | TS 用 promise 链串行化同一文件的写入；C# 用 `Task` continuation 链达成同一语义（前一次写入失败不阻断后续）。副作用：排队的写入可能在线程池线程上运行，而**入队的 setter 仍在栈上**——因此每个被排队工作触碰的值都在入队前快照（与 TS 同），dirty 字段集合用锁保护。 |
 | C47 | **`IProvider` 用显式能力属性替代 TS 的可选成员存在性** | TS 的 `Provider.fetchDeferred` / `cancelDeferred` 是可选成员，`Models` 靠「成员是否存在」决定报错时机；C# 的默认接口成员**总是存在**，故补 `SupportsFetchDeferred` / `SupportsCancelDeferred` 两个布尔属性承载「存在性」，使 `StreamDeferred` / `CancelDeferredAsync` 能在**解析认证之前**判定能力——与 TS 的检查顺序一致（否则「认证未配置」会先于「不支持延后」报出）。 |
+| C48 | **响应头要跨 `HttpResponseHeaders` / `HttpContentHeaders` 两处查** | TS 的 `response.headers` 是统一视图，`response.headers.get("last-modified")` 一定拿得到；.NET 把实体头（`Last-Modified`、`Content-Type` 等）路由到 `HttpContentHeaders`，`response.Headers.TryGetValues("last-modified")` 对**真实响应**返回 false（`ETag` 属响应头所以正常）。`RemoteCatalogProvider.ReadHeader` 因此先查响应头再查内容头。**这是移植时踩到的真实缺陷**：首版只查 `response.Headers`，`lastModified` 恒为 0，会让远端目录每次刷新都全量下载（新鲜度门槛失效）。 |
+| C49 | **`runtime-credentials.ts` 的 override 用有序列表而非字典** | TS 的 override 是 JS `Map`：迭代顺序即插入顺序，且「删除后重插」会移到末尾。.NET `Dictionary` 可能复用空槽，顺序会不同。`RuntimeCredentials` 因此用 `List<KeyValuePair<…>>` 复刻，`ListAsync` 的合并结果与 TS 逐项一致（存储顺序在前、同 id 就地替换、新 id 追加到末尾）。 |
 
 ## 差分验证（utils 层）
 
