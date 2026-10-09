@@ -125,11 +125,27 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 | `core/model-registry.ts` | 244 | `Core/ModelRegistry.cs`（约 300）+ `ResolvedRequestAuth` | 面向扩展的**同步兼容门面**：全部成员转发到 `ModelRuntime`，自身不持状态。手写部分只有两处——目录访问器返回副本（对齐 TS 的展开），以及 `getApiKeyAndHeaders` 的四条分支（已配置认证 / 未配置时回落到兼容头 / `authHeader` 缺 key 报错 / 把组合器抛出的 `authHeader requires a resolved API key` 翻译成用户可见文案）。差异 C62–C65。 |
 | 根级 `migrations.ts` | 315 | `Migrations.cs` | 启动时一次性迁移（auth → auth.json、会话目录、commands → prompts、keybindings、tools → bin、扩展系统）。TS 归 4a 的「根级模块」，随 4b 一并收口。差异 C42。 |
 
+### minimatch 依赖（`Utils/Glob/`，为 `model-resolver` 而移植）
+
+`core/model-resolver.ts` 用 `minimatch(fullId, globPattern, { nocase: true })` 解析用户的模型通配，而 C# 没有等价物。这是**面向用户**的能力（`docs/cli.md` 承诺大小写不敏感的 glob），近似实现会静默改变用户可见行为，因此按 `minimatch@10.2.6` 逐行移植，并用真实包采出的差分语料锁定（见「差分验证」）。
+
+| .NET | 对应 JS | 说明 |
+|---|---|---|
+| `Utils/Glob/Glob.cs` | `index.js` 的导出面 + `escape.js` / `unescape.js` / `assert-valid-pattern.js` | `GlobOptions`、`Match(p, pattern, options)`、`Filter`、`MakeRe`、`MatchList`、`BraceExpand`、`Escape` / `Unescape`、`AssertValidPattern`、`Sep`、`GlobStar`。 |
+| `Utils/Glob/Minimatch.cs` | `index.js` 的 `Minimatch` 类 | `make()` 全流程、`preprocess` 五件套（`adjascentGlobstarOptimize` / `levelOneOptimize` / `levelTwoFileOptimize` / `firstPhasePreProcess` / `secondPhasePreProcess`）、`parseNegate`、`parse`（含 8 个 fast-test 短路）、`makeRe`、`slashSplit`、`match`、`matchOne` / `matchGlobstar` / `matchGlobStarBodySections`。 |
+| `Utils/Glob/GlobAst.cs` | `ast.js` | `#parts`（`string \| AST` 联合）、`#flatten`（adopt / adoptWithSpace / usurp，最多 10 轮）、`#fillNegs`（把 `!` extglob 的尾部复制进后续兄弟，使 `!(a)b` ≡ `!(a\|ab)`）、`#parseAST`、`#parseGlob`、`#partsToRegExp`、`toMMPattern`。 |
+| `Utils/Glob/GlobClass.cs` | `brace-expressions.js` | `parseClass` 与 POSIX 类表。**插入顺序 load-bearing**：`[[:alpha:]]` 与 `[[:alnum:]]` 的前缀关系决定了谁先命中。 |
+| `Utils/Glob/BraceExpansion.cs` | `brace-expansion@5` | `{a,b}` 集合与 `{1..5}` 序列，含 Bash 的 `{a},b}` 重启怪癖与四个 DoS 上限（`max` / `maxLength` / `maxDepth` / `maxRewrites`）。 |
+| `Utils/Glob/BalancedMatch.cs` | `balanced-match` | 最外层成对定界符定位；`brace-expansion` 用它走 `{...}`。 |
+
+> `windowsPathsNoEscape` 的取值链值得单独记一笔：`Minimatch` 把它算成 `!!options.windowsPathsNoEscape \|\| options.allowWindowsEscape === false`（上游用 `'allowWindow' + 'sEscape'` 拼出已废弃的键名来绕开类型检查），而 `escape` / `unescape` 只读前者。平台默认取 `process.platform`（可被 `__MINIMATCH_TESTING_PLATFORM__` 覆盖，本移植沿用该覆盖点以便在任何宿主上跑 Windows 分支）。
+> `brace-expansion` 的哨兵串由 `Math.random()` 改为定值 NUL 字面量；`NumericToString` 只覆盖 JS 打印为纯数字的整数范围（`|n| < 1e21`），指数形态不复制（glob 不可达）。另：上游注释称 `{},a}b` 会「展开成空」，但实现返回原串——本移植跟实现走。
+
 ### ⏳ 未移植（1 文件，783 行）
 
 | TS 文件 | 行数 | 阻塞点 |
 |---|---:|---|
-| `core/model-resolver.ts` | 783 | 需 `minimatch` 等价物与 `isValidThinkingLevel`；后者所在 `cli/args.ts` 属 4g。 |
+| `core/model-resolver.ts` | 783 | 需 `isValidThinkingLevel`；其所在 `cli/args.ts` 属 4g。`minimatch` 依赖已就绪（见上）。 |
 
 ### Pi.Ai 侧补齐（4b 的运行时依赖）
 
@@ -198,9 +214,9 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 | C30 | **`ModelImageResizeOptions` 是 Pi.Ai 的名义类型，与 coding-agent 的 `ImageResizeOptions` 结构相同但语义独立** | TS 靠结构类型把模型档案直接传进 `processImage`；C# 在 `ToolResultImages` 里显式字段映射桥接，两个类型都保留（模型目录下发档位 vs 通用默认，后续 4b/4c 消费）。`types.ts` 的 `ModelInputLimits` / `ModelImageInputLimits` / `BaseModel.inputLimits` 一并补进 Pi.Ai（此前无消费者）。 |
 | C31 | **C# 原生剪贴板接口把 TS 的 `undefined`/`null` 折叠成 `null`** | pi-tui TS 的 `getImage()` 三态（undefined=不可用、null=无图像、数组=有图像）；C# `INativeClipboard.GetImageAsync()` 的契约是 null=不可用、空数组=无图像。`ClipboardImageApi` 的 `ImageProbe` 保留三态语义：null→继续回退、空→停止。原生剪贴板恒为最后一站，折叠不可观察；命令行后端的三态照原样保留（Wayland 空剪贴板不得回退到陈旧 X11 内容）。 |
 
-### 4b 阶段差异（C32–C65）
+### 4b 阶段差异（C32–C73）
 
-> 编号说明：C33–C36 是 4b 期间预留但最终未使用的空号（相关结论并入了 C37 与 C39），此处不跳号补位以免与代码注释失配。
+> 编号说明：C33–C36 是 4b 期间预留但最终未使用的空号（相关结论并入了 C37 与 C39），此处不跳号补位以免与代码注释失配。C66 起是 `minimatch` 移植带来的差异。
 
 | # | 差异 | 说明 |
 |---|---|---|
@@ -234,6 +250,14 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 | C63 | **`registerProvider(name)` 的运行时守卫变为编译期约束** | TS 声明 `registerProvider(provider)` / `registerProvider(name, config)` 两个重载，实现体收 `config?` 并在缺省时抛 `Provider config is required when registering by name`。C# 的两个重载直接让 `config` 非空，该错误不可能发生，守卫随之删除。 |
 | C64 | **`ResolvedRequestAuth` 由两条成员联合改为两个子记录** | 本仓判别联合的既有惯例（见 `ProcessImageResult`）。另有一处 JS 真值语义：TS 用 `...(baseUrl ? { baseUrl } : {})` 展开，故**空串也算「无 baseUrl」**；C# 用 `string.IsNullOrEmpty` 判定后存 `null`。 |
 | C65 | **`AuthOperationOptions` 展开为末尾的 `CancellationToken`** | `getAvailableOfType` 的 `{ signal }` 变成末位可选 token；`stream` / `complete` 额外多出可选 token（TS 把 signal 放在选项里）。另：`getApiKeyForProvider` 的裸 `catch {}` 按原样保留——**取消也被吞成「无 key」**，与 TS 一致而非 .NET 惯例。 |
+| C66 | **`GlobOptions.MagicalBraces` 是 `bool?`** | `magicalBraces` 在三个消费者里的默认值互不相同：`escape` 解构成 `false`，`unescape` 解构成 `true`，`Minimatch.hasMagic()` 按普通属性读（缺席即 falsy）。C# 的 `bool` 无法表达「缺席」，故用 `bool?`，各处再各自取默认——这是 `escape` 与 `unescape` 对 `{a}` 行为相反的原因。 |
+| C67 | **`escape` / `unescape` 不读 `allowWindowsEscape`** | 上游只有 `Minimatch` 的构造器读那个已废弃的键（`awe` 拼接），`escape` / `unescape` 只解构 `windowsPathsNoEscape`。首版把两者一起读，语料立刻报出 23 处不符。 |
+| C68 | **`defaults(def)` 未移植** | 它返回一个把默认项用 `Object.assign({}, def, options)` 垫在每次调用之下的匹配器，而该合并依赖 JS 的「自有键缺席」与「自有键为默认值」之分：`minimatch(p, pat, { nocase: true })` 不会覆盖默认项的 `dot`，而 C# 的 `GlobOptions` 字面量对**每个**成员都带值，会把 `dot` 覆盖成 `false`。忠实复刻需要把每个选项都改成可空，而移植后的调用点无人使用 `defaults`，C# 的习惯本就是直接传想要的那份选项。 |
+| C69 | **`MatchPart` 判别联合取代 `string \| RegExp \| GLOBSTAR`** | `MatchLiteralPart` / `MatchRegexPart` / `MatchGlobstarPart`（单例，代替 `Symbol`）。三者公开，因为它们是 `Minimatch.Set` 的元素类型且 `GLOBSTAR` 是文档化导出；产生它们的 `GlobAst` 则保持 `internal`，即 `minimatch.AST` 不再对外。`MatchRegexPart` 额外带上 `Glob`（上游的 `_glob`，`toMMPattern` 里那次 `toString()`），供差分语料比对 `flatten` / `fillNegs` 的重写结果。 |
+| C70 | **`assertValidPattern` 的 `typeof` 分支由类型系统承担** | 只保留 64 KiB 长度上限。上游抛 `TypeError`，C# 用 `ArgumentException` 并保留原文案（`invalid pattern` / `pattern is too long`），与本仓既有惯例一致。 |
+| C71 | **`debug()` 轨迹与 `u` 正则标志省略** | `debug(...)` 与 `Symbol.for('nodejs.util.inspect.custom')` 只用于诊断，不参与判定。`u` 标志只在 JS 里为了让 `\p{…}` 生效；.NET 的 `Regex` 原生支持 `\p{…}`，因此 `MatchRegexPart` 只保留 `IgnoreCase`。 |
+| C72 | **`parse()` 已不可能返回 `false`，相关死代码删除** | 上游 `make()` 的 `set.filter(s => s.indexOf(false) === -1)` 与 `#matchOne` 的 `p === false` 分支都是 9.x 之前的遗留：`toMMPattern()` 只返回字符串或 `RegExp`。C# 里保留它们需要为一个不可能的值发明表示，故删除并留注释。另：`makeRe()` 的裸 `catch` 收敛为 `catch (ArgumentException)`——那里唯一可能失败的就是 `Regex` 构造。 |
+| C73 | **`firstPhasePreProcess` 的外层循环改用下标遍历** | 上游用 `for...of` 遍历数组，**同时在循环体里向同一数组 push 新备选**，于是循环会继续访问刚创建的数组——这就是它的工作列表语义。C# 的 `foreach` 遇到同样的改动会抛异常，故改为 `for (k = 0; k < globParts.Count; k++)`。 |
 
 ## 差分验证（utils 层）
 
@@ -319,9 +343,24 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 
 主题格式化器无法序列化，故语料存 id，两侧把同一 id 映射到同一变换。
 
+`tests/Pi.CodingAgent.Tests/minimatch-corpus.json`（由 `tools/gen-coding-agent-minimatch-corpus.mjs` 生成，共 5,673 条用例 × 46 个被匹配路径）：
+
+| 区段 | 内容 |
+|---|---|
+| `cases` | 246 个 pattern × 23 组选项。逐条记录 `globSet`（花括号展开 + 去重）、`globParts`（预处理重写结果）、`set`（编译后的路径段：字面量 / `**` 哨兵 / 正则源 + `_glob` 重建文本）、`hasMagic`、`makeRe` 的可用性与逐路径答案、`match`（`minimatch()` 函数）与 `matchDirect`（`Minimatch.match()`）的逐路径答案，以及 `pattern` / `negate` / `comment` / `empty` / `nocase` / `isWindows` / `windowsNoMagicRoot` / `windowsPathsNoEscape` / `maxGlobstarRecursion`。 |
+| `escape` | 25 个输入 × 5 组选项的 `escape` / `unescape` / 往返。 |
+| `matchList` | 5 个列表 × 6 个 pattern × 4 组选项的 `match(list, pattern, options)`。 |
+
+> **选项集**：default、nocase、dot、nocase+dot、nocaseMagicOnly、noglobstar、noext、nobrace、nonegate、nocomment、matchBase、partial、flipNegate、magicalBraces、preserveMultipleSlashes、optimizationLevel0/2、**posix / win32 / win32+nocase / win32+dot / win32+preserveMultipleSlashes**（显式钉住平台，使 UNC 与盘符分支在任何宿主上都可测）、windowsPathsNoEscape、windowsPathsNoEscape+nocase、allowWindowsEscape:false、maxGlobstarRecursion0/1、maxExtglobRecursion0、braceExpandMax3、nonull、nocase+matchBase。
+> **pattern 覆盖**：字面量与空串、注释、`*` / `?` / `**` 的各种组合、字符类（含 `[[:alpha:]]`、`[!a-c]`、`[]]`、`[a-`、`[[`、`[a-[:alpha:]]`）、五种 extglob（含 `!()`、`+(*)`、`*(?)`、`@(`）、花括号（序列 / 步长 / 补零 / 嵌套 / `{a},b}` 怪癖 / `{2..}` 与 `{}` 这类不展开形态）、否定（`!` / `!!` / `!` 单独）、转义（`\*` / `\[` / 结尾 `\`）、Windows 根（`C:/` / `C:\` / `//server/share` / `//?/C:`）、路径形态（尾随 `/`、`./`、`../`、`a/../b`、`a//b`）、以及 `**` 在头 / 中 / 尾 / 多段（`a/**/b/**/c/**/d`）的全部位置。
+> **被匹配路径**覆盖了同样的形态，另加 `''`、`'/'`、`.hidden`、`.git/config`、`.`、`..`、UTF-8 名、大小写变体与反斜杠路径。
+> **两条踩过的坑**：①语料里**状态快照必须早于任何 `match()` 调用**——`matchOne` 会把 pattern 的盘符段就地改写成被测路径的大小写（`pattern[pdi] = fd`），先跑匹配再拍快照会拿到被污染的结果。②逐路径答案存成 `'0'/'1'` 位串而非 JSON 布尔数组，否则 5,673 × 46 的数组会把语料从 3.9 MB 撑到 7.7 MB。
+
+> **语料抓到的两处移植缺陷**（都不是 glob 算法本身，而是选项语义）：①`Glob.Escape` / `Glob.Unescape` 首版把 `allowWindowsEscape === false` 也算进 `windowsPathsNoEscape`，但上游只有 `Minimatch` 构造器读那个键——`escape` / `unescape` 只解构 `windowsPathsNoEscape`，于是 23 条 `allowWindowsEscape:false` 向量全部不符（差异 C67）。②`magicalBraces` 在 `escape` 里默认 `false`、在 `unescape` 里默认 `true`，首版用统一的 `bool` 默认值导致 `{a}` 的解转义全错——改为 `bool?` 后由各处自取默认（差异 C66）。两处都是**只看代码读不出来**的：`escape.js` 与 `unescape.js` 的解构默认值写在同一行的花括号里，很容易当作同一个值。
+
 ## 测试覆盖
 
-`tests/Pi.CodingAgent.Tests`（67 项，已禁用并行化）：
+`tests/Pi.CodingAgent.Tests` 的 utils 层部分（下表，共 121 项；4b 的 5 个测试类见「4b 进度 → 测试覆盖」）：
 
 | 测试类 | 项数 | 覆盖 |
 |---|---:|---|
@@ -333,3 +372,5 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 | `ToolsCorpusTests` | 7 | `tools-corpus.json` 的全部区段：`toNamespacedPath`、`getLatestVersion`、`getToolPath`、`ensureTool`、离线判定、`WindowsSelfUpdate` 布局回放（含清理缺失路径） |
 | `ZipCorpusTests` | 2 | `zip-corpus.json` 的 12 组归档：逐字段结构比对 + BCL `ZipArchive` 读 Node 归档 |
 | `SyntaxHighlightCorpusTests` | 5 | `syntax-highlight-corpus.json` 的 323 条：手工 HTML、真实 highlight.js 输出、`highlight` 的委派与分支选择、`supportsLanguage` 委派、plaintext 回退与真实 highlight.js 等价 |
+| `MinimatchCorpusTests` | 10 | `minimatch-corpus.json` 的 5,673 条：`minimatch()` / `Minimatch.match()` / `makeRe()` 的逐路径答案、`globSet` / `globParts` / `set`（含正则源与 `_glob` 重建文本）/ `hasMagic` / `braceExpand` 的结构比对、`escape` / `unescape`、`matchList`，外加宿主平台与包版本守卫 |
+| `MinimatchTests` | 44 | 语料覆盖不到的部分：`GlobStar` 单例与 `Sep`、`Filter`、64 KiB 上限、`makeRe()` 为空集返回 null、`hasMagic` 的 `magicalBraces` 门槛、**盘符改写只影响本实例**、`BraceExpansion` 的四个 DoS 上限与 Bash 怪癖、`escape` / `unescape` 的相反默认与「不读 `allowWindowsEscape`」、以及 `model-resolver` 那句 `minimatch(fullId, glob, { nocase: true }) \|\| minimatch(m.id, glob, { nocase: true })` 的端到端行为 |

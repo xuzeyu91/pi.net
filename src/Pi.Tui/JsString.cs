@@ -68,6 +68,48 @@ public static class JsString
     /// </summary>
     public static char CharAt(string value, int index) => index >= 0 && index < value.Length ? value[index] : '\0';
 
+    /// <summary>
+    /// JavaScript <c>String.prototype.indexOf(search, fromIndex)</c>: a negative <paramref name="from"/>
+    /// is clamped to zero, and a <paramref name="from"/> past the end yields -1 rather than throwing.
+    /// </summary>
+    public static int IndexOf(string value, string search, int from = 0)
+    {
+        var start = Math.Max(from, 0);
+        return start > value.Length ? -1 : value.IndexOf(search, start, StringComparison.Ordinal);
+    }
+
+    /// <summary>
+    /// JavaScript <c>String.prototype.lastIndexOf(search, fromIndex)</c>. A match that *begins* at
+    /// <paramref name="from"/> is considered even when it extends past it, and <paramref name="from"/> is
+    /// clamped to <c>[0, length]</c> — neither matches <see cref="string.LastIndexOf(string, int, StringComparison)"/>.
+    /// Pass <c>null</c> for JS's omitted argument (search from the end).
+    /// </summary>
+    public static int LastIndexOf(string value, string search, int? from = null)
+    {
+        var length = value.Length;
+        var start = from is null ? length : Math.Clamp(from.Value, 0, length);
+        if (search.Length == 0) return start;
+        if (search.Length > length) return -1;
+        for (var i = Math.Min(start, length - search.Length); i >= 0; i--)
+        {
+            if (string.CompareOrdinal(value, i, search, 0, search.Length) == 0) return i;
+        }
+
+        return -1;
+    }
+
+    /// <summary>
+    /// JavaScript <c>String.prototype.startsWith(search, position)</c>. <paramref name="position"/> is
+    /// clamped to <c>[0, length]</c>, and a search that would run past the end simply fails rather than
+    /// throwing — unlike <see cref="string.StartsWith(string, int, StringComparison)"/>.
+    /// </summary>
+    public static bool StartsWith(string value, string search, int position = 0)
+    {
+        var start = Math.Clamp(position, 0, value.Length);
+        return start + search.Length <= value.Length
+            && string.CompareOrdinal(value, start, search, 0, search.Length) == 0;
+    }
+
     /// <summary>Number of code points, matching JS <c>Array.from(value).length</c>.</summary>
     public static int CodePointLength(string value)
     {

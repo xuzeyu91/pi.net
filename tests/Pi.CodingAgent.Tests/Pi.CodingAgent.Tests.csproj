@@ -24,6 +24,9 @@
     <None Include="zip-corpus.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="syntax-highlight-corpus.json" CopyToOutputDirectory="PreserveNewest" />
     <None Include="frontmatter-corpus.json" CopyToOutputDirectory="PreserveNewest" />
+    <!-- Fifth slice: minimatch@10.2.6 (glob matching), which the model resolver's case-insensitive
+         model-id globs depend on. -->
+    <None Include="minimatch-corpus.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Pi.CodingAgent\Pi.CodingAgent.csproj" />

@@ -105,7 +105,7 @@
 - **目标**：移植交互式 CLI 主产品。**实测 85,536 行 / 299 文件**（早期写的 19,427 行有误）。
 - **子阶段（按依赖顺序）**：
   1. **4a `src/utils/*` + 无依赖根级模块** —— ✅ 已完成：utils 36/36 文件 + `config.ts` + `migrations.ts`（2026-10-09）
-  2. **4b 配置 / 信任 / 模型层** —— 🚧 进行中：settings-manager / trust-manager / project-trust / auth-storage / model-config / models-store / radius / virtual-models / mcp-servers / keybindings / runtime-credentials / remote-catalog-provider / provider-composer / model-runtime / model-registry 共 15/16 文件（6,061 / 6,844 行）完成；余 model-resolver（783）。Pi.Ai 侧的 `Models` 凭据/刷新/可用性运行时层（`ModelsAuth.cs` / `ModelsRefresh.cs` / `ModelsRequestOptions.cs` / `ModelSpecJson.cs`）已补齐。
+  2. **4b 配置 / 信任 / 模型层** —— 🚧 进行中：settings-manager / trust-manager / project-trust / auth-storage / model-config / models-store / radius / virtual-models / mcp-servers / keybindings / runtime-credentials / remote-catalog-provider / provider-composer / model-runtime / model-registry 共 15/16 文件（6,061 / 6,844 行）完成；余 model-resolver（783）。Pi.Ai 侧的 `Models` 凭据/刷新/可用性运行时层（`ModelsAuth.cs` / `ModelsRefresh.cs` / `ModelsRequestOptions.cs` / `ModelSpecJson.cs`）已补齐。model-resolver 的 `minimatch` 依赖已按 `minimatch@10.2.6` 逐行移植到 `Utils/Glob/`（6 文件），并用 5,673 条差分语料锁定。
   3. 4c 工具系统（`core/tools/*` + `core/tools/renderers/*`）
   4. 4d 扩展系统（`core/extensions/*` + `extensions/*`：codemode / llama / mcp / tool-search）
   5. 4e 会话与资源（agent-session / session-manager / resource-loader / package-manager / compaction / export-html / system-prompt / telemetry / sdk）
