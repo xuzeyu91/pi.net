@@ -1,0 +1,936 @@
+{
+  "cases": [
+    {
+      "label": "plain text, no frontmatter",
+      "content": "hello\nworld\n",
+      "fields": [],
+      "rootKind": "object",
+      "body": "hello\nworld\n",
+      "threw": null,
+      "stripped": "hello\nworld\n",
+      "stripThrew": null
+    },
+    {
+      "label": "empty content",
+      "content": "",
+      "fields": [],
+      "rootKind": "object",
+      "body": "",
+      "threw": null,
+      "stripped": "",
+      "stripThrew": null
+    },
+    {
+      "label": "simple pair",
+      "content": "---\nname: x\ndescription: y\n---\nbody\n",
+      "fields": [
+        {
+          "key": "description",
+          "kind": "string",
+          "text": "y"
+        },
+        {
+          "key": "name",
+          "kind": "string",
+          "text": "x"
+        }
+      ],
+      "rootKind": "object",
+      "body": "body",
+      "threw": null,
+      "stripped": "body",
+      "stripThrew": null
+    },
+    {
+      "label": "body trimmed",
+      "content": "---\nname: x\n---\n\n\n  body with padding  \n\n",
+      "fields": [
+        {
+          "key": "name",
+          "kind": "string",
+          "text": "x"
+        }
+      ],
+      "rootKind": "object",
+      "body": "body with padding",
+      "threw": null,
+      "stripped": "body with padding",
+      "stripThrew": null
+    },
+    {
+      "label": "boolean true",
+      "content": "---\ndisable-model-invocation: true\n---\nb\n",
+      "fields": [
+        {
+          "key": "disable-model-invocation",
+          "kind": "boolean",
+          "text": "true"
+        }
+      ],
+      "rootKind": "object",
+      "body": "b",
+      "threw": null,
+      "stripped": "b",
+      "stripThrew": null
+    },
+    {
+      "label": "boolean false",
+      "content": "---\ndisable-model-invocation: false\n---\nb\n",
+      "fields": [
+        {
+          "key": "disable-model-invocation",
+          "kind": "boolean",
+          "text": "false"
+        }
+      ],
+      "rootKind": "object",
+      "body": "b",
+      "threw": null,
+      "stripped": "b",
+      "stripThrew": null
+    },
+    {
+      "label": "argument-hint",
+      "content": "---\nargument-hint: <file>\n---\nb\n",
+      "fields": [
+        {
+          "key": "argument-hint",
+          "kind": "string",
+          "text": "<file>"
+        }
+      ],
+      "rootKind": "object",
+      "body": "b",
+      "threw": null,
+      "stripped": "b",
+      "stripThrew": null
+    },
+    {
+      "label": "quoted strings",
+      "content": "---\nname: \"quoted: value\"\ndescription: 'single'\n---\nb\n",
+      "fields": [
+        {
+          "key": "description",
+          "kind": "string",
+          "text": "single"
+        },
+        {
+          "key": "name",
+          "kind": "string",
+          "text": "quoted: value"
+        }
+      ],
+      "rootKind": "object",
+      "body": "b",
+      "threw": null,
+      "stripped": "b",
+      "stripThrew": null
+    },
+    {
+      "label": "value with colon",
+      "content": "---\nname: a: b\n---\nb\n",
+      "fields": null,
+      "rootKind": null,
+      "body": null,
+      "threw": "Nested mappings are not allowed in compact mappings at line 1, column 7:\n\nname: a: b\n      ^\n",
+      "stripped": null,
+      "stripThrew": "Nested mappings are not allowed in compact mappings at line 1, column 7:\n\nname: a: b\n      ^\n"
+    },
+    {
+      "label": "value with hash",
+      "content": "---\nname: a # not a comment?\n---\nb\n",
+      "fields": [
+        {
+          "key": "name",
+          "kind": "string",
+          "text": "a"
+        }
+      ],
+      "rootKind": "object",
+      "body": "b",
+      "threw": null,
+      "stripped": "b",
+      "stripThrew": null
+    },
+    {
+      "label": "list value",
+      "content": "---\ntags:\n  - a\n  - b\n---\nb\n",
+      "fields": [
+        {
+          "key": "tags",
+          "kind": "array",
+          "items": [
+            {
+              "kind": "string",
+              "text": "a"
+            },
+            {
+              "kind": "string",
+              "text": "b"
+            }
+          ]
+        }
+      ],
+      "rootKind": "object",
+      "body": "b",
+      "threw": null,
+      "stripped": "b",
+      "stripThrew": null
+    },
+    {
+      "label": "inline list",
+      "content": "---\ntags: [a, b]\n---\nb\n",
+      "fields": [
+        {
+          "key": "tags",
+          "kind": "array",
+          "items": [
+            {
+              "kind": "string",
+              "text": "a"
+            },
+            {
+              "kind": "string",
+              "text": "b"
+            }
+          ]
+        }
+      ],
+      "rootKind": "object",
+      "body": "b",
+      "threw": null,
+      "stripped": "b",
+      "stripThrew": null
+    },
+    {
+      "label": "nested map",
+      "content": "---\nmeta:\n  a: 1\n  b: 2\n---\nb\n",
+      "fields": [
+        {
+          "key": "meta",
+          "kind": "object",
+          "entries": [
+            {
+              "key": "a",
+              "value": {
+                "kind": "number",
+                "text": "1"
+              }
+            },
+            {
+              "key": "b",
+              "value": {
+                "kind": "number",
+                "text": "2"
+              }
+            }
+          ]
+        }
+      ],
+      "rootKind": "object",
+      "body": "b",
+      "threw": null,
+      "stripped": "b",
+      "stripThrew": null
+    },
+    {
+      "label": "block scalar literal",
+      "content": "---\ndescription: |\n  line one\n  line two\n---\nb\n",
+      "fields": [
+        {
+          "key": "description",
+          "kind": "string",
+          "text": "line one\nline two\n"
+        }
+      ],
+      "rootKind": "object",
+      "body": "b",
+      "threw": null,
+      "stripped": "b",
+      "stripThrew": null
+    },
+    {
+      "label": "block scalar folded",
+      "content": "---\ndescription: >\n  line one\n  line two\n---\nb\n",
+      "fields": [
+        {
+          "key": "description",
+          "kind": "string",
+          "text": "line one line two\n"
+        }
+      ],
+      "rootKind": "object",
+      "body": "b",
+      "threw": null,
+      "stripped": "b",
+      "stripThrew": null
+    },
+    {
+      "label": "null values",
+      "content": "---\na: null\nb: ~\nc:\n---\nb\n",
+      "fields": [
+        {
+          "key": "a",
+          "kind": "null"
+        },
+        {
+          "key": "b",
+          "kind": "null"
+        },
+        {
+          "key": "c",
+          "kind": "null"
+        }
+      ],
+      "rootKind": "object",
+      "body": "b",
+      "threw": null,
+      "stripped": "b",
+      "stripThrew": null
+    },
+    {
+      "label": "numbers",
+      "content": "---\na: 1\nb: 1.5\nc: 0x10\nd: 1e3\ne: -2\n---\nb\n",
+      "fields": [
+        {
+          "key": "a",
+          "kind": "number",
+          "text": "1"
+        },
+        {
+          "key": "b",
+          "kind": "number",
+          "text": "1.5"
+        },
+        {
+          "key": "c",
+          "kind": "number",
+          "text": "16"
+        },
+        {
+          "key": "d",
+          "kind": "number",
+          "text": "1000"
+        },
+        {
+          "key": "e",
+          "kind": "number",
+          "text": "-2"
+        }
+      ],
+      "rootKind": "object",
+      "body": "b",
+      "threw": null,
+      "stripped": "b",
+      "stripThrew": null
+    },
+    {
+      "label": "empty yaml block",
+      "content": "---\n---\nbody\n",
+      "fields": [],
+      "rootKind": "object",
+      "body": "body",
+      "threw": null,
+      "stripped": "body",
+      "stripThrew": null
+    },
+    {
+      "label": "only delimiters",
+      "content": "---\n---\n",
+      "fields": [],
+      "rootKind": "object",
+      "body": "",
+      "threw": null,
+      "stripped": "",
+      "stripThrew": null
+    },
+    {
+      "label": "only opening delimiter",
+      "content": "---",
+      "fields": [],
+      "rootKind": "object",
+      "body": "---",
+      "threw": null,
+      "stripped": "---",
+      "stripThrew": null
+    },
+    {
+      "label": "opening delimiter plus text",
+      "content": "---\nname: x",
+      "fields": [],
+      "rootKind": "object",
+      "body": "---\nname: x",
+      "threw": null,
+      "stripped": "---\nname: x",
+      "stripThrew": null
+    },
+    {
+      "label": "opening delimiter no newline",
+      "content": "---\n",
+      "fields": [],
+      "rootKind": "object",
+      "body": "---\n",
+      "threw": null,
+      "stripped": "---\n",
+      "stripThrew": null
+    },
+    {
+      "label": "no closing delimiter",
+      "content": "---\nname: x\ndescription: y\nbody text\n",
+      "fields": [],
+      "rootKind": "object",
+      "body": "---\nname: x\ndescription: y\nbody text\n",
+      "threw": null,
+      "stripped": "---\nname: x\ndescription: y\nbody text\n",
+      "stripThrew": null
+    },
+    {
+      "label": "crlf everywhere",
+      "content": "---\r\nname: x\r\n---\r\nbody\r\n",
+      "fields": [
+        {
+          "key": "name",
+          "kind": "string",
+          "text": "x"
+        }
+      ],
+      "rootKind": "object",
+      "body": "body",
+      "threw": null,
+      "stripped": "body",
+      "stripThrew": null
+    },
+    {
+      "label": "crlf no frontmatter",
+      "content": "hello\r\nworld\r\n",
+      "fields": [],
+      "rootKind": "object",
+      "body": "hello\nworld\n",
+      "threw": null,
+      "stripped": "hello\nworld\n",
+      "stripThrew": null
+    },
+    {
+      "label": "bare cr",
+      "content": "---\rname: x\r---\rbody\r",
+      "fields": [
+        {
+          "key": "name",
+          "kind": "string",
+          "text": "x"
+        }
+      ],
+      "rootKind": "object",
+      "body": "body",
+      "threw": null,
+      "stripped": "body",
+      "stripThrew": null
+    },
+    {
+      "label": "bom prefix",
+      "content": "﻿---\nname: x\n---\nbody\n",
+      "fields": [
+        {
+          "key": "name",
+          "kind": "string",
+          "text": "x"
+        }
+      ],
+      "rootKind": "object",
+      "body": "body",
+      "threw": null,
+      "stripped": "body",
+      "stripThrew": null
+    },
+    {
+      "label": "bom without frontmatter",
+      "content": "﻿hello\n",
+      "fields": [],
+      "rootKind": "object",
+      "body": "hello\n",
+      "threw": null,
+      "stripped": "hello\n",
+      "stripThrew": null
+    },
+    {
+      "label": "dashes later in body",
+      "content": "---\nname: x\n---\nbody\n---\nmore\n",
+      "fields": [
+        {
+          "key": "name",
+          "kind": "string",
+          "text": "x"
+        }
+      ],
+      "rootKind": "object",
+      "body": "body\n---\nmore",
+      "threw": null,
+      "stripped": "body\n---\nmore",
+      "stripThrew": null
+    },
+    {
+      "label": "four leading dashes",
+      "content": "----\nname: x\n---\nbody\n",
+      "fields": [
+        {
+          "key": "name",
+          "kind": "string",
+          "text": "x"
+        }
+      ],
+      "rootKind": "object",
+      "body": "body",
+      "threw": null,
+      "stripped": "body",
+      "stripThrew": null
+    },
+    {
+      "label": "not at start",
+      "content": " \n---\nname: x\n---\nbody\n",
+      "fields": [],
+      "rootKind": "object",
+      "body": " \n---\nname: x\n---\nbody\n",
+      "threw": null,
+      "stripped": " \n---\nname: x\n---\nbody\n",
+      "stripThrew": null
+    },
+    {
+      "label": "comment lines",
+      "content": "---\n# a comment\nname: x\n---\nb\n",
+      "fields": [
+        {
+          "key": "name",
+          "kind": "string",
+          "text": "x"
+        }
+      ],
+      "rootKind": "object",
+      "body": "b",
+      "threw": null,
+      "stripped": "b",
+      "stripThrew": null
+    },
+    {
+      "label": "duplicate keys",
+      "content": "---\nname: first\nname: second\n---\nb\n",
+      "fields": null,
+      "rootKind": null,
+      "body": null,
+      "threw": "Map keys must be unique at line 2, column 1:\n\nname: first\nname: second\n^\n",
+      "stripped": null,
+      "stripThrew": "Map keys must be unique at line 2, column 1:\n\nname: first\nname: second\n^\n"
+    },
+    {
+      "label": "key with dash",
+      "content": "---\ndisable-model-invocation: true\nargument-hint: x\n---\nb\n",
+      "fields": [
+        {
+          "key": "argument-hint",
+          "kind": "string",
+          "text": "x"
+        },
+        {
+          "key": "disable-model-invocation",
+          "kind": "boolean",
+          "text": "true"
+        }
+      ],
+      "rootKind": "object",
+      "body": "b",
+      "threw": null,
+      "stripped": "b",
+      "stripThrew": null
+    },
+    {
+      "label": "key with dot",
+      "content": "---\na.b: 1\n---\nb\n",
+      "fields": [
+        {
+          "key": "a.b",
+          "kind": "number",
+          "text": "1"
+        }
+      ],
+      "rootKind": "object",
+      "body": "b",
+      "threw": null,
+      "stripped": "b",
+      "stripThrew": null
+    },
+    {
+      "label": "empty value string",
+      "content": "---\nname: ''\n---\nb\n",
+      "fields": [
+        {
+          "key": "name",
+          "kind": "string",
+          "text": ""
+        }
+      ],
+      "rootKind": "object",
+      "body": "b",
+      "threw": null,
+      "stripped": "b",
+      "stripThrew": null
+    },
+    {
+      "label": "whitespace value",
+      "content": "---\nname: '   '\n---\nb\n",
+      "fields": [
+        {
+          "key": "name",
+          "kind": "string",
+          "text": "   "
+        }
+      ],
+      "rootKind": "object",
+      "body": "b",
+      "threw": null,
+      "stripped": "b",
+      "stripThrew": null
+    },
+    {
+      "label": "deeply indented body",
+      "content": "---\nname: x\n---\n    indented\n",
+      "fields": [
+        {
+          "key": "name",
+          "kind": "string",
+          "text": "x"
+        }
+      ],
+      "rootKind": "object",
+      "body": "indented",
+      "threw": null,
+      "stripped": "indented",
+      "stripThrew": null
+    },
+    {
+      "label": "trailing whitespace lines in yaml",
+      "content": "---\nname: x\n\n\n---\nb\n",
+      "fields": [
+        {
+          "key": "name",
+          "kind": "string",
+          "text": "x"
+        }
+      ],
+      "rootKind": "object",
+      "body": "b",
+      "threw": null,
+      "stripped": "b",
+      "stripThrew": null
+    },
+    {
+      "label": "malformed unclosed flow",
+      "content": "---\na: [1, 2\n---\nb\n",
+      "fields": null,
+      "rootKind": null,
+      "body": null,
+      "threw": "Flow sequence in block collection must be sufficiently indented and end with a ] at line 1, column 9:\n\na: [1, 2\n        ^\n",
+      "stripped": null,
+      "stripThrew": "Flow sequence in block collection must be sufficiently indented and end with a ] at line 1, column 9:\n\na: [1, 2\n        ^\n"
+    },
+    {
+      "label": "malformed bad indent",
+      "content": "---\na: 1\n  b: 2\n---\nb\n",
+      "fields": null,
+      "rootKind": null,
+      "body": null,
+      "threw": "Nested mappings are not allowed in compact mappings at line 1, column 4:\n\na: 1\n   ^\n",
+      "stripped": null,
+      "stripThrew": "Nested mappings are not allowed in compact mappings at line 1, column 4:\n\na: 1\n   ^\n"
+    },
+    {
+      "label": "malformed tab indent",
+      "content": "---\na:\n\tb: 1\n---\nb\n",
+      "fields": null,
+      "rootKind": null,
+      "body": null,
+      "threw": "Tabs are not allowed as indentation at line 2, column 1:\n\na:\n\tb: 1\n^\n",
+      "stripped": null,
+      "stripThrew": "Tabs are not allowed as indentation at line 2, column 1:\n\na:\n\tb: 1\n^\n"
+    },
+    {
+      "label": "malformed colon only",
+      "content": "---\n: :\n---\nb\n",
+      "fields": null,
+      "rootKind": null,
+      "body": null,
+      "threw": "Nested mappings are not allowed in compact mappings at line 1, column 3:\n\n: :\n  ^\n",
+      "stripped": null,
+      "stripThrew": "Nested mappings are not allowed in compact mappings at line 1, column 3:\n\n: :\n  ^\n"
+    },
+    {
+      "label": "yaml 1.1 yes/no",
+      "content": "---\na: yes\nb: no\nc: on\nd: off\n---\nb\n",
+      "fields": [
+        {
+          "key": "a",
+          "kind": "string",
+          "text": "yes"
+        },
+        {
+          "key": "b",
+          "kind": "string",
+          "text": "no"
+        },
+        {
+          "key": "c",
+          "kind": "string",
+          "text": "on"
+        },
+        {
+          "key": "d",
+          "kind": "string",
+          "text": "off"
+        }
+      ],
+      "rootKind": "object",
+      "body": "b",
+      "threw": null,
+      "stripped": "b",
+      "stripThrew": null
+    },
+    {
+      "label": "yaml 1.1 y/n",
+      "content": "---\na: y\nb: n\n---\nb\n",
+      "fields": [
+        {
+          "key": "a",
+          "kind": "string",
+          "text": "y"
+        },
+        {
+          "key": "b",
+          "kind": "string",
+          "text": "n"
+        }
+      ],
+      "rootKind": "object",
+      "body": "b",
+      "threw": null,
+      "stripped": "b",
+      "stripThrew": null
+    },
+    {
+      "label": "timestamp-like",
+      "content": "---\na: 2001-12-14\nb: 2001-12-14T21:59:43.10-05:00\n---\nb\n",
+      "fields": [
+        {
+          "key": "a",
+          "kind": "string",
+          "text": "2001-12-14"
+        },
+        {
+          "key": "b",
+          "kind": "string",
+          "text": "2001-12-14T21:59:43.10-05:00"
+        }
+      ],
+      "rootKind": "object",
+      "body": "b",
+      "threw": null,
+      "stripped": "b",
+      "stripThrew": null
+    },
+    {
+      "label": "anchors and aliases",
+      "content": "---\na: &x 1\nb: *x\n---\nb\n",
+      "fields": [
+        {
+          "key": "a",
+          "kind": "number",
+          "text": "1"
+        },
+        {
+          "key": "b",
+          "kind": "number",
+          "text": "1"
+        }
+      ],
+      "rootKind": "object",
+      "body": "b",
+      "threw": null,
+      "stripped": "b",
+      "stripThrew": null
+    },
+    {
+      "label": "merge key",
+      "content": "---\nbase: &b\n  x: 1\nchild:\n  <<: *b\n  y: 2\n---\nb\n",
+      "fields": [
+        {
+          "key": "base",
+          "kind": "object",
+          "entries": [
+            {
+              "key": "x",
+              "value": {
+                "kind": "number",
+                "text": "1"
+              }
+            }
+          ]
+        },
+        {
+          "key": "child",
+          "kind": "object",
+          "entries": [
+            {
+              "key": "<<",
+              "value": {
+                "kind": "object",
+                "entries": [
+                  {
+                    "key": "x",
+                    "value": {
+                      "kind": "number",
+                      "text": "1"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "key": "y",
+              "value": {
+                "kind": "number",
+                "text": "2"
+              }
+            }
+          ]
+        }
+      ],
+      "rootKind": "object",
+      "body": "b",
+      "threw": null,
+      "stripped": "b",
+      "stripThrew": null
+    },
+    {
+      "label": "explicit tag",
+      "content": "---\na: !!str 1\n---\nb\n",
+      "fields": [
+        {
+          "key": "a",
+          "kind": "string",
+          "text": "1"
+        }
+      ],
+      "rootKind": "object",
+      "body": "b",
+      "threw": null,
+      "stripped": "b",
+      "stripThrew": null
+    },
+    {
+      "label": "infinity and nan",
+      "content": "---\na: .inf\nb: .nan\n---\nb\n",
+      "fields": [
+        {
+          "key": "a",
+          "kind": "number",
+          "text": "Infinity"
+        },
+        {
+          "key": "b",
+          "kind": "number",
+          "text": "NaN"
+        }
+      ],
+      "rootKind": "object",
+      "body": "b",
+      "threw": null,
+      "stripped": "b",
+      "stripThrew": null
+    },
+    {
+      "label": "octal-looking",
+      "content": "---\na: 0777\n---\nb\n",
+      "fields": [
+        {
+          "key": "a",
+          "kind": "number",
+          "text": "777"
+        }
+      ],
+      "rootKind": "object",
+      "body": "b",
+      "threw": null,
+      "stripped": "b",
+      "stripThrew": null
+    },
+    {
+      "label": "very long single line",
+      "content": "---\ndescription: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n---\nb\n",
+      "fields": [
+        {
+          "key": "description",
+          "kind": "string",
+          "text": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+        }
+      ],
+      "rootKind": "object",
+      "body": "b",
+      "threw": null,
+      "stripped": "b",
+      "stripThrew": null
+    },
+    {
+      "label": "unicode keys and values",
+      "content": "---\n名字: 值\n---\n正文\n",
+      "fields": [
+        {
+          "key": "名字",
+          "kind": "string",
+          "text": "值"
+        }
+      ],
+      "rootKind": "object",
+      "body": "正文",
+      "threw": null,
+      "stripped": "正文",
+      "stripThrew": null
+    },
+    {
+      "label": "scalar root",
+      "content": "---\nhello\n---\nb\n",
+      "fields": [],
+      "rootKind": "string",
+      "body": "b",
+      "threw": null,
+      "stripped": "b",
+      "stripThrew": null
+    },
+    {
+      "label": "number root",
+      "content": "---\n42\n---\nb\n",
+      "fields": [],
+      "rootKind": "number",
+      "body": "b",
+      "threw": null,
+      "stripped": "b",
+      "stripThrew": null
+    },
+    {
+      "label": "list root",
+      "content": "---\n- a\n- b\n---\nb\n",
+      "fields": [],
+      "rootKind": "array",
+      "body": "b",
+      "threw": null,
+      "stripped": "b",
+      "stripThrew": null
+    },
+    {
+      "label": "empty scalar root",
+      "content": "---\n''\n---\nb\n",
+      "fields": [],
+      "rootKind": "string",
+      "body": "b",
+      "threw": null,
+      "stripped": "b",
+      "stripThrew": null
+    }
+  ]
+}
