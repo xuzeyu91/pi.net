@@ -1,0 +1,899 @@
+{
+ "hostCwd": "D:\\AI\\参考项目\\pi.net",
+ "nodePathToNamespacedPath": [
+  {
+   "input": "",
+   "win32": "",
+   "posix": ""
+  },
+  {
+   "input": "a",
+   "win32": "\\\\?\\D:\\AI\\参考项目\\pi.net\\a",
+   "posix": "a"
+  },
+  {
+   "input": "a/b",
+   "win32": "\\\\?\\D:\\AI\\参考项目\\pi.net\\a\\b",
+   "posix": "a/b"
+  },
+  {
+   "input": "/tmp/x",
+   "win32": "\\\\?\\D:\\tmp\\x",
+   "posix": "/tmp/x"
+  },
+  {
+   "input": "C:\\foo\\bar",
+   "win32": "\\\\?\\C:\\foo\\bar",
+   "posix": "C:\\foo\\bar"
+  },
+  {
+   "input": "C:/foo/bar",
+   "win32": "\\\\?\\C:\\foo\\bar",
+   "posix": "C:/foo/bar"
+  },
+  {
+   "input": "C:",
+   "win32": "\\\\?\\C:\\",
+   "posix": "C:"
+  },
+  {
+   "input": "c:",
+   "win32": "\\\\?\\c:\\",
+   "posix": "c:"
+  },
+  {
+   "input": "\\",
+   "win32": "\\\\?\\D:\\",
+   "posix": "\\"
+  },
+  {
+   "input": "/",
+   "win32": "\\\\?\\D:\\",
+   "posix": "/"
+  },
+  {
+   "input": "\\\\server\\share\\x",
+   "win32": "\\\\?\\UNC\\server\\share\\x",
+   "posix": "\\\\server\\share\\x"
+  },
+  {
+   "input": "//server/share/x",
+   "win32": "\\\\?\\UNC\\server\\share\\x",
+   "posix": "//server/share/x"
+  },
+  {
+   "input": "\\\\?\\C:\\x",
+   "win32": "\\\\?\\C:\\x",
+   "posix": "\\\\?\\C:\\x"
+  },
+  {
+   "input": "\\\\.\\pipe\\x",
+   "win32": "\\\\.\\pipe\\x",
+   "posix": "\\\\.\\pipe\\x"
+  },
+  {
+   "input": "\\\\?\\UNC\\server\\share\\x",
+   "win32": "\\\\?\\UNC\\server\\share\\x",
+   "posix": "\\\\?\\UNC\\server\\share\\x"
+  },
+  {
+   "input": "C:\\foo\\..\\bar",
+   "win32": "\\\\?\\C:\\bar",
+   "posix": "C:\\foo\\..\\bar"
+  },
+  {
+   "input": "C:\\foo\\.\\bar",
+   "win32": "\\\\?\\C:\\foo\\bar",
+   "posix": "C:\\foo\\.\\bar"
+  },
+  {
+   "input": "C:\\",
+   "win32": "\\\\?\\C:\\",
+   "posix": "C:\\"
+  },
+  {
+   "input": "\\\\server",
+   "win32": "\\\\?\\D:\\server",
+   "posix": "\\\\server"
+  },
+  {
+   "input": "foo\\bar",
+   "win32": "\\\\?\\D:\\AI\\参考项目\\pi.net\\foo\\bar",
+   "posix": "foo\\bar"
+  },
+  {
+   "input": "..\\..\\x",
+   "win32": "\\\\?\\D:\\AI\\x",
+   "posix": "..\\..\\x"
+  },
+  {
+   "input": "\\\\?\\",
+   "win32": "\\\\?\\D:\\?",
+   "posix": "\\\\?\\"
+  }
+ ],
+ "toolsLatestVersion": [
+  {
+   "status": 302,
+   "location": "https://github.com/sharkdp/fd/releases/tag/v10.3.0",
+   "version": "10.3.0",
+   "error": null
+  },
+  {
+   "status": 301,
+   "location": "https://github.com/BurntSushi/ripgrep/releases/tag/14.1.1",
+   "version": "14.1.1",
+   "error": null
+  },
+  {
+   "status": 302,
+   "location": "/sharkdp/fd/releases/tag/v10.3.0",
+   "version": "10.3.0",
+   "error": null
+  },
+  {
+   "status": 302,
+   "location": "//github.com/sharkdp/fd/releases/tag/v10.3.0",
+   "version": "10.3.0",
+   "error": null
+  },
+  {
+   "status": 302,
+   "location": "https://github.com/sharkdp/fd/releases/tag/v1.0.0-rc.1",
+   "version": "1.0.0-rc.1",
+   "error": null
+  },
+  {
+   "status": 302,
+   "location": "https://github.com/sharkdp/fd/releases/tag/v10.3.0?x=1",
+   "version": "10.3.0",
+   "error": null
+  },
+  {
+   "status": 302,
+   "location": "https://github.com/sharkdp/fd/releases/tag/v10.3.0#notes",
+   "version": "10.3.0",
+   "error": null
+  },
+  {
+   "status": 302,
+   "location": "https://github.com/sharkdp/fd/releases/tag/v10.3.0/",
+   "version": null,
+   "error": "Error: Failed to resolve latest sharkdp/fd release: unexpected redirect to https://github.com/sharkdp/fd/releases/tag/v10.3.0/"
+  },
+  {
+   "status": 302,
+   "location": "https://github.com/sharkdp/fd/releases/tag/v1.2.3%2Bbuild",
+   "version": "1.2.3+build",
+   "error": null
+  },
+  {
+   "status": 302,
+   "location": "https://github.com/sharkdp/fd/releases/tag/10.3.0",
+   "version": "10.3.0",
+   "error": null
+  },
+  {
+   "status": 302,
+   "location": "https://github.com/sharkdp/fd/releases/latest",
+   "version": null,
+   "error": "Error: Failed to resolve latest sharkdp/fd release: unexpected redirect to https://github.com/sharkdp/fd/releases/latest"
+  },
+  {
+   "status": 302,
+   "location": "https://example.com/elsewhere",
+   "version": null,
+   "error": "Error: Failed to resolve latest sharkdp/fd release: unexpected redirect to https://example.com/elsewhere"
+  },
+  {
+   "status": 302,
+   "location": "",
+   "version": null,
+   "error": "Error: Failed to resolve latest sharkdp/fd release: HTTP 302 without redirect"
+  },
+  {
+   "status": 302,
+   "location": null,
+   "version": null,
+   "error": "Error: Failed to resolve latest sharkdp/fd release: HTTP 302 without redirect"
+  },
+  {
+   "status": 200,
+   "location": "https://github.com/sharkdp/fd/releases/tag/v10.3.0",
+   "version": null,
+   "error": "Error: Failed to resolve latest sharkdp/fd release: HTTP 200 without redirect"
+  },
+  {
+   "status": 404,
+   "location": null,
+   "version": null,
+   "error": "Error: Failed to resolve latest sharkdp/fd release: HTTP 404 without redirect"
+  },
+  {
+   "status": 500,
+   "location": null,
+   "version": null,
+   "error": "Error: Failed to resolve latest sharkdp/fd release: HTTP 500 without redirect"
+  }
+ ],
+ "toolsToolPath": [
+  {
+   "tool": "fd",
+   "spawn": "all-missing",
+   "local": false,
+   "plat": "win32",
+   "result": "null"
+  },
+  {
+   "tool": "rg",
+   "spawn": "all-missing",
+   "local": false,
+   "plat": "win32",
+   "result": "null"
+  },
+  {
+   "tool": "fd",
+   "spawn": "all-present",
+   "local": false,
+   "plat": "win32",
+   "result": "fd"
+  },
+  {
+   "tool": "rg",
+   "spawn": "all-present",
+   "local": false,
+   "plat": "linux",
+   "result": "rg"
+  },
+  {
+   "tool": "fd",
+   "spawn": "fdfind-only",
+   "local": false,
+   "plat": "linux",
+   "result": "fdfind"
+  },
+  {
+   "tool": "fd",
+   "spawn": "all-missing",
+   "local": true,
+   "plat": "win32",
+   "result": "<tmp>\\agent\\bin\\fd.exe"
+  },
+  {
+   "tool": "rg",
+   "spawn": "all-present",
+   "local": true,
+   "plat": "win32",
+   "result": "<tmp>\\agent\\bin\\rg.exe"
+  },
+  {
+   "tool": "fd",
+   "spawn": "all-present",
+   "local": false,
+   "plat": "darwin",
+   "result": "fd"
+  },
+  {
+   "tool": "nope",
+   "spawn": "all-present",
+   "local": false,
+   "plat": "win32",
+   "result": "null"
+  }
+ ],
+ "toolsEnsureTool": [
+  {
+   "tool": "fd",
+   "plat": "win32",
+   "arch": "x64",
+   "spawn": "all-present",
+   "fetch": {
+    "latest": {
+     "status": 302,
+     "location": "https://github.com/sharkdp/fd/releases/tag/v10.3.0"
+    },
+    "download": "archive"
+   },
+   "offline": false,
+   "label": "system-binary-present",
+   "statuses": [],
+   "result": "fd",
+   "error": null
+  },
+  {
+   "tool": "rg",
+   "plat": "linux",
+   "arch": "arm64",
+   "spawn": "all-missing",
+   "fetch": {
+    "latest": {
+     "status": 302,
+     "location": "https://github.com/BurntSushi/ripgrep/releases/tag/14.1.1"
+    },
+    "download": "archive"
+   },
+   "offline": false,
+   "label": "extraction-tool-missing",
+   "statuses": [
+    {
+     "type": "info",
+     "message": "ripgrep not found. Downloading..."
+    },
+    {
+     "type": "warning",
+     "message": "Failed to download ripgrep: Failed to extract ripgrep-14.1.1-aarch64-unknown-linux-musl.tar.gz: tar: spawnSync tar ENOENT"
+    }
+   ],
+   "result": "null",
+   "error": null
+  },
+  {
+   "tool": "fd",
+   "plat": "darwin",
+   "arch": "x64",
+   "spawn": "all-present",
+   "fetch": {
+    "latest": {
+     "status": 302,
+     "location": "https://github.com/sharkdp/fd/releases/tag/v10.3.0"
+    },
+    "download": "archive"
+   },
+   "offline": false,
+   "label": "darwin-x64-system-binary",
+   "statuses": [],
+   "result": "fd",
+   "error": null
+  },
+  {
+   "tool": "fd",
+   "plat": "darwin",
+   "arch": "x64",
+   "spawn": "system-missing-extract-ok",
+   "fetch": {
+    "latest": {
+     "status": 302,
+     "location": "https://github.com/sharkdp/fd/releases/tag/v10.3.0"
+    },
+    "download": "archive"
+   },
+   "offline": false,
+   "label": "pinned-version-darwin-x64-archive-not-found",
+   "statuses": [
+    {
+     "type": "info",
+     "message": "fd not found. Downloading..."
+    },
+    {
+     "type": "warning",
+     "message": "Failed to download fd: Binary not found in archive: expected fd under <tmp>\\agent\\bin\\extract_tmp_<run>"
+    }
+   ],
+   "result": "null",
+   "error": null
+  },
+  {
+   "tool": "rg",
+   "plat": "win32",
+   "arch": "arm64",
+   "spawn": "system-missing-extract-ok",
+   "fetch": {
+    "latest": {
+     "status": 302,
+     "location": "https://github.com/BurntSushi/ripgrep/releases/tag/14.1.1"
+    },
+    "download": "archive"
+   },
+   "offline": false,
+   "label": "windows-arm64-zip-archive-not-found",
+   "statuses": [
+    {
+     "type": "info",
+     "message": "ripgrep not found. Downloading..."
+    },
+    {
+     "type": "warning",
+     "message": "Failed to download ripgrep: Binary not found in archive: expected rg.exe under <tmp>\\agent\\bin\\extract_tmp_<run>"
+    }
+   ],
+   "result": "null",
+   "error": null
+  },
+  {
+   "tool": "fd",
+   "plat": "linux",
+   "arch": "x64",
+   "spawn": "system-missing-extract-ok",
+   "fetch": {
+    "latest": {
+     "status": 302,
+     "location": "https://github.com/sharkdp/fd/releases/tag/v10.3.0"
+    },
+    "download": "archive"
+   },
+   "offline": false,
+   "label": "linux-x64-tar-gz-archive-not-found",
+   "statuses": [
+    {
+     "type": "info",
+     "message": "fd not found. Downloading..."
+    },
+    {
+     "type": "warning",
+     "message": "Failed to download fd: Binary not found in archive: expected fd under <tmp>\\agent\\bin\\extract_tmp_<run>"
+    }
+   ],
+   "result": "null",
+   "error": null
+  },
+  {
+   "tool": "fd",
+   "plat": "darwin",
+   "arch": "arm64",
+   "spawn": "fdfind-only",
+   "fetch": {
+    "latest": {
+     "status": 302,
+     "location": "https://github.com/sharkdp/fd/releases/tag/v10.3.0"
+    },
+    "download": "archive"
+   },
+   "offline": false,
+   "label": "fdfind-fallback",
+   "statuses": [],
+   "result": "fdfind",
+   "error": null
+  },
+  {
+   "tool": "fd",
+   "plat": "aix",
+   "arch": "x64",
+   "spawn": "all-missing",
+   "fetch": {
+    "latest": {
+     "status": 302,
+     "location": "https://github.com/sharkdp/fd/releases/tag/v10.3.0"
+    },
+    "download": "archive"
+   },
+   "offline": false,
+   "label": "unsupported-platform",
+   "statuses": [
+    {
+     "type": "info",
+     "message": "fd not found. Downloading..."
+    },
+    {
+     "type": "warning",
+     "message": "Failed to download fd: Unsupported platform: aix/x64"
+    }
+   ],
+   "result": "null",
+   "error": null
+  },
+  {
+   "tool": "fd",
+   "plat": "linux",
+   "arch": "arm64",
+   "spawn": "all-missing",
+   "fetch": {
+    "latest": {
+     "status": 302,
+     "location": "https://github.com/sharkdp/fd/releases/tag/v10.3.0"
+    },
+    "download": "archive"
+   },
+   "offline": false,
+   "label": "linux-arm64-asset-name",
+   "statuses": [
+    {
+     "type": "info",
+     "message": "fd not found. Downloading..."
+    },
+    {
+     "type": "warning",
+     "message": "Failed to download fd: Failed to extract fd-v10.3.0-aarch64-unknown-linux-musl.tar.gz: tar: spawnSync tar ENOENT"
+    }
+   ],
+   "result": "null",
+   "error": null
+  },
+  {
+   "tool": "fd",
+   "plat": "linux",
+   "arch": "x64",
+   "spawn": "all-missing",
+   "fetch": {
+    "status": 200
+   },
+   "offline": false,
+   "label": "version-lookup-without-redirect",
+   "statuses": [
+    {
+     "type": "info",
+     "message": "fd not found. Downloading..."
+    },
+    {
+     "type": "warning",
+     "message": "Failed to download fd: Failed to resolve latest sharkdp/fd release: HTTP 200 without redirect"
+    }
+   ],
+   "result": "null",
+   "error": null
+  },
+  {
+   "tool": "fd",
+   "plat": "linux",
+   "arch": "x64",
+   "spawn": "all-missing",
+   "fetch": {
+    "status": 302,
+    "location": "https://example.com/nope"
+   },
+   "offline": false,
+   "label": "unexpected-redirect",
+   "statuses": [
+    {
+     "type": "info",
+     "message": "fd not found. Downloading..."
+    },
+    {
+     "type": "warning",
+     "message": "Failed to download fd: Failed to resolve latest sharkdp/fd release: unexpected redirect to https://example.com/nope"
+    }
+   ],
+   "result": "null",
+   "error": null
+  },
+  {
+   "tool": "fd",
+   "plat": "linux",
+   "arch": "x64",
+   "spawn": "all-missing",
+   "fetch": {
+    "latest": {
+     "status": 302,
+     "location": "https://github.com/sharkdp/fd/releases/tag/v10.3.0"
+    },
+    "download": {
+     "status": 404
+    }
+   },
+   "offline": false,
+   "label": "download-404",
+   "statuses": [
+    {
+     "type": "info",
+     "message": "fd not found. Downloading..."
+    },
+    {
+     "type": "warning",
+     "message": "Failed to download fd: Download failed with HTTP 404: https://github.com/sharkdp/fd/releases/download/v10.3.0/fd-v10.3.0-x86_64-unknown-linux-musl.tar.gz"
+    }
+   ],
+   "result": "null",
+   "error": null
+  },
+  {
+   "tool": "rg",
+   "plat": "linux",
+   "arch": "x64",
+   "spawn": "all-missing",
+   "fetch": {
+    "latest": {
+     "status": 302,
+     "location": "https://github.com/BurntSushi/ripgrep/releases/tag/14.1.1"
+    },
+    "download": "archive"
+   },
+   "offline": true,
+   "label": "offline-mode",
+   "statuses": [
+    {
+     "type": "warning",
+     "message": "ripgrep not found. Offline mode enabled, skipping download."
+    }
+   ],
+   "result": "null",
+   "error": null
+  },
+  {
+   "tool": "fd",
+   "plat": "android",
+   "arch": "arm64",
+   "spawn": "all-missing",
+   "fetch": {
+    "latest": {
+     "status": 302,
+     "location": "https://github.com/sharkdp/fd/releases/tag/v10.3.0"
+    },
+    "download": "archive"
+   },
+   "offline": false,
+   "label": "termux",
+   "statuses": [
+    {
+     "type": "warning",
+     "message": "fd not found. Install with: pkg install fd"
+    }
+   ],
+   "result": "null",
+   "error": null
+  },
+  {
+   "tool": "rg",
+   "plat": "android",
+   "arch": "arm64",
+   "spawn": "all-missing",
+   "fetch": {
+    "latest": {
+     "status": 302,
+     "location": "https://github.com/BurntSushi/ripgrep/releases/tag/14.1.1"
+    },
+    "download": "archive"
+   },
+   "offline": true,
+   "label": "termux-offline-wins",
+   "statuses": [
+    {
+     "type": "warning",
+     "message": "ripgrep not found. Offline mode enabled, skipping download."
+    }
+   ],
+   "result": "null",
+   "error": null
+  },
+  {
+   "tool": "nope",
+   "plat": "linux",
+   "arch": "x64",
+   "spawn": "all-missing",
+   "fetch": {
+    "latest": {
+     "status": 302,
+     "location": "https://github.com/sharkdp/fd/releases/tag/v10.3.0"
+    },
+    "download": "archive"
+   },
+   "offline": false,
+   "label": "unknown-tool",
+   "statuses": [],
+   "result": "null",
+   "error": null
+  }
+ ],
+ "toolsOfflineMode": [
+  {
+   "value": "1",
+   "offline": true
+  },
+  {
+   "value": "true",
+   "offline": true
+  },
+  {
+   "value": "TRUE",
+   "offline": true
+  },
+  {
+   "value": "True",
+   "offline": true
+  },
+  {
+   "value": "yes",
+   "offline": true
+  },
+  {
+   "value": "YES",
+   "offline": true
+  },
+  {
+   "value": "0",
+   "offline": false
+  },
+  {
+   "value": "false",
+   "offline": false
+  },
+  {
+   "value": "no",
+   "offline": false
+  },
+  {
+   "value": "",
+   "offline": false
+  },
+  {
+   "value": "on",
+   "offline": false
+  },
+  {
+   "value": " true ",
+   "offline": false
+  }
+ ],
+ "windowsSelfUpdate": [
+  {
+   "name": "under-node-modules",
+   "packageRelative": "node_modules\\pi\\dist",
+   "sharedObjects": [
+    "<inside-a>",
+    "<inside-b>",
+    "<outside>"
+   ],
+   "cleanupFirst": false,
+   "secondPass": false,
+   "layoutAfterQuarantine": [
+    "elsewhere/c.node",
+    "node_modules/.pi-native-quarantine/<run>/native/a.node",
+    "node_modules/.pi-native-quarantine/<run>/native/b.node",
+    "node_modules/pi/dist/native/a.node",
+    "node_modules/pi/dist/native/b.node"
+   ],
+   "layoutAfterSecondPass": null,
+   "layoutAfterCleanup": [
+    "elsewhere/c.node",
+    "node_modules/pi/dist/native/a.node",
+    "node_modules/pi/dist/native/b.node"
+   ]
+  },
+  {
+   "name": "not-under-node-modules",
+   "packageRelative": "plain\\dir",
+   "sharedObjects": [
+    "<inside-a>"
+   ],
+   "cleanupFirst": false,
+   "secondPass": false,
+   "layoutAfterQuarantine": [
+    "elsewhere/c.node",
+    "plain/dir/native/a.node",
+    "plain/dir/native/b.node"
+   ],
+   "layoutAfterSecondPass": null,
+   "layoutAfterCleanup": [
+    "elsewhere/c.node",
+    "plain/dir/native/a.node",
+    "plain/dir/native/b.node"
+   ]
+  },
+  {
+   "name": "nothing-loaded",
+   "packageRelative": "node_modules\\pi\\dist",
+   "sharedObjects": [],
+   "cleanupFirst": false,
+   "secondPass": false,
+   "layoutAfterQuarantine": [
+    "elsewhere/c.node",
+    "node_modules/pi/dist/native/a.node",
+    "node_modules/pi/dist/native/b.node"
+   ],
+   "layoutAfterSecondPass": null,
+   "layoutAfterCleanup": [
+    "elsewhere/c.node",
+    "node_modules/pi/dist/native/a.node",
+    "node_modules/pi/dist/native/b.node"
+   ]
+  },
+  {
+   "name": "only-outside-package",
+   "packageRelative": "node_modules\\pi\\dist",
+   "sharedObjects": [
+    "<outside>"
+   ],
+   "cleanupFirst": false,
+   "secondPass": false,
+   "layoutAfterQuarantine": [
+    "elsewhere/c.node",
+    "node_modules/pi/dist/native/a.node",
+    "node_modules/pi/dist/native/b.node"
+   ],
+   "layoutAfterSecondPass": null,
+   "layoutAfterCleanup": [
+    "elsewhere/c.node",
+    "node_modules/pi/dist/native/a.node",
+    "node_modules/pi/dist/native/b.node"
+   ]
+  },
+  {
+   "name": "duplicate-entries",
+   "packageRelative": "node_modules\\pi\\dist",
+   "sharedObjects": [
+    "<inside-a>",
+    "<inside-a>",
+    "<inside-b>"
+   ],
+   "cleanupFirst": false,
+   "secondPass": false,
+   "layoutAfterQuarantine": [
+    "elsewhere/c.node",
+    "node_modules/.pi-native-quarantine/<run>/native/a.node",
+    "node_modules/.pi-native-quarantine/<run>/native/b.node",
+    "node_modules/pi/dist/native/a.node",
+    "node_modules/pi/dist/native/b.node"
+   ],
+   "layoutAfterSecondPass": null,
+   "layoutAfterCleanup": [
+    "elsewhere/c.node",
+    "node_modules/pi/dist/native/a.node",
+    "node_modules/pi/dist/native/b.node"
+   ]
+  },
+  {
+   "name": "with-stale-quarantine",
+   "packageRelative": "node_modules\\pi\\dist",
+   "sharedObjects": [
+    "<inside-a>"
+   ],
+   "cleanupFirst": true,
+   "secondPass": false,
+   "layoutAfterQuarantine": [
+    "elsewhere/c.node",
+    "node_modules/.pi-native-quarantine/<run>/native/a.node",
+    "node_modules/pi/dist/native/a.node",
+    "node_modules/pi/dist/native/b.node"
+   ],
+   "layoutAfterSecondPass": null,
+   "layoutAfterCleanup": [
+    "elsewhere/c.node",
+    "node_modules/pi/dist/native/a.node",
+    "node_modules/pi/dist/native/b.node"
+   ]
+  },
+  {
+   "name": "second-pass",
+   "packageRelative": "node_modules\\pi\\dist",
+   "sharedObjects": [
+    "<inside-a>",
+    "<inside-b>"
+   ],
+   "cleanupFirst": false,
+   "secondPass": true,
+   "layoutAfterQuarantine": [
+    "elsewhere/c.node",
+    "node_modules/.pi-native-quarantine/<run>/native/a.node",
+    "node_modules/.pi-native-quarantine/<run>/native/b.node",
+    "node_modules/pi/dist/native/a.node",
+    "node_modules/pi/dist/native/b.node"
+   ],
+   "layoutAfterSecondPass": [
+    "elsewhere/c.node",
+    "node_modules/.pi-native-quarantine/<run>/native/a.node",
+    "node_modules/.pi-native-quarantine/<run>/native/a.node",
+    "node_modules/.pi-native-quarantine/<run>/native/b.node",
+    "node_modules/.pi-native-quarantine/<run>/native/b.node",
+    "node_modules/pi/dist/native/a.node",
+    "node_modules/pi/dist/native/b.node"
+   ],
+   "layoutAfterCleanup": [
+    "elsewhere/c.node",
+    "node_modules/pi/dist/native/a.node",
+    "node_modules/pi/dist/native/b.node"
+   ]
+  },
+  {
+   "name": "nested-node-modules",
+   "packageRelative": "node_modules\\outer\\node_modules\\pi",
+   "sharedObjects": [
+    "<inside-a>"
+   ],
+   "cleanupFirst": false,
+   "secondPass": false,
+   "layoutAfterQuarantine": [
+    "elsewhere/c.node",
+    "node_modules/outer/node_modules/.pi-native-quarantine/<run>/native/a.node",
+    "node_modules/outer/node_modules/pi/native/a.node",
+    "node_modules/outer/node_modules/pi/native/b.node"
+   ],
+   "layoutAfterSecondPass": null,
+   "layoutAfterCleanup": [
+    "elsewhere/c.node",
+    "node_modules/outer/node_modules/pi/native/a.node",
+    "node_modules/outer/node_modules/pi/native/b.node"
+   ]
+  }
+ ],
+ "windowsSelfUpdateCleanupMissing": {
+  "threw": null
+ }
+}

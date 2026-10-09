@@ -27,7 +27,7 @@
 
 | 子阶段 | 范围 | 行数 | 状态 |
 |---|---|---:|---|
-| **4a** | `src/utils/*`（37 文件）+ 无依赖的根级模块（`config.ts` / `migrations.ts` / `core/defaults.ts` 等） | ~4,500 | 🚧 进行中（22/36 utils + `config.ts`） |
+| **4a** | `src/utils/*`（37 文件）+ 无依赖的根级模块（`config.ts` / `migrations.ts` / `core/defaults.ts` 等） | ~4,500 | 🚧 进行中（24/36 utils + `config.ts`） |
 | **4b** | 配置 / 信任 / 模型层：settings-manager、trust-manager、project-trust、auth-storage、model-config/registry/resolver、models-store、radius、virtual-models、mcp-servers、keybindings | ~12,000 | ⏳ |
 | **4c** | 工具系统：`core/tools/*` + `core/tools/renderers/*` | ~9,000 | ⏳ |
 | **4d** | 扩展系统：`core/extensions/*`（types / runner / loader）+ `extensions/*`（codemode / llama / mcp / tool-search） | ~12,000 | ⏳ |
@@ -37,7 +37,7 @@
 
 ## 4a 进度（utils 层）
 
-### ✅ 已完成（22/36 个 utils 代码文件 + 根级 `config.ts`）
+### ✅ 已完成（24/36 个 utils 代码文件 + 根级 `config.ts`）
 
 | TS 文件 | 行数 | .NET | 说明 |
 |---|---:|---|---|
@@ -63,6 +63,8 @@
 | `utils/management-http.ts` | 78 | `Utils/ManagementHttp.cs` | 带重试的 fetch（`{408,425,429,500,502,503,504}`），`HandlerOverride` 注入缝 |
 | `utils/changelog.ts` | 196 | `Utils/Changelog.cs` | `parseChangelog` / `normalizeChangelogLinks`（把仓库内相对链接改写到 tag）/ `compareVersions` / `getNewEntries`；需要 JS 的 `encodeURI`（差异 C15） |
 | `utils/git.ts` | 226 | `Utils/Git.cs` + `Utils/HostedGit.cs` + `Utils/JsUrl.cs` | `splitRef`（scp / 显式协议 / 裸 `host/path` 三态）/ `hasUnsafeGitInstallPart` / `buildGitSource` / `parseGenericGitUrl` / `parseGitUrl`。`HostedGit.cs` 是 `hosted-git-info@8.1.0` 的**识别半边**（`parse-url` + `from-url` + `hosts` 的 `domain`/`protocols`/`extract`），`JsUrl.cs` 是它依赖的 WHATWG `new URL()` 子集（差异 C16–C17） |
+| `utils/tools-manager.ts` | 366 | `Utils/ToolsManager.cs` | `getToolPath` / `getLatestVersion` / `ensureTool`：托管 `fd`/`rg` 的下载、解压（tar.gz / zip）、就位。五处注入缝（`EnvOverride` / `ToolsDirOverride` / `SpawnOverride` / `PlatformOverride` / `ArchOverride`），平台与架构**不经 `ProcessInfo`** 以免扰动 `NodePath`（差异 C19–C20） |
+| `utils/windows-self-update.ts` | 118 | `Utils/WindowsSelfUpdate.cs` | `cleanupQuarantine` / `quarantineNativeDependencies`：把仍被加载的 `.node` 挪进 `.pi-native-quarantine` 再删。加载列表经 `LoadedSharedObjectsOverride` 注入——`process.report.getReport().sharedObjects` 在 .NET 无对应物（差异 C21） |
 | `config.ts`（根级） | 656 | `Config.cs` | 安装方式判定、自更新命令拼装、分享链接、资产路径。`ConfigSeams` 集中 9 个注入点 |
 
 C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶段复用）：
@@ -74,21 +76,20 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 | `Utils/Chalk.cs` | chalk 的 16 色子集：嵌套重开（`close` → `close+open`）与 CRLF 感知的逐行包裹 |
 | `Utils/NodeError.cs` | `INodeError { string? Code }` + `NodeIoException`——Node 的 `err.code`（`ECONNREFUSED`、`ERR_INVALID_URL`…）在 C# 侧的落点 |
 | `Utils/Semver.cs` | semver 7.8.5 的 `valid` / `parse` / `compare`；把 `internal/re.js` 的 `MAX_LENGTH`/`MAX_SAFE_INTEGER` 安全边界原样搬进正则 |
-| `Utils/NodePath.cs` | `lib/path.js` 的逐行移植（含 `\\.\`/`\\?\` 设备根、UNC 根、Windows 保留名、CVE-2024-36139 补丁块） |
+| `Utils/NodePath.cs` | `lib/path.js` 的逐行移植（含 `\\.\`/`\\?\` 设备根、UNC 根、Windows 保留名、CVE-2024-36139 补丁块）。`toNamespacedPath` 也在这里（`WindowsSelfUpdate` 要它把路径规范成 `\\?\` 长路径形式），源码同样取自 `process.binding("natives")["path"]` |
 | `Utils/FileUrl.cs` | `fileURLToPath` 的 WHATWG 解析器（scheme/authority/path 三态、IPv4 归一化、禁止域名码点） |
 | `Utils/JsUri.cs` | JS 的 `encodeURI` / `encodeURIComponent`。**不能**用 `Uri.EscapeDataString`：未转义集合不同，且两者都不保留 `%`（`encodeURI("%41")` 是 `"%2541"`）。`decodeURIComponent` 也在这里——它要**抛**（`URIError`），`HostedGit` 与 `Git` 都靠这个信号判定畸形转义 |
-| `Utils/JsUrl.cs` | WHATWG `new URL()` 的子集 + 序列化器。**不能**用 `System.Uri`：非特殊协议没有 `//` 时是**不透明路径**（`github:user/repo` 的主机是空串），特殊协议的 authority 会吃掉**任意个**前导 `/`（`https:////host/x` 的主机仍是 `host`）。序列化器只有 `Git.SplitRef` 用得到——它靠「改 `pathname` 再 `toString()`」把 ref 从 clone URL 里摘掉 |
+| `Utils/JsUrl.cs` | WHATWG `new URL()` 的子集 + 序列化器。**不能**用 `System.Uri`：非特殊协议没有 `//` 时是**不透明路径**（`github:user/repo` 的主机是空串），特殊协议的 authority 会吃掉**任意个**前导 `/`（`https:////host/x` 的主机仍是 `host`）。序列化器只有 `Git.SplitRef` 用得到——它靠「改 `pathname` 再 `toString()`」把 ref 从 clone URL 里摘掉。`Resolve(base, ref)` 是 `ToolsManager` 解析 `Location` 头用的相对引用解析（绝对 → 协议相对 → 空 → `?`/`#` → 目录拼接） |
 | `Utils/HostedGit.cs` | `hosted-git-info` 的 `fromUrl`：5 个主机的 `domain`/`protocols`/`extract` 表 + `parse-url` 的 scp 修正。返回 `HostedGitInfo`（`type`/`domain`/`user`/`project`/`committish`/`default`） |
 
 ### ⏳ 待移植
 
-`utils/` 余下 **14 个文件 / 1,980 行**：
+`utils/` 余下 **12 个文件 / 1,496 行**：
 
 | 分组 | 文件 | 行数 | 备注 |
 |---|---|---:|---|
 | 图像处理 | `clipboard-image.ts`、`exif-orientation.ts`、`image-convert.ts`、`image-process.ts`、`image-resize-core.ts`、`image-resize-worker.ts`、`image-resize.ts`、`photon.ts`、`tool-result-images.ts` | 1,265 | 依赖 `@silvia-odwyer/photon-node`（Rust/wasm）。**需选型**：托管图像库（SkiaSharp / ImageSharp）或注入点外置 |
-| 工具管理 | `tools-manager.ts`、`windows-self-update.ts` | 484 | 依赖 `config.ts`（已完成）与子进程 |
-| 需第三方库 | `frontmatter.ts`、`syntax-highlight.ts`、`zip.ts` | 331 | 分别依赖 `yaml`、`highlight.js`、归档库；**需选型** |
+| 需第三方库 | `frontmatter.ts`、`syntax-highlight.ts`、`zip.ts` | 231 | 分别依赖 `yaml`、`highlight.js`、归档库；**需选型**。注：`zip.ts` 只用到 `crc32` + `deflateRawSync`，`System.IO.Compression` 足以覆盖，实际选型成本低于另外两个 |
 
 另 `utils/highlight-js.d.ts` 是纯类型声明，无运行时代码，不需要移植。
 
@@ -114,6 +115,9 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 | C16 | **`JsUrl` 刻意省略两处 WHATWG 行为** | ①IDNA / domain-to-ASCII：非 ASCII 的特殊协议主机名原样保留而不转 punycode（ICU 的 `domainToUnicode` 与 TS 侧同样不完整，见 C11）；②默认端口折叠：`https://h:443/x` 保留显式 `:443` 而不丢。两者都不改变本仓可达路径上的 `hostname` / `pathname`，已写进 `JsUrl.cs` 的 XML `<remarks>`。**首版还有一处真错**：特殊协议只吃了两个前导 `/`，导致 `https:////host/x` 的主机被判成空串。WHATWG 的 "special authority ignore slashes" 会吃掉**任意个**，`git://github.com/user/repo.git` 因此得到 `null` 而不是 `https:////github.com/user/repo.git`；语料把它抓出来了。 |
 | C17 | **`hosted-git-info` 只移植「识别」半边** | `git.ts` 只读 `domain`/`user`/`project`/`committish`（`type`/`default` 也一并保留以对齐 `fromUrl` 的返回值），故不移植 URL **格式化**半边（`ssh()`/`https()`/`browse()`/`tarball()` 与背后十几个模板）、1000 条 LRU 缓存、以及 `auth` 分量。判断依据是 grep：全仓只有 `git.ts` 引它，且只调 `fromUrl`；缓存是纯记忆化，唯一可观测差异是返回对象的引用相等，而调用方只读字段。 |
 | C18 | **`Git.SplitRef` 的 `://` 分支需要 URL 序列化** | 原实现是「`new URL(url)` → 改 `parsed.pathname` → `parsed.toString()`」，序列化结果会带上协议规范化、主机小写、点段折叠。这不是能省的一步：`https://github.com/user/repo@ref` 的 `repo` 就来自它。为此给 `JsUrlValue` 补了 `Port`/`Query`/`HasAuthority`/`IsIpv6` 四个分量并写了 `JsUrl.Serialize`。用户信息与不透明主机按解析结果原样输出（解析时也没有编码它们），ASCII 输入下与 WHATWG 一致。 |
+| C19 | **`ToolsManager` 的平台/架构读本类私有缝，不经 `ProcessInfo`** | 语料要在同一台 Windows 上回放 darwin / linux / win32 × x64 / arm64 的全矩阵，所以平台与架构必须可注入。若把缝挂在 `ProcessInfo` 上，`NodePath`（它按真实宿主平台选 `win32`/`posix` 分支）就会被一起改写，路径答案随即失真——`ToolsManager` 里所有平台判断都走 `Platform` / `Arch` 两个私有属性，`ProcessInfo` 保持只读宿主常量。 |
+| C20 | **`redirect: "manual"` → `FetchRetryOptions.AllowAutoRedirect`** | `getLatestVersion` 读的是 302 的 `Location` 头本身，必须关掉自动跟随。`ManagementHttp` 原来只有一个 `HttpClient`，现拆成 `_client` / `_manualRedirectClient` 两个（`HandlerOverride` 的 setter 同时处置两者），选项默认 `true` 以保持既有调用点行为不变。`Location` 的解析用 `JsUrl.Resolve("https://github.com", location)` 再取 `pathname` 最后一段——与 `new URL(location, "https://github.com")` 一致，相对 `Location` 也能解析。 |
+| C21 | **`process.report.getReport().sharedObjects` 在 .NET 没有对应物** | `windows-self-update.ts` 靠它拿到「当前进程已加载的原生模块」，据此判断哪些 `.node` 仍被占用。.NET 侧的近似物是 `Process.GetCurrentProcess().Modules`，但语义不同（它列的是模块而非 dlopen 的共享对象，且在非 Windows 上不可用）。因此 `DefaultLoadedSharedObjects()` 只在 Windows 上返回模块列表、其他平台返回 `null`，真实判定交给 `LoadedSharedObjectsOverride` 注入——语料用注入值回放全部 8 条向量。另外 `renameSync` 在同卷上是原子改名，落点用 `File.Move(overwrite: true)`。 |
 
 ## 差分验证（utils 层）
 
@@ -154,9 +158,21 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 | `compareChangelogVersions` | 7 | 三元比较 |
 | `getNewChangelogEntries` | 13 | `lastVersion` 畸形时的 `Number() \|\| 0` 语义 |
 
+`tests/Pi.CodingAgent.Tests/tools-corpus.json`（由 `tools/gen-coding-agent-tools-corpus.mjs` 生成，共 84 条 + 2 个常量对象）：
+
+| 区段 | 条数 | 内容 |
+|---|---:|---|
+| `nodePathToNamespacedPath` | 22 | `path.toNamespacedPath` 的 win32 / posix 双列：驱动器相对、UNC、设备根、`\\?\` 幂等、超短路径 |
+| `toolsLatestVersion` | 17 | `getLatestVersion` 的状态码 / `Location` 组合：302 正常、无 `Location`、404、相对 `Location`、畸形 tag |
+| `toolsToolPath` | 9 | `getToolPath` 的三态（托管副本 / 系统二进制 / `null`）× 平台 × 系统命令可用性 |
+| `toolsEnsureTool` | 16 | `ensureTool` 的四种 spawn 模式（`all-missing` / `all-present` / `fdfind-only` / `system-missing-extract-ok`）× 平台 × 架构 × 离线，逐条记录状态消息序列与最终路径 |
+| `toolsOfflineMode` | 12 | `PI_OFFLINE` 的取值形态（`1` / `true` / `0` / 空串 / 未设…）与「离线」判定 |
+| `windowsSelfUpdate` | 8 | 隔离目录建/挪/删、二次执行幂等、包外文件不碰、清理后布局 |
+| `hostCwd` / `windowsSelfUpdateCleanupMissing` | 2 | 宿主 cwd 常量；隔离目录缺失时清理不抛 |
+
 ## 测试覆盖
 
-`tests/Pi.CodingAgent.Tests`（53 项，已禁用并行化）：
+`tests/Pi.CodingAgent.Tests`（60 项，已禁用并行化）：
 
 | 测试类 | 项数 | 覆盖 |
 |---|---:|---|
@@ -165,3 +181,4 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 | `CoreUtilsCorpusTests` | 18 | 其余全部区段：semver、版本检查、剪贴板、config、shell、cross-spawn 转义（含 448 条随机扫描） |
 | `ChangelogCorpusTests` | 6 | `git-corpus.json` 的 changelog 区段 |
 | `GitCorpusTests` | 2 | `git-corpus.json` 的 `hostedGitInfoFromUrl`（92 条）与 `parseGitUrl`（107 条）区段 |
+| `ToolsCorpusTests` | 7 | `tools-corpus.json` 的全部区段：`toNamespacedPath`、`getLatestVersion`、`getToolPath`、`ensureTool`、离线判定、`WindowsSelfUpdate` 布局回放（含清理缺失路径） |

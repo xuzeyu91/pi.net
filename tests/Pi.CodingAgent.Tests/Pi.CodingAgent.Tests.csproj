@@ -18,6 +18,9 @@
     <None Include="core-utils-corpus.json" CopyToOutputDirectory="PreserveNewest" />
     <!-- Third slice: git source parsing (git.ts + hosted-git-info) and the changelog helpers. -->
     <None Include="git-corpus.json" CopyToOutputDirectory="PreserveNewest" />
+    <!-- Fourth slice: the managed-tool downloader, the Windows self-update quarantine, and
+         node:path.toNamespacedPath. -->
+    <None Include="tools-corpus.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Pi.CodingAgent\Pi.CodingAgent.csproj" />

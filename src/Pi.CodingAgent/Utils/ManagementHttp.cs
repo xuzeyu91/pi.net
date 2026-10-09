@@ -14,6 +14,15 @@ public sealed record FetchRetryOptions
 
     /// <summary>Per-attempt timeout; a new one is created for every attempt.</summary>
     public int? AttemptTimeoutMs { get; init; }
+
+    /// <summary>
+    /// Follow HTTP redirects automatically. Defaults to true.
+    /// </summary>
+    /// <remarks>
+    /// Set this to false to read a redirect's <c>Location</c> header instead of following it, which is
+    /// what <c>fetch(…, { redirect: "manual" })</c> does. The caller then sees the 3xx status itself.
+    /// </remarks>
+    public bool? AllowAutoRedirect { get; init; }
 }
 
 /// <summary>Port of <c>utils/management-http.ts</c>.</summary>
@@ -40,6 +49,7 @@ public static class ManagementHttp
     public static readonly IReadOnlySet<int> RetryableStatusCodes = new HashSet<int> { 408, 425, 429, 500, 502, 503, 504 };
 
     private static HttpClient? _client;
+    private static HttpClient? _manualRedirectClient;
     private static HttpMessageHandler? _handlerOverride;
 
     /// <summary>Replace the transport, so the retry matrix can be exercised without a server.</summary>
@@ -51,14 +61,33 @@ public static class ManagementHttp
             _handlerOverride = value;
             _client?.Dispose();
             _client = null;
+            _manualRedirectClient?.Dispose();
+            _manualRedirectClient = null;
         }
     }
 
-    /// <summary>The shared client. Its own timeout is disabled because the timeouts are per attempt.</summary>
-    private static HttpClient Client => _client ??= new HttpClient(_handlerOverride ?? new SocketsHttpHandler())
+    /// <summary>
+    /// The shared client for an attempt. Its own timeout is disabled because the timeouts are per attempt.
+    /// </summary>
+    /// <remarks>
+    /// Two clients are kept because <c>AllowAutoRedirect</c> is a handler-level setting with no
+    /// per-request equivalent, and the release-page lookup needs redirects <em>not</em> to be followed.
+    /// </remarks>
+    private static HttpClient Client(bool allowAutoRedirect)
     {
-        Timeout = Timeout.InfiniteTimeSpan,
-    };
+        if (allowAutoRedirect)
+        {
+            return _client ??= CreateClient(allowAutoRedirect: true);
+        }
+
+        return _manualRedirectClient ??= CreateClient(allowAutoRedirect: false);
+    }
+
+    private static HttpClient CreateClient(bool allowAutoRedirect) =>
+        new(_handlerOverride ?? new SocketsHttpHandler { AllowAutoRedirect = allowAutoRedirect })
+        {
+            Timeout = Timeout.InfiniteTimeSpan,
+        };
 
     /// <summary>
     /// Fetch a management HTTP resource with a bounded immediate retry.
@@ -76,6 +105,7 @@ public static class ManagementHttp
         options ??= new FetchRetryOptions();
         var maxRetries = options.MaxRetries is null or < 0 ? 2 : options.MaxRetries.Value;
         var retryOnStatus = options.RetryOnStatus ?? true;
+        var client = Client(options.AllowAutoRedirect ?? true);
 
         using var overallTimeout = options.TimeoutMs is int overall && overall > 0
             ? new CancellationTokenSource(overall)
@@ -113,7 +143,7 @@ public static class ManagementHttp
             {
                 using var request = new HttpRequestMessage(HttpMethod.Get, url);
                 configure?.Invoke(request);
-                var response = await Client.SendAsync(request, effectiveToken).ConfigureAwait(false);
+                var response = await client.SendAsync(request, effectiveToken).ConfigureAwait(false);
 
                 var shouldRetry = retryOnStatus &&
                                   RetryableStatusCodes.Contains((int)response.StatusCode) &&

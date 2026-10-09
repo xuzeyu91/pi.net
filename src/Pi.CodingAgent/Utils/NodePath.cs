@@ -623,6 +623,56 @@ public static class NodePath
     public static string Resolve(bool windows, params string[] parts) =>
         windows ? ResolveWindows(parts) : ResolvePosix(parts);
 
+    /// <summary>Node's <c>path.toNamespacedPath</c> for the host flavour.</summary>
+    public static string ToNamespacedPath(string path) => ToNamespacedPath(path, IsWindows);
+
+    /// <summary>
+    /// Node's <c>path.toNamespacedPath</c>: rewrite a Windows path into the extended-length form
+    /// (<c>\\?\</c> or <c>\\?\UNC\</c>) so that it is not subject to <c>MAX_PATH</c>.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// The POSIX implementation is the identity function, including for the empty string.
+    /// </para>
+    /// <para>
+    /// Two details are easy to get wrong. A path whose <em>resolved</em> form is two characters or
+    /// shorter returns the <em>input</em> rather than the resolved path, and the UNC rewrite is skipped
+    /// when the third character is already <c>?</c> or <c>.</c>, which is what leaves <c>\\?\C:\x</c> and
+    /// <c>\\.\pipe\x</c> untouched.
+    /// </para>
+    /// </remarks>
+    public static string ToNamespacedPath(string path, bool windows)
+    {
+        if (!windows || path.Length == 0)
+        {
+            return path;
+        }
+
+        var resolved = Resolve(windows: true, path);
+        if (resolved.Length <= 2)
+        {
+            return path;
+        }
+
+        if (resolved[0] == '\\')
+        {
+            if (resolved[1] == '\\')
+            {
+                var code = resolved[2];
+                if (code != '?' && code != '.')
+                {
+                    return @"\\?\UNC\" + resolved[2..];
+                }
+            }
+        }
+        else if (IsDeviceRoot(resolved[0]) && resolved[1] == ':' && resolved[2] == '\\')
+        {
+            return @"\\?\" + resolved;
+        }
+
+        return resolved;
+    }
+
     private static string ResolveWindows(IReadOnlyList<string> parts)
     {
         var resolvedDevice = string.Empty;

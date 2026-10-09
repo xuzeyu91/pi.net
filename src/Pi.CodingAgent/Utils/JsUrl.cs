@@ -224,34 +224,80 @@ internal static class JsUrl
         var builder = new StringBuilder(url.Protocol);
         if (url.HasAuthority)
         {
-            builder.Append("//");
-            if (url.Username.Length > 0 || url.Password.Length > 0)
-            {
-                builder.Append(url.Username);
-                if (url.Password.Length > 0)
-                {
-                    builder.Append(':').Append(url.Password);
-                }
-
-                builder.Append('@');
-            }
-
-            if (url.IsIpv6)
-            {
-                builder.Append('[').Append(url.Hostname).Append(']');
-            }
-            else
-            {
-                builder.Append(url.Hostname);
-            }
-
-            if (url.Port.Length > 0)
-            {
-                builder.Append(':').Append(url.Port);
-            }
+            builder.Append("//").Append(SerializeAuthority(url));
         }
 
         return builder.Append(url.Pathname).Append(url.Query).Append(url.Hash).ToString();
+    }
+
+    /// <summary>The userinfo, host and port of a URL, i.e. everything after the <c>//</c>.</summary>
+    private static string SerializeAuthority(JsUrlValue url)
+    {
+        var builder = new StringBuilder();
+        if (url.Username.Length > 0 || url.Password.Length > 0)
+        {
+            builder.Append(url.Username);
+            if (url.Password.Length > 0)
+            {
+                builder.Append(':').Append(url.Password);
+            }
+
+            builder.Append('@');
+        }
+
+        builder.Append(url.IsIpv6 ? "[" + url.Hostname + "]" : url.Hostname);
+        if (url.Port.Length > 0)
+        {
+            builder.Append(':').Append(url.Port);
+        }
+
+        return builder.ToString();
+    }
+
+    /// <summary>
+    /// Resolve <paramref name="reference"/> against <paramref name="baseUrl"/>, i.e.
+    /// <c>new URL(reference, baseUrl)</c>.
+    /// </summary>
+    /// <remarks>
+    /// Only the shapes a redirect <c>Location</c> can take are handled: an absolute URL, a
+    /// scheme-relative <c>//host/path</c>, an absolute path, and a path relative to the base directory.
+    /// The reference is concatenated with the base and re-parsed, so query, fragment and dot segments
+    /// come out of the ordinary parse. Full RFC 3986 base resolution (which would also need to consult
+    /// the base's query for a <c>?</c>-only reference) is not implemented, because nothing here needs it.
+    /// </remarks>
+    internal static JsUrlValue? Resolve(string baseUrl, string reference)
+    {
+        if (TryParse(reference) is { } absolute)
+        {
+            return absolute;
+        }
+
+        if (TryParse(baseUrl) is not { HasAuthority: true } baseValue)
+        {
+            return null;
+        }
+
+        if (reference.StartsWith("//", StringComparison.Ordinal))
+        {
+            return TryParse(baseValue.Protocol + reference);
+        }
+
+        var prefix = baseValue.Protocol + "//" + SerializeAuthority(baseValue);
+        if (reference.Length == 0)
+        {
+            return TryParse(prefix + baseValue.Pathname + baseValue.Query);
+        }
+
+        if (reference[0] is '?' or '#')
+        {
+            return TryParse(prefix + baseValue.Pathname + baseValue.Query + reference);
+        }
+
+        var directory = reference[0] == '/'
+            ? string.Empty
+            : baseValue.Pathname[..(baseValue.Pathname.LastIndexOf('/') + 1)];
+
+        return TryParse(prefix + directory + reference);
     }
 
     /// <summary>
