@@ -610,61 +610,11 @@ internal static class FileUrl
         input.IndexOf('%') < 0 ? input : DecodeUriComponent(input);
 
     /// <summary>
-    /// Port of JavaScript's <c>decodeURIComponent</c>: percent-decode to bytes, then decode those bytes
-    /// as UTF-8, throwing on malformed escapes or invalid UTF-8 exactly as <c>URIError</c> does.
+    /// Port of JavaScript's <c>decodeURIComponent</c>. The implementation lives on
+    /// <see cref="JsUri.DecodeUriComponent"/> because <c>hosted-git-info</c> needs the same throwing
+    /// behaviour for the <c>URIError</c> it catches; this is the shared entry point.
     /// </summary>
-    private static string DecodeUriComponent(string input)
-    {
-        var bytes = new List<byte>(input.Length);
-        for (var index = 0; index < input.Length; index++)
-        {
-            var value = input[index];
-            if (value == '%')
-            {
-                if (index + 2 >= input.Length)
-                {
-                    throw new UriFormatException("URI malformed");
-                }
-
-                var high = HexValue(input[index + 1]);
-                var low = HexValue(input[index + 2]);
-                if (high < 0 || low < 0)
-                {
-                    throw new UriFormatException("URI malformed");
-                }
-
-                bytes.Add((byte)((high << 4) | low));
-                index += 2;
-                continue;
-            }
-
-            // A lone surrogate has no UTF-8 encoding and makes JavaScript's decoder throw.
-            if (char.IsSurrogate(value))
-            {
-                if (!char.IsHighSurrogate(value) ||
-                    index + 1 >= input.Length ||
-                    !char.IsLowSurrogate(input[index + 1]))
-                {
-                    throw new UriFormatException("URI malformed");
-                }
-
-                bytes.AddRange(Encoding.UTF8.GetBytes(input.Substring(index, 2)));
-                index++;
-                continue;
-            }
-
-            bytes.AddRange(Encoding.UTF8.GetBytes(input.Substring(index, 1)));
-        }
-
-        try
-        {
-            return StrictUtf8.GetString(bytes.ToArray());
-        }
-        catch (DecoderFallbackException exception)
-        {
-            throw new UriFormatException("URI malformed", exception);
-        }
-    }
+    private static string DecodeUriComponent(string input) => JsUri.DecodeUriComponent(input);
 
     /// <summary>
     /// The URL spec's lenient "percent-decode" followed by "UTF-8 decode without BOM": a <c>%</c> that
@@ -707,8 +657,6 @@ internal static class FileUrl
         // Encoding.UTF8 is lenient: an invalid sequence becomes U+FFFD, as "UTF-8 decode without BOM" does.
         return Encoding.UTF8.GetString(bytes.ToArray());
     }
-
-    private static readonly UTF8Encoding StrictUtf8 = new(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
 
     private static int HexValue(char value) => value switch
     {

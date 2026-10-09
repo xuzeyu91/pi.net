@@ -27,7 +27,7 @@
 
 | 子阶段 | 范围 | 行数 | 状态 |
 |---|---|---:|---|
-| **4a** | `src/utils/*`（37 文件）+ 无依赖的根级模块（`config.ts` / `migrations.ts` / `core/defaults.ts` 等） | ~4,500 | 🚧 进行中（21/36 utils + `config.ts`） |
+| **4a** | `src/utils/*`（37 文件）+ 无依赖的根级模块（`config.ts` / `migrations.ts` / `core/defaults.ts` 等） | ~4,500 | 🚧 进行中（22/36 utils + `config.ts`） |
 | **4b** | 配置 / 信任 / 模型层：settings-manager、trust-manager、project-trust、auth-storage、model-config/registry/resolver、models-store、radius、virtual-models、mcp-servers、keybindings | ~12,000 | ⏳ |
 | **4c** | 工具系统：`core/tools/*` + `core/tools/renderers/*` | ~9,000 | ⏳ |
 | **4d** | 扩展系统：`core/extensions/*`（types / runner / loader）+ `extensions/*`（codemode / llama / mcp / tool-search） | ~12,000 | ⏳ |
@@ -37,7 +37,7 @@
 
 ## 4a 进度（utils 层）
 
-### ✅ 已完成（21/36 个 utils 代码文件 + 根级 `config.ts`）
+### ✅ 已完成（22/36 个 utils 代码文件 + 根级 `config.ts`）
 
 | TS 文件 | 行数 | .NET | 说明 |
 |---|---:|---|---|
@@ -62,6 +62,7 @@
 | `utils/version-check.ts` | 109 | `Utils/VersionCheck.cs` | `formatVersionCheckError` / `comparePackageVersions` / `getLatestPiRelease` / `checkForNewPiVersion`（差异 C14） |
 | `utils/management-http.ts` | 78 | `Utils/ManagementHttp.cs` | 带重试的 fetch（`{408,425,429,500,502,503,504}`），`HandlerOverride` 注入缝 |
 | `utils/changelog.ts` | 196 | `Utils/Changelog.cs` | `parseChangelog` / `normalizeChangelogLinks`（把仓库内相对链接改写到 tag）/ `compareVersions` / `getNewEntries`；需要 JS 的 `encodeURI`（差异 C15） |
+| `utils/git.ts` | 226 | `Utils/Git.cs` + `Utils/HostedGit.cs` + `Utils/JsUrl.cs` | `splitRef`（scp / 显式协议 / 裸 `host/path` 三态）/ `hasUnsafeGitInstallPart` / `buildGitSource` / `parseGenericGitUrl` / `parseGitUrl`。`HostedGit.cs` 是 `hosted-git-info@8.1.0` 的**识别半边**（`parse-url` + `from-url` + `hosts` 的 `domain`/`protocols`/`extract`），`JsUrl.cs` 是它依赖的 WHATWG `new URL()` 子集（差异 C16–C17） |
 | `config.ts`（根级） | 656 | `Config.cs` | 安装方式判定、自更新命令拼装、分享链接、资产路径。`ConfigSeams` 集中 9 个注入点 |
 
 C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶段复用）：
@@ -75,15 +76,16 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 | `Utils/Semver.cs` | semver 7.8.5 的 `valid` / `parse` / `compare`；把 `internal/re.js` 的 `MAX_LENGTH`/`MAX_SAFE_INTEGER` 安全边界原样搬进正则 |
 | `Utils/NodePath.cs` | `lib/path.js` 的逐行移植（含 `\\.\`/`\\?\` 设备根、UNC 根、Windows 保留名、CVE-2024-36139 补丁块） |
 | `Utils/FileUrl.cs` | `fileURLToPath` 的 WHATWG 解析器（scheme/authority/path 三态、IPv4 归一化、禁止域名码点） |
-| `Utils/JsUri.cs` | JS 的 `encodeURI` / `encodeURIComponent`。**不能**用 `Uri.EscapeDataString`：未转义集合不同，且两者都不保留 `%`（`encodeURI("%41")` 是 `"%2541"`） |
+| `Utils/JsUri.cs` | JS 的 `encodeURI` / `encodeURIComponent`。**不能**用 `Uri.EscapeDataString`：未转义集合不同，且两者都不保留 `%`（`encodeURI("%41")` 是 `"%2541"`）。`decodeURIComponent` 也在这里——它要**抛**（`URIError`），`HostedGit` 与 `Git` 都靠这个信号判定畸形转义 |
+| `Utils/JsUrl.cs` | WHATWG `new URL()` 的子集 + 序列化器。**不能**用 `System.Uri`：非特殊协议没有 `//` 时是**不透明路径**（`github:user/repo` 的主机是空串），特殊协议的 authority 会吃掉**任意个**前导 `/`（`https:////host/x` 的主机仍是 `host`）。序列化器只有 `Git.SplitRef` 用得到——它靠「改 `pathname` 再 `toString()`」把 ref 从 clone URL 里摘掉 |
+| `Utils/HostedGit.cs` | `hosted-git-info` 的 `fromUrl`：5 个主机的 `domain`/`protocols`/`extract` 表 + `parse-url` 的 scp 修正。返回 `HostedGitInfo`（`type`/`domain`/`user`/`project`/`committish`/`default`） |
 
 ### ⏳ 待移植
 
-`utils/` 余下 **15 个文件 / 2,206 行**：
+`utils/` 余下 **14 个文件 / 1,980 行**：
 
 | 分组 | 文件 | 行数 | 备注 |
 |---|---|---:|---|
-| Git | `git.ts` | 226 | 依赖 `hosted-git-info`（658 行纯字符串库）。**需移植**：`parse-url.js`（WHATWG `new URL()` 子集）+ `from-url.js` + `hosts.js` 的 `extract`/`protocols`/`domain`；模板函数无人调用可略 |
 | 图像处理 | `clipboard-image.ts`、`exif-orientation.ts`、`image-convert.ts`、`image-process.ts`、`image-resize-core.ts`、`image-resize-worker.ts`、`image-resize.ts`、`photon.ts`、`tool-result-images.ts` | 1,265 | 依赖 `@silvia-odwyer/photon-node`（Rust/wasm）。**需选型**：托管图像库（SkiaSharp / ImageSharp）或注入点外置 |
 | 工具管理 | `tools-manager.ts`、`windows-self-update.ts` | 484 | 依赖 `config.ts`（已完成）与子进程 |
 | 需第三方库 | `frontmatter.ts`、`syntax-highlight.ts`、`zip.ts` | 331 | 分别依赖 `yaml`、`highlight.js`、归档库；**需选型** |
@@ -109,6 +111,9 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 | C13 | **需要注入缝的三处平台耦合** | `NodePath.CwdOverride`（`resolve`/`relative` 读 cwd，而语料在不同目录采录）、`Clipboard.NativeClipboardOverride`（TS 测试会 stub 模块级单例）、`Clipboard.PlatformOverride` / `EnvOverride` / `CommandRunnerOverride` / `Osc52WriterOverride`。`resolve`/`relative` 是纯字符串运算，注入的路径不必真实存在。 |
 | C14 | **`AggregateException.Message` 不是 JS 的 `error.message`** | .NET 的 `AggregateException.Message` 会把每条内层消息**追加**成 `" (m1) (m2)"`，而 JS 的 `error.message` 只有外层文本；同时 `String(error)` 取的是 JS 的 `error.name`（`"Error"` / `"AggregateError"`），不是 .NET 类型名。`FormatVersionCheckError` 因此要把后缀剥回去，并把类型映射成 JS 名称。 |
 | C15 | **`existsSync` 对目录返回 true** | Node 的 `existsSync(dir)` 是 true，随后 `readFileSync` 抛 `EISDIR` 走 catch；而 .NET 的 `File.Exists(dir)` 是 false，会静默跳过 catch。`Changelog.ParseChangelog` 因此用 `File.Exists(path) \|\| Directory.Exists(path)`。同理 `Uri.EscapeDataString` 不能当 `encodeURI`（差异见 `JsUri.cs`）。 |
+| C16 | **`JsUrl` 刻意省略两处 WHATWG 行为** | ①IDNA / domain-to-ASCII：非 ASCII 的特殊协议主机名原样保留而不转 punycode（ICU 的 `domainToUnicode` 与 TS 侧同样不完整，见 C11）；②默认端口折叠：`https://h:443/x` 保留显式 `:443` 而不丢。两者都不改变本仓可达路径上的 `hostname` / `pathname`，已写进 `JsUrl.cs` 的 XML `<remarks>`。**首版还有一处真错**：特殊协议只吃了两个前导 `/`，导致 `https:////host/x` 的主机被判成空串。WHATWG 的 "special authority ignore slashes" 会吃掉**任意个**，`git://github.com/user/repo.git` 因此得到 `null` 而不是 `https:////github.com/user/repo.git`；语料把它抓出来了。 |
+| C17 | **`hosted-git-info` 只移植「识别」半边** | `git.ts` 只读 `domain`/`user`/`project`/`committish`（`type`/`default` 也一并保留以对齐 `fromUrl` 的返回值），故不移植 URL **格式化**半边（`ssh()`/`https()`/`browse()`/`tarball()` 与背后十几个模板）、1000 条 LRU 缓存、以及 `auth` 分量。判断依据是 grep：全仓只有 `git.ts` 引它，且只调 `fromUrl`；缓存是纯记忆化，唯一可观测差异是返回对象的引用相等，而调用方只读字段。 |
+| C18 | **`Git.SplitRef` 的 `://` 分支需要 URL 序列化** | 原实现是「`new URL(url)` → 改 `parsed.pathname` → `parsed.toString()`」，序列化结果会带上协议规范化、主机小写、点段折叠。这不是能省的一步：`https://github.com/user/repo@ref` 的 `repo` 就来自它。为此给 `JsUrlValue` 补了 `Port`/`Query`/`HasAuthority`/`IsIpv6` 四个分量并写了 `JsUrl.Serialize`。用户信息与不透明主机按解析结果原样输出（解析时也没有编码它们），ASCII 输入下与 WHATWG 一致。 |
 
 ## 差分验证（utils 层）
 
@@ -141,8 +146,8 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 
 | 区段 | 条数 | 内容 |
 |---|---:|---|
-| `hostedGitInfoFromUrl` | 92 | hosted-git-info 的 `fromUrl`：github / gitlab / bitbucket / gist / sourcehut、短写、凭据、端口、百分号编码、畸形输入。**待消费**（`git.ts` 那一批） |
-| `parseGitUrl` | 107 | `git.ts` 的 `parseGitUrl`：`git:` 前缀的各种历史短写、显式协议、scp 形式、`#ref`、不安全片段（`..`、反斜杠、前导 `/`、`%00`）。**待消费** |
+| `hostedGitInfoFromUrl` | 92 | hosted-git-info 的 `fromUrl`：github / gitlab / bitbucket / gist / sourcehut、短写、凭据、端口、百分号编码、畸形输入 |
+| `parseGitUrl` | 107 | `git.ts` 的 `parseGitUrl`：`git:` 前缀的各种历史短写、显式协议、scp 形式、`#ref`、不安全片段（`..`、反斜杠、前导 `/`、`%00`） |
 | `normalizeChangelogLinks` | 52 | 相对链接改写、`blob`/`tree` 判定、浮动分支改写到 tag、旧仓库改名、编码 |
 | `parseChangelog` | 19 | 版本头形态（`## x.y.z` / `## [x.y.z]` / `## v…`）、无版本头截断、CRLF、缺失尾换行 |
 | `parseChangelogMissing` / `parseChangelogUnreadable` | 2 | 不存在的路径 / 目录（后者走 catch 分支） |
@@ -151,11 +156,12 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 
 ## 测试覆盖
 
-`tests/Pi.CodingAgent.Tests`（51 项，已禁用并行化）：
+`tests/Pi.CodingAgent.Tests`（53 项，已禁用并行化）：
 
 | 测试类 | 项数 | 覆盖 |
 |---|---:|---|
 | `UtilsCorpusTests` | 11 | `utils-corpus.json` 的 416 条 + 两条语料守卫 |
 | `PathCorpusTests` | 16 | `nodePath*` / `paths*` / `fileUrlToPath` / `semver` / `versionCheck` 的路径与版本语义；含 `FileUrlToPath_DivergencesAreAsDocumented` 双向断言与 `CwdScope` 回放 |
 | `CoreUtilsCorpusTests` | 18 | 其余全部区段：semver、版本检查、剪贴板、config、shell、cross-spawn 转义（含 448 条随机扫描） |
-| `ChangelogCorpusTests` | 6 | `git-corpus.json` 的 changelog 区段（`git.ts` 与 `hostedGitInfoFromUrl` 区段待下一批消费） |
+| `ChangelogCorpusTests` | 6 | `git-corpus.json` 的 changelog 区段 |
+| `GitCorpusTests` | 2 | `git-corpus.json` 的 `hostedGitInfoFromUrl`（92 条）与 `parseGitUrl`（107 条）区段 |

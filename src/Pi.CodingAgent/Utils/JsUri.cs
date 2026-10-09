@@ -32,6 +32,74 @@ public static class JsUri
     /// <summary>JavaScript's <c>encodeURIComponent</c>.</summary>
     public static string EncodeUriComponent(string value) => Encode(value, UriUnescapedCharacters);
 
+    /// <summary>
+    /// JavaScript's <c>decodeURIComponent</c>: percent-decode to bytes, then decode those bytes as UTF-8,
+    /// throwing on malformed escapes or invalid UTF-8 exactly as <c>URIError</c> does.
+    /// </summary>
+    /// <exception cref="UriFormatException">
+    /// A <c>%</c> not followed by two hex digits, a lone surrogate, or bytes that are not valid UTF-8.
+    /// </exception>
+    public static string DecodeUriComponent(string input)
+    {
+        var bytes = new List<byte>(input.Length);
+        for (var index = 0; index < input.Length; index++)
+        {
+            var value = input[index];
+            if (value == '%')
+            {
+                if (index + 2 >= input.Length)
+                {
+                    throw new UriFormatException("URI malformed");
+                }
+
+                var high = HexValue(input[index + 1]);
+                var low = HexValue(input[index + 2]);
+                if (high < 0 || low < 0)
+                {
+                    throw new UriFormatException("URI malformed");
+                }
+
+                bytes.Add((byte)((high << 4) | low));
+                index += 2;
+                continue;
+            }
+
+            // A lone surrogate has no UTF-8 encoding and makes JavaScript's decoder throw.
+            if (char.IsSurrogate(value))
+            {
+                if (!char.IsHighSurrogate(value) || index + 1 >= input.Length || !char.IsLowSurrogate(input[index + 1]))
+                {
+                    throw new UriFormatException("URI malformed");
+                }
+
+                bytes.AddRange(Encoding.UTF8.GetBytes(input.Substring(index, 2)));
+                index++;
+                continue;
+            }
+
+            bytes.AddRange(Encoding.UTF8.GetBytes(input.Substring(index, 1)));
+        }
+
+        try
+        {
+            return StrictUtf8.GetString(bytes.ToArray());
+        }
+        catch (DecoderFallbackException exception)
+        {
+            throw new UriFormatException("URI malformed", exception);
+        }
+    }
+
+    private static readonly UTF8Encoding StrictUtf8 = new(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true);
+
+    private static int HexValue(char value) => value switch
+    {
+        >= '0' and <= '9' => value - '0',
+        >= 'a' and <= 'f' => value - 'a' + 10,
+        >= 'A' and <= 'F' => value - 'A' + 10,
+        _ => -1,
+    };
+
     private static string Encode(string value, string unescaped)
     {
         StringBuilder? builder = null;
