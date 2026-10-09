@@ -16,10 +16,10 @@ namespace Pi.CodingAgent.Core;
 /// The selection (<c>model_change</c>, <c>agent.state.model</c>, <c>ctx.model</c>) may name a virtual
 /// model. Everything below the routing step only sees physical models: providers stream them and
 /// assistant messages record them. A virtual model never reaches a provider.
-/// <para>
-/// Not ported here (both need the 4e session layer, tracked as gap G-4b-VM):
-/// <c>findLatestResponse</c> (needs the <c>AgentMessage</c> union) and
-/// <c>getBranchSelection</c>/<c>getVirtualModelState</c> (need <c>SessionEntry</c>).
+/// /// <para>
+/// Not ported here (needs the 4e session layer, tracked as gap G-4b-VM):
+/// <c>getBranchSelection</c>/<c>getVirtualModelState</c> (need <c>SessionEntry</c>). The
+/// <c>findLatestResponse</c> overload the router needs is ported below over <see cref="ChatMessage"/>.
 /// </para>
 /// <para>Difference C40: router state is <see cref="JsonNode"/> (TS <c>TState = unknown</c>, documented as
 /// JSON-serializable), and provider capability checks that TS expresses as absent members surface here as
@@ -38,6 +38,28 @@ public static class VirtualModels
 
     /// <summary>Whether an assistant message names a virtual model (failed routing leaves it on the message).</summary>
     public static bool IsVirtualModel(AssistantMessage message) => message.Api == Api;
+
+    /// <summary>
+    /// Latest successful assistant response in <paramref name="messages"/>, skipping failed and aborted turns.
+    /// Port of the TS <c>findLatestResponse</c> overload that takes the plain <c>Message</c> union.
+    /// </summary>
+    /// <remarks>
+    /// The TS signature also accepts <c>AgentMessage</c> (which adds extension messages). C# transcripts carry
+    /// <see cref="ChatMessage"/>, so the wider overload is not needed here; it arrives with the 4e session layer
+    /// (gap G-4b-VM) only if extension messages become a distinct type.
+    /// </remarks>
+    public static AssistantMessage? FindLatestResponse(IReadOnlyList<ChatMessage> messages)
+    {
+        for (var index = messages.Count - 1; index >= 0; index--)
+        {
+            if (messages[index] is AssistantMessage message
+                && message.StopReason is not StopReason.Error and not StopReason.Aborted)
+            {
+                return message;
+            }
+        }
+        return null;
+    }
 
     /// <summary>Build the catalog entry of a virtual model. The definition's <c>Route</c> is ignored.</summary>
     public static ModelSpec CreateVirtualModel(VirtualModelDefinition definition)

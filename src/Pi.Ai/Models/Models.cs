@@ -166,18 +166,23 @@ public sealed partial class Models
                 : null);
 
     /// <summary>按类别取模型（可选 provider 过滤）。对应 TS <c>getModelsOfType()</c>。</summary>
+    /// <remarks>
+    /// TS filters <c>getAllModels()</c>, not <c>getModels()</c>: every category is searched, and a provider
+    /// that only implements <c>getModels()</c> still contributes its chat models through the default
+    /// <c>getAllModels()</c>.
+    /// </remarks>
     public IReadOnlyList<ModelSpec> GetModelsOfType(ModelType type, string? provider = null)
     {
         if (provider is not null)
         {
             return !_providers.TryGetValue(provider, out var entry)
                 ? []
-                : SafeModels(entry).Where(model => model.Type == type).ToList();
+                : SafeAllModels(entry).Where(model => model.Type == type).ToList();
         }
         var models = new List<ModelSpec>();
         foreach (var entry in _providers.Values)
         {
-            models.AddRange(SafeModels(entry).Where(model => model.Type == type));
+            models.AddRange(SafeAllModels(entry).Where(model => model.Type == type));
         }
         return models;
     }

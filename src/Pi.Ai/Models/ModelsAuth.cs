@@ -20,6 +20,9 @@ public sealed record ModelsAuthOverrides
 
     public IReadOnlyDictionary<string, string>? Env { get; init; }
 
+    /// <summary>要求的 OAuth 令牌剩余有效期；缺省五分钟。</summary>
+    public long? MinOAuthValidityMs { get; init; }
+
     public CancellationToken Signal { get; init; }
 }
 
@@ -460,6 +463,7 @@ public sealed partial class Models
             {
                 ApiKey = overrides?.ApiKey,
                 Env = overrides?.Env,
+                MinOAuthValidityMs = overrides?.MinOAuthValidityMs,
                 Signal = effectiveSignal,
             },
             effectiveSignal).ConfigureAwait(false);
