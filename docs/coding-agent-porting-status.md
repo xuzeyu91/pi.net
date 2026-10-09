@@ -28,7 +28,7 @@
 | 子阶段 | 范围 | 行数 | 状态 |
 |---|---|---:|---|
 | **4a** | `src/utils/*`（37 文件）+ 无依赖的根级模块（`config.ts` / `migrations.ts` / `core/defaults.ts` 等） | ~4,500 | ✅ utils 36/36 + `config.ts` 完成（2026-10-09） |
-| **4b** | 配置 / 信任 / 模型层：settings-manager、trust-manager、project-trust、auth-storage、model-config/registry/resolver、models-store、radius、virtual-models、mcp-servers、keybindings | 6,844（实测） | 🚧 14/16 文件（5,817 行）完成；余 model-registry / model-resolver（1,027 行） |
+| **4b** | 配置 / 信任 / 模型层：settings-manager、trust-manager、project-trust、auth-storage、model-config/registry/resolver、models-store、radius、virtual-models、mcp-servers、keybindings | 6,844（实测） | 🚧 15/16 文件（6,061 行）完成；余 model-resolver（783 行） |
 | **4c** | 工具系统：`core/tools/*` + `core/tools/renderers/*` | ~9,000 | ⏳ |
 | **4d** | 扩展系统：`core/extensions/*`（types / runner / loader）+ `extensions/*`（codemode / llama / mcp / tool-search） | ~12,000 | ⏳ |
 | **4e** | 会话与资源：agent-session、session-manager、resource-loader、package-manager、compaction、export-html、system-prompt、telemetry、sdk | ~20,000 | ⏳ |
@@ -104,7 +104,7 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 
 ## 4b 进度（配置 / 信任 / 模型层）
 
-### ✅ 已完成（14/16 文件，5,817 行）
+### ✅ 已完成（15/16 文件，6,061 行）
 
 | TS 文件 | 行数 | .NET | 说明 |
 |---|---:|---|---|
@@ -122,13 +122,13 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 | `core/remote-catalog-provider.ts` | 158 | `Core/RemoteCatalogProvider.cs` | 给静态内置 provider 叠加持久化的 pi.dev 目录：三态目录体（数组 / `{models:[]}` / 对象 map）、新鲜度窗口、ETag 条件请求、404/501 与瞬时失败的差异化持久化策略。TS 用对象展开包装 provider，C# 显式转发全部成员并实现 `IImagesProvider` / `IClassifierProvider`（差异 C48）。 |
 | `core/provider-composer.ts` | 732 | `Core/ProviderComposer.cs`（1,213）+ `Core/ProviderConfig.cs`（190） | 组合内置 / `models.json` / 扩展三层，产出不读凭据的 `IProvider`。公开面：`ComposeModelProvider`、`ValidateExtensionProvider`、`ResolveConfiguredModelHeaders`、`ResolveCompatibilityRequestConfig`、`ConfiguredRequestAuthStatus`、`ClearApiKeyCache`；类型面：`ProviderModelConfig`（抽象基类 + chat/image/classifier 三态）、`ProviderConfigInput`、`ExtensionOAuthConfig`、`AuthStatus` / `AuthStatusSource`。差异 C50–C56。 |
 | `core/model-runtime.ts` | 1,032 | `Core/ModelRuntime.cs`（约 1,180） | 配置 pi-ai `Models` 集合、组合 provider（内置 → `models.json` → 扩展 → 虚拟模型）、维护可用性快照、串行化凭据操作、虚拟模型路由与错误上报。`Models` 在 C# 是 sealed class（非接口），故改为**组合**一个 `Models` 实例而非继承（差异 C57）；其余差异 C58–C61。 |
+| `core/model-registry.ts` | 244 | `Core/ModelRegistry.cs`（约 300）+ `ResolvedRequestAuth` | 面向扩展的**同步兼容门面**：全部成员转发到 `ModelRuntime`，自身不持状态。手写部分只有两处——目录访问器返回副本（对齐 TS 的展开），以及 `getApiKeyAndHeaders` 的四条分支（已配置认证 / 未配置时回落到兼容头 / `authHeader` 缺 key 报错 / 把组合器抛出的 `authHeader requires a resolved API key` 翻译成用户可见文案）。差异 C62–C65。 |
 | 根级 `migrations.ts` | 315 | `Migrations.cs` | 启动时一次性迁移（auth → auth.json、会话目录、commands → prompts、keybindings、tools → bin、扩展系统）。TS 归 4a 的「根级模块」，随 4b 一并收口。差异 C42。 |
 
-### ⏳ 未移植（2 文件，1,027 行）
+### ⏳ 未移植（1 文件，783 行）
 
 | TS 文件 | 行数 | 阻塞点 |
 |---|---:|---|
-| `core/model-registry.ts` | 244 | `ModelRuntime` 的同步兼容门面，依赖 `model-runtime.ts`（**已完成**）。 |
 | `core/model-resolver.ts` | 783 | 需 `minimatch` 等价物与 `isValidThinkingLevel`；后者所在 `cli/args.ts` 属 4g。 |
 
 ### Pi.Ai 侧补齐（4b 的运行时依赖）
@@ -153,6 +153,8 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 `tests/Pi.CodingAgent.Tests/CoreProviderComposerTests.cs`（39 项）：TS 侧 `provider-composer` 的辅助函数全部未导出，没有可复刻的参考用例，因此断言针对 `ComposeModelProvider` 的**端到端可观察行为**——五层叠加顺序（内置 → models.json baseUrl/compat → 自定义模型 upsert → 扩展整体替换 → OAuth `modifyModels`（chat-only）→ 顶层 `modelOverrides`）、`streamSimple` 的 api 分流与 `getApiProvider` 回退（含未注册 api 的 error 终态）、`refreshModels` 的**条件存在性**与「先校验再发布」、取消时跳过发布、图片/分类的「扩展 → base → error 结果」优先序、api-key/OAuth 组合与 `authHeader` 约束、三层请求头合并、`configuredRequestAuthStatus` 的六种来源、以及全部结构性错误文案。
 
 `tests/Pi.CodingAgent.Tests/CoreModelRuntimeTests.cs`（62 项）：`model-runtime.ts` 未导出任何辅助函数，同样只能做端到端断言。覆盖 `CreateAsync` 的门面（42 个内置 provider、`models.json` 加载、`PI_OFFLINE` 的**存在性**语义）、注册/重注册/反注册（native ↔ extension 互斥、`RegisterProvider` 的逐字段合并、校验先于写入）、虚拟模型（空 id、与物理模型冲突、纯虚拟 provider 立即 configured、注销）、`GetProviderAuthStatus` 的五级回退（runtime → stored → models.json → environment → 未配置）、`IsUsingOAuth` / `IsUsingSubscription`、`GetAuthAsync(providerId)` / `GetAuthAsync(model)` 的模型头合并、`StreamSimple` 的认证合并（头名大小写不敏感）/ `transformHeaders`（并在请求前摘除该选项）/ `baseUrl` 覆盖 / `apiKey` 优先、分派与三类错误终态、延后能力报错、图片/分类的认证边界与 error 结果、虚拟路由（`maxTokens` 封顶、无上限时保留调用方预算、跨 provider 丢凭据 / 同 provider 透传、三类路由错误、`Previous` / `Failed` 上报）、`RefreshAsync` 的错误收集 / 取消 / 配置重载 / 组合错误消除、凭据串行化与 `CredentialSynchronizationError` 包装、`LoginAsync` / `LogoutAsync`，以及各访问器。
+
+`tests/Pi.CodingAgent.Tests/CoreModelRegistryTests.cs`（29 项）：`ModelRegistry` 是纯转发门面，故断言分两半——每个成员是否落到同一个 `ModelRuntime` 入口，以及手写部分是否守住 TS 的控制流。覆盖目录访问器返回**副本**（`GetAll` / `GetAvailable` 不与运行时共享列表实例）、`Find` / `FindOfType` / `GetModelsOfType` / `GetModelOfType` / `GetAvailableOfTypeAsync` 的类别与凭据过滤（含 `Find` 只达 chat 模型、非 chat 类型必须走 `FindOfType` 这条 TS 语义）、`HasConfiguredAuth` / `GetProviderAuthStatus` / `GetProviderDisplayName`（未知 provider 回落成 id）/ `IsUsingOAuth`、`GetApiKeyAndHeadersAsync` 的四条分支（已配置认证含 headers；**空串 baseUrl 视作缺席**；未配置时回落到兼容头；`authHeader` 缺 key 报 `No API key found for "p"`；组合器抛出的 `authHeader requires a resolved API key` 被翻译成同一文案；其他失败保留 cause 原文）、`GetProviderAuthAsync` / `GetApiKeyForProviderAsync`（失败与未知 provider 都吞成 null）、两类 provider 与虚拟模型的注册/注销与可见性（含虚拟模型**不**进 `GetRegisteredProviderIds`）、`RefreshAsync` 重载 `models.json`、`GetError` 暴露组合错误、以及 `Stream` / `StreamSimple` / `CompleteAsync` / `ClassifyAsync` / `GenerateImagesAsync` 的分派。
 
 > **本轮测试发现并修复的真实缺陷**：`Models.GetModelsOfType` 用的是 chat-only 的 `SafeModels`，而 TS 是 `getAllModels(provider).filter(isModelType)`。后果是 image / classifier 模型一律取不到（`classifier` 更糟——`getModels` 的默认实现会过滤掉非 chat 模型）。已按 TS 修正（改为遍历 `SafeAllModels`），`Pi.Ai.Tests` 全量 286 项仍全绿。顺带记一笔：既有用例 `GetModelsOfTypeFiltersByType` 用的替身同时实现了 `GetModels()` 与 `GetAllModels()`，而 TS 的默认 `getAllModels` 会把后者退回成前者，因此该用例本身与 TS 不符——本移植按 TS 收紧后它仍然通过，属「假阴性恰好被修正的语义掩盖」，无需改动。
 
@@ -196,7 +198,7 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 | C30 | **`ModelImageResizeOptions` 是 Pi.Ai 的名义类型，与 coding-agent 的 `ImageResizeOptions` 结构相同但语义独立** | TS 靠结构类型把模型档案直接传进 `processImage`；C# 在 `ToolResultImages` 里显式字段映射桥接，两个类型都保留（模型目录下发档位 vs 通用默认，后续 4b/4c 消费）。`types.ts` 的 `ModelInputLimits` / `ModelImageInputLimits` / `BaseModel.inputLimits` 一并补进 Pi.Ai（此前无消费者）。 |
 | C31 | **C# 原生剪贴板接口把 TS 的 `undefined`/`null` 折叠成 `null`** | pi-tui TS 的 `getImage()` 三态（undefined=不可用、null=无图像、数组=有图像）；C# `INativeClipboard.GetImageAsync()` 的契约是 null=不可用、空数组=无图像。`ClipboardImageApi` 的 `ImageProbe` 保留三态语义：null→继续回退、空→停止。原生剪贴板恒为最后一站，折叠不可观察；命令行后端的三态照原样保留（Wayland 空剪贴板不得回退到陈旧 X11 内容）。 |
 
-### 4b 阶段差异（C32–C61）
+### 4b 阶段差异（C32–C65）
 
 > 编号说明：C33–C36 是 4b 期间预留但最终未使用的空号（相关结论并入了 C37 与 C39），此处不跳号补位以免与代码注释失配。
 
@@ -228,6 +230,10 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 | C59 | **`modelsPath` 的「未设置 / 显式 null」两态由 `ModelsPathDisabled` 承载** | TS 的 `createModelRuntime({ modelsPath })` 区分「未传」（用默认 `~/.pi/models.json`）与「显式 `null`」（完全不读文件），而 C# 的 `string?` 只有一个空值。故 `CreateModelRuntimeOptions` 拆成 `ModelsPath` + `ModelsPathDisabled` 两个成员。 |
 | C60 | **`refresh()` 不需要「旧版发布包返回 undefined」的兜底** | TS 对某些旧版 `Models` 实现的 `refresh()` 可能拿到 `undefined`，故有 `?? {…}` 兜底；C# 的 `Models.RefreshAsync` 恒返回 `ModelsRefreshResult`，该分支不存在。 |
 | C61 | **图片/分类请求同样解析认证并应用 `transformHeaders`** | 与 TS 一致（`generateImages` / `classify` 走同一个 `prepareRequest`），但这与 C# 既有 `Models.GenerateImagesAsync` / `Models.ClassifyAsync` 的「不解析认证」行为不同——`ModelRuntime` 才是图片/分类的认证边界，`Models` 那一层保持原样。 |
+| C62 | **`ModelTypeMap[TType]` / `Api` 泛型参数折叠为 `ModelSpec` / `ModelType`** | TS 的 `findOfType<TType>` / `getModelsOfType<TType>` / `getModelOfType<TType>` 靠 `ModelTypeMap[TType]` 把类别映射到 `Model`/`ImageModel`/`ClassifierModel`，`stream<TApi>` / `complete<TApi>` 靠 `Api` 约束选项类型。C# 的目录是单一具名记录 `ModelSpec`（`Type` 字段承载类别），故泛型参数消失、选项统一为 `IReadOnlyDictionary<string, object?>`。 |
+| C63 | **`registerProvider(name)` 的运行时守卫变为编译期约束** | TS 声明 `registerProvider(provider)` / `registerProvider(name, config)` 两个重载，实现体收 `config?` 并在缺省时抛 `Provider config is required when registering by name`。C# 的两个重载直接让 `config` 非空，该错误不可能发生，守卫随之删除。 |
+| C64 | **`ResolvedRequestAuth` 由两条成员联合改为两个子记录** | 本仓判别联合的既有惯例（见 `ProcessImageResult`）。另有一处 JS 真值语义：TS 用 `...(baseUrl ? { baseUrl } : {})` 展开，故**空串也算「无 baseUrl」**；C# 用 `string.IsNullOrEmpty` 判定后存 `null`。 |
+| C65 | **`AuthOperationOptions` 展开为末尾的 `CancellationToken`** | `getAvailableOfType` 的 `{ signal }` 变成末位可选 token；`stream` / `complete` 额外多出可选 token（TS 把 signal 放在选项里）。另：`getApiKeyForProvider` 的裸 `catch {}` 按原样保留——**取消也被吞成「无 key」**，与 TS 一致而非 .NET 惯例。 |
 
 ## 差分验证（utils 层）
 
