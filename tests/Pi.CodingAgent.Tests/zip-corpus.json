@@ -1,0 +1,850 @@
+{
+  "fixedLocal": "2024-03-15T14:23:47",
+  "dosDateTime": {
+    "time": 29431,
+    "day": 22639
+  },
+  "archives": [
+    {
+      "label": "single small text entry",
+      "entries": [
+        {
+          "name": "hello.txt",
+          "text": "hello world\n"
+        }
+      ],
+      "entryCount": 1,
+      "centralDirectorySize": 55,
+      "locals": [
+        {
+          "version": 20,
+          "flags": 2048,
+          "method": 8,
+          "time": 29431,
+          "day": 22639,
+          "crc": 2936552237,
+          "compressedSize": 14,
+          "uncompressedSize": 12,
+          "nameLength": 9,
+          "extraLength": 0,
+          "name": "hello.txt",
+          "contentBase64": "aGVsbG8gd29ybGQK"
+        }
+      ],
+      "centrals": [
+        {
+          "versionMadeBy": 20,
+          "versionNeeded": 20,
+          "flags": 2048,
+          "method": 8,
+          "time": 29431,
+          "day": 22639,
+          "crc": 2936552237,
+          "compressedSize": 14,
+          "uncompressedSize": 12,
+          "nameLength": 9,
+          "extraLength": 0,
+          "commentLength": 0,
+          "diskStart": 0,
+          "internalAttributes": 0,
+          "externalAttributes": 0,
+          "localOffset": 0,
+          "name": "hello.txt"
+        }
+      ],
+      "eocd": {
+        "diskNumber": 0,
+        "centralDirectoryDisk": 0,
+        "entriesOnDisk": 1,
+        "totalEntries": 1,
+        "centralDirectorySize": 55,
+        "centralDirectoryOffset": 53,
+        "commentLength": 0
+      },
+      "archiveBase64": "UEsDBBQAAAgIAPdyb1gtOwivDgAAAAwAAAAJAAAAaGVsbG8udHh0y0jNyclXKM8vyknhAgBQSwECFAAUAAAICAD3cm9YLTsIrw4AAAAMAAAACQAAAAAAAAAAAAAAAAAAAAAAaGVsbG8udHh0UEsFBgAAAAABAAEANwAAADUAAAAAAA=="
+    },
+    {
+      "label": "bug-report shape (json + jsonl + markdown)",
+      "entries": [
+        {
+          "name": "report.json",
+          "text": "{\n  \"id\": \"abc\",\n  \"kind\": \"bug\"\n}\n"
+        },
+        {
+          "name": "diagnostics.json",
+          "text": "{\n  \"platform\": \"win32\"\n}\n"
+        },
+        {
+          "name": "session.jsonl",
+          "text": "{\"type\":\"user\"}\n{\"type\":\"assistant\"}\n"
+        },
+        {
+          "name": "summary.md",
+          "text": "# Summary\n\nSomething broke.\n"
+        }
+      ],
+      "entryCount": 4,
+      "centralDirectorySize": 234,
+      "locals": [
+        {
+          "version": 20,
+          "flags": 2048,
+          "method": 8,
+          "time": 29431,
+          "day": 22639,
+          "crc": 3957197513,
+          "compressedSize": 31,
+          "uncompressedSize": 35,
+          "nameLength": 11,
+          "extraLength": 0,
+          "name": "report.json",
+          "contentBase64": "ewogICJpZCI6ICJhYmMiLAogICJraW5kIjogImJ1ZyIKfQo="
+        },
+        {
+          "version": 20,
+          "flags": 2048,
+          "method": 8,
+          "time": 29431,
+          "day": 22639,
+          "crc": 394810060,
+          "compressedSize": 28,
+          "uncompressedSize": 26,
+          "nameLength": 16,
+          "extraLength": 0,
+          "name": "diagnostics.json",
+          "contentBase64": "ewogICJwbGF0Zm9ybSI6ICJ3aW4zMiIKfQo="
+        },
+        {
+          "version": 20,
+          "flags": 2048,
+          "method": 8,
+          "time": 29431,
+          "day": 22639,
+          "crc": 1618679876,
+          "compressedSize": 32,
+          "uncompressedSize": 37,
+          "nameLength": 13,
+          "extraLength": 0,
+          "name": "session.jsonl",
+          "contentBase64": "eyJ0eXBlIjoidXNlciJ9CnsidHlwZSI6ImFzc2lzdGFudCJ9Cg=="
+        },
+        {
+          "version": 20,
+          "flags": 2048,
+          "method": 8,
+          "time": 29431,
+          "day": 22639,
+          "crc": 1198942601,
+          "compressedSize": 30,
+          "uncompressedSize": 28,
+          "nameLength": 10,
+          "extraLength": 0,
+          "name": "summary.md",
+          "contentBase64": "IyBTdW1tYXJ5CgpTb21ldGhpbmcgYnJva2UuCg=="
+        }
+      ],
+      "centrals": [
+        {
+          "versionMadeBy": 20,
+          "versionNeeded": 20,
+          "flags": 2048,
+          "method": 8,
+          "time": 29431,
+          "day": 22639,
+          "crc": 3957197513,
+          "compressedSize": 31,
+          "uncompressedSize": 35,
+          "nameLength": 11,
+          "extraLength": 0,
+          "commentLength": 0,
+          "diskStart": 0,
+          "internalAttributes": 0,
+          "externalAttributes": 0,
+          "localOffset": 0,
+          "name": "report.json"
+        },
+        {
+          "versionMadeBy": 20,
+          "versionNeeded": 20,
+          "flags": 2048,
+          "method": 8,
+          "time": 29431,
+          "day": 22639,
+          "crc": 394810060,
+          "compressedSize": 28,
+          "uncompressedSize": 26,
+          "nameLength": 16,
+          "extraLength": 0,
+          "commentLength": 0,
+          "diskStart": 0,
+          "internalAttributes": 0,
+          "externalAttributes": 0,
+          "localOffset": 72,
+          "name": "diagnostics.json"
+        },
+        {
+          "versionMadeBy": 20,
+          "versionNeeded": 20,
+          "flags": 2048,
+          "method": 8,
+          "time": 29431,
+          "day": 22639,
+          "crc": 1618679876,
+          "compressedSize": 32,
+          "uncompressedSize": 37,
+          "nameLength": 13,
+          "extraLength": 0,
+          "commentLength": 0,
+          "diskStart": 0,
+          "internalAttributes": 0,
+          "externalAttributes": 0,
+          "localOffset": 146,
+          "name": "session.jsonl"
+        },
+        {
+          "versionMadeBy": 20,
+          "versionNeeded": 20,
+          "flags": 2048,
+          "method": 8,
+          "time": 29431,
+          "day": 22639,
+          "crc": 1198942601,
+          "compressedSize": 30,
+          "uncompressedSize": 28,
+          "nameLength": 10,
+          "extraLength": 0,
+          "commentLength": 0,
+          "diskStart": 0,
+          "internalAttributes": 0,
+          "externalAttributes": 0,
+          "localOffset": 221,
+          "name": "summary.md"
+        }
+      ],
+      "eocd": {
+        "diskNumber": 0,
+        "centralDirectoryDisk": 0,
+        "entriesOnDisk": 4,
+        "totalEntries": 4,
+        "centralDirectorySize": 234,
+        "centralDirectoryOffset": 291,
+        "commentLength": 0
+      },
+      "archiveBase64": "UEsDBBQAAAgIAPdyb1jJCt7rHwAAACMAAAALAAAAcmVwb3J0Lmpzb26r5lJQUMpMUbJSUEpMSlbSAXGzM/PAAkml6UpctVwAUEsDBBQAAAgIAPdyb1jMUogXHAAAABoAAAAQAAAAZGlhZ25vc3RpY3MuanNvbqvmUlBQKshJLEnLL8pVslJQKs/MMzZS4qrlAgBQSwMEFAAACAgA93JvWEQYe2AgAAAAJQAAAA0AAABzZXNzaW9uLmpzb25sq1YqqSxIVbJSKi1OLVKq5aqG8ROLizOLSxLzSpRquQBQSwMEFAAACAgA93JvWIlpdkceAAAAHAAAAAoAAABzdW1tYXJ5Lm1kU1YILs3NTSyq5OIKzs9NLcnIzEtXSCrKz07V4wIAUEsBAhQAFAAACAgA93JvWMkK3usfAAAAIwAAAAsAAAAAAAAAAAAAAAAAAAAAAHJlcG9ydC5qc29uUEsBAhQAFAAACAgA93JvWMxSiBccAAAAGgAAABAAAAAAAAAAAAAAAAAASAAAAGRpYWdub3N0aWNzLmpzb25QSwECFAAUAAAICAD3cm9YRBh7YCAAAAAlAAAADQAAAAAAAAAAAAAAAACSAAAAc2Vzc2lvbi5qc29ubFBLAQIUABQAAAgIAPdyb1iJaXZHHgAAABwAAAAKAAAAAAAAAAAAAAAAAN0AAABzdW1tYXJ5Lm1kUEsFBgAAAAAEAAQA6gAAACMBAAAAAA=="
+    },
+    {
+      "label": "no entries",
+      "entries": [],
+      "entryCount": 0,
+      "centralDirectorySize": 0,
+      "locals": [],
+      "centrals": [],
+      "eocd": {
+        "diskNumber": 0,
+        "centralDirectoryDisk": 0,
+        "entriesOnDisk": 0,
+        "totalEntries": 0,
+        "centralDirectorySize": 0,
+        "centralDirectoryOffset": 0,
+        "commentLength": 0
+      },
+      "archiveBase64": "UEsFBgAAAAAAAAAAAAAAAAAAAAAAAA=="
+    },
+    {
+      "label": "single empty entry",
+      "entries": [
+        {
+          "name": "empty.txt",
+          "text": ""
+        }
+      ],
+      "entryCount": 1,
+      "centralDirectorySize": 55,
+      "locals": [
+        {
+          "version": 20,
+          "flags": 2048,
+          "method": 8,
+          "time": 29431,
+          "day": 22639,
+          "crc": 0,
+          "compressedSize": 2,
+          "uncompressedSize": 0,
+          "nameLength": 9,
+          "extraLength": 0,
+          "name": "empty.txt",
+          "contentBase64": ""
+        }
+      ],
+      "centrals": [
+        {
+          "versionMadeBy": 20,
+          "versionNeeded": 20,
+          "flags": 2048,
+          "method": 8,
+          "time": 29431,
+          "day": 22639,
+          "crc": 0,
+          "compressedSize": 2,
+          "uncompressedSize": 0,
+          "nameLength": 9,
+          "extraLength": 0,
+          "commentLength": 0,
+          "diskStart": 0,
+          "internalAttributes": 0,
+          "externalAttributes": 0,
+          "localOffset": 0,
+          "name": "empty.txt"
+        }
+      ],
+      "eocd": {
+        "diskNumber": 0,
+        "centralDirectoryDisk": 0,
+        "entriesOnDisk": 1,
+        "totalEntries": 1,
+        "centralDirectorySize": 55,
+        "centralDirectoryOffset": 41,
+        "commentLength": 0
+      },
+      "archiveBase64": "UEsDBBQAAAgIAPdyb1gAAAAAAgAAAAAAAAAJAAAAZW1wdHkudHh0AwBQSwECFAAUAAAICAD3cm9YAAAAAAIAAAAAAAAACQAAAAAAAAAAAAAAAAAAAAAAZW1wdHkudHh0UEsFBgAAAAABAAEANwAAACkAAAAAAA=="
+    },
+    {
+      "label": "empty and non-empty mixed",
+      "entries": [
+        {
+          "name": "a.txt",
+          "text": ""
+        },
+        {
+          "name": "b.txt",
+          "text": "b"
+        }
+      ],
+      "entryCount": 2,
+      "centralDirectorySize": 102,
+      "locals": [
+        {
+          "version": 20,
+          "flags": 2048,
+          "method": 8,
+          "time": 29431,
+          "day": 22639,
+          "crc": 0,
+          "compressedSize": 2,
+          "uncompressedSize": 0,
+          "nameLength": 5,
+          "extraLength": 0,
+          "name": "a.txt",
+          "contentBase64": ""
+        },
+        {
+          "version": 20,
+          "flags": 2048,
+          "method": 8,
+          "time": 29431,
+          "day": 22639,
+          "crc": 1908338681,
+          "compressedSize": 3,
+          "uncompressedSize": 1,
+          "nameLength": 5,
+          "extraLength": 0,
+          "name": "b.txt",
+          "contentBase64": "Yg=="
+        }
+      ],
+      "centrals": [
+        {
+          "versionMadeBy": 20,
+          "versionNeeded": 20,
+          "flags": 2048,
+          "method": 8,
+          "time": 29431,
+          "day": 22639,
+          "crc": 0,
+          "compressedSize": 2,
+          "uncompressedSize": 0,
+          "nameLength": 5,
+          "extraLength": 0,
+          "commentLength": 0,
+          "diskStart": 0,
+          "internalAttributes": 0,
+          "externalAttributes": 0,
+          "localOffset": 0,
+          "name": "a.txt"
+        },
+        {
+          "versionMadeBy": 20,
+          "versionNeeded": 20,
+          "flags": 2048,
+          "method": 8,
+          "time": 29431,
+          "day": 22639,
+          "crc": 1908338681,
+          "compressedSize": 3,
+          "uncompressedSize": 1,
+          "nameLength": 5,
+          "extraLength": 0,
+          "commentLength": 0,
+          "diskStart": 0,
+          "internalAttributes": 0,
+          "externalAttributes": 0,
+          "localOffset": 37,
+          "name": "b.txt"
+        }
+      ],
+      "eocd": {
+        "diskNumber": 0,
+        "centralDirectoryDisk": 0,
+        "entriesOnDisk": 2,
+        "totalEntries": 2,
+        "centralDirectorySize": 102,
+        "centralDirectoryOffset": 75,
+        "commentLength": 0
+      },
+      "archiveBase64": "UEsDBBQAAAgIAPdyb1gAAAAAAgAAAAAAAAAFAAAAYS50eHQDAFBLAwQUAAAICAD3cm9Y+e++cQMAAAABAAAABQAAAGIudHh0SwIAUEsBAhQAFAAACAgA93JvWAAAAAACAAAAAAAAAAUAAAAAAAAAAAAAAAAAAAAAAGEudHh0UEsBAhQAFAAACAgA93JvWPnvvnEDAAAAAQAAAAUAAAAAAAAAAAAAAAAAJQAAAGIudHh0UEsFBgAAAAACAAIAZgAAAEsAAAAAAA=="
+    },
+    {
+      "label": "binary data with high bytes",
+      "entries": [
+        {
+          "name": "blob.bin",
+          "base64": "AAF/gP/+AEFC"
+        }
+      ],
+      "entryCount": 1,
+      "centralDirectorySize": 54,
+      "locals": [
+        {
+          "version": 20,
+          "flags": 2048,
+          "method": 8,
+          "time": 29431,
+          "day": 22639,
+          "crc": 4083046602,
+          "compressedSize": 11,
+          "uncompressedSize": 9,
+          "nameLength": 8,
+          "extraLength": 0,
+          "name": "blob.bin",
+          "contentBase64": "AAF/gP/+AEFC"
+        }
+      ],
+      "centrals": [
+        {
+          "versionMadeBy": 20,
+          "versionNeeded": 20,
+          "flags": 2048,
+          "method": 8,
+          "time": 29431,
+          "day": 22639,
+          "crc": 4083046602,
+          "compressedSize": 11,
+          "uncompressedSize": 9,
+          "nameLength": 8,
+          "extraLength": 0,
+          "commentLength": 0,
+          "diskStart": 0,
+          "internalAttributes": 0,
+          "externalAttributes": 0,
+          "localOffset": 0,
+          "name": "blob.bin"
+        }
+      ],
+      "eocd": {
+        "diskNumber": 0,
+        "centralDirectoryDisk": 0,
+        "entriesOnDisk": 1,
+        "totalEntries": 1,
+        "centralDirectorySize": 54,
+        "centralDirectoryOffset": 49,
+        "commentLength": 0
+      },
+      "archiveBase64": "UEsDBBQAAAgIAPdyb1jKWF7zCwAAAAkAAAAIAAAAYmxvYi5iaW5jYKxv+P+PwdEJAFBLAQIUABQAAAgIAPdyb1jKWF7zCwAAAAkAAAAIAAAAAAAAAAAAAAAAAAAAAABibG9iLmJpblBLBQYAAAAAAQABADYAAAAxAAAAAAA="
+    },
+    {
+      "label": "incompressible-ish 1000 bytes",
+      "entries": [
+        {
+          "name": "a.txt",
+          "text": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        }
+      ],
+      "entryCount": 1,
+      "centralDirectorySize": 51,
+      "locals": [
+        {
+          "version": 20,
+          "flags": 2048,
+          "method": 8,
+          "time": 29431,
+          "day": 22639,
+          "crc": 1369452033,
+          "compressedSize": 11,
+          "uncompressedSize": 1000,
+          "nameLength": 5,
+          "extraLength": 0,
+          "name": "a.txt",
+          "contentBase64": "QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQQ=="
+        }
+      ],
+      "centrals": [
+        {
+          "versionMadeBy": 20,
+          "versionNeeded": 20,
+          "flags": 2048,
+          "method": 8,
+          "time": 29431,
+          "day": 22639,
+          "crc": 1369452033,
+          "compressedSize": 11,
+          "uncompressedSize": 1000,
+          "nameLength": 5,
+          "extraLength": 0,
+          "commentLength": 0,
+          "diskStart": 0,
+          "internalAttributes": 0,
+          "externalAttributes": 0,
+          "localOffset": 0,
+          "name": "a.txt"
+        }
+      ],
+      "eocd": {
+        "diskNumber": 0,
+        "centralDirectoryDisk": 0,
+        "entriesOnDisk": 1,
+        "totalEntries": 1,
+        "centralDirectorySize": 51,
+        "centralDirectoryOffset": 46,
+        "commentLength": 0
+      },
+      "archiveBase64": "UEsDBBQAAAgIAPdyb1gBLqBRCwAAAOgDAAAFAAAAYS50eHRzdBwFo2AUDHcAAFBLAQIUABQAAAgIAPdyb1gBLqBRCwAAAOgDAAAFAAAAAAAAAAAAAAAAAAAAAABhLnR4dFBLBQYAAAAAAQABADMAAAAuAAAAAAA="
+    },
+    {
+      "label": "compressible 4096 bytes",
+      "entries": [
+        {
+          "name": "big.txt",
+          "text": "line\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\nline\n"
+        }
+      ],
+      "entryCount": 1,
+      "centralDirectorySize": 53,
+      "locals": [
+        {
+          "version": 20,
+          "flags": 2048,
+          "method": 8,
+          "time": 29431,
+          "day": 22639,
+          "crc": 2903783233,
+          "compressedSize": 30,
+          "uncompressedSize": 4095,
+          "nameLength": 7,
+          "extraLength": 0,
+          "name": "big.txt",
+          "contentBase64": "bGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUKbGluZQpsaW5lCmxpbmUK"
+        }
+      ],
+      "centrals": [
+        {
+          "versionMadeBy": 20,
+          "versionNeeded": 20,
+          "flags": 2048,
+          "method": 8,
+          "time": 29431,
+          "day": 22639,
+          "crc": 2903783233,
+          "compressedSize": 30,
+          "uncompressedSize": 4095,
+          "nameLength": 7,
+          "extraLength": 0,
+          "commentLength": 0,
+          "diskStart": 0,
+          "internalAttributes": 0,
+          "externalAttributes": 0,
+          "localOffset": 0,
+          "name": "big.txt"
+        }
+      ],
+      "eocd": {
+        "diskNumber": 0,
+        "centralDirectoryDisk": 0,
+        "entriesOnDisk": 1,
+        "totalEntries": 1,
+        "centralDirectorySize": 53,
+        "centralDirectoryOffset": 67,
+        "commentLength": 0
+      },
+      "archiveBase64": "UEsDBBQAAAgIAPdyb1hBNxStHgAAAP8PAAAHAAAAYmlnLnR4dO3EoQ0AAAgDMM+fCJKF/yV/kFY0s12RJEmSJEmPO1BLAQIUABQAAAgIAPdyb1hBNxStHgAAAP8PAAAHAAAAAAAAAAAAAAAAAAAAAABiaWcudHh0UEsFBgAAAAABAAEANQAAAEMAAAAAAA=="
+    },
+    {
+      "label": "utf-8 file name",
+      "entries": [
+        {
+          "name": "报告-📄.md",
+          "text": "内容\n"
+        }
+      ],
+      "entryCount": 1,
+      "centralDirectorySize": 60,
+      "locals": [
+        {
+          "version": 20,
+          "flags": 2048,
+          "method": 8,
+          "time": 29431,
+          "day": 22639,
+          "crc": 2593039206,
+          "compressedSize": 9,
+          "uncompressedSize": 7,
+          "nameLength": 14,
+          "extraLength": 0,
+          "name": "报告-📄.md",
+          "contentBase64": "5YaF5a65Cg=="
+        }
+      ],
+      "centrals": [
+        {
+          "versionMadeBy": 20,
+          "versionNeeded": 20,
+          "flags": 2048,
+          "method": 8,
+          "time": 29431,
+          "day": 22639,
+          "crc": 2593039206,
+          "compressedSize": 9,
+          "uncompressedSize": 7,
+          "nameLength": 14,
+          "extraLength": 0,
+          "commentLength": 0,
+          "diskStart": 0,
+          "internalAttributes": 0,
+          "externalAttributes": 0,
+          "localOffset": 0,
+          "name": "报告-📄.md"
+        }
+      ],
+      "eocd": {
+        "diskNumber": 0,
+        "centralDirectoryDisk": 0,
+        "entriesOnDisk": 1,
+        "totalEntries": 1,
+        "centralDirectorySize": 60,
+        "centralDirectoryOffset": 53,
+        "commentLength": 0
+      },
+      "archiveBase64": "UEsDBBQAAAgIAPdyb1hmo46aCQAAAAcAAAAOAAAA5oql5ZGKLfCfk4QubWR72tb6dN1OLgBQSwECFAAUAAAICAD3cm9YZqOOmgkAAAAHAAAADgAAAAAAAAAAAAAAAAAAAAAA5oql5ZGKLfCfk4QubWRQSwUGAAAAAAEAAQA8AAAANQAAAAAA"
+    },
+    {
+      "label": "nested path names",
+      "entries": [
+        {
+          "name": "nested/dir/file.txt",
+          "text": "nested\n"
+        }
+      ],
+      "entryCount": 1,
+      "centralDirectorySize": 65,
+      "locals": [
+        {
+          "version": 20,
+          "flags": 2048,
+          "method": 8,
+          "time": 29431,
+          "day": 22639,
+          "crc": 3953890701,
+          "compressedSize": 9,
+          "uncompressedSize": 7,
+          "nameLength": 19,
+          "extraLength": 0,
+          "name": "nested/dir/file.txt",
+          "contentBase64": "bmVzdGVkCg=="
+        }
+      ],
+      "centrals": [
+        {
+          "versionMadeBy": 20,
+          "versionNeeded": 20,
+          "flags": 2048,
+          "method": 8,
+          "time": 29431,
+          "day": 22639,
+          "crc": 3953890701,
+          "compressedSize": 9,
+          "uncompressedSize": 7,
+          "nameLength": 19,
+          "extraLength": 0,
+          "commentLength": 0,
+          "diskStart": 0,
+          "internalAttributes": 0,
+          "externalAttributes": 0,
+          "localOffset": 0,
+          "name": "nested/dir/file.txt"
+        }
+      ],
+      "eocd": {
+        "diskNumber": 0,
+        "centralDirectoryDisk": 0,
+        "entriesOnDisk": 1,
+        "totalEntries": 1,
+        "centralDirectorySize": 65,
+        "centralDirectoryOffset": 58,
+        "commentLength": 0
+      },
+      "archiveBase64": "UEsDBBQAAAgIAPdyb1iNlavrCQAAAAcAAAATAAAAbmVzdGVkL2Rpci9maWxlLnR4dMtLLS5JTeECAFBLAQIUABQAAAgIAPdyb1iNlavrCQAAAAcAAAATAAAAAAAAAAAAAAAAAAAAAABuZXN0ZWQvZGlyL2ZpbGUudHh0UEsFBgAAAAABAAEAQQAAADoAAAAAAA=="
+    },
+    {
+      "label": "crlf content",
+      "entries": [
+        {
+          "name": "crlf.txt",
+          "text": "a\r\nb\r\n"
+        }
+      ],
+      "entryCount": 1,
+      "centralDirectorySize": 54,
+      "locals": [
+        {
+          "version": 20,
+          "flags": 2048,
+          "method": 8,
+          "time": 29431,
+          "day": 22639,
+          "crc": 4218409364,
+          "compressedSize": 8,
+          "uncompressedSize": 6,
+          "nameLength": 8,
+          "extraLength": 0,
+          "name": "crlf.txt",
+          "contentBase64": "YQ0KYg0K"
+        }
+      ],
+      "centrals": [
+        {
+          "versionMadeBy": 20,
+          "versionNeeded": 20,
+          "flags": 2048,
+          "method": 8,
+          "time": 29431,
+          "day": 22639,
+          "crc": 4218409364,
+          "compressedSize": 8,
+          "uncompressedSize": 6,
+          "nameLength": 8,
+          "extraLength": 0,
+          "commentLength": 0,
+          "diskStart": 0,
+          "internalAttributes": 0,
+          "externalAttributes": 0,
+          "localOffset": 0,
+          "name": "crlf.txt"
+        }
+      ],
+      "eocd": {
+        "diskNumber": 0,
+        "centralDirectoryDisk": 0,
+        "entriesOnDisk": 1,
+        "totalEntries": 1,
+        "centralDirectorySize": 54,
+        "centralDirectoryOffset": 46,
+        "commentLength": 0
+      },
+      "archiveBase64": "UEsDBBQAAAgIAPdyb1iU0W/7CAAAAAYAAAAIAAAAY3JsZi50eHRL5OVK4uUCAFBLAQIUABQAAAgIAPdyb1iU0W/7CAAAAAYAAAAIAAAAAAAAAAAAAAAAAAAAAABjcmxmLnR4dFBLBQYAAAAAAQABADYAAAAuAAAAAAA="
+    },
+    {
+      "label": "duplicate names",
+      "entries": [
+        {
+          "name": "dup.txt",
+          "text": "first"
+        },
+        {
+          "name": "dup.txt",
+          "text": "second"
+        }
+      ],
+      "entryCount": 2,
+      "centralDirectorySize": 106,
+      "locals": [
+        {
+          "version": 20,
+          "flags": 2048,
+          "method": 8,
+          "time": 29431,
+          "day": 22639,
+          "crc": 2456940119,
+          "compressedSize": 7,
+          "uncompressedSize": 5,
+          "nameLength": 7,
+          "extraLength": 0,
+          "name": "dup.txt",
+          "contentBase64": "Zmlyc3Q="
+        },
+        {
+          "version": 20,
+          "flags": 2048,
+          "method": 8,
+          "time": 29431,
+          "day": 22639,
+          "crc": 3055489385,
+          "compressedSize": 8,
+          "uncompressedSize": 6,
+          "nameLength": 7,
+          "extraLength": 0,
+          "name": "dup.txt",
+          "contentBase64": "c2Vjb25k"
+        }
+      ],
+      "centrals": [
+        {
+          "versionMadeBy": 20,
+          "versionNeeded": 20,
+          "flags": 2048,
+          "method": 8,
+          "time": 29431,
+          "day": 22639,
+          "crc": 2456940119,
+          "compressedSize": 7,
+          "uncompressedSize": 5,
+          "nameLength": 7,
+          "extraLength": 0,
+          "commentLength": 0,
+          "diskStart": 0,
+          "internalAttributes": 0,
+          "externalAttributes": 0,
+          "localOffset": 0,
+          "name": "dup.txt"
+        },
+        {
+          "versionMadeBy": 20,
+          "versionNeeded": 20,
+          "flags": 2048,
+          "method": 8,
+          "time": 29431,
+          "day": 22639,
+          "crc": 3055489385,
+          "compressedSize": 8,
+          "uncompressedSize": 6,
+          "nameLength": 7,
+          "extraLength": 0,
+          "commentLength": 0,
+          "diskStart": 0,
+          "internalAttributes": 0,
+          "externalAttributes": 0,
+          "localOffset": 44,
+          "name": "dup.txt"
+        }
+      ],
+      "eocd": {
+        "diskNumber": 0,
+        "centralDirectoryDisk": 0,
+        "entriesOnDisk": 2,
+        "totalEntries": 2,
+        "centralDirectorySize": 106,
+        "centralDirectoryOffset": 89,
+        "commentLength": 0
+      },
+      "archiveBase64": "UEsDBBQAAAgIAPdyb1hX7nGSBwAAAAUAAAAHAAAAZHVwLnR4dEvLLCouAQBQSwMEFAAACAgA93JvWGkRH7YIAAAABgAAAAcAAABkdXAudHh0K05Nzs9LAQBQSwECFAAUAAAICAD3cm9YV+5xkgcAAAAFAAAABwAAAAAAAAAAAAAAAAAAAAAAZHVwLnR4dFBLAQIUABQAAAgIAPdyb1hpER+2CAAAAAYAAAAHAAAAAAAAAAAAAAAAACwAAABkdXAudHh0UEsFBgAAAAACAAIAagAAAFkAAAAAAA=="
+    }
+  ]
+}

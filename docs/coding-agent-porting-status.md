@@ -27,7 +27,7 @@
 
 | 子阶段 | 范围 | 行数 | 状态 |
 |---|---|---:|---|
-| **4a** | `src/utils/*`（37 文件）+ 无依赖的根级模块（`config.ts` / `migrations.ts` / `core/defaults.ts` 等） | ~4,500 | 🚧 进行中（24/36 utils + `config.ts`） |
+| **4a** | `src/utils/*`（37 文件）+ 无依赖的根级模块（`config.ts` / `migrations.ts` / `core/defaults.ts` 等） | ~4,500 | 🚧 进行中（25/36 utils + `config.ts`） |
 | **4b** | 配置 / 信任 / 模型层：settings-manager、trust-manager、project-trust、auth-storage、model-config/registry/resolver、models-store、radius、virtual-models、mcp-servers、keybindings | ~12,000 | ⏳ |
 | **4c** | 工具系统：`core/tools/*` + `core/tools/renderers/*` | ~9,000 | ⏳ |
 | **4d** | 扩展系统：`core/extensions/*`（types / runner / loader）+ `extensions/*`（codemode / llama / mcp / tool-search） | ~12,000 | ⏳ |
@@ -37,7 +37,7 @@
 
 ## 4a 进度（utils 层）
 
-### ✅ 已完成（24/36 个 utils 代码文件 + 根级 `config.ts`）
+### ✅ 已完成（25/36 个 utils 代码文件 + 根级 `config.ts`）
 
 | TS 文件 | 行数 | .NET | 说明 |
 |---|---:|---|---|
@@ -65,6 +65,7 @@
 | `utils/git.ts` | 226 | `Utils/Git.cs` + `Utils/HostedGit.cs` + `Utils/JsUrl.cs` | `splitRef`（scp / 显式协议 / 裸 `host/path` 三态）/ `hasUnsafeGitInstallPart` / `buildGitSource` / `parseGenericGitUrl` / `parseGitUrl`。`HostedGit.cs` 是 `hosted-git-info@8.1.0` 的**识别半边**（`parse-url` + `from-url` + `hosts` 的 `domain`/`protocols`/`extract`），`JsUrl.cs` 是它依赖的 WHATWG `new URL()` 子集（差异 C16–C17） |
 | `utils/tools-manager.ts` | 366 | `Utils/ToolsManager.cs` | `getToolPath` / `getLatestVersion` / `ensureTool`：托管 `fd`/`rg` 的下载、解压（tar.gz / zip）、就位。五处注入缝（`EnvOverride` / `ToolsDirOverride` / `SpawnOverride` / `PlatformOverride` / `ArchOverride`），平台与架构**不经 `ProcessInfo`** 以免扰动 `NodePath`（差异 C19–C20） |
 | `utils/windows-self-update.ts` | 118 | `Utils/WindowsSelfUpdate.cs` | `cleanupQuarantine` / `quarantineNativeDependencies`：把仍被加载的 `.node` 挪进 `.pi-native-quarantine` 再删。加载列表经 `LoadedSharedObjectsOverride` 注入——`process.report.getReport().sharedObjects` 在 .NET 无对应物（差异 C21） |
+| `utils/zip.ts` | 72 | `Utils/Zip.cs` | `writeZipArchive`：手写经典 ZIP（版本 20 / UTF-8 名标志 `0x0800` / 方法 8 / 无数据描述符 / 无扩展字段），供 bug report 打包。压缩流用 `DeflateStream`（裸 RFC 1951），CRC-32 自实现（与 `zlib.crc32` 逐位一致）。`ZipEntry.FromText` / `FromBytes` 对应 TS 的 `string \| Uint8Array` 两态（差异 C22） |
 | `config.ts`（根级） | 656 | `Config.cs` | 安装方式判定、自更新命令拼装、分享链接、资产路径。`ConfigSeams` 集中 9 个注入点 |
 
 C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶段复用）：
@@ -84,16 +85,16 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 
 ### ⏳ 待移植
 
-`utils/` 余下 **12 个文件 / 1,496 行**：
+`utils/` 余下 **11 个文件 / 1,424 行**：
 
 | 分组 | 文件 | 行数 | 备注 |
 |---|---|---:|---|
 | 图像处理 | `clipboard-image.ts`、`exif-orientation.ts`、`image-convert.ts`、`image-process.ts`、`image-resize-core.ts`、`image-resize-worker.ts`、`image-resize.ts`、`photon.ts`、`tool-result-images.ts` | 1,165 | 依赖 `@silvia-odwyer/photon-node`（Rust/wasm）。**需选型**：托管图像库（SkiaSharp / ImageSharp）或注入点外置 |
-| 需第三方库 | `frontmatter.ts`、`syntax-highlight.ts`、`zip.ts` | 331 | 分别依赖 `yaml`、`highlight.js`、归档库；**需选型**。注：`zip.ts` 只用到 `crc32` + `deflateRawSync`，`System.IO.Compression` 足以覆盖，实际选型成本低于另外两个 |
+| 需第三方库 | `frontmatter.ts`、`syntax-highlight.ts` | 259 | 分别依赖 `yaml`、`highlight.js`；**需选型** |
 
 另 `utils/highlight-js.d.ts` 是纯类型声明，无运行时代码，不需要移植。
 
-> 计数口径：上表两行相加 = 1,165 + 331 = **1,496**，与 `wc -l` 实测一致。早前记的「图像处理 1,265」多算了 100 行（导致 1,265+484+331=2,080 与总数 1,980 对不上），本批已按实测更正。
+> 计数口径：上表两行相加 = 1,165 + 259 = **1,424**，与 `wc -l` 实测一致。早前记的「图像处理 1,265」多算了 100 行（导致 1,265+484+331=2,080 与总数 1,980 对不上），本批已按实测更正。
 
 ## 关键设计差异（TS → C#）
 
@@ -120,6 +121,7 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 | C19 | **`ToolsManager` 的平台/架构读本类私有缝，不经 `ProcessInfo`** | 语料要在同一台 Windows 上回放 darwin / linux / win32 × x64 / arm64 的全矩阵，所以平台与架构必须可注入。若把缝挂在 `ProcessInfo` 上，`NodePath`（它按真实宿主平台选 `win32`/`posix` 分支）就会被一起改写，路径答案随即失真——`ToolsManager` 里所有平台判断都走 `Platform` / `Arch` 两个私有属性，`ProcessInfo` 保持只读宿主常量。 |
 | C20 | **`redirect: "manual"` → `FetchRetryOptions.AllowAutoRedirect`** | `getLatestVersion` 读的是 302 的 `Location` 头本身，必须关掉自动跟随。`ManagementHttp` 原来只有一个 `HttpClient`，现拆成 `_client` / `_manualRedirectClient` 两个（`HandlerOverride` 的 setter 同时处置两者），选项默认 `true` 以保持既有调用点行为不变。`Location` 的解析用 `JsUrl.Resolve("https://github.com", location)` 再取 `pathname` 最后一段——与 `new URL(location, "https://github.com")` 一致，相对 `Location` 也能解析。 |
 | C21 | **`process.report.getReport().sharedObjects` 在 .NET 没有对应物** | `windows-self-update.ts` 靠它拿到「当前进程已加载的原生模块」，据此判断哪些 `.node` 仍被占用。.NET 侧的近似物是 `Process.GetCurrentProcess().Modules`，但语义不同（它列的是模块而非 dlopen 的共享对象，且在非 Windows 上不可用）。因此 `DefaultLoadedSharedObjects()` 只在 Windows 上返回模块列表、其他平台返回 `null`，真实判定交给 `LoadedSharedObjectsOverride` 注入——语料用注入值回放全部 8 条向量。另外 `renameSync` 在同卷上是原子改名，落点用 `File.Move(overwrite: true)`。 |
+| C22 | **`Zip` 的压缩字节不逐字节复刻，接受标准改为「结构等价 + 双向互操作」** | Node 的 zlib 与 .NET 的 zlib-ng 在小载荷上**逐字节相同**，在较大载荷上会选出不同的匹配编码——1000 个 `'A'` 时 Node 出 11 字节、.NET 出 12 字节。因此 `compressedSize` 以及由它派生的 `localOffset` / `centralDirectoryOffset` **不能**与 TS 对齐，语料改为：①逐字段比对全部编码无关字段（签名、版本 20、flags `0x0800`、method 8、DOS 时间/日期、CRC-32、**未压缩**长度、名字节、中央目录尺寸、条目数）；②把 `localOffset` 断言成「指向同名局部记录」的**链接关系**而非具体数字；③断言 deflate 往返回原字节；④用 BCL `ZipArchive` 读 Node 写的归档。另外**独立**用 Python `zipfile`（第三方实现，读取时校验 CRC）双向验证了 12 组归档 × 2 侧全部通过，含 UTF-8 名 `报告-📄.md`。副作用：`zip.ts` 原本是「需第三方归档库」的待选型项，实际只用 `crc32` + `deflateRawSync`，`System.IO.Compression` 全覆盖，无需新增依赖。 |
 
 ## 差分验证（utils 层）
 
@@ -172,9 +174,19 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 | `windowsSelfUpdate` | 8 | 隔离目录建/挪/删、二次执行幂等、包外文件不碰、清理后布局 |
 | `hostCwd` / `windowsSelfUpdateCleanupMissing` | 2 | 宿主 cwd 常量；隔离目录缺失时清理不抛 |
 
+`tests/Pi.CodingAgent.Tests/zip-corpus.json`（由 `tools/gen-coding-agent-zip-corpus.mjs` 生成，共 12 组归档）：
+
+| 区段 | 条数 | 内容 |
+|---|---:|---|
+| `fixedLocal` / `dosDateTime` | 2 | 生成时钉住的本地时刻（`2024-03-15T14:23:47`）与它应编出的 DOS 字（time 29431 / day 22639） |
+| `archives[].locals` / `centrals` / `eocd` | 12 组 | 逐字段解码出的归档结构；`compressedSize` 与偏移只做一致性检查（差异 C22） |
+| `archives[].archiveBase64` | 12 组 | Node 写出的原始归档字节，用于「C# 能否读外部归档」这一向 |
+
+归档用例覆盖：单条小文本、bug report 的四文件形态（`report.json` / `diagnostics.json` / `session.jsonl` / `summary.md`）、空归档、空内容条目、空与非空混合、含高位字节的二进制、1000 字节近不可压、4096 字节高可压、UTF-8 名（`报告-📄.md`）、嵌套路径名、CRLF 内容、重名条目。
+
 ## 测试覆盖
 
-`tests/Pi.CodingAgent.Tests`（60 项，已禁用并行化）：
+`tests/Pi.CodingAgent.Tests`（62 项，已禁用并行化）：
 
 | 测试类 | 项数 | 覆盖 |
 |---|---:|---|
@@ -184,3 +196,4 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 | `ChangelogCorpusTests` | 6 | `git-corpus.json` 的 changelog 区段 |
 | `GitCorpusTests` | 2 | `git-corpus.json` 的 `hostedGitInfoFromUrl`（92 条）与 `parseGitUrl`（107 条）区段 |
 | `ToolsCorpusTests` | 7 | `tools-corpus.json` 的全部区段：`toNamespacedPath`、`getLatestVersion`、`getToolPath`、`ensureTool`、离线判定、`WindowsSelfUpdate` 布局回放（含清理缺失路径） |
+| `ZipCorpusTests` | 2 | `zip-corpus.json` 的 12 组归档：逐字段结构比对 + BCL `ZipArchive` 读 Node 归档 |
