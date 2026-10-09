@@ -401,7 +401,7 @@ public class ModelsImagesClassifierTests
         var result = await models.GenerateImagesAsync(
             ImageModel(), new ImagesContext { Input = [new TextContent("cat")] });
         Assert.Equal(ImagesStopReason.Error, result.StopReason);
-        Assert.Contains("not registered", result.ErrorMessage);
+        Assert.Contains("Unknown provider: openrouter", result.ErrorMessage);
     }
 
     [Fact]

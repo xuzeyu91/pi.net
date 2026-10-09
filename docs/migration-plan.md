@@ -104,8 +104,8 @@
 
 - **目标**：移植交互式 CLI 主产品。**实测 85,536 行 / 299 文件**（早期写的 19,427 行有误）。
 - **子阶段（按依赖顺序）**：
-  1. **4a `src/utils/*` + 无依赖根级模块** —— 🚧 进行中：utils 12/37 文件 + 409 条差分向量
-  2. 4b 配置 / 信任 / 模型层（settings-manager / trust-manager / auth-storage / model-* / models-store / radius / mcp-servers / keybindings）
+  1. **4a `src/utils/*` + 无依赖根级模块** —— ✅ 已完成：utils 36/36 文件 + `config.ts` + `migrations.ts`（2026-10-09）
+  2. **4b 配置 / 信任 / 模型层** —— 🚧 进行中：settings-manager / trust-manager / project-trust / auth-storage / model-config / models-store / radius / virtual-models / mcp-servers / keybindings 共 10/16 文件（3,843 / 6,844 行）完成；余 model-registry / model-resolver / model-runtime / provider-composer / runtime-credentials / remote-catalog-provider（3,001 行）。Pi.Ai 侧的 `Models` 凭据/刷新/可用性运行时层（`ModelsAuth.cs` / `ModelsRefresh.cs` / `ModelSpecJson.cs`）已补齐。
   3. 4c 工具系统（`core/tools/*` + `core/tools/renderers/*`）
   4. 4d 扩展系统（`core/extensions/*` + `extensions/*`：codemode / llama / mcp / tool-search）
   5. 4e 会话与资源（agent-session / session-manager / resource-loader / package-manager / compaction / export-html / system-prompt / telemetry / sdk）
@@ -135,4 +135,5 @@
 1. **性能**：`RegexOptions.Compiled` 规则集若按渲染重建会造成数量级退化（阶段 1 已修复）。
 2. **沙箱限制**：`dotnet build` 需 `-m:1`；监听端口 / 长路径 / loopback 相关测试在沙箱内失败，与移植代码无关。
 3. **durable 间歇性挂起**：满负荷运行 `Pi.Durable.Tests` 偶发挂起（环境相关，见 porting-status 第 55 条）。
-4. **coding-agent 规模**：19.4k 行 + 13.2k 行测试，是剩余工作量的主体，需分多批推进。
+4. **coding-agent 规模**：实测 **85,536 行**（早期写的 19.4k 有误，少算一个数量级）+ 13.2k 行测试，是剩余工作量的主体，需分多批推进。
+5. **coding-agent 既有测试失败（4a 遗留，20 项）**：`Pi.CodingAgent.Tests` 中 `ClipboardImageTests`(12) / `ExifOrientationTests`(2) / `ToolResultImagesTests`(1) / `ImageConvertAndResizeTests`(1) / `FrontmatterCorpusTests`(2) 失败。这些测试均不经过模型层（不引用 `Pi.Ai.Models`），与 4b 改动无因果关系；`FrontmatterCorpusTests` 的两项是 YAML 块标量（`|` / `>`）**尾随换行丢失**的真实缺陷。待 4a 收尾批次一并处理。

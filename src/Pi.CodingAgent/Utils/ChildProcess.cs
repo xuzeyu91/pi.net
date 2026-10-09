@@ -57,6 +57,12 @@ public sealed record SpawnSyncOptions
 
     /// <summary>Environment overlay; a <see langword="null"/> value removes the variable.</summary>
     public IReadOnlyDictionary<string, string?>? Env { get; init; }
+
+    /// <summary>
+    /// Written to the child's standard input, which is then closed (Node's <c>input</c> option). Setting
+    /// it forces stdin into <see cref="StdioMode.Pipe"/> regardless of <see cref="Stdio"/>.
+    /// </summary>
+    public string? Input { get; init; }
 }
 
 /// <summary>The result of <see cref="ChildProcess.SpawnSync"/> (Node's <c>SpawnSyncReturns</c>).</summary>
@@ -120,6 +126,10 @@ public static class ChildProcess
     {
         options ??= new SpawnSyncOptions();
         var stdio = ExpandStdio(options.Stdio);
+        if (options.Input is not null)
+        {
+            stdio = [StdioMode.Pipe, stdio[1], stdio[2]];
+        }
         var captureStdout = stdio[1] == StdioMode.Pipe;
         var captureStderr = stdio[2] == StdioMode.Pipe;
         var stdout = string.Empty;
@@ -146,6 +156,12 @@ public static class ChildProcess
 
             var readOutput = captureStdout ? process.StandardOutput.ReadToEndAsync() : Task.FromResult(string.Empty);
             var readError = captureStderr ? process.StandardError.ReadToEndAsync() : Task.FromResult(string.Empty);
+
+            if (options.Input is not null)
+            {
+                process.StandardInput.Write(options.Input);
+                process.StandardInput.Close();
+            }
 
             var timedOut = false;
             if (options.TimeoutMs is int timeout && timeout > 0)

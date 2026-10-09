@@ -102,10 +102,66 @@ public static class AuthResolve
     }
 
     /// <summary>
+    /// 在凭据存储的 modify 锁内刷新过期的 OAuth 凭据。对应 TS <c>refreshStoredOAuthCredential</c>。
+    /// </summary>
+    /// <remarks>
+    /// 等待锁的 modify 会随 <paramref name="signal"/> 取消，但已开始的刷新<em>不</em>随之取消
+    /// （只受 <paramref name="refreshTimeoutMs"/> 约束）——这样轮换后的 refresh token 一定会被持久化，
+    /// 后续刷新就能看到新凭据。fn 返回 null（期间已登出、或已被其他进程/请求刷新）时返回 null。
+    /// </remarks>
+    public static async Task<Credential.OAuth?> RefreshStoredOAuthCredentialAsync(
+        ICredentialStore credentials,
+        string providerId,
+        IOAuthAuth oauth,
+        Func<Credential.OAuth, bool> needsRefresh,
+        CancellationToken signal,
+        int refreshTimeoutMs = DefaultOAuthRefreshTimeoutMs)
+    {
+        Credential? post;
+        using var lockWait = new CancellationTokenSource();
+        using var registration = signal.Register(lockWait.Cancel);
+        if (signal.IsCancellationRequested) lockWait.Cancel();
+        try
+        {
+            post = await credentials.ModifyAsync(providerId, async current =>
+            {
+                signal.ThrowIfCancellationRequested();
+                if (current is not Credential.OAuth currentOauth) return null; // 期间已登出
+                if (!needsRefresh(currentOauth)) return null;                  // 其他进程/请求已刷新
+                try
+                {
+                    using var refreshSignal = new CancellationTokenSource(refreshTimeoutMs);
+                    return await oauth.RefreshAsync(currentOauth, refreshSignal.Token).ConfigureAwait(false);
+                }
+                catch (ModelsError)
+                {
+                    throw;
+                }
+                catch (Exception error)
+                {
+                    throw new ModelsError(ModelsErrorCode.OAuth,
+                        $"OAuth refresh failed for {providerId}", error);
+                }
+            }, lockWait.Token).ConfigureAwait(false);
+        }
+        catch (ModelsError)
+        {
+            throw;
+        }
+        catch (Exception error)
+        {
+            signal.ThrowIfCancellationRequested();
+            throw new ModelsError(ModelsErrorCode.Auth,
+                $"Credential store modify failed for {providerId}", error);
+        }
+
+        return post as Credential.OAuth;
+    }
+
+    /// <summary>
     /// OAuth 解析 + 双检锁：剩余有效期不足五分钟的令牌进锁，锁内复查过期，
     /// 全局刷新一次并在释放前持久化轮换凭据。对应 TS <c>resolveStoredOAuth</c>。
-    /// fn 返回 null（期间已登出/已被他人刷新）时，modify 解析为写后凭据——
-    /// 后者让本请求直接复用刚刷新的令牌。
+    /// fn 返回 null（期间已登出/已被他人刷新）时返回 null。
     /// </summary>
     private static async Task<AuthResult?> ResolveStoredOAuthAsync(
         ICredentialStore credentials,
@@ -122,41 +178,10 @@ public static class AuthResolve
         if (ExpiresSoon(credential))
         {
             // 乐观检查说已过期；权威检查在锁内运行。
-            Credential? post;
-            try
-            {
-                post = await credentials.ModifyAsync(providerId, async current =>
-                {
-                    if (current is not Credential.OAuth currentOauth) return null; // 期间已登出
-                    if (!ExpiresSoon(currentOauth)) return null;                   // 其他进程/请求已刷新
-                    try
-                    {
-                        using var refreshSignal = CancellationTokenSource.CreateLinkedTokenSource(signal);
-                        refreshSignal.CancelAfter(DefaultOAuthRefreshTimeoutMs);
-                        return await oauth.RefreshAsync(currentOauth, refreshSignal.Token).ConfigureAwait(false);
-                    }
-                    catch (ModelsError)
-                    {
-                        throw;
-                    }
-                    catch (Exception error)
-                    {
-                        throw new ModelsError(ModelsErrorCode.OAuth,
-                            $"OAuth refresh failed for {providerId}", error);
-                    }
-                }, signal).ConfigureAwait(false);
-            }
-            catch (ModelsError)
-            {
-                throw;
-            }
-            catch (Exception error)
-            {
-                throw new ModelsError(ModelsErrorCode.Auth,
-                    $"Credential store modify failed for {providerId}", error);
-            }
-            if (post is not Credential.OAuth postOauth) return null; // 期间已登出
-            credential = postOauth;
+            var post = await RefreshStoredOAuthCredentialAsync(
+                credentials, providerId, oauth, ExpiresSoon, signal).ConfigureAwait(false);
+            if (post is null) return null; // 期间已登出
+            credential = post;
             // 常规五分钟窗口触发刷新但不构成 provider 契约；显式调用方（如
             // bearer-token 导出）刷新后才要求请求的最小有效期。
             if (minOAuthValidityMs is not null && ExpiresSoon(credential))

@@ -38,6 +38,9 @@ public sealed record ThinkingLevelMap
     /// <summary>档位是否在映射表中显式存在（含 null 值）。</summary>
     public bool Has(string level) => _levels.ContainsKey(level);
 
+    /// <summary>显式存在的档位条目（含 null 值），按插入顺序——序列化用。</summary>
+    public IReadOnlyList<KeyValuePair<string, string?>> Entries => _levels.ToList();
+
     public static ThinkingLevelMap FromJsonObject(JsonObject obj)
     {
         var map = new ThinkingLevelMap();
@@ -172,7 +175,10 @@ public sealed class ModelCatalog
             ?? throw new ArgumentException("Invalid model catalog JSON"));
     }
 
-    private static ModelSpec ParseSpec(string provider, JsonObject spec)
+    /// <summary>
+    /// 解析单个模型条目（<c>ModelSpecJson.FromJsonObject</c> 复用此入口，保证读路径只有一份实现）。
+    /// </summary>
+    public static ModelSpec ParseSpec(string provider, JsonObject spec)
     {
         string? GetString(string key)
             => spec[key] is JsonValue { } value && value.TryGetValue<string>(out var text) ? text : null;
@@ -281,7 +287,7 @@ public sealed class ModelCatalog
     }
 
     /// <summary>解析 <c>inputLimits</c> 子树（resize/maxPerMessage/maxPerRequest/maxRequestBytes）。</summary>
-    private static ModelInputLimits ParseInputLimits(JsonObject limits)
+    public static ModelInputLimits ParseInputLimits(JsonObject limits)
     {
         static long? GetLongValue(JsonObject owner, string key)
             => owner[key] is JsonValue { } number && number.TryGetValue<long>(out var parsed) ? parsed : null;

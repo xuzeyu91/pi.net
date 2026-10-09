@@ -48,8 +48,23 @@ public interface IProvider
     /// <summary>全部类别的已知模型（chat + image + classifier）。对应 TS <c>getAllModels()</c>。</summary>
     IReadOnlyList<ModelSpec> GetAllModels() => GetModels();
 
+    /// <summary>
+    /// 动态 provider 的目录刷新实现。返回 null 表示静态 provider——对应 TS 可选成员
+    /// <c>refreshModels</c> 的「缺失」语义：<c>Models.refresh()</c> 会跳过它。
+    /// 实现须保留失败前的列表、经 <c>context.publish()</c> 发布持久化与同步状态改动，
+    /// 并遵守共享取消信号。
+    /// </summary>
+    Func<RefreshModelsContext, Task>? RefreshModels => null;
+
     /// <summary>按凭据过滤可用 chat 模型。对应 TS <c>Provider.filterModels</c>。</summary>
     IReadOnlyList<ModelSpec> FilterModels(IReadOnlyList<ModelSpec> models, Credential? credential) => models;
+
+    /// <summary>
+    /// 跨全部类别的凭据相关可用性策略。返回 null 表示未实现——对应 TS 可选成员
+    /// <c>filterAllModels</c> 的「缺失」语义：<c>getAllAvailable()</c> 会改走由
+    /// <c>filterModels</c> 推导 chat 可用 id 的分支。
+    /// </summary>
+    IReadOnlyList<ModelSpec>? FilterAllModels(IReadOnlyList<ModelSpec> models, Credential? credential) => null;
 
     /// <summary>流式：归一化转录分发给 provider。</summary>
     IAssistantMessageEventStream Stream(ModelSpec model, IReadOnlyList<ChatMessage> context,
@@ -58,6 +73,17 @@ public interface IProvider
     /// <summary>简单流式：文本/图片内容直传。</summary>
     IAssistantMessageEventStream StreamSimple(ModelSpec model, IReadOnlyList<ChatMessage> context,
         IReadOnlyDictionary<string, object?>? options = null);
+
+    /// <summary>
+    /// 是否导出续取延后响应能力。对应 TS 可选成员 <c>Provider.fetchDeferred</c> 的「存在性」——
+    /// <see cref="Models.StreamDeferred"/> 在解析认证**之前**据此判定，与 TS 的检查顺序一致。
+    /// </summary>
+    bool SupportsFetchDeferred => false;
+
+    /// <summary>
+    /// 是否导出取消延后响应能力。对应 TS 可选成员 <c>Provider.cancelDeferred</c> 的「存在性」。
+    /// </summary>
+    bool SupportsCancelDeferred => false;
 
     /// <summary>
     /// 续取延后响应。不支持时返回 null（<see cref="Models.StreamDeferred"/> 据此报错）。
@@ -78,18 +104,34 @@ public interface IProvider
 /// <see cref="Models"/> 按 model.provider 分发（requireChatProvider 校验模型归属）。
 /// 对应 TS <c>Models</c>（models.ts 1256 行）的编排核心。
 /// </summary>
-public sealed class Models
+public sealed partial class Models
 {
     private readonly Dictionary<string, IProvider> _providers = [];
 
     /// <summary>注册（或替换）provider。</summary>
-    public void SetProvider(IProvider provider) => _providers[provider.Id] = provider;
+    public void SetProvider(IProvider provider)
+    {
+        SupersedeProviderRefresh(provider.Id);
+        _providers[provider.Id] = provider;
+    }
 
     /// <summary>移除 provider。</summary>
-    public bool DeleteProvider(string id) => _providers.Remove(id);
+    public bool DeleteProvider(string id)
+    {
+        SupersedeProviderRefresh(id);
+        return _providers.Remove(id);
+    }
 
     /// <summary>清空全部 provider。</summary>
-    public void ClearProviders() => _providers.Clear();
+    public void ClearProviders()
+    {
+        foreach (var id in _providers.Keys.Concat(_refreshControllers.Keys).Distinct(StringComparer.Ordinal).ToList())
+        {
+            SupersedeProviderRefresh(id);
+        }
+
+        _providers.Clear();
+    }
 
     public IReadOnlyList<IProvider> GetProviders() => _providers.Values.ToList();
 
@@ -152,7 +194,7 @@ public sealed class Models
         try
         {
             ModelOperations.AssertImageModel(model);
-            var provider = RequireProvider(model.Provider);
+            var provider = RequireProvider(model);
             if (provider is not IImagesProvider imagesProvider)
             {
                 throw new ModelsError(ModelsErrorCode.Provider,
@@ -176,7 +218,7 @@ public sealed class Models
         try
         {
             ModelOperations.AssertClassifierModel(model);
-            var provider = RequireProvider(model.Provider);
+            var provider = RequireProvider(model);
             if (provider is not IClassifierProvider classifierProvider)
             {
                 throw new ModelsError(ModelsErrorCode.Provider,
@@ -193,20 +235,46 @@ public sealed class Models
     }
 
     /// <summary>要求 provider 已注册。对应 TS <c>requireProvider</c>。</summary>
-    private IProvider RequireProvider(string providerId)
-        => _providers.TryGetValue(providerId, out var provider)
+    private IProvider RequireProvider(ModelSpec model)
+        => _providers.TryGetValue(model.Provider, out var provider)
             ? provider
-            : throw new ModelsError(ModelsErrorCode.Provider, $"Provider {providerId} is not registered");
+            : throw new ModelsError(ModelsErrorCode.Provider, $"Unknown provider: {model.Provider}");
 
     /// <summary>
-    /// 简单流式：按 model.provider 分发到所属 provider。
-    /// 对应 TS <c>streamSimple()</c>（lazyStream 的延迟语义由调用方迭代触发保持一致）。
+    /// 简单流式：同步返回事件流，认证解析与 provider 分派在其后运行
+    /// （<see cref="LazyStream.Run"/> 的延迟语义——未注册 provider 也产出 error 终态而非抛出）。
+    /// 对应 TS <c>streamSimple()</c>。
     /// </summary>
     public IAssistantMessageEventStream StreamSimple(ModelSpec model, IReadOnlyList<ChatMessage> context,
         IReadOnlyDictionary<string, object?>? options = null)
+        => LazyStream.Run(model, async () =>
+        {
+            var provider = RequireChatProvider(model);
+            var (requestModel, requestOptions) = await ApplyAuthAsync(model, options, CancellationToken.None)
+                .ConfigureAwait(false);
+            return provider.StreamSimple(requestModel, context, requestOptions);
+        });
+
+    /// <summary>
+    /// 完整选项流式：同步返回事件流，认证解析与 provider 分派在其后运行。
+    /// 对应 TS <c>stream()</c>。
+    /// </summary>
+    public IAssistantMessageEventStream Stream(ModelSpec model, IReadOnlyList<ChatMessage> context,
+        IReadOnlyDictionary<string, object?>? options = null)
+        => LazyStream.Run(model, async () =>
+        {
+            var provider = RequireChatProvider(model);
+            var (requestModel, requestOptions) = await ApplyAuthAsync(model, options, CancellationToken.None)
+                .ConfigureAwait(false);
+            return provider.Stream(requestModel, context, requestOptions);
+        });
+
+    /// <summary>完整选项补全：等待终态并返回最终消息。对应 TS <c>complete()</c>。</summary>
+    public async Task<AssistantMessage> CompleteAsync(ModelSpec model, IReadOnlyList<ChatMessage> context,
+        IReadOnlyDictionary<string, object?>? options = null, CancellationToken cancellationToken = default)
     {
-        var provider = RequireChatProvider(model);
-        return provider.StreamSimple(model, context, options);
+        var stream = Stream(model, context, options);
+        return await stream.WaitForDoneAsync(cancellationToken).ConfigureAwait(false);
     }
 
     /// <summary>简单补全：等待终态并返回最终消息。对应 TS <c>completeSimple()</c>。</summary>
@@ -233,15 +301,25 @@ public sealed class Models
     /// 续取延后响应：同步返回事件流，认证解析与 provider 分派在其后运行
     /// （<see cref="LazyStream.Run"/> 的延迟语义）。对应 TS <c>streamDeferred()</c>。
     /// </summary>
+    /// <remarks>
+    /// 与 TS 一致：先判定 provider 是否导出该能力，再解析认证——因此「不支持延后」先于
+    /// 「认证未配置」报出（两者都是 error 终态）。
+    /// </remarks>
     public IAssistantMessageEventStream StreamDeferred(ModelSpec model, DeferredHandle handle,
         IReadOnlyDictionary<string, object?>? options = null)
-        => LazyStream.Run(model, () =>
+        => LazyStream.Run(model, async () =>
         {
             var provider = RequireChatProvider(model);
-            var stream = provider.StreamDeferred(model, handle, options)
+            if (!provider.SupportsFetchDeferred)
+            {
+                throw new ModelsError(ModelsErrorCode.Provider,
+                    $"Provider {model.Provider} does not support deferred responses");
+            }
+            var (requestModel, requestOptions) = await ApplyAuthAsync(model, options, CancellationToken.None)
+                .ConfigureAwait(false);
+            return provider.StreamDeferred(requestModel, handle, requestOptions)
                 ?? throw new ModelsError(ModelsErrorCode.Provider,
                     $"Provider {model.Provider} does not support deferred responses");
-            return Task.FromResult(stream);
         });
 
     /// <summary>续取延后响应并等待终态。对应 TS <c>fetchDeferred()</c>。</summary>
@@ -249,22 +327,27 @@ public sealed class Models
         IReadOnlyDictionary<string, object?>? options = null, CancellationToken cancellationToken = default)
         => await StreamDeferred(model, handle, options).WaitForDoneAsync(cancellationToken).ConfigureAwait(false);
 
-    /// <summary>尽力取消延后响应。对应 TS <c>cancelDeferred()</c>。</summary>
+    /// <summary>尽力取消延后响应。对应 TS <c>cancelDeferred()</c>（同样先判定能力再解析认证）。</summary>
     public async Task CancelDeferredAsync(ModelSpec model, DeferredHandle handle,
         IReadOnlyDictionary<string, object?>? options = null, CancellationToken cancellationToken = default)
     {
         var provider = RequireChatProvider(model);
-        await provider.CancelDeferredAsync(model, handle, options, cancellationToken).ConfigureAwait(false);
+        if (!provider.SupportsCancelDeferred)
+        {
+            throw new ModelsError(ModelsErrorCode.Provider,
+                $"Provider {model.Provider} does not support deferred responses");
+        }
+        var (requestModel, requestOptions) = await ApplyAuthAsync(model, options, cancellationToken)
+            .ConfigureAwait(false);
+        await provider.CancelDeferredAsync(requestModel, handle, requestOptions, cancellationToken)
+            .ConfigureAwait(false);
     }
 
-    /// <summary>chat 模型必须归属已注册 provider 且在其目录中。对应 TS <c>requireChatProvider</c>。</summary>
+    /// <summary>chat 模型必须归属已注册 provider。对应 TS <c>requireChatProvider</c>。</summary>
     private IProvider RequireChatProvider(ModelSpec model)
     {
-        var provider = _providers.GetValueOrDefault(model.Provider)
-            ?? throw new KeyNotFoundException($"Unknown model provider: {model.Provider}");
-        if (SafeModels(provider).Any(known => known.Id == model.Id)) return provider;
-        throw new KeyNotFoundException(
-            $"Provider {model.Provider} does not list model {model.Id}");
+        ModelOperations.AssertChatModel(model);
+        return RequireProvider(model);
     }
 
     /// <summary>best-effort 取模型（抛错实现产出零模型）。</summary>

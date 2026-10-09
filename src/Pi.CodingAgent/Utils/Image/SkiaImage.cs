@@ -94,7 +94,9 @@ internal static class SkiaImage
         using var converted = new SKBitmap(info);
         using (var canvas = new SKCanvas(converted))
         {
-            canvas.DrawBitmap(image, 0f, 0f, default);
+            // 1:1 copy, so nearest sampling is exact. `DrawBitmap(bitmap, x, y, paint)` is obsolete in
+            // SkiaSharp 4.x in favor of the SKSamplingOptions overload.
+            canvas.DrawBitmap(image, 0f, 0f, new SKSamplingOptions(SKFilterMode.Nearest, SKMipmapMode.None));
         }
 
         using var premulImage = SKImage.FromBitmap(converted);

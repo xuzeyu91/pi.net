@@ -251,7 +251,12 @@ public class DeferredTests
             },
         });
 
-        var models = new Pi.Ai.Models.Models();
+        var models = new Pi.Ai.Models.Models(new CreateModelsOptions
+        {
+            // 该 provider 的 api key 来自环境变量；注入叠加上下文，避免依赖真实进程环境。
+            AuthContext = new OverlayEnvAuthContext(DefaultAuthContext.Instance,
+                new Dictionary<string, string> { ["TEST_API_KEY"] = "test-key" }),
+        });
         models.SetProvider(provider);
 
         var message = await models.FetchDeferredAsync(model, Handle());

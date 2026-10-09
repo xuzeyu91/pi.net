@@ -71,19 +71,32 @@ public class ModelsTests
     }
 
     [Fact]
-    public void UnknownProviderAndUnlistedModelRejected()
+    public async Task UnknownProviderYieldsErrorStreamInsteadOfThrowing()
     {
         var catalog = ModelCatalog.LoadFromResource("openai");
         var models = new Pi.Ai.Models.Models();
         models.SetProvider(new CatalogProvider("openai", catalog));
 
+        // TS 语义：stream()/streamSimple() 经 lazyStream 同步返回，未注册 provider 以 error 终态呈现。
         var foreign = catalog.ChatModels["gpt-4o"] with { Provider = "anthropic" };
-        Assert.Throws<KeyNotFoundException>(() =>
-            models.StreamSimple(foreign, [Messages.UserText("hi")]));
+        var message = await models.CompleteSimpleAsync(foreign, [Messages.UserText("hi")]);
+        Assert.Equal(Types.StopReason.Error, message.StopReason);
+        Assert.Contains("Unknown provider: anthropic", message.ErrorMessage);
+        Assert.Empty(message.Content);
+    }
+
+    [Fact]
+    public async Task UnlistedModelStillDispatchesToItsProvider()
+    {
+        // TS 只校验 provider 已注册 + 模型是 chat 类型，不校验模型是否出现在 provider 目录中。
+        var catalog = ModelCatalog.LoadFromResource("openai");
+        var models = new Pi.Ai.Models.Models();
+        models.SetProvider(new CatalogProvider("openai", catalog));
 
         var unlisted = catalog.ChatModels["gpt-4o"] with { Id = "not-in-catalog" };
-        Assert.Throws<KeyNotFoundException>(() =>
-            models.StreamSimple(unlisted, [Messages.UserText("hi")]));
+        var message = await models.CompleteSimpleAsync(unlisted, [Messages.UserText("hi")]);
+        Assert.Equal(Types.StopReason.Stop, message.StopReason);
+        Assert.Equal("echo:not-in-catalog", ((TextContent)message.Content[0]).Text);
     }
 
     [Fact]

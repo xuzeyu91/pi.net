@@ -28,7 +28,7 @@
 | 子阶段 | 范围 | 行数 | 状态 |
 |---|---|---:|---|
 | **4a** | `src/utils/*`（37 文件）+ 无依赖的根级模块（`config.ts` / `migrations.ts` / `core/defaults.ts` 等） | ~4,500 | ✅ utils 36/36 + `config.ts` 完成（2026-10-09） |
-| **4b** | 配置 / 信任 / 模型层：settings-manager、trust-manager、project-trust、auth-storage、model-config/registry/resolver、models-store、radius、virtual-models、mcp-servers、keybindings | ~12,000 | ⏳ |
+| **4b** | 配置 / 信任 / 模型层：settings-manager、trust-manager、project-trust、auth-storage、model-config/registry/resolver、models-store、radius、virtual-models、mcp-servers、keybindings | 6,844（实测） | 🚧 10/16 文件（3,843 行）完成；余 model-registry / model-resolver / model-runtime / provider-composer / runtime-credentials / remote-catalog-provider（3,001 行） |
 | **4c** | 工具系统：`core/tools/*` + `core/tools/renderers/*` | ~9,000 | ⏳ |
 | **4d** | 扩展系统：`core/extensions/*`（types / runner / loader）+ `extensions/*`（codemode / llama / mcp / tool-search） | ~12,000 | ⏳ |
 | **4e** | 会话与资源：agent-session、session-manager、resource-loader、package-manager、compaction、export-html、system-prompt、telemetry、sdk | ~20,000 | ⏳ |
@@ -102,6 +102,48 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 
 > 计数口径：图像处理 1,165 行 + frontmatter 40 行 = 1,205 行，与 `wc -l` 实测一致。
 
+## 4b 进度（配置 / 信任 / 模型层）
+
+### ✅ 已完成（10/16 文件，3,843 行）
+
+| TS 文件 | 行数 | .NET | 说明 |
+|---|---:|---|---|
+| `core/settings-manager.ts` | 1,533 | `Core/SettingsManager.cs`（1,555）+ `Core/Settings.cs` / `Core/ResolveConfigValue.cs` / `Core/PiManifest.cs` / `Core/Defaults.cs` | 全局/项目分层设置、逐字段 dirty 跟踪、串行写队列、每次文件操作都加锁。三层内部保持 `JsonObject`（与 TS 保留 plain object 一致），深合并 / 已改字段回放到磁盘文件 / 畸形值宽容这三件事才等价；具名 `Settings` 只出现在公开边界。写队列见差异 C46。 |
+| `core/trust-manager.ts` | 246 | `Core/TrustManager.cs` | 项目信任的授予/撤销/查询，`NodeLock` 文件锁（`Core/NodeLock.cs`）。 |
+| `core/project-trust.ts` | 96 | `Core/ProjectTrust.cs` | 信任状态判定（受信根、子路径继承、显式拒绝）。 |
+| `core/auth-storage.ts` | 506 | `Core/AuthStorage.cs` | `ModeFile`（`0o600`/`0o700`，仅非 Windows 生效）、`FileAuthStorageBackend`、`ReadOnlyAuthStorage`、`InMemoryAuthStorageBackend`、`AuthStorage`（共享读取状态 + reload 去重 + readers 计数）。 |
+| `core/model-config.ts` | 346 | `Core/ModelConfig.cs`（591）+ `Core/JsonSchema.cs` | `models.json` 的 schema 校验与具名快照。schema 用**手写 JSON-schema 树**替代 TypeBox `Compile()`（差异 C38）；错误路径格式化（`required` 特例 + `instancePath` → 点分路径）与 TypeBox 的 `formatValidationPath` 同形。 |
+| `core/models-store.ts` | 147 | `Core/ModelsStore.cs` | `InMemoryCodingAgentModelsStore` / `FileModelsStore`（文件后端以**解析后的 JSON 对象**为准，忠实复刻 TS 的整体 parse→re-serialize，未识别条目不丢）；配合 Pi.Ai 的 `ModelSpecJson` 完成「模型对象 ↔ JSON」往返。 |
+| `core/radius.ts` | 11 | `Core/Radius.cs` | `ProviderId = "radius"`、`PI_RADIUS_GATEWAY`、`McpUrl`、可注入 `Env`。 |
+| `core/virtual-models.ts` | 238 | `Core/VirtualModels.cs` | 虚拟模型路由：`VirtualModels`（`Api = "pi-virtual"`、`StateEntry`、`CreateVirtualModel`、`WithVirtualModels`、`UnroutedStream`、`RouteReasons`）、`VirtualModelDefinition`、`VirtualOnlyProvider`、`VirtualModelsProvider`。router state 见差异 C40；`findLatestResponse` / `getBranchSelection` / `getVirtualModelState` 未移植（gap **G-4b-VM**，待 4e）。 |
+| `core/mcp-servers.ts` | 319 | `Core/McpServers.cs` | 暴露面常量与别名（`exposures` / `allExposures` / `exposureAliases`）、`Namespace`、`IsLoopbackRedirectUri`、配置校验、OAuth 校验、别名解析、`McpServerRegistry`。`McpServerConfig` 见差异 C41。 |
+| `core/keybindings.ts` | 401 | `Core/Keybindings.cs` | 键位绑定解析/校验/冲突检测与用户覆盖。 |
+| 根级 `migrations.ts` | 315 | `Migrations.cs` | 启动时一次性迁移（auth → auth.json、会话目录、commands → prompts、keybindings、tools → bin、扩展系统）。TS 归 4a 的「根级模块」，随 4b 一并收口。差异 C42。 |
+
+### Pi.Ai 侧补齐（4b 的运行时依赖）
+
+`core/model-runtime.ts` 依赖 Pi.Ai 的 `Models` 运行时层，而此前 Pi.Ai 只移植了编排核心与图片/分类分发。本阶段补齐：
+
+| .NET | 内容 |
+|---|---|
+| `Pi.Ai/Models/ModelsRefresh.cs` | `ModelsPublication`（`PersistDeleted` / `Persist` / `Update`，用两个成员替代 TS 的三态 `persist`）、`RefreshModelsContext`、`ModelsRefreshOptions`、`ModelsRefreshResult`。 |
+| `Pi.Ai/Models/ModelsAuth.cs`（`Models` 的第二个 partial） | `CreateModelsOptions`、`ModelsAuthOverrides`、`Credentials` / `Store`、刷新代次与控制器（`SupersedeProviderRefresh` / `BeginProviderRefresh`）、带代次校验的串行发布（`PublishProviderModelsAsync`）、`RefreshAsync`（先离网恢复缓存再联网）、`CheckAuthAsync` / `GetAuthenticatedProvidersAsync`、`GetAvailable*`、`GetAuthAsync(providerId)` / `GetAuthAsync(model)`、`LoginAsync` / `LogoutAsync`、`MergeHeaders` / `MergeEnv` / `ApplyAuthAsync`。差异 C43 / C44 / C45。 |
+| `Pi.Ai/Models/ModelSpecJson.cs` | `ModelSpec` ↔ JSON 往返（TS 里「模型对象本身就是 JSON」，C# 是具名记录，需要显式映射）。 |
+| `Pi.Ai/Models/Models.cs`（改） | `Stream` / `StreamSimple` / `StreamDeferred` 改经 `LazyStream.Run` **延迟执行**（修正原实现的同步抛出——TS 的 `models.stream()` 同步返回流、把错误编码成 error 终态）；`IProvider` 增 `RefreshModels` / `FilterAllModels` / `SupportsFetchDeferred` / `SupportsCancelDeferred`（差异 C47）；`SetProvider` / `DeleteProvider` / `ClearProviders` 现在会作废进行中的刷新。 |
+| `Pi.Ai/Auth/AuthResolve.cs`（改） | 抽出 `RefreshStoredOAuthCredentialAsync`；语义修正：**已开始的刷新不随调用方 signal 取消**，只受超时约束（保证轮换的 refresh token 一定落盘）。 |
+| `Pi.Ai/Utils/AbortSignals.cs`（改） | 新增 `RaceWithAsync<T>` 与非泛型重载 + `Observe(Task)`（被放弃的操作仍被观察，不留未观察异常）。 |
+
+### ⏳ 未移植（6 文件，3,001 行）
+
+| TS 文件 | 行数 | 阻塞点 |
+|---|---:|---|
+| `core/model-registry.ts` | 244 | `ModelRuntime` 的同步兼容门面，依赖 `model-runtime.ts`。 |
+| `core/model-resolver.ts` | 783 | 需 `minimatch` 等价物与 `isValidThinkingLevel`；后者所在 `cli/args.ts` 属 4g。 |
+| `core/model-runtime.ts` | 1,032 | 依赖 `provider-composer` / `runtime-credentials` / `remote-catalog-provider`。 |
+| `core/provider-composer.ts` | 732 | 多 api provider 组合，会拉入较大的 Pi.Ai provider 表面。 |
+| `core/runtime-credentials.ts` | 52 | 小，随 `model-runtime` 一起。 |
+| `core/remote-catalog-provider.ts` | 158 | 远程目录 provider，随 `model-runtime` 一起。 |
+
 ## 关键设计差异（TS → C#）
 
 | # | 差异 | 说明 |
@@ -137,6 +179,25 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 | C29 | **`Buffer.from(x, "base64")` 是宽容解码，.NET 会抛** | JS 跳过字母表外字符（含空白）、1 mod 4 的悬尾字符丢弃、容忍缺 padding；`Convert.FromBase64String` 全都要抛。`LenientBase64.Decode` 复刻宽容前半，再交给 BCL。工具产出的 payload 不保证干净，宽容语义保证「不可解码图像 → 保留原块」而不是异常冒泡。 |
 | C30 | **`ModelImageResizeOptions` 是 Pi.Ai 的名义类型，与 coding-agent 的 `ImageResizeOptions` 结构相同但语义独立** | TS 靠结构类型把模型档案直接传进 `processImage`；C# 在 `ToolResultImages` 里显式字段映射桥接，两个类型都保留（模型目录下发档位 vs 通用默认，后续 4b/4c 消费）。`types.ts` 的 `ModelInputLimits` / `ModelImageInputLimits` / `BaseModel.inputLimits` 一并补进 Pi.Ai（此前无消费者）。 |
 | C31 | **C# 原生剪贴板接口把 TS 的 `undefined`/`null` 折叠成 `null`** | pi-tui TS 的 `getImage()` 三态（undefined=不可用、null=无图像、数组=有图像）；C# `INativeClipboard.GetImageAsync()` 的契约是 null=不可用、空数组=无图像。`ClipboardImageApi` 的 `ImageProbe` 保留三态语义：null→继续回退、空→停止。原生剪贴板恒为最后一站，折叠不可观察；命令行后端的三态照原样保留（Wayland 空剪贴板不得回退到陈旧 X11 内容）。 |
+
+### 4b 阶段差异（C32–C46）
+
+> 编号说明：C33–C36 是 4b 期间预留但最终未使用的空号（相关结论并入了 C37 与 C39），此处不跳号补位以免与代码注释失配。
+
+| # | 差异 | 说明 |
+|---|---|---|
+| C32 | **`http-dispatcher.ts` 只移植 provider 中立的半边** | TS 装 Undici 的 `EnvHttpProxyAgent` 为全局 dispatcher 并替换 `globalThis.fetch`；.NET 没有对应物——`HttpClient` 自己管连接池、代理解析与超时，coding-agent 在 `Utils/ManagementHttp.cs` 与 Pi.Ai 传输层逐 client 配置。故保留超时解析/格式化契约与代理环境变量播种，**丢弃 dispatcher 安装**。 |
+| C37 | **`models-store.ts` 的条目解析提前丢弃未知 `type`** | TS 的存储原样保留 JSON，直到 `createModels` 才按已知类别过滤；C# 在 `FromJsonObject` 就丢弃（`ModelSpecJson` 需要具名记录）。已发布的 provider 都不产出未知类别，因此不可观察。 |
+| C38 | **手写 JSON-schema 树替代 TypeBox `Compile()`** | `model-config.ts` 用 TypeBox 编译 `models.json` 的 schema 并读 `Check()`/`Errors()`；C# 无对应物，改为手写 `JsonSchema` 子集（Any / Null / Bool / Str / Num / Int / Lit / Arr / Obj / Rec / Union）与同形错误对象（`keyword` / `instancePath` / `message` / `requiredProperties`）。两处差异：TypeBox 报节点的**每个**失败关键字，本移植每节点只报第一个；错误文案对齐 TypeBox 但不保证逐字节相同。 |
+| C39 | **`ModelConfig` 不做深冻结** | TS 深冻结每个 provider，调用方无法改动快照；C# 无冻结机制，`GetProvider` 直接交出存储实例，调用方须自行视为只读。另：I/O 错误文案内嵌平台自身的消息（不再有 Node 的 `ENOENT: no such file or directory, open '…'`）。 |
+| C40 | **`virtual-models.ts` 的 router state 用 `JsonNode`** | TS 的 `TState = unknown`（文档要求 JSON 可序列化），C# 收敛为 `JsonNode`。另：TS 用「成员缺失」表达的 provider 能力检查，C# 以同一错误消息呈现。**未移植**：`findLatestResponse`（需 `AgentMessage` 联合）与 `getBranchSelection` / `getVirtualModelState`（需 `SessionEntry`），记为 gap **G-4b-VM**，待 4e 会话层。 |
+| C41 | **`McpServerConfig` 包装 aliases 解析后的 JSON** | TS 的 MCP 配置是结构型 JSON 对象；C# 用 `McpServerConfig(JsonObject)` 包装并投影核心读取的字段，配置里未识别的键**不丢**。 |
+| C42 | **`Migrations.ShowDeprecationWarningsAsync` 在 stdin 被重定向时读一行** | TS 在关闭的 stdin 上会永久等待；C# 在重定向时读一行（EOF 即继续），交互式仍读单个按键。 |
+| C43 | **`IProvider.Auth` 为 null 即「无认证语义」** | TS 的 `Provider.auth` 是必填成员，不存在无认证 provider；C# 的 `Auth` 是默认接口成员（null），`ApplyAuthAsync` 视 null 为无认证并**跳过解析**——测试替身与 faux provider 不必构造认证，所有真实 provider 都设有 `Auth`，走与 TS 完全一致的路径。 |
+| C44 | **取消以 `OperationCanceledException` 呈现** | TS 的 `AbortSignal` 取消携带 `signal.reason`；C# 统一抛 `OperationCanceledException`（携带 token），调用方用 `IsCancellationRequested` 判别。 |
+| C45 | **`transformHeaders` 走选项字典的键** | TS 是 `ModelsRequestTransforms` 的具名成员；C# 以选项字典的 `"transformHeaders"` 键承载（`Models.TransformHeadersOptionKey`），与本解决方案其余流选项的字典约定一致；`ApplyAuthAsync` 在返回前移除该键。 |
+| C46 | **`settings-manager.ts` 的写队列是 `Task` 续接链** | TS 用 promise 链串行化同一文件的写入；C# 用 `Task` continuation 链达成同一语义（前一次写入失败不阻断后续）。副作用：排队的写入可能在线程池线程上运行，而**入队的 setter 仍在栈上**——因此每个被排队工作触碰的值都在入队前快照（与 TS 同），dirty 字段集合用锁保护。 |
+| C47 | **`IProvider` 用显式能力属性替代 TS 的可选成员存在性** | TS 的 `Provider.fetchDeferred` / `cancelDeferred` 是可选成员，`Models` 靠「成员是否存在」决定报错时机；C# 的默认接口成员**总是存在**，故补 `SupportsFetchDeferred` / `SupportsCancelDeferred` 两个布尔属性承载「存在性」，使 `StreamDeferred` / `CancelDeferredAsync` 能在**解析认证之前**判定能力——与 TS 的检查顺序一致（否则「认证未配置」会先于「不支持延后」报出）。 |
 
 ## 差分验证（utils 层）
 

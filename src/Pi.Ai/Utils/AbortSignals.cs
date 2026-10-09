@@ -45,4 +45,52 @@ public static class AbortSignals
             }
         }
     }
+
+    /// <summary>
+    /// 停止等待被取消的操作，但继续观察其结算（避免未观察异常）。
+    /// 对应 TS <c>raceWithAbortSignal</c>：取消以 <see cref="OperationCanceledException"/> 呈现，
+    /// 而非 TS 的 <c>signal.reason</c>。
+    /// </summary>
+    public static async Task<T> RaceWithAsync<T>(Task<T> operation, CancellationToken signal)
+    {
+        ArgumentNullException.ThrowIfNull(operation);
+
+        if (!signal.CanBeCanceled) return await operation.ConfigureAwait(false);
+        if (signal.IsCancellationRequested)
+        {
+            Observe(operation);
+            throw new OperationCanceledException(signal);
+        }
+
+        var aborted = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        using var registration = signal.Register(
+            static state => ((TaskCompletionSource<bool>)state!).TrySetResult(true), aborted);
+
+        var winner = await Task.WhenAny(operation, aborted.Task).ConfigureAwait(false);
+        if (!ReferenceEquals(winner, operation))
+        {
+            Observe(operation);
+            throw new OperationCanceledException(signal);
+        }
+
+        return await operation.ConfigureAwait(false);
+    }
+
+    /// <summary>非泛型重载：停止等待被取消的操作，但继续观察其结算。</summary>
+    public static async Task RaceWithAsync(Task operation, CancellationToken signal)
+        => await RaceWithAsync<object?>(AwaitAsync(operation), signal).ConfigureAwait(false);
+
+    private static async Task<object?> AwaitAsync(Task operation)
+    {
+        await operation.ConfigureAwait(false);
+        return null;
+    }
+
+    /// <summary>挂上观察者，避免被放弃的操作留下未观察异常。</summary>
+    private static void Observe(Task operation)
+        => _ = operation.ContinueWith(
+            static task => _ = task.Exception,
+            CancellationToken.None,
+            TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously,
+            TaskScheduler.Default);
 }

@@ -135,10 +135,16 @@ public static class ProviderFactory
         }
 
         /// <summary>仅当任一实现导出延后方法时才暴露 <c>fetchDeferred</c>。对应 TS createProvider。</summary>
+        public bool SupportsFetchDeferred => _streams.Any(entry => entry.FetchDeferred is not null);
+
+        /// <summary>仅当任一实现导出取消方法时才暴露 <c>cancelDeferred</c>。对应 TS createProvider。</summary>
+        public bool SupportsCancelDeferred => _streams.Any(entry => entry.CancelDeferred is not null);
+
+        /// <summary>仅当任一实现导出延后方法时才暴露 <c>fetchDeferred</c>。对应 TS createProvider。</summary>
         public IAssistantMessageEventStream? StreamDeferred(ModelSpec model, DeferredHandle handle,
             IReadOnlyDictionary<string, object?>? options = null)
         {
-            if (!_streams.Any(entry => entry.FetchDeferred is not null)) return null;
+            if (!SupportsFetchDeferred) return null;
             return LazyStream.Run(model, () =>
             {
                 var implementation = ApiFor(model);
@@ -154,7 +160,7 @@ public static class ProviderFactory
         public async Task CancelDeferredAsync(ModelSpec model, DeferredHandle handle,
             IReadOnlyDictionary<string, object?>? options = null, CancellationToken cancellationToken = default)
         {
-            if (!_streams.Any(entry => entry.CancelDeferred is not null))
+            if (!SupportsCancelDeferred)
             {
                 throw new ModelsError(ModelsErrorCode.Provider,
                     $"Provider {_input.Id} does not support deferred responses");
