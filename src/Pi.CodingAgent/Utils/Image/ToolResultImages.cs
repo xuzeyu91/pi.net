@@ -72,13 +72,7 @@ public static class ToolResultImages
                 {
                     AutoResizeImages = autoResizeImages,
                     ResizeOptions = options?.ResizeOptions is { } profile
-                        ? new ImageResizeOptions
-                        {
-                            MaxWidth = profile.MaxWidth,
-                            MaxHeight = profile.MaxHeight,
-                            MaxBytes = profile.MaxBytes,
-                            JpegQuality = profile.JpegQuality,
-                        }
+                        ? ImageResizeOptions.FromModelProfile(profile)
                         : null,
                 }).ConfigureAwait(false);
 

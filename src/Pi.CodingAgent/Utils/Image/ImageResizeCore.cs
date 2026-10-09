@@ -12,6 +12,19 @@ public sealed record ImageResizeOptions
     public long? MaxBytes { get; init; }
 
     public int? JpegQuality { get; init; }
+
+    /// <summary>
+    /// Bridges the model catalog's nominal <see cref="Pi.Ai.Types.ModelImageResizeOptions"/> to this
+    /// type. The two are structurally identical but deliberately separate (difference C30): one is the
+    /// profile the catalog hands down, the other the generic caller-facing override.
+    /// </summary>
+    public static ImageResizeOptions FromModelProfile(Pi.Ai.Types.ModelImageResizeOptions profile) => new()
+    {
+        MaxWidth = profile.MaxWidth,
+        MaxHeight = profile.MaxHeight,
+        MaxBytes = profile.MaxBytes,
+        JpegQuality = profile.JpegQuality,
+    };
 }
 
 /// <summary>Port of the TS <c>ResizedImage</c>: the payload is base64.</summary>

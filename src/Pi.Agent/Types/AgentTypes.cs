@@ -94,8 +94,33 @@ public sealed record AgentTool(
     ToolExecutionMode? ExecutionMode = null,
     Func<object?, object?>? PrepareArguments = null)
 {
+    /// <summary>
+    /// JSON Schema of <c>structuredContent</c> in successful results. Tools that declare it should
+    /// always set <c>structuredContent</c>. 对应 TS <c>AgentTool.outputSchema</c>（继承自 pi-ai 的
+    /// <c>Tool</c>）。
+    /// </summary>
+    public ToolSchema? OutputSchema { get; init; }
+
+    /// <summary>
+    /// Provider 侧的约束采样请求。TS 还允许 <c>false</c> 表示「显式关闭」，文档称其与缺省等价，
+    /// 故此处两者都折叠为 null。对应 TS <c>Tool.constrainedSampling</c>。
+    /// </summary>
+    public System.Text.Json.Nodes.JsonObject? ConstrainedSampling { get; init; }
+
     /// <summary>构造可被 ai 包声明使用的视图。</summary>
-    public ToolDefinition Definition => new(Name, Description, Parameters);
+    public ToolDefinition Definition
+    {
+        get
+        {
+            var definition = new ToolDefinition(Name, Description, Parameters);
+            if (ConstrainedSampling is not null)
+            {
+                definition.ConstrainedSampling = ConstrainedSampling;
+            }
+
+            return definition;
+        }
+    }
 }
 
 /// <summary>工具调用钩子上下文。对应 TS <c>BeforeToolCallContext</c> / <c>AfterToolCallContext</c>。</summary>

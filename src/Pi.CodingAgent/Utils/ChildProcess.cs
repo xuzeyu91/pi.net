@@ -500,7 +500,11 @@ public sealed class ChildProcessHandle : IDisposable
     private readonly TaskCompletionSource _stderrEnded = new(TaskCreationOptions.RunContinuationsAsynchronously);
     private readonly MemoryStream _stdoutBuffer = new();
     private readonly MemoryStream _stderrBuffer = new();
+    private readonly List<byte[]> _pendingStdout = [];
+    private readonly List<byte[]> _pendingStderr = [];
     private readonly Lock _bufferLock = new();
+    private Action<byte[]>? _stdoutListeners;
+    private Action<byte[]>? _stderrListeners;
     private long _lastDataMs;
     private int _disposed;
 
@@ -518,11 +522,67 @@ public sealed class ChildProcessHandle : IDisposable
         }
     }
 
-    /// <summary>Standard output chunks, in arrival order. Only raised when stdout is piped.</summary>
-    public event Action<byte[]>? StdoutData;
+    /// <summary>
+    /// Standard output chunks, in arrival order. Only raised when stdout is piped.
+    /// </summary>
+    /// <remarks>
+    /// Difference C96: Node's <c>child.stdout</c> is a paused <c>Readable</c> that buffers until a
+    /// <c>"data"</c> listener puts it into flowing mode, so a listener attached after <c>spawn</c>
+    /// still sees everything the child wrote in the meantime. The port therefore buffers chunks until
+    /// the first subscriber arrives and replays them, instead of dropping output written before the
+    /// subscription.
+    /// </remarks>
+    public event Action<byte[]>? StdoutData
+    {
+        add
+        {
+            lock (_bufferLock)
+            {
+                _stdoutListeners += value;
+                foreach (var chunk in _pendingStdout)
+                {
+                    value(chunk);
+                }
+
+                _pendingStdout.Clear();
+            }
+        }
+
+        remove
+        {
+            lock (_bufferLock)
+            {
+                _stdoutListeners -= value;
+            }
+        }
+    }
 
     /// <summary>Standard error chunks, in arrival order. Only raised when stderr is piped.</summary>
-    public event Action<byte[]>? StderrData;
+    /// <remarks>Buffered the same way as <see cref="StdoutData"/> (difference C96).</remarks>
+    public event Action<byte[]>? StderrData
+    {
+        add
+        {
+            lock (_bufferLock)
+            {
+                _stderrListeners += value;
+                foreach (var chunk in _pendingStderr)
+                {
+                    value(chunk);
+                }
+
+                _pendingStderr.Clear();
+            }
+        }
+
+        remove
+        {
+            lock (_bufferLock)
+            {
+                _stderrListeners -= value;
+            }
+        }
+    }
 
     /// <summary>The process id, or <see langword="null"/> when it could not be started.</summary>
     public int? Id { get; private init; }
@@ -588,12 +648,12 @@ public sealed class ChildProcessHandle : IDisposable
 
         if (hasStdout)
         {
-            _ = handle.PumpAsync(process.StandardOutput.BaseStream, handle._stdoutBuffer, handle.StdoutData, handle._stdoutEnded);
+            _ = handle.PumpAsync(process.StandardOutput.BaseStream, handle._stdoutBuffer, isStdout: true, handle._stdoutEnded);
         }
 
         if (hasStderr)
         {
-            _ = handle.PumpAsync(process.StandardError.BaseStream, handle._stderrBuffer, handle.StderrData, handle._stderrEnded);
+            _ = handle.PumpAsync(process.StandardError.BaseStream, handle._stderrBuffer, isStdout: false, handle._stderrEnded);
         }
 
         if (process.HasExited)
@@ -712,7 +772,7 @@ public sealed class ChildProcessHandle : IDisposable
         }
     }
 
-    private async Task PumpAsync(Stream stream, MemoryStream buffer, Action<byte[]>? listeners, TaskCompletionSource ended)
+    private async Task PumpAsync(Stream stream, MemoryStream buffer, bool isStdout, TaskCompletionSource ended)
     {
         var chunk = new byte[8192];
         try
@@ -727,9 +787,31 @@ public sealed class ChildProcessHandle : IDisposable
 
                 Interlocked.Exchange(ref _lastDataMs, NowMs());
                 var copy = chunk[..read];
+
+                // Read the listener list under the lock and dispatch outside it, so a handler that
+                // subscribes or unsubscribes does not deadlock against the pump. Until the first
+                // subscriber arrives the chunk is parked, to be replayed on subscription
+                // (difference C96).
+                Action<byte[]>? listeners;
                 lock (_bufferLock)
                 {
                     buffer.Write(copy);
+                    if (isStdout)
+                    {
+                        listeners = _stdoutListeners;
+                        if (listeners is null)
+                        {
+                            _pendingStdout.Add(copy);
+                        }
+                    }
+                    else
+                    {
+                        listeners = _stderrListeners;
+                        if (listeners is null)
+                        {
+                            _pendingStderr.Add(copy);
+                        }
+                    }
                 }
 
                 listeners?.Invoke(copy);

@@ -45,6 +45,14 @@ public static class ToolSchemaBuilder
         return node;
     }
 
+    /// <summary>构造布尔属性。对应 typebox <c>Type.Boolean</c>。</summary>
+    public static JsonObject Boolean(string? description = null)
+    {
+        var node = new JsonObject { ["type"] = "boolean" };
+        if (description is not null) node["description"] = description;
+        return node;
+    }
+
     /// <summary>构造数组属性。对应 typebox <c>Type.Array</c>。</summary>
     public static JsonObject Array(JsonNode items, string? description = null)
     {
@@ -101,6 +109,14 @@ public static class ToolArgs
         if (!args.TryGetValue(name, out var value) || value is null) return null;
         if (value is string text) return text;
         throw new InvalidOperationException($"Invalid arguments: {name} must be a string");
+    }
+
+    /// <summary>取可选布尔。</summary>
+    public static bool? OptionalBool(IReadOnlyDictionary<string, object?> args, string name)
+    {
+        if (!args.TryGetValue(name, out var value) || value is null) return null;
+        if (value is bool flag) return flag;
+        throw new InvalidOperationException($"Invalid arguments: {name} must be a boolean");
     }
 
     /// <summary>取可选对象数组（元素为字典）。</summary>
