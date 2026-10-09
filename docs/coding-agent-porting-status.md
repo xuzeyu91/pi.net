@@ -27,7 +27,7 @@
 
 | 子阶段 | 范围 | 行数 | 状态 |
 |---|---|---:|---|
-| **4a** | `src/utils/*`（37 文件）+ 无依赖的根级模块（`config.ts` / `migrations.ts` / `core/defaults.ts` 等） | ~4,500 | 🚧 进行中（20/36 utils + `config.ts`） |
+| **4a** | `src/utils/*`（37 文件）+ 无依赖的根级模块（`config.ts` / `migrations.ts` / `core/defaults.ts` 等） | ~4,500 | 🚧 进行中（21/36 utils + `config.ts`） |
 | **4b** | 配置 / 信任 / 模型层：settings-manager、trust-manager、project-trust、auth-storage、model-config/registry/resolver、models-store、radius、virtual-models、mcp-servers、keybindings | ~12,000 | ⏳ |
 | **4c** | 工具系统：`core/tools/*` + `core/tools/renderers/*` | ~9,000 | ⏳ |
 | **4d** | 扩展系统：`core/extensions/*`（types / runner / loader）+ `extensions/*`（codemode / llama / mcp / tool-search） | ~12,000 | ⏳ |
@@ -37,7 +37,7 @@
 
 ## 4a 进度（utils 层）
 
-### ✅ 已完成（20/36 个 utils 代码文件 + 根级 `config.ts`）
+### ✅ 已完成（21/36 个 utils 代码文件 + 根级 `config.ts`）
 
 | TS 文件 | 行数 | .NET | 说明 |
 |---|---:|---|---|
@@ -61,6 +61,7 @@
 | `utils/clipboard-command.ts` | 44 | `Utils/ClipboardCommand.cs` | 带超时与输出上限的剪贴板命令执行器 |
 | `utils/version-check.ts` | 109 | `Utils/VersionCheck.cs` | `formatVersionCheckError` / `comparePackageVersions` / `getLatestPiRelease` / `checkForNewPiVersion`（差异 C14） |
 | `utils/management-http.ts` | 78 | `Utils/ManagementHttp.cs` | 带重试的 fetch（`{408,425,429,500,502,503,504}`），`HandlerOverride` 注入缝 |
+| `utils/changelog.ts` | 196 | `Utils/Changelog.cs` | `parseChangelog` / `normalizeChangelogLinks`（把仓库内相对链接改写到 tag）/ `compareVersions` / `getNewEntries`；需要 JS 的 `encodeURI`（差异 C15） |
 | `config.ts`（根级） | 656 | `Config.cs` | 安装方式判定、自更新命令拼装、分享链接、资产路径。`ConfigSeams` 集中 9 个注入点 |
 
 C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶段复用）：
@@ -74,14 +75,15 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 | `Utils/Semver.cs` | semver 7.8.5 的 `valid` / `parse` / `compare`；把 `internal/re.js` 的 `MAX_LENGTH`/`MAX_SAFE_INTEGER` 安全边界原样搬进正则 |
 | `Utils/NodePath.cs` | `lib/path.js` 的逐行移植（含 `\\.\`/`\\?\` 设备根、UNC 根、Windows 保留名、CVE-2024-36139 补丁块） |
 | `Utils/FileUrl.cs` | `fileURLToPath` 的 WHATWG 解析器（scheme/authority/path 三态、IPv4 归一化、禁止域名码点） |
+| `Utils/JsUri.cs` | JS 的 `encodeURI` / `encodeURIComponent`。**不能**用 `Uri.EscapeDataString`：未转义集合不同，且两者都不保留 `%`（`encodeURI("%41")` 是 `"%2541"`） |
 
 ### ⏳ 待移植
 
-`utils/` 余下 **16 个文件 / 2,402 行**：
+`utils/` 余下 **15 个文件 / 2,206 行**：
 
 | 分组 | 文件 | 行数 | 备注 |
 |---|---|---:|---|
-| Git / 变更日志 | `git.ts`、`changelog.ts` | 422 | 用 `Process` 调外部 `git` |
+| Git | `git.ts` | 226 | 依赖 `hosted-git-info`（658 行纯字符串库）。**需移植**：`parse-url.js`（WHATWG `new URL()` 子集）+ `from-url.js` + `hosts.js` 的 `extract`/`protocols`/`domain`；模板函数无人调用可略 |
 | 图像处理 | `clipboard-image.ts`、`exif-orientation.ts`、`image-convert.ts`、`image-process.ts`、`image-resize-core.ts`、`image-resize-worker.ts`、`image-resize.ts`、`photon.ts`、`tool-result-images.ts` | 1,265 | 依赖 `@silvia-odwyer/photon-node`（Rust/wasm）。**需选型**：托管图像库（SkiaSharp / ImageSharp）或注入点外置 |
 | 工具管理 | `tools-manager.ts`、`windows-self-update.ts` | 484 | 依赖 `config.ts`（已完成）与子进程 |
 | 需第三方库 | `frontmatter.ts`、`syntax-highlight.ts`、`zip.ts` | 331 | 分别依赖 `yaml`、`highlight.js`、归档库；**需选型** |
@@ -106,6 +108,7 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 | C12 | **cross-spawn `escapeArgument` 的正则不能照搬** | 原式 `/(?=(\\+?)?)\1"/g` 与 `/(?=(\\+?)?)\1$/` 把反斜杠串放在**前瞻里的惰性量词**中，而 V8 不会为一个已经成功的前瞻回溯放大该捕获——真正被倍增的只有反斜杠串的**最后一个**反斜杠。实测规则：串尾的 n 个反斜杠变 n+1，引号前的 n 个变 n+2（n=0 时变 1）。照搬正则会得到 2n / 2n+1，**是错的**。已用 448 条随机向量锁定。 |
 | C13 | **需要注入缝的三处平台耦合** | `NodePath.CwdOverride`（`resolve`/`relative` 读 cwd，而语料在不同目录采录）、`Clipboard.NativeClipboardOverride`（TS 测试会 stub 模块级单例）、`Clipboard.PlatformOverride` / `EnvOverride` / `CommandRunnerOverride` / `Osc52WriterOverride`。`resolve`/`relative` 是纯字符串运算，注入的路径不必真实存在。 |
 | C14 | **`AggregateException.Message` 不是 JS 的 `error.message`** | .NET 的 `AggregateException.Message` 会把每条内层消息**追加**成 `" (m1) (m2)"`，而 JS 的 `error.message` 只有外层文本；同时 `String(error)` 取的是 JS 的 `error.name`（`"Error"` / `"AggregateError"`），不是 .NET 类型名。`FormatVersionCheckError` 因此要把后缀剥回去，并把类型映射成 JS 名称。 |
+| C15 | **`existsSync` 对目录返回 true** | Node 的 `existsSync(dir)` 是 true，随后 `readFileSync` 抛 `EISDIR` 走 catch；而 .NET 的 `File.Exists(dir)` 是 false，会静默跳过 catch。`Changelog.ParseChangelog` 因此用 `File.Exists(path) \|\| Directory.Exists(path)`。同理 `Uri.EscapeDataString` 不能当 `encodeURI`（差异见 `JsUri.cs`）。 |
 
 ## 差分验证（utils 层）
 
@@ -134,12 +137,25 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 | `escapeCmdCommand` / `escapeCmdArgument` | 140 | cross-spawn 转义的定值向量 |
 | `escapeCmdArgumentRandom` | 448 | 反斜杠 / 引号 / 元字符的确定性随机扫描 + 全部 n≤8 的串形（差异 C12） |
 
+`tests/Pi.CodingAgent.Tests/git-corpus.json`（由 `tools/gen-coding-agent-git-corpus.mjs` 生成，共 292 条）：
+
+| 区段 | 条数 | 内容 |
+|---|---:|---|
+| `hostedGitInfoFromUrl` | 92 | hosted-git-info 的 `fromUrl`：github / gitlab / bitbucket / gist / sourcehut、短写、凭据、端口、百分号编码、畸形输入。**待消费**（`git.ts` 那一批） |
+| `parseGitUrl` | 107 | `git.ts` 的 `parseGitUrl`：`git:` 前缀的各种历史短写、显式协议、scp 形式、`#ref`、不安全片段（`..`、反斜杠、前导 `/`、`%00`）。**待消费** |
+| `normalizeChangelogLinks` | 52 | 相对链接改写、`blob`/`tree` 判定、浮动分支改写到 tag、旧仓库改名、编码 |
+| `parseChangelog` | 19 | 版本头形态（`## x.y.z` / `## [x.y.z]` / `## v…`）、无版本头截断、CRLF、缺失尾换行 |
+| `parseChangelogMissing` / `parseChangelogUnreadable` | 2 | 不存在的路径 / 目录（后者走 catch 分支） |
+| `compareChangelogVersions` | 7 | 三元比较 |
+| `getNewChangelogEntries` | 13 | `lastVersion` 畸形时的 `Number() \|\| 0` 语义 |
+
 ## 测试覆盖
 
-`tests/Pi.CodingAgent.Tests`（45 项，已禁用并行化）：
+`tests/Pi.CodingAgent.Tests`（51 项，已禁用并行化）：
 
 | 测试类 | 项数 | 覆盖 |
 |---|---:|---|
 | `UtilsCorpusTests` | 11 | `utils-corpus.json` 的 416 条 + 两条语料守卫 |
 | `PathCorpusTests` | 16 | `nodePath*` / `paths*` / `fileUrlToPath` / `semver` / `versionCheck` 的路径与版本语义；含 `FileUrlToPath_DivergencesAreAsDocumented` 双向断言与 `CwdScope` 回放 |
 | `CoreUtilsCorpusTests` | 18 | 其余全部区段：semver、版本检查、剪贴板、config、shell、cross-spawn 转义（含 448 条随机扫描） |
+| `ChangelogCorpusTests` | 6 | `git-corpus.json` 的 changelog 区段（`git.ts` 与 `hostedGitInfoFromUrl` 区段待下一批消费） |
