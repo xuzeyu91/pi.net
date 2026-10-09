@@ -149,7 +149,7 @@ public class CoreUtilsCorpusTests
             var actual = VersionCheck.FormatVersionCheckError(error);
             if (actual != expected)
             {
-                failures.Add($"{name}: expected \"{actual}\", got \"{expected}\"");
+                failures.Add($"{name}: expected \"{expected}\", got \"{actual}\"");
             }
         }
 
@@ -165,8 +165,10 @@ public class CoreUtilsCorpusTests
     }
 
     /// <summary>
-    /// A stand-in for JavaScript's <c>Error</c>. The name matters: <c>formatVersionCheckError</c> falls
-    /// back to the error's name when the message is empty, and the corpus expects <c>"Error"</c> there.
+    /// A stand-in for JavaScript's <c>Error</c>. The CLR type name is deliberately irrelevant: when the
+    /// message is empty <c>formatVersionCheckError</c> has to report the JavaScript name <c>"Error"</c>,
+    /// not the .NET one, so the port maps the exception type rather than reading
+    /// <see cref="Type.Name"/>.
     /// </summary>
     private sealed class JsError : Exception
     {
@@ -197,7 +199,7 @@ public class CoreUtilsCorpusTests
                     "1.0.0",
                     new VersionCheckOptions { Retry = retry });
 
-                var actual = Describe(release);
+                var actual = DescribeRelease(release);
                 var expected = Describe(vector.GetProperty("result"));
                 if (actual != expected)
                 {
@@ -239,7 +241,7 @@ public class CoreUtilsCorpusTests
                 VersionCheck.EnvOverride = Lookup(env);
                 var release = await VersionCheck.CheckForNewPiVersionAsync(current);
 
-                var actual = Describe(release);
+                var actual = DescribeRelease(release);
                 var expected = Describe(vector.GetProperty("result"));
                 if (actual != expected)
                 {
@@ -270,7 +272,7 @@ public class CoreUtilsCorpusTests
     private static Func<string, string?> Lookup(Dictionary<string, string> env) =>
         name => env.TryGetValue(name, out var value) ? value : null;
 
-    private static string Describe(LatestPiRelease? release) =>
+    private static string DescribeRelease(LatestPiRelease? release) =>
         release is null ? "null" : $"{release.Version}|{release.PackageName ?? "-"}|{release.Note ?? "-"}";
 
     private static string Describe(JsonElement result)
@@ -278,6 +280,11 @@ public class CoreUtilsCorpusTests
         if (result.ValueKind == JsonValueKind.Null)
         {
             return "null";
+        }
+
+        if (result.ValueKind == JsonValueKind.String)
+        {
+            return result.GetString()!;
         }
 
         var version = result.GetProperty("version").GetString()!;
@@ -415,7 +422,7 @@ public class CoreUtilsCorpusTests
         Dictionary<string, string> env,
         Dictionary<string, byte[]> results,
         List<RecordedCall> calls,
-        string? nativeText,
+        NativeStub native,
         Func<Task<string?>> body,
         TextWriter? osc52 = null)
     {
@@ -430,7 +437,9 @@ public class CoreUtilsCorpusTests
                 var key = string.Join(' ', new[] { command }.Concat(args));
                 return Task.FromResult(results.TryGetValue(key, out var value) ? value : null);
             };
-            Clipboard.NativeClipboardOverride = nativeText is null ? null : () => new StubClipboard(calls, nativeText);
+            Clipboard.NativeClipboardOverride = native.Present
+                ? () => new StubClipboard(calls, native.Text)
+                : null;
 
             return await body();
         }
@@ -459,39 +468,45 @@ public class CoreUtilsCorpusTests
     }
 
     /// <summary>
-    /// The TS stub distinguishes three states: no native clipboard (<c>false</c>), a clipboard whose
-    /// text is undefined (<c>null</c>), and a clipboard with text. <c>false</c> and <c>null</c> both map
-    /// to "no native clipboard" for the port, which never reads a text value it has not been given.
+    /// The TS stub distinguishes three states, which the corpus records as three different JSON values:
+    /// <c>false</c> for "no native clipboard at all", <c>null</c> for "a native clipboard whose
+    /// <c>getText</c> yields nothing", and a string for a clipboard with text. The copy vectors use
+    /// <c>true</c>, because their stub only has to exist — its text is fixed.
     /// </summary>
-    private static string? ReadNative(JsonElement vector)
+    private static NativeStub ReadNative(JsonElement vector)
     {
         if (!vector.TryGetProperty("native", out var native))
         {
-            return null;
+            return new NativeStub(false, null);
         }
 
         return native.ValueKind switch
         {
-            JsonValueKind.False => null,
-            JsonValueKind.Null => null,
-            _ => native.GetString() ?? string.Empty,
+            JsonValueKind.False => new NativeStub(false, null),
+            JsonValueKind.Null => new NativeStub(true, null),
+            JsonValueKind.True => new NativeStub(true, "native-text"),
+            _ => new NativeStub(true, native.GetString() ?? string.Empty),
         };
     }
+
+    /// <summary>A native clipboard the corpus can ask for: whether one exists, and the text it reports.</summary>
+    private readonly record struct NativeStub(bool Present, string? Text);
 
     private sealed record RecordedCall(string Command, IReadOnlyList<string> Args, string? Input, int? TimeoutMs);
 
     private sealed class StubClipboard : INativeClipboard
     {
         private readonly List<RecordedCall> _calls;
-        private readonly string _text;
+        private readonly string? _text;
 
-        public StubClipboard(List<RecordedCall> calls, string text)
+        public StubClipboard(List<RecordedCall> calls, string? text)
         {
             _calls = calls;
             _text = text;
         }
 
-        public Task<NativeClipboardText?> GetTextAsync() => Task.FromResult<NativeClipboardText?>(new NativeClipboardText(_text));
+        public Task<NativeClipboardText?> GetTextAsync() =>
+            Task.FromResult<NativeClipboardText?>(_text is null ? null : new NativeClipboardText(_text));
 
         public Task<byte[]?> GetImageAsync() => Task.FromResult<byte[]?>(null);
 
@@ -542,8 +557,20 @@ public class CoreUtilsCorpusTests
     private static string DescribeCall(string command, string[] args, string? input, int? timeout) =>
         $"{{ {command} [{string.Join(" ", args.Select(Quote))}] input={Describe(input)} timeout={Describe(timeout)} }}";
 
-    private static string DescribeVector(JsonElement vector) =>
-        vector.TryGetProperty("name", out var name) ? name.GetString()! : Describe(vector);
+    /// <summary>
+    /// Prefer the vector's own <c>name</c>. Vectors without one still need a label that does not blow up
+    /// the failure message, so fall back to the raw JSON rather than to an unrelated overload.
+    /// </summary>
+    private static string DescribeVector(JsonElement vector)
+    {
+        if (vector.TryGetProperty("name", out var name) && name.ValueKind == JsonValueKind.String)
+        {
+            return name.GetString()!;
+        }
+
+        var raw = vector.GetRawText().Replace('\n', ' ');
+        return raw.Length <= 140 ? raw : raw[..140] + "…";
+    }
 
     // ---------------------------------------------------------------------------------------------
     // src/config.ts
@@ -717,7 +744,26 @@ public class CoreUtilsCorpusTests
     public void EscapeCmdArgument_MatchesCrossSpawn()
     {
         var failures = new List<string>();
-        foreach (var vector in Corpus.GetProperty("escapeCmdArgument").EnumerateArray())
+        CheckEscapeArguments("escapeCmdArgument", failures);
+        Assert.True(failures.Count == 0, Mismatches(failures));
+    }
+
+    /// <summary>
+    /// The hand-picked vectors above only cover short backslash runs. This sweep covers every run length
+    /// up to eight plus 400 pseudo-random strings, because the rule the original regexes actually
+    /// implement (only the final backslash of a run is doubled) is not the rule the regexes read like.
+    /// </summary>
+    [Fact]
+    public void EscapeCmdArgumentRandom_MatchesCrossSpawn()
+    {
+        var failures = new List<string>();
+        CheckEscapeArguments("escapeCmdArgumentRandom", failures);
+        Assert.True(failures.Count == 0, Mismatches(failures));
+    }
+
+    private static void CheckEscapeArguments(string section, List<string> failures)
+    {
+        foreach (var vector in Corpus.GetProperty(section).EnumerateArray())
         {
             var input = vector.GetProperty("input").GetString()!;
             foreach (var (field, doubleEscape) in new[] { ("single", false), ("double", true) })
@@ -732,8 +778,6 @@ public class CoreUtilsCorpusTests
                 }
             }
         }
-
-        Assert.True(failures.Count == 0, Mismatches(failures));
     }
 
     // ---------------------------------------------------------------------------------------------

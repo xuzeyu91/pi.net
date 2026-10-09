@@ -101,9 +101,6 @@ public static class ChildProcess
     /// </summary>
     public const int ExitStdioGraceMs = 100;
 
-    private static readonly Regex CmdBackslashQuote = new("(\\\\*)\"", RegexOptions.Compiled);
-    private static readonly Regex CmdTrailingBackslashes = new("(\\\\*)$", RegexOptions.Compiled);
-
     // cross-spawn's metaCharsRegExp. Note the ']' and the backtick: cmd.exe treats both as metacharacters.
     private static readonly Regex CmdMetaCharacters = new("([()\\][%!^\"`<>&|;, *?])", RegexOptions.Compiled);
 
@@ -392,15 +389,72 @@ public static class ChildProcess
     /// <param name="doubleEscapeMetaChars">
     /// Escape meta characters a second time, which is required for a <c>node_modules/.bin</c> cmd-shim.
     /// </param>
+    /// <remarks>
+    /// The original runs two regular expressions, <c>/(?=(\\+?)?)\1"/g</c> and <c>/(?=(\\+?)?)\1$/</c>.
+    /// Both put the backslash run in a <em>lazy</em> quantifier <em>inside a lookahead</em>, and V8 does
+    /// not backtrack a lookahead that already succeeded to grow that capture: only the <b>final</b>
+    /// backslash of a run is ever the one matched, and the backreference then has to line up with the
+    /// text that follows. The upshot, measured against the real library rather than derived on paper:
+    /// a run of <c>n</c> backslashes grows to <c>n + 1</c> at the end of the string, and to <c>n + 2</c>
+    /// when it precedes a double quote (<c>n = 0</c> grows to <c>1</c>, the escape backslash itself).
+    /// Porting the regexes literally produces <c>2n</c> / <c>2n + 1</c> and is wrong.
+    /// </remarks>
     internal static string EscapeCmdArgument(string arg, bool doubleEscapeMetaChars = false)
     {
-        // A run of backslashes before a double quote doubles, and the quote is escaped.
-        arg = CmdBackslashQuote.Replace(arg, "$1$1\\\"");
-        // A run of backslashes at the end of the string doubles, because a closing quote is appended.
-        arg = CmdTrailingBackslashes.Replace(arg, "$1$1");
+        // A backslash before a double quote is doubled and the quote gains an escape backslash.
+        arg = DoubleBackslashesBeforeQuotes(arg);
+        // A trailing backslash is doubled, because a closing quote is about to be appended.
+        arg = DoubleTrailingBackslash(arg);
         arg = "\"" + arg + "\"";
         arg = CmdMetaCharacters.Replace(arg, "^$1");
         return doubleEscapeMetaChars ? CmdMetaCharacters.Replace(arg, "^$1") : arg;
+    }
+
+    /// <summary>
+    /// Grow every backslash run that sits directly in front of a <c>"</c> by two, or by one when the run
+    /// is empty (that single backslash escapes the quote).
+    /// </summary>
+    private static string DoubleBackslashesBeforeQuotes(string arg)
+    {
+        if (!arg.Contains('"'))
+        {
+            return arg;
+        }
+
+        var builder = new StringBuilder(arg.Length + 8);
+        for (var index = 0; index < arg.Length; index++)
+        {
+            if (arg[index] == '"')
+            {
+                var backslashes = 0;
+                for (var probe = index - 1; probe >= 0 && arg[probe] == '\\'; probe--)
+                {
+                    backslashes++;
+                }
+
+                builder.Append('\\');
+                if (backslashes > 0)
+                {
+                    builder.Append('\\');
+                }
+            }
+
+            builder.Append(arg[index]);
+        }
+
+        return builder.ToString();
+    }
+
+    /// <summary>Grow a trailing backslash run by one, which doubles the final backslash.</summary>
+    private static string DoubleTrailingBackslash(string arg)
+    {
+        var backslashes = 0;
+        for (var index = arg.Length - 1; index >= 0 && arg[index] == '\\'; index--)
+        {
+            backslashes++;
+        }
+
+        return backslashes == 0 ? arg : arg + "\\";
     }
 
     private static IReadOnlyList<StdioMode> ExpandStdio(IReadOnlyList<StdioMode>? stdio)

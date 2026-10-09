@@ -52,7 +52,7 @@ public static class VersionCheck
     /// </remarks>
     public static string FormatVersionCheckError(Exception error)
     {
-        var rootMessage = string.IsNullOrEmpty(error.Message) ? error.GetType().Name : error.Message;
+        var rootMessage = RootMessage(error);
 
         IReadOnlyList<Exception> causes = error switch
         {
@@ -78,6 +78,48 @@ public static class VersionCheck
         var causeMessage = causes.FirstOrDefault(cause => !string.IsNullOrEmpty(cause.Message))?.Message;
         return causeMessage is null ? rootMessage : $"{rootMessage} (cause: {causeMessage})";
     }
+
+    /// <summary>
+    /// The text JavaScript would read as <c>error.message</c>, or the error's name when the message is
+    /// empty — which is what <c>String(error)</c> produces for a bare <c>Error</c>.
+    /// </summary>
+    /// <remarks>
+    /// Two .NET behaviours have to be undone here, because neither exists in JavaScript:
+    /// <list type="bullet">
+    /// <item>
+    /// <see cref="AggregateException.Message"/> is not the message handed to the constructor. The
+    /// runtime appends every inner message as <c>" (m1) (m2)"</c>, so the outer text has to be recovered
+    /// by removing that suffix again.
+    /// </item>
+    /// <item>
+    /// A .NET type name is not a JavaScript error name, so the fallback is mapped explicitly.
+    /// </item>
+    /// </list>
+    /// </remarks>
+    private static string RootMessage(Exception error)
+    {
+        if (string.IsNullOrEmpty(error.Message))
+        {
+            return JavaScriptErrorName(error);
+        }
+
+        if (error is not AggregateException aggregate || aggregate.InnerExceptions.Count == 0)
+        {
+            return error.Message;
+        }
+
+        var suffix = " (" + string.Join(") (", aggregate.InnerExceptions.Select(inner => inner.Message)) + ")";
+        return aggregate.Message.EndsWith(suffix, StringComparison.Ordinal)
+            ? aggregate.Message[..^suffix.Length]
+            : aggregate.Message;
+    }
+
+    /// <summary>
+    /// The name JavaScript reports for an error. Node only ever throws <c>Error</c> and
+    /// <c>AggregateError</c> from a failed fetch, so those are the only names that can appear here.
+    /// </summary>
+    private static string JavaScriptErrorName(Exception error) =>
+        error is AggregateException ? "AggregateError" : "Error";
 
     /// <summary>Compare two package versions, or <see langword="null"/> when either is not valid semver.</summary>
     public static int? ComparePackageVersions(string leftVersion, string rightVersion)

@@ -29,4 +29,6 @@ diag-partial.txt
 mdtest-*.txt
 full-diff.log
 *.ctrf
+gen.log
+push.log
 

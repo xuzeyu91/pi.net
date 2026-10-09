@@ -27,7 +27,7 @@
 
 | 子阶段 | 范围 | 行数 | 状态 |
 |---|---|---:|---|
-| **4a** | `src/utils/*`（37 文件）+ 无依赖的根级模块（`config.ts` / `migrations.ts` / `core/defaults.ts` 等） | ~4,500 | 🚧 进行中（12/37 utils） |
+| **4a** | `src/utils/*`（37 文件）+ 无依赖的根级模块（`config.ts` / `migrations.ts` / `core/defaults.ts` 等） | ~4,500 | 🚧 进行中（20/36 utils + `config.ts`） |
 | **4b** | 配置 / 信任 / 模型层：settings-manager、trust-manager、project-trust、auth-storage、model-config/registry/resolver、models-store、radius、virtual-models、mcp-servers、keybindings | ~12,000 | ⏳ |
 | **4c** | 工具系统：`core/tools/*` + `core/tools/renderers/*` | ~9,000 | ⏳ |
 | **4d** | 扩展系统：`core/extensions/*`（types / runner / loader）+ `extensions/*`（codemode / llama / mcp / tool-search） | ~12,000 | ⏳ |
@@ -37,7 +37,7 @@
 
 ## 4a 进度（utils 层）
 
-### ✅ 已完成
+### ✅ 已完成（20/36 个 utils 代码文件 + 根级 `config.ts`）
 
 | TS 文件 | 行数 | .NET | 说明 |
 |---|---:|---|---|
@@ -53,26 +53,40 @@
 | `utils/output-files.ts` | 34 | `Utils/OutputFiles.cs` | 临时输出文件（`0o600` + `wx`，差异 C6） |
 | `utils/mime.ts` | 116 | `Utils/Mime.cs` | 图像 MIME 嗅探：JPEG / PNG（含 APNG 排除）/ GIF / WebP / BMP 头部校验 |
 | `utils/open-browser.ts` | 24 | `Utils/OpenBrowser.cs` | 平台启动器（不用 shell，防注入） |
+| `utils/fs-watch.ts` | 30 | `Utils/FsWatch.cs` | `fs.watch` 的 `FileSystemWatcher` 等价物 + 抖动去重 |
+| `utils/paths.ts` | 140 | `Utils/Paths.cs` + `Utils/FileUrl.cs` + `Utils/NodePath.cs` | 核心路径语义。`FileUrl.cs` 与 `NodePath.cs` 是新增的忠实底层：`node:url` 的 `fileURLToPath`（WHATWG 状态机）与 `node:path` 的 `normalize`/`join`/`dirname`/`basename`/`isAbsolute`/`resolve`/`relative`（见差异 C9–C11） |
+| `utils/child-process.ts` | 137 | `Utils/ChildProcess.cs` | `utils/child-process.ts` + `cross-spawn`：`parseNonShell` 的 cmd-shim 判定、`.com`/`.exe` 快路径、`comspec` 回退，以及 `escapeCommand`/`escapeArgument`（差异 C12） |
+| `utils/shell.ts` | 218 | `Utils/Shell.cs` | `getShellConfig` / `getPowerShellConfig` / `getShellEnv` / `sanitizeBinaryOutput` / `killProcessTree` + 分离子进程 PID 追踪 |
+| `utils/clipboard.ts` | 144 | `Utils/Clipboard.cs` | 平台命令分派（Termux → Wayland → X11 → pbcopy/clip）、远程会话 OSC 52 回退、原生剪贴板注入缝（差异 C13） |
+| `utils/clipboard-command.ts` | 44 | `Utils/ClipboardCommand.cs` | 带超时与输出上限的剪贴板命令执行器 |
+| `utils/version-check.ts` | 109 | `Utils/VersionCheck.cs` | `formatVersionCheckError` / `comparePackageVersions` / `getLatestPiRelease` / `checkForNewPiVersion`（差异 C14） |
+| `utils/management-http.ts` | 78 | `Utils/ManagementHttp.cs` | 带重试的 fetch（`{408,425,429,500,502,503,504}`），`HandlerOverride` 注入缝 |
+| `config.ts`（根级） | 656 | `Config.cs` | 安装方式判定、自更新命令拼装、分享链接、资产路径。`ConfigSeams` 集中 9 个注入点 |
 
-C# 侧另有三个「JS 语义」辅助（TS 无对应文件，供全部子阶段复用）：
+C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶段复用）：
 
 | 文件 | 作用 |
 |---|---|
 | `Utils/JsRegex.cs` | JS `\s` / `\d` 字符类常量 + `Number.parseInt` 的忠实实现（0x 前缀剥离、大整数单次正确舍入，见差异 C7） |
 | `Utils/ProcessInfo.cs` | `process.platform` / `process.arch` 的 Node 拼写映射（保持用户可见字符串不变） |
 | `Utils/Chalk.cs` | chalk 的 16 色子集：嵌套重开（`close` → `close+open`）与 CRLF 感知的逐行包裹 |
+| `Utils/NodeError.cs` | `INodeError { string? Code }` + `NodeIoException`——Node 的 `err.code`（`ECONNREFUSED`、`ERR_INVALID_URL`…）在 C# 侧的落点 |
+| `Utils/Semver.cs` | semver 7.8.5 的 `valid` / `parse` / `compare`；把 `internal/re.js` 的 `MAX_LENGTH`/`MAX_SAFE_INTEGER` 安全边界原样搬进正则 |
+| `Utils/NodePath.cs` | `lib/path.js` 的逐行移植（含 `\\.\`/`\\?\` 设备根、UNC 根、Windows 保留名、CVE-2024-36139 补丁块） |
+| `Utils/FileUrl.cs` | `fileURLToPath` 的 WHATWG 解析器（scheme/authority/path 三态、IPv4 归一化、禁止域名码点） |
 
 ### ⏳ 待移植
 
-`utils/` 余下 25 个文件（约 2,900 行），按依赖分组：
+`utils/` 余下 **16 个文件 / 2,402 行**：
 
-| 分组 | 文件 | 备注 |
-|---|---|---|
-| 路径 / 进程 | `paths.ts`、`child-process.ts`、`shell.ts`、`fs-watch.ts` | 依赖 `config.ts` 的 `getBinDir()`；进程树杀死与 stdio 宽限同 durable 的 `Env` 层处理 |
-| Git / 变更日志 | `git.ts`、`changelog.ts`、`version-check.ts` | git 用 `Process` 调外部命令 |
-| 剪贴板 | `clipboard.ts`、`clipboard-command.ts`、`clipboard-image.ts` | 平台命令分派 |
-| 图像处理 | `photon.ts`、`image-convert.ts`、`image-process.ts`、`image-resize.ts`、`image-resize-core.ts`、`image-resize-worker.ts`、`exif-orientation.ts`、`tool-result-images.ts` | 依赖 `@silvia-odwyer/photon-node`（Rust/wasm）。需选型：托管图像库（SkiaSharp / ImageSharp）或注入点外置 |
-| 其他 | `frontmatter.ts`、`zip.ts`、`syntax-highlight.ts`、`html.ts`✅、`tools-manager.ts`、`management-http.ts`、`windows-self-update.ts`、`abort.ts`✅ | `frontmatter` 依赖 `yaml`、`syntax-highlight` 依赖 `highlight.js`、`zip` 需归档库 |
+| 分组 | 文件 | 行数 | 备注 |
+|---|---|---:|---|
+| Git / 变更日志 | `git.ts`、`changelog.ts` | 422 | 用 `Process` 调外部 `git` |
+| 图像处理 | `clipboard-image.ts`、`exif-orientation.ts`、`image-convert.ts`、`image-process.ts`、`image-resize-core.ts`、`image-resize-worker.ts`、`image-resize.ts`、`photon.ts`、`tool-result-images.ts` | 1,265 | 依赖 `@silvia-odwyer/photon-node`（Rust/wasm）。**需选型**：托管图像库（SkiaSharp / ImageSharp）或注入点外置 |
+| 工具管理 | `tools-manager.ts`、`windows-self-update.ts` | 484 | 依赖 `config.ts`（已完成）与子进程 |
+| 需第三方库 | `frontmatter.ts`、`syntax-highlight.ts`、`zip.ts` | 331 | 分别依赖 `yaml`、`highlight.js`、归档库；**需选型** |
+
+另 `utils/highlight-js.d.ts` 是纯类型声明，无运行时代码，不需要移植。
 
 ## 关键设计差异（TS → C#）
 
@@ -86,41 +100,46 @@ C# 侧另有三个「JS 语义」辅助（TS 无对应文件，供全部子阶�
 | C6 | **`0o600` + `flag: "wx"` → `FileStreamOptions`** | `wx` = `FileMode.CreateNew`（不跟随他人预置的链接），权限用 `UnixCreateMode`。注意 `UnixCreateMode` 在 Windows 上会抛，故只在 `!OperatingSystem.IsWindows()` 分支设置（否则 CA1416 报错）。 |
 | C7 | **`Number.parseInt` 需要两处非显然的处理** | ①规范在**显式 radix 为 16** 时设置 `stripPrefix`，故 `parseInt("0x1f", 16) === 31`；②V8 用 bignum 累加后**只做一次正确舍入**，而 .NET 的 `(double)BigInteger` 是**截断**（`11111111111111111` → `...110`，JS 是 `...112`），故改走 `double.Parse`（.NET Core 3.0+ 的解析器是正确舍入的）。110 条差分向量锁定，含 `1e308`、`Infinity`、`9`×24 等边界。 |
 | C8 | **chalk 的嵌套重开是 `close → close + open`** | chalk v6 的 `stringReplaceAll(string, substring, postfix)` **保留匹配并追加** `postfix`，所以已存在的 `\e[39m` 变成 `\e[39m\e[33m`（而不是被替换成 `\e[33m`）。首版按旧版 chalk 的「替换」实现，6 条嵌套向量失败。 |
+| C9 | **`node:path` 不能交给 BCL** | `Path.GetFullPath` / `Path.GetRelativePath` 只是近似：`relative` 对相等路径 .NET 返回 `"."` 而 Node 返回**空串**；`resolve` 的逐盘符 cwd 回退、`normalize` 的 `\\.\`/`\\?\` 设备根与 Windows 保留名（`CON`、`COM¹`…）都没有对应物。首版用 BCL 实现，13 条差分向量失败，最终改为逐行移植 `lib/path.js`（源码经 `process.binding("natives")["path"]` 取出，不靠猜）。 |
+| C10 | **`fileURLToPath` 需自行实现 WHATWG 状态机** | `new URL()` 无法直接复用：驱动器字母可以从 authority 态「逃逸」（`file:///C:/x` vs `file://C:/x`），`localhost` 的折叠发生在**大小写折叠之后**，凭据/端口要报 `ERR_INVALID_URL`，主机名的「以数字结尾」判定是**语法性**的（`08` 会走进 IPv4 分支然后失败，而不是保持为主机名）。全部规则先用约 200 条探针向量实测，再落代码。 |
+| C11 | **两处刻意的 `fileURLToPath` 分歧** | ①ICU 的 `domainToUnicode` 未移植（`internal/idna` 不在 `process.binding("natives")` 里，是 ICU 后端），含非 ASCII 主机名时行为不同；②IPv4 内嵌的 IPv6 字面量用 .NET 的点分十进制序列化。两者都写进 XML `<remarks>`，并用 `fileUrlToPathDivergence` 语料段**双向断言**——若将来 ICU/.NET 的变化让分歧收窄或扩大，测试会失败并提示删除条目。 |
+| C12 | **cross-spawn `escapeArgument` 的正则不能照搬** | 原式 `/(?=(\\+?)?)\1"/g` 与 `/(?=(\\+?)?)\1$/` 把反斜杠串放在**前瞻里的惰性量词**中，而 V8 不会为一个已经成功的前瞻回溯放大该捕获——真正被倍增的只有反斜杠串的**最后一个**反斜杠。实测规则：串尾的 n 个反斜杠变 n+1，引号前的 n 个变 n+2（n=0 时变 1）。照搬正则会得到 2n / 2n+1，**是错的**。已用 448 条随机向量锁定。 |
+| C13 | **需要注入缝的三处平台耦合** | `NodePath.CwdOverride`（`resolve`/`relative` 读 cwd，而语料在不同目录采录）、`Clipboard.NativeClipboardOverride`（TS 测试会 stub 模块级单例）、`Clipboard.PlatformOverride` / `EnvOverride` / `CommandRunnerOverride` / `Osc52WriterOverride`。`resolve`/`relative` 是纯字符串运算，注入的路径不必真实存在。 |
+| C14 | **`AggregateException.Message` 不是 JS 的 `error.message`** | .NET 的 `AggregateException.Message` 会把每条内层消息**追加**成 `" (m1) (m2)"`，而 JS 的 `error.message` 只有外层文本；同时 `String(error)` 取的是 JS 的 `error.name`（`"Error"` / `"AggregateError"`），不是 .NET 类型名。`FormatVersionCheckError` 因此要把后缀剥回去，并把类型映射成 JS 名称。 |
 
 ## 差分验证（utils 层）
 
-`tests/Pi.CodingAgent.Tests/utils-corpus.json` 由 `tools/gen-coding-agent-utils-corpus.mjs`
-驱动**原始 TypeScript 实现**实跑生成（`tools/` 已 gitignore）。当前 **409 条**向量：
+两份语料都由**原始 TypeScript 实现**实跑生成（生成器在 `tools/`，该目录已 gitignore）：
+
+| 语料 | 生成器 | 条数 | 覆盖 |
+|---|---|---:|---|
+| `tests/Pi.CodingAgent.Tests/utils-corpus.json` | `tools/gen-coding-agent-utils-corpus.mjs` | 416 | json / text / html / ansi / parseInt / chalk / deprecation / mime |
+| `tests/Pi.CodingAgent.Tests/core-utils-corpus.json` | `tools/gen-coding-agent-core-utils-corpus.mjs` | 1,526 | 见下表（38 个区段） |
+
+`core-utils-corpus.json` 的区段：
 
 | 区段 | 条数 | 内容 |
 |---|---:|---|
-| `stripJsonComments` | 23 | 注释 / 尾随逗号 / 字符串内的 `//` 与 `,}` / 嵌套 / 未闭合字符串 |
-| `text` | 7 | BOM 的有无、重复、非 BOM 的零宽字符 |
-| `decodeHtmlEntity` | 48 | 具名实体、十进制 / 十六进制（含大小写前缀）、符号、越界、NaN、孤立代理项 |
-| `decodeHtmlEntityAt` | 19 | 分号缺失 / 距离超 16 / 连续实体 / 越界索引 |
-| `stripAnsi` | 23 | CSI / OSC（BEL、ESC\\、0x9C 三种终止符）/ 8 位 CSI / 真彩 / 超链接 / 多行 |
-| `parseInt` | 110 | 2 个 radix × 55 串：空白集、符号、`0x` 前缀、小数、指数、非法字符、17–400 位大整数 |
-| `chalk` | 150 | 10 种样式 × 15 个文本：空串、多行、CRLF、嵌套、已有 close、Unicode |
-| `deprecation` | 4 → 3 | 去重语义 + chalk 包裹的确切输出行 |
-| `mime` | 29 | JPEG（含 JFIF-F7 特例）/ PNG（含 APNG、坏 chunk 长度）/ GIF / WebP / BMP（DIB 12/40/124/125、planes、bits） |
-
-生成器还带一条守卫：任何会被记成 JSON 字符串的字段若含**孤立代理项**就直接抛错，避免
-`System.Text.Json` 在 C# 侧报出难懂的解析失败。
+| `nodePathNormalize` / `Join` / `Dirname` / `Basename` / `BasenameWithExt` / `IsAbsolute` | 237 | win32 与 posix 双平台：设备根、UNC、保留名、`.`/`..` 折叠、尾随分隔符 |
+| `nodePathResolve` / `nodePathRelative` | 60 | 逐盘符 cwd 回退、跨盘、相对路径在 cwd 之外的情形（配合 `hostCwd` 回放） |
+| `pathsNormalizeWindowsShellPath` / `IsLocalPath` / `NormalizePath` / `ResolvePath` / `CwdRelative` / `Platform` | 103 | `utils/paths.ts` 的公开面 |
+| `fileUrlToPath` | 254 | WHATWG 路径状态机、百分号编码的点段、authority/主机/凭据/端口、禁止域名码点、IPv4 归一化 |
+| `fileUrlToPathDivergence` | 4 | 差异 C11 的双向断言 |
+| `semverValid` / `semverCompare` | 95 | semver 7.8.5 的 `valid` / `compare`，含长度与安全整数边界 |
+| `versionCheckCompare` / `IsNewer` / `FormatError` / `Release` / `Check` | 49 | 版本比较、错误格式化（含 `AggregateError`）、重试次数（404→1、503/429→3、418→1、408→3） |
+| `clipboardRead` / `clipboardCopy` / `clipboardCopyText` | 34 | 平台分派顺序、远程会话 OSC 52、原生剪贴板三态（无 / 空 / 有文本） |
+| `configUpdate` / `Classify` / `CommandStep` / `NormalizeTarget` / `ShareUrl` | 55 | 安装方式判定、自更新命令拼装、包目标归一化 |
+| `hostPlatform` / `hostCwd` | 2 | 宿主常量，供回放使用 |
+| `shellSanitizeBinaryOutput` / `IsLegacyWslBashPath` | 45 | 二进制输出清洗、WSL bash 路径判定 |
+| `escapeCmdCommand` / `escapeCmdArgument` | 140 | cross-spawn 转义的定值向量 |
+| `escapeCmdArgumentRandom` | 448 | 反斜杠 / 引号 / 元字符的确定性随机扫描 + 全部 n≤8 的串形（差异 C12） |
 
 ## 测试覆盖
 
-`tests/Pi.CodingAgent.Tests`（11 项，已禁用并行化）：
+`tests/Pi.CodingAgent.Tests`（45 项，已禁用并行化）：
 
-| 测试 | 覆盖 |
-|---|---|
-| `UtilsCorpusTests.StripJsonComments_MatchesTypeScriptReference` | 23 条 |
-| `UtilsCorpusTests.TextBom_MatchesTypeScriptReference` | 7 条（`splitBom` + `stripBom` 双断言） |
-| `UtilsCorpusTests.DecodeHtmlEntity_MatchesTypeScriptReference` | 48 条 |
-| `UtilsCorpusTests.DecodeHtmlEntityAt_MatchesTypeScriptReference` | 19 条 |
-| `UtilsCorpusTests.StripAnsi_MatchesTypeScriptReference` | 23 条 |
-| `UtilsCorpusTests.ParseInt_MatchesTypeScriptReference` | 110 条 |
-| `UtilsCorpusTests.Chalk_MatchesTypeScriptReference` | 150 条（另断言禁用时原样返回） |
-| `UtilsCorpusTests.Deprecation_MatchesTypeScriptReference` | 去重 + 输出行 |
-| `UtilsCorpusTests.Mime_MatchesTypeScriptReference` | 29 条 |
-| `UtilsCorpusTests.CorpusIsComplete` | 各分区条数守卫 |
-| `UtilsCorpusTests.CorpusCoversTheInterestingOutcomes` | 覆盖分布守卫（字符串内注释、越界码点、8 位 CSI、CRLF、BMP DIB 边界…） |
+| 测试类 | 项数 | 覆盖 |
+|---|---:|---|
+| `UtilsCorpusTests` | 11 | `utils-corpus.json` 的 416 条 + 两条语料守卫 |
+| `PathCorpusTests` | 16 | `nodePath*` / `paths*` / `fileUrlToPath` / `semver` / `versionCheck` 的路径与版本语义；含 `FileUrlToPath_DivergencesAreAsDocumented` 双向断言与 `CwdScope` 回放 |
+| `CoreUtilsCorpusTests` | 18 | 其余全部区段：semver、版本检查、剪贴板、config、shell、cross-spawn 转义（含 448 条随机扫描） |
