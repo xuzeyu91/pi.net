@@ -201,10 +201,14 @@ public sealed class ModelConfig
         }
 
         var providers = new Dictionary<string, ModelsJsonProvider>(StringComparer.Ordinal);
-        foreach (var (providerId, provider) in (JsonObject)parsed!)
+        // TS: `Object.entries(config.providers)` — the provider map is nested under the root key.
+        if (parsed is JsonObject root && root["providers"] is JsonObject providerMap)
         {
-            if (provider is not JsonObject providerObject) continue;
-            providers[providerId] = ParseProvider(providerObject);
+            foreach (var (providerId, provider) in providerMap)
+            {
+                if (provider is not JsonObject providerObject) continue;
+                providers[providerId] = ParseProvider(providerObject);
+            }
         }
 
         return new ModelConfig(providers);

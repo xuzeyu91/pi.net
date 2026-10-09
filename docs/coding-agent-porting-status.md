@@ -28,7 +28,7 @@
 | 子阶段 | 范围 | 行数 | 状态 |
 |---|---|---:|---|
 | **4a** | `src/utils/*`（37 文件）+ 无依赖的根级模块（`config.ts` / `migrations.ts` / `core/defaults.ts` 等） | ~4,500 | ✅ utils 36/36 + `config.ts` 完成（2026-10-09） |
-| **4b** | 配置 / 信任 / 模型层：settings-manager、trust-manager、project-trust、auth-storage、model-config/registry/resolver、models-store、radius、virtual-models、mcp-servers、keybindings | 6,844（实测） | 🚧 12/16 文件（4,053 行）完成；余 model-registry / model-resolver / model-runtime / provider-composer（2,791 行） |
+| **4b** | 配置 / 信任 / 模型层：settings-manager、trust-manager、project-trust、auth-storage、model-config/registry/resolver、models-store、radius、virtual-models、mcp-servers、keybindings | 6,844（实测） | 🚧 13/16 文件（4,785 行）完成；余 model-registry / model-resolver / model-runtime（2,059 行） |
 | **4c** | 工具系统：`core/tools/*` + `core/tools/renderers/*` | ~9,000 | ⏳ |
 | **4d** | 扩展系统：`core/extensions/*`（types / runner / loader）+ `extensions/*`（codemode / llama / mcp / tool-search） | ~12,000 | ⏳ |
 | **4e** | 会话与资源：agent-session、session-manager、resource-loader、package-manager、compaction、export-html、system-prompt、telemetry、sdk | ~20,000 | ⏳ |
@@ -104,7 +104,7 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 
 ## 4b 进度（配置 / 信任 / 模型层）
 
-### ✅ 已完成（12/16 文件，4,053 行）
+### ✅ 已完成（13/16 文件，4,785 行）
 
 | TS 文件 | 行数 | .NET | 说明 |
 |---|---:|---|---|
@@ -112,7 +112,7 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 | `core/trust-manager.ts` | 246 | `Core/TrustManager.cs` | 项目信任的授予/撤销/查询，`NodeLock` 文件锁（`Core/NodeLock.cs`）。 |
 | `core/project-trust.ts` | 96 | `Core/ProjectTrust.cs` | 信任状态判定（受信根、子路径继承、显式拒绝）。 |
 | `core/auth-storage.ts` | 506 | `Core/AuthStorage.cs` | `ModeFile`（`0o600`/`0o700`，仅非 Windows 生效）、`FileAuthStorageBackend`、`ReadOnlyAuthStorage`、`InMemoryAuthStorageBackend`、`AuthStorage`（共享读取状态 + reload 去重 + readers 计数）。 |
-| `core/model-config.ts` | 346 | `Core/ModelConfig.cs`（591）+ `Core/JsonSchema.cs` | `models.json` 的 schema 校验与具名快照。schema 用**手写 JSON-schema 树**替代 TypeBox `Compile()`（差异 C38）；错误路径格式化（`required` 特例 + `instancePath` → 点分路径）与 TypeBox 的 `formatValidationPath` 同形。 |
+| `core/model-config.ts` | 346 | `Core/ModelConfig.cs`（595）+ `Core/JsonSchema.cs` | `models.json` 的 schema 校验与具名快照。schema 用**手写 JSON-schema 树**替代 TypeBox `Compile()`（差异 C38）；错误路径格式化（`required` 特例 + `instancePath` → 点分路径）与 TypeBox 的 `formatValidationPath` 同形。**已修缺陷**：首版迭代 JSON 根对象而非 `config.providers`，使整份 `models.json` 静默失效（见「测试覆盖」）。 |
 | `core/models-store.ts` | 147 | `Core/ModelsStore.cs` | `InMemoryCodingAgentModelsStore` / `FileModelsStore`（文件后端以**解析后的 JSON 对象**为准，忠实复刻 TS 的整体 parse→re-serialize，未识别条目不丢）；配合 Pi.Ai 的 `ModelSpecJson` 完成「模型对象 ↔ JSON」往返。 |
 | `core/radius.ts` | 11 | `Core/Radius.cs` | `ProviderId = "radius"`、`PI_RADIUS_GATEWAY`、`McpUrl`、可注入 `Env`。 |
 | `core/virtual-models.ts` | 238 | `Core/VirtualModels.cs` | 虚拟模型路由：`VirtualModels`（`Api = "pi-virtual"`、`StateEntry`、`CreateVirtualModel`、`WithVirtualModels`、`UnroutedStream`、`RouteReasons`）、`VirtualModelDefinition`、`VirtualOnlyProvider`、`VirtualModelsProvider`。router state 见差异 C40；`findLatestResponse` / `getBranchSelection` / `getVirtualModelState` 未移植（gap **G-4b-VM**，待 4e）。 |
@@ -120,16 +120,16 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 | `core/keybindings.ts` | 401 | `Core/Keybindings.cs` | 键位绑定解析/校验/冲突检测与用户覆盖。 |
 | `core/runtime-credentials.ts` | 52 | `Core/RuntimeCredentials.cs` | 非持久化运行时 API key 的凭据存储叠加层（`--api-key` 路径）。override 用有序列表复刻 JS `Map` 语义（差异 C49）。 |
 | `core/remote-catalog-provider.ts` | 158 | `Core/RemoteCatalogProvider.cs` | 给静态内置 provider 叠加持久化的 pi.dev 目录：三态目录体（数组 / `{models:[]}` / 对象 map）、新鲜度窗口、ETag 条件请求、404/501 与瞬时失败的差异化持久化策略。TS 用对象展开包装 provider，C# 显式转发全部成员并实现 `IImagesProvider` / `IClassifierProvider`（差异 C48）。 |
+| `core/provider-composer.ts` | 732 | `Core/ProviderComposer.cs`（1,213）+ `Core/ProviderConfig.cs`（190） | 组合内置 / `models.json` / 扩展三层，产出不读凭据的 `IProvider`。公开面：`ComposeModelProvider`、`ValidateExtensionProvider`、`ResolveConfiguredModelHeaders`、`ResolveCompatibilityRequestConfig`、`ConfiguredRequestAuthStatus`、`ClearApiKeyCache`；类型面：`ProviderModelConfig`（抽象基类 + chat/image/classifier 三态）、`ProviderConfigInput`、`ExtensionOAuthConfig`、`AuthStatus` / `AuthStatusSource`。差异 C50–C56。 |
 | 根级 `migrations.ts` | 315 | `Migrations.cs` | 启动时一次性迁移（auth → auth.json、会话目录、commands → prompts、keybindings、tools → bin、扩展系统）。TS 归 4a 的「根级模块」，随 4b 一并收口。差异 C42。 |
 
-### ⏳ 未移植（4 文件，2,791 行）
+### ⏳ 未移植（3 文件，2,059 行）
 
 | TS 文件 | 行数 | 阻塞点 |
 |---|---:|---|
 | `core/model-registry.ts` | 244 | `ModelRuntime` 的同步兼容门面，依赖 `model-runtime.ts`。 |
 | `core/model-resolver.ts` | 783 | 需 `minimatch` 等价物与 `isValidThinkingLevel`；后者所在 `cli/args.ts` 属 4g。 |
-| `core/model-runtime.ts` | 1,032 | 依赖 `provider-composer`。 |
-| `core/provider-composer.ts` | 732 | 多 api provider 组合（`models.json` + 扩展 OAuth + 内置 provider 合成运行时 provider），拉入较大的 Pi.Ai provider/auth 表面。 |
+| `core/model-runtime.ts` | 1,032 | 依赖 `provider-composer`（已完成）。 |
 
 ### Pi.Ai 侧补齐（4b 的运行时依赖）
 
@@ -147,6 +147,10 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 ### 测试覆盖
 
 `tests/Pi.CodingAgent.Tests/CoreRuntimeTests.cs`（19 项）：`RuntimeCredentials` 的覆盖/回落/列表顺序/取消语义；`RemoteCatalogProvider` 的空叠加、类型+id 合并与顺序、`localGeneratedAt` 门槛、发布被取代、新鲜度窗口跳过、强制刷新的 `?types=` 与 `If-None-Match`、304 / 404 / 瞬时失败三条分支、三种目录体形状、畸形目录报错、能力转发。HTTP 经 `ManagementHttp.HandlerOverride` 注入（`InternalsVisibleTo` 已开）。
+
+`tests/Pi.CodingAgent.Tests/CoreProviderComposerTests.cs`（39 项）：TS 侧 `provider-composer` 的辅助函数全部未导出，没有可复刻的参考用例，因此断言针对 `ComposeModelProvider` 的**端到端可观察行为**——五层叠加顺序（内置 → models.json baseUrl/compat → 自定义模型 upsert → 扩展整体替换 → OAuth `modifyModels`（chat-only）→ 顶层 `modelOverrides`）、`streamSimple` 的 api 分流与 `getApiProvider` 回退（含未注册 api 的 error 终态）、`refreshModels` 的**条件存在性**与「先校验再发布」、取消时跳过发布、图片/分类的「扩展 → base → error 结果」优先序、api-key/OAuth 组合与 `authHeader` 约束、三层请求头合并、`configuredRequestAuthStatus` 的六种来源、以及全部结构性错误文案。
+
+> **本轮测试发现并修复的真实缺陷**：`ModelConfig.LoadAsync` 迭代的是 JSON **根对象**而非 `config.providers`（TS 为 `Object.entries(config.providers)`），导致任何 `models.json` 都解析出空 provider 表——`models` / `modelOverrides` / `headers` / `oauth` / `authHeader` 全部静默失效。已修正，并新增「无认证方式时组合出的 api-key 认证 resolve 为未配置」用例（TS 的 `no authentication method configured` 分支在两侧都实际不可达）。
 
 > 其余 4b 文件（settings-manager / trust-manager / auth-storage / model-config / models-store / mcp-servers / keybindings / virtual-models）目前**只有编译与人工核对**，尚无自动化测试；记为待办。
 
@@ -186,7 +190,7 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 | C30 | **`ModelImageResizeOptions` 是 Pi.Ai 的名义类型，与 coding-agent 的 `ImageResizeOptions` 结构相同但语义独立** | TS 靠结构类型把模型档案直接传进 `processImage`；C# 在 `ToolResultImages` 里显式字段映射桥接，两个类型都保留（模型目录下发档位 vs 通用默认，后续 4b/4c 消费）。`types.ts` 的 `ModelInputLimits` / `ModelImageInputLimits` / `BaseModel.inputLimits` 一并补进 Pi.Ai（此前无消费者）。 |
 | C31 | **C# 原生剪贴板接口把 TS 的 `undefined`/`null` 折叠成 `null`** | pi-tui TS 的 `getImage()` 三态（undefined=不可用、null=无图像、数组=有图像）；C# `INativeClipboard.GetImageAsync()` 的契约是 null=不可用、空数组=无图像。`ClipboardImageApi` 的 `ImageProbe` 保留三态语义：null→继续回退、空→停止。原生剪贴板恒为最后一站，折叠不可观察；命令行后端的三态照原样保留（Wayland 空剪贴板不得回退到陈旧 X11 内容）。 |
 
-### 4b 阶段差异（C32–C49）
+### 4b 阶段差异（C32–C56）
 
 > 编号说明：C33–C36 是 4b 期间预留但最终未使用的空号（相关结论并入了 C37 与 C39），此处不跳号补位以免与代码注释失配。
 
@@ -206,6 +210,13 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 | C47 | **`IProvider` 用显式能力属性替代 TS 的可选成员存在性** | TS 的 `Provider.fetchDeferred` / `cancelDeferred` 是可选成员，`Models` 靠「成员是否存在」决定报错时机；C# 的默认接口成员**总是存在**，故补 `SupportsFetchDeferred` / `SupportsCancelDeferred` 两个布尔属性承载「存在性」，使 `StreamDeferred` / `CancelDeferredAsync` 能在**解析认证之前**判定能力——与 TS 的检查顺序一致（否则「认证未配置」会先于「不支持延后」报出）。 |
 | C48 | **响应头要跨 `HttpResponseHeaders` / `HttpContentHeaders` 两处查** | TS 的 `response.headers` 是统一视图，`response.headers.get("last-modified")` 一定拿得到；.NET 把实体头（`Last-Modified`、`Content-Type` 等）路由到 `HttpContentHeaders`，`response.Headers.TryGetValues("last-modified")` 对**真实响应**返回 false（`ETag` 属响应头所以正常）。`RemoteCatalogProvider.ReadHeader` 因此先查响应头再查内容头。**这是移植时踩到的真实缺陷**：首版只查 `response.Headers`，`lastModified` 恒为 0，会让远端目录每次刷新都全量下载（新鲜度门槛失效）。 |
 | C49 | **`runtime-credentials.ts` 的 override 用有序列表而非字典** | TS 的 override 是 JS `Map`：迭代顺序即插入顺序，且「删除后重插」会移到末尾。.NET `Dictionary` 可能复用空槽，顺序会不同。`RuntimeCredentials` 因此用 `List<KeyValuePair<…>>` 复刻，`ListAsync` 的合并结果与 TS 逐项一致（存储顺序在前、同 id 就地替换、新 id 追加到末尾）。 |
+| C50 | **`adaptOAuth` 退化为恒等转发** | TS 的扩展 OAuth 面向 `OAuthLoginCallbacks`（notify/prompt 风格），由 `adaptOAuth` 翻译成规范的 `AuthInteraction`；C# 的两个面本就是同一类型 `ProviderAuthInteraction`（`IAuthInteraction` + `Signal`），故 `ExtensionOAuthConfig.Login` 直接接收它，`ExtensionOAuthAuth` 只做 `IOAuthAuth` 适配。TS 的 `{...credential, type: "oauth"}` 打标在 C# 由 `Credential.OAuth` 的静态类型承载。 |
+| C51 | **`ApiKeyAuth.check` 未移植** | TS 的 `composeApiKeyAuth` 实现 `check`（命令配置值不执行命令、环境值只判存在）；C# 的 `IApiKeyAuth` 没有 `check` 成员——可用性一律经 `ResolveAsync` 判定（见 `ModelsAuth.CheckProviderAuthAsync`）。因此组合出的 api-key 认证只暴露 `name` / `login` / `resolve`。可观察差异：命令配置值在检查阶段就会执行，失败经 `AuthResolve` 包成 `ModelsError` 抛出。这是本移植对**所有** provider 一致的既有取舍。 |
+| C52 | **api 注册表回退统一走 `StreamSimple`** | TS 的 `streamWith` 在回退到 `getApiProvider(model.api)` 时按 `simple` 分流 `api.stream` / `api.streamSimple`；C# 的注册表契约里 `Stream` 收 `JsonObject`、`StreamSimple` 收 `SimpleStreamOptions`，而 provider 边界的 `IReadOnlyDictionary<string, object?>` 只能无损转成后者（`Signal`、回调等进不了 JSON）。因此两条路径都调 `StreamSimple`——与既有的 `Compat.Stream` 完全一致。 |
+| C53 | **`Provider.headers` 未移植** | TS 的组合 provider 会转发 `base.headers`；C# 的 `IProvider` 没有 `Headers` 成员（`CreateProviderOptions` 亦然），故丢弃。 |
+| C54 | **能力接口恒实现，缺失时返回同一 error 结果** | TS 按能力**条件性安装** `fetchDeferred` / `cancelDeferred` / `generateImages` / `classify`；C# 的能力接口（`IImagesProvider` / `IClassifierProvider`）是静态实现的，故组合 provider 恒实现它们：延后能力经 `SupportsFetchDeferred` / `SupportsCancelDeferred` 表达（差异 C47），图片/分类在无实现时返回 TS `Models` 层会产出的同一 `imageErrorResult` / `classifierErrorResult`（含 `does not support image generation` 与 `has no image implementation for "…"` 两种文案的分界）。与 `ProviderFactory` 的既有做法一致。 |
+| C55 | **`OAuthCredential.env` 的开放字段未建模** | TS `composeOAuthAuth.toAuth` 读 `credential.env`（`OAuthCredentials` 的开放索引签名）作为请求头模板的解析环境；C# 的 `Credential.OAuth` 只有具名的 provider 专属字段（`AccountId` / `GatewayConfig` 等），没有环境包，故恒传 `undefined`。 |
+| C56 | **`composeModelProvider` 的 eager 校验先于认证检查** | TS 先跑一次 `getAllModels()` 再判「有没有认证方式」；C# 首版把认证检查放在构造组合 provider 之前，会让「无认证方式」抢先于结构性错误报出。已改为构造器内先做 eager 校验、构造后再检查认证，顺序与 TS 一致。 |
 
 ## 差分验证（utils 层）
 
