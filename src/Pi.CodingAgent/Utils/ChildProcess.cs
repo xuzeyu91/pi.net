@@ -541,7 +541,7 @@ public sealed class ChildProcessHandle : IDisposable
                 _stdoutListeners += value;
                 foreach (var chunk in _pendingStdout)
                 {
-                    value(chunk);
+                    value!(chunk);
                 }
 
                 _pendingStdout.Clear();
@@ -568,7 +568,7 @@ public sealed class ChildProcessHandle : IDisposable
                 _stderrListeners += value;
                 foreach (var chunk in _pendingStderr)
                 {
-                    value(chunk);
+                    value!(chunk);
                 }
 
                 _pendingStderr.Clear();

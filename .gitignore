@@ -21,7 +21,7 @@
 .workbuddy-ai/
 
 # Local debug/repro scratch tools and ad-hoc diagnostic output
-tools/
+/tools/
 dump.json
 dump-*.txt
 run-all*.txt

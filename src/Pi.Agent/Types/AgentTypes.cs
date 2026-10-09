@@ -107,6 +107,18 @@ public sealed record AgentTool(
     /// </summary>
     public System.Text.Json.Nodes.JsonObject? ConstrainedSampling { get; init; }
 
+    /// <summary>
+    /// 系统提示中该工具的简短说明。对应 TS <c>AgentTool.promptSnippet</c>。TS 的 shell 工具在
+    /// <c>createBashTool</c> / <c>createPowerShellTool</c> 里用 <c>Object.assign</c> 把定义上的
+    /// 这两个字段挂到包装后的工具上，端口用不可变记录属性表达。
+    /// </summary>
+    public string? PromptSnippet { get; init; }
+
+    /// <summary>
+    /// 系统提示中该工具的补充要点。对应 TS <c>AgentTool.promptGuidelines</c>。
+    /// </summary>
+    public System.Collections.Generic.IReadOnlyList<string>? PromptGuidelines { get; init; }
+
     /// <summary>构造可被 ai 包声明使用的视图。</summary>
     public ToolDefinition Definition
     {
