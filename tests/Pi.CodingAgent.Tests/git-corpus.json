@@ -1,0 +1,2588 @@
+{
+ "hostedGitInfoFromUrl": [
+  {
+   "input": "https://github.com/user/repo",
+   "info": {
+    "type": "github",
+    "domain": "github.com",
+    "user": "user",
+    "project": "repo",
+    "committish": "",
+    "default": "https"
+   }
+  },
+  {
+   "input": "https://github.com/user/repo.git",
+   "info": {
+    "type": "github",
+    "domain": "github.com",
+    "user": "user",
+    "project": "repo",
+    "committish": "",
+    "default": "https"
+   }
+  },
+  {
+   "input": "http://github.com/user/repo",
+   "info": {
+    "type": "github",
+    "domain": "github.com",
+    "user": "user",
+    "project": "repo",
+    "committish": "",
+    "default": "http"
+   }
+  },
+  {
+   "input": "git://github.com/user/repo.git",
+   "info": {
+    "type": "github",
+    "domain": "github.com",
+    "user": "user",
+    "project": "repo",
+    "committish": "",
+    "default": "git"
+   }
+  },
+  {
+   "input": "git+ssh://git@github.com/user/repo.git",
+   "info": {
+    "type": "github",
+    "domain": "github.com",
+    "user": "user",
+    "project": "repo",
+    "committish": "",
+    "default": "sshurl"
+   }
+  },
+  {
+   "input": "git+https://github.com/user/repo.git",
+   "info": {
+    "type": "github",
+    "domain": "github.com",
+    "user": "user",
+    "project": "repo",
+    "committish": "",
+    "default": "https"
+   }
+  },
+  {
+   "input": "ssh://git@github.com/user/repo.git",
+   "info": {
+    "type": "github",
+    "domain": "github.com",
+    "user": "user",
+    "project": "repo",
+    "committish": "",
+    "default": "sshurl"
+   }
+  },
+  {
+   "input": "git@github.com:user/repo.git",
+   "info": {
+    "type": "github",
+    "domain": "github.com",
+    "user": "user",
+    "project": "repo",
+    "committish": "",
+    "default": "sshurl"
+   }
+  },
+  {
+   "input": "git@github.com:user/repo",
+   "info": {
+    "type": "github",
+    "domain": "github.com",
+    "user": "user",
+    "project": "repo",
+    "committish": "",
+    "default": "sshurl"
+   }
+  },
+  {
+   "input": "github:user/repo",
+   "info": {
+    "type": "github",
+    "domain": "github.com",
+    "user": "user",
+    "project": "repo",
+    "committish": null,
+    "default": "shortcut"
+   }
+  },
+  {
+   "input": "user/repo",
+   "info": {
+    "type": "github",
+    "domain": "github.com",
+    "user": "user",
+    "project": "repo",
+    "committish": null,
+    "default": "shortcut"
+   }
+  },
+  {
+   "input": "https://github.com/user/repo#main",
+   "info": {
+    "type": "github",
+    "domain": "github.com",
+    "user": "user",
+    "project": "repo",
+    "committish": "main",
+    "default": "https"
+   }
+  },
+  {
+   "input": "https://github.com/user/repo.git#v1.2.3",
+   "info": {
+    "type": "github",
+    "domain": "github.com",
+    "user": "user",
+    "project": "repo",
+    "committish": "v1.2.3",
+    "default": "https"
+   }
+  },
+  {
+   "input": "https://github.com/user/repo/tree/feature/x",
+   "info": {
+    "type": "github",
+    "domain": "github.com",
+    "user": "user",
+    "project": "repo",
+    "committish": "feature",
+    "default": "https"
+   }
+  },
+  {
+   "input": "https://github.com/user/repo/blob/main/file.ts",
+   "info": null
+  },
+  {
+   "input": "git@github.com:user/repo.git#semver:^1.0.0",
+   "info": {
+    "type": "github",
+    "domain": "github.com",
+    "user": "user",
+    "project": "repo",
+    "committish": "semver:^1.0.0",
+    "default": "sshurl"
+   }
+  },
+  {
+   "input": "github:user/repo#branch",
+   "info": {
+    "type": "github",
+    "domain": "github.com",
+    "user": "user",
+    "project": "repo",
+    "committish": "branch",
+    "default": "shortcut"
+   }
+  },
+  {
+   "input": "https://www.github.com/user/repo",
+   "info": {
+    "type": "github",
+    "domain": "github.com",
+    "user": "user",
+    "project": "repo",
+    "committish": "",
+    "default": "https"
+   }
+  },
+  {
+   "input": "https://github.com/user/repo/",
+   "info": {
+    "type": "github",
+    "domain": "github.com",
+    "user": "user",
+    "project": "repo",
+    "committish": "",
+    "default": "https"
+   }
+  },
+  {
+   "input": "https://github.com/user/repo/issues",
+   "info": null
+  },
+  {
+   "input": "https://github.com/user/repo/raw/main/a.ts",
+   "info": null
+  },
+  {
+   "input": "https://github.com/user/repo.git/",
+   "info": {
+    "type": "github",
+    "domain": "github.com",
+    "user": "user",
+    "project": "repo",
+    "committish": "",
+    "default": "https"
+   }
+  },
+  {
+   "input": "https://github.com/",
+   "info": null
+  },
+  {
+   "input": "https://github.com",
+   "info": null
+  },
+  {
+   "input": "https://github.com/user",
+   "info": null
+  },
+  {
+   "input": "https://github.com/user/",
+   "info": null
+  },
+  {
+   "input": "https://codeload.github.com/user/repo/tar.gz/main",
+   "info": null
+  },
+  {
+   "input": "https://raw.githubusercontent.com/user/repo/main/a.ts",
+   "info": null
+  },
+  {
+   "input": "https://github.com/user/repo/archive/refs/heads/main.tar.gz",
+   "info": null
+  },
+  {
+   "input": "https://gitlab.com/user/repo",
+   "info": {
+    "type": "gitlab",
+    "domain": "gitlab.com",
+    "user": "user",
+    "project": "repo",
+    "committish": "",
+    "default": "https"
+   }
+  },
+  {
+   "input": "https://gitlab.com/user/repo.git",
+   "info": {
+    "type": "gitlab",
+    "domain": "gitlab.com",
+    "user": "user",
+    "project": "repo",
+    "committish": "",
+    "default": "https"
+   }
+  },
+  {
+   "input": "https://gitlab.com/group/sub/repo",
+   "info": {
+    "type": "gitlab",
+    "domain": "gitlab.com",
+    "user": "group/sub",
+    "project": "repo",
+    "committish": "",
+    "default": "https"
+   }
+  },
+  {
+   "input": "https://gitlab.com/group/sub/repo#v1",
+   "info": {
+    "type": "gitlab",
+    "domain": "gitlab.com",
+    "user": "group/sub",
+    "project": "repo",
+    "committish": "v1",
+    "default": "https"
+   }
+  },
+  {
+   "input": "git@gitlab.com:user/repo.git",
+   "info": {
+    "type": "gitlab",
+    "domain": "gitlab.com",
+    "user": "user",
+    "project": "repo",
+    "committish": "",
+    "default": "sshurl"
+   }
+  },
+  {
+   "input": "gitlab:user/repo",
+   "info": {
+    "type": "gitlab",
+    "domain": "gitlab.com",
+    "user": "user",
+    "project": "repo",
+    "committish": null,
+    "default": "shortcut"
+   }
+  },
+  {
+   "input": "https://gitlab.com/user/repo/-/tree/main",
+   "info": null
+  },
+  {
+   "input": "https://gitlab.com/user/repo/repository/archive.tar.gz?ref=main",
+   "info": null
+  },
+  {
+   "input": "https://bitbucket.org/user/repo",
+   "info": {
+    "type": "bitbucket",
+    "domain": "bitbucket.org",
+    "user": "user",
+    "project": "repo",
+    "committish": "",
+    "default": "https"
+   }
+  },
+  {
+   "input": "https://bitbucket.org/user/repo.git",
+   "info": {
+    "type": "bitbucket",
+    "domain": "bitbucket.org",
+    "user": "user",
+    "project": "repo",
+    "committish": "",
+    "default": "https"
+   }
+  },
+  {
+   "input": "https://bitbucket.org/user/repo#tag",
+   "info": {
+    "type": "bitbucket",
+    "domain": "bitbucket.org",
+    "user": "user",
+    "project": "repo",
+    "committish": "tag",
+    "default": "https"
+   }
+  },
+  {
+   "input": "git@bitbucket.org:user/repo.git",
+   "info": {
+    "type": "bitbucket",
+    "domain": "bitbucket.org",
+    "user": "user",
+    "project": "repo",
+    "committish": "",
+    "default": "sshurl"
+   }
+  },
+  {
+   "input": "bitbucket:user/repo",
+   "info": {
+    "type": "bitbucket",
+    "domain": "bitbucket.org",
+    "user": "user",
+    "project": "repo",
+    "committish": null,
+    "default": "shortcut"
+   }
+  },
+  {
+   "input": "https://bitbucket.org/user/repo/get/main.tar.gz",
+   "info": null
+  },
+  {
+   "input": "https://bitbucket.org/user/repo/src/main",
+   "info": {
+    "type": "bitbucket",
+    "domain": "bitbucket.org",
+    "user": "user",
+    "project": "repo",
+    "committish": "",
+    "default": "https"
+   }
+  },
+  {
+   "input": "https://gist.github.com/user/abc123",
+   "info": {
+    "type": "gist",
+    "domain": "gist.github.com",
+    "user": "user",
+    "project": "abc123",
+    "committish": "",
+    "default": "https"
+   }
+  },
+  {
+   "input": "https://gist.github.com/abc123",
+   "info": {
+    "type": "gist",
+    "domain": "gist.github.com",
+    "user": null,
+    "project": "abc123",
+    "committish": "",
+    "default": "https"
+   }
+  },
+  {
+   "input": "https://gist.github.com/user/abc123.git",
+   "info": {
+    "type": "gist",
+    "domain": "gist.github.com",
+    "user": "user",
+    "project": "abc123",
+    "committish": "",
+    "default": "https"
+   }
+  },
+  {
+   "input": "https://gist.github.com/user/abc123#file-notes-md",
+   "info": {
+    "type": "gist",
+    "domain": "gist.github.com",
+    "user": "user",
+    "project": "abc123",
+    "committish": "file-notes-md",
+    "default": "https"
+   }
+  },
+  {
+   "input": "git@gist.github.com:abc123.git",
+   "info": {
+    "type": "gist",
+    "domain": "gist.github.com",
+    "user": null,
+    "project": "abc123",
+    "committish": "",
+    "default": "sshurl"
+   }
+  },
+  {
+   "input": "gist:abc123",
+   "info": {
+    "type": "gist",
+    "domain": "gist.github.com",
+    "user": null,
+    "project": "abc123",
+    "committish": null,
+    "default": "shortcut"
+   }
+  },
+  {
+   "input": "https://gist.github.com/user/abc123/raw/a.ts",
+   "info": null
+  },
+  {
+   "input": "https://gist.githubusercontent.com/user/abc123/raw/a.ts",
+   "info": null
+  },
+  {
+   "input": "https://git.sr.ht/~user/repo",
+   "info": {
+    "type": "sourcehut",
+    "domain": "git.sr.ht",
+    "user": "~user",
+    "project": "repo",
+    "committish": "",
+    "default": "https"
+   }
+  },
+  {
+   "input": "https://git.sr.ht/~user/repo#v1",
+   "info": {
+    "type": "sourcehut",
+    "domain": "git.sr.ht",
+    "user": "~user",
+    "project": "repo",
+    "committish": "v1",
+    "default": "https"
+   }
+  },
+  {
+   "input": "git@git.sr.ht:~user/repo",
+   "info": {
+    "type": "sourcehut",
+    "domain": "git.sr.ht",
+    "user": "~user",
+    "project": "repo",
+    "committish": "",
+    "default": "sshurl"
+   }
+  },
+  {
+   "input": "sourcehut:~user/repo",
+   "info": {
+    "type": "sourcehut",
+    "domain": "git.sr.ht",
+    "user": "~user",
+    "project": "repo",
+    "committish": null,
+    "default": "shortcut"
+   }
+  },
+  {
+   "input": "https://git.sr.ht/~user/repo/archive/main.tar.gz",
+   "info": null
+  },
+  {
+   "input": "https://user:pass@github.com/user/repo.git",
+   "info": {
+    "type": "github",
+    "domain": "github.com",
+    "user": "user",
+    "project": "repo",
+    "committish": "",
+    "default": "https"
+   }
+  },
+  {
+   "input": "https://user@github.com/user/repo.git",
+   "info": {
+    "type": "github",
+    "domain": "github.com",
+    "user": "user",
+    "project": "repo",
+    "committish": "",
+    "default": "https"
+   }
+  },
+  {
+   "input": "https://github.com:443/user/repo",
+   "info": {
+    "type": "github",
+    "domain": "github.com",
+    "user": "user",
+    "project": "repo",
+    "committish": "",
+    "default": "https"
+   }
+  },
+  {
+   "input": "git+ssh://user@github.com/user/repo.git",
+   "info": {
+    "type": "github",
+    "domain": "github.com",
+    "user": "user",
+    "project": "repo",
+    "committish": "",
+    "default": "sshurl"
+   }
+  },
+  {
+   "input": "https://token@github.com/user/repo.git#main",
+   "info": {
+    "type": "github",
+    "domain": "github.com",
+    "user": "user",
+    "project": "repo",
+    "committish": "main",
+    "default": "https"
+   }
+  },
+  {
+   "input": "https://github.com/user%2Frepo",
+   "info": null
+  },
+  {
+   "input": "https://github.com/us%20er/repo",
+   "info": {
+    "type": "github",
+    "domain": "github.com",
+    "user": "us er",
+    "project": "repo",
+    "committish": "",
+    "default": "https"
+   }
+  },
+  {
+   "input": "https://github.com/user/re%70o",
+   "info": {
+    "type": "github",
+    "domain": "github.com",
+    "user": "user",
+    "project": "repo",
+    "committish": "",
+    "default": "https"
+   }
+  },
+  {
+   "input": "https://github.com/user/repo%2Egit",
+   "info": {
+    "type": "github",
+    "domain": "github.com",
+    "user": "user",
+    "project": "repo.git",
+    "committish": "",
+    "default": "https"
+   }
+  },
+  {
+   "input": "https://github.com/user/r%C3%A9po",
+   "info": {
+    "type": "github",
+    "domain": "github.com",
+    "user": "user",
+    "project": "répo",
+    "committish": "",
+    "default": "https"
+   }
+  },
+  {
+   "input": "https://github.com/user/%E4%B8%AD",
+   "info": {
+    "type": "github",
+    "domain": "github.com",
+    "user": "user",
+    "project": "中",
+    "committish": "",
+    "default": "https"
+   }
+  },
+  {
+   "input": "https://github.com/%zz/repo",
+   "info": null
+  },
+  {
+   "input": "https://example.com/user/repo",
+   "info": null
+  },
+  {
+   "input": "https://example.com/user/repo.git",
+   "info": null
+  },
+  {
+   "input": "https://example.com/",
+   "info": null
+  },
+  {
+   "input": "https://example.com",
+   "info": null
+  },
+  {
+   "input": "https://localhost/user/repo",
+   "info": null
+  },
+  {
+   "input": "https://127.0.0.1/user/repo",
+   "info": null
+  },
+  {
+   "input": "https://[::1]/user/repo",
+   "info": null
+  },
+  {
+   "input": "https://example.com/a/b/c",
+   "info": null
+  },
+  {
+   "input": "",
+   "info": null
+  },
+  {
+   "input": "   ",
+   "info": null
+  },
+  {
+   "input": "/absolute/path",
+   "info": null
+  },
+  {
+   "input": "./relative",
+   "info": null
+  },
+  {
+   "input": "../relative",
+   "info": null
+  },
+  {
+   "input": "@scoped/name",
+   "info": null
+  },
+  {
+   "input": "not a url",
+   "info": null
+  },
+  {
+   "input": "https://",
+   "info": null
+  },
+  {
+   "input": "://nope",
+   "info": null
+  },
+  {
+   "input": "git+ssh://",
+   "info": null
+  },
+  {
+   "input": "user/repo/extra/deep",
+   "info": null
+  },
+  {
+   "input": "  https://github.com/user/repo  ",
+   "info": {
+    "type": "github",
+    "domain": "github.com",
+    "user": "user",
+    "project": "repo",
+    "committish": "",
+    "default": "https"
+   }
+  },
+  {
+   "input": "https://github.com/user/repo#",
+   "info": {
+    "type": "github",
+    "domain": "github.com",
+    "user": "user",
+    "project": "repo",
+    "committish": "",
+    "default": "https"
+   }
+  },
+  {
+   "input": "https://github.com/user/repo#a b",
+   "info": {
+    "type": "github",
+    "domain": "github.com",
+    "user": "user",
+    "project": "repo",
+    "committish": "a b",
+    "default": "https"
+   }
+  },
+  {
+   "input": "https://github.com/user/repo#a%20b",
+   "info": {
+    "type": "github",
+    "domain": "github.com",
+    "user": "user",
+    "project": "repo",
+    "committish": "a b",
+    "default": "https"
+   }
+  }
+ ],
+ "parseGitUrl": [
+  {
+   "input": "git:user/repo",
+   "source": {
+    "type": "git",
+    "repo": "https://user/repo",
+    "host": "github.com",
+    "path": "user/repo",
+    "ref": null,
+    "pinned": false
+   }
+  },
+  {
+   "input": "git:user/repo#main",
+   "source": {
+    "type": "git",
+    "repo": "https://user/repo#main",
+    "host": "github.com",
+    "path": "user/repo",
+    "ref": "main",
+    "pinned": true
+   }
+  },
+  {
+   "input": "git:github.com/user/repo",
+   "source": {
+    "type": "git",
+    "repo": "https://github.com/user/repo",
+    "host": "github.com",
+    "path": "user/repo",
+    "ref": null,
+    "pinned": false
+   }
+  },
+  {
+   "input": "git:github.com/user/repo#v1",
+   "source": {
+    "type": "git",
+    "repo": "https://github.com/user/repo#v1",
+    "host": "github.com",
+    "path": "user/repo",
+    "ref": "v1",
+    "pinned": true
+   }
+  },
+  {
+   "input": "git:git@github.com:user/repo.git",
+   "source": {
+    "type": "git",
+    "repo": "git@github.com:user/repo.git",
+    "host": "github.com",
+    "path": "user/repo",
+    "ref": null,
+    "pinned": false
+   }
+  },
+  {
+   "input": "git:git@github.com:user/repo.git#dev",
+   "source": {
+    "type": "git",
+    "repo": "git@github.com:user/repo.git#dev",
+    "host": "github.com",
+    "path": "user/repo",
+    "ref": "dev",
+    "pinned": true
+   }
+  },
+  {
+   "input": "git:https://github.com/user/repo",
+   "source": {
+    "type": "git",
+    "repo": "https://github.com/user/repo",
+    "host": "github.com",
+    "path": "user/repo",
+    "ref": null,
+    "pinned": false
+   }
+  },
+  {
+   "input": "git:https://github.com/user/repo#main",
+   "source": {
+    "type": "git",
+    "repo": "https://github.com/user/repo#main",
+    "host": "github.com",
+    "path": "user/repo",
+    "ref": "main",
+    "pinned": true
+   }
+  },
+  {
+   "input": "git:https://github.com/user/repo.git#v1.2.3",
+   "source": {
+    "type": "git",
+    "repo": "https://github.com/user/repo.git#v1.2.3",
+    "host": "github.com",
+    "path": "user/repo",
+    "ref": "v1.2.3",
+    "pinned": true
+   }
+  },
+  {
+   "input": "git:git://github.com/user/repo.git",
+   "source": {
+    "type": "git",
+    "repo": "git://github.com/user/repo.git",
+    "host": "github.com",
+    "path": "user/repo",
+    "ref": null,
+    "pinned": false
+   }
+  },
+  {
+   "input": "git:ssh://git@github.com/user/repo.git",
+   "source": {
+    "type": "git",
+    "repo": "ssh://git@github.com/user/repo.git",
+    "host": "github.com",
+    "path": "user/repo",
+    "ref": null,
+    "pinned": false
+   }
+  },
+  {
+   "input": "git:git+ssh://git@github.com/user/repo.git",
+   "source": {
+    "type": "git",
+    "repo": "https://git+ssh://git@github.com/user/repo.git",
+    "host": "github.com",
+    "path": "user/repo",
+    "ref": null,
+    "pinned": false
+   }
+  },
+  {
+   "input": "git:gitlab.com/user/repo",
+   "source": {
+    "type": "git",
+    "repo": "https://gitlab.com/user/repo",
+    "host": "gitlab.com",
+    "path": "user/repo",
+    "ref": null,
+    "pinned": false
+   }
+  },
+  {
+   "input": "git:gitlab.com/group/sub/repo#v1",
+   "source": {
+    "type": "git",
+    "repo": "https://gitlab.com/group/sub/repo#v1",
+    "host": "gitlab.com",
+    "path": "group/sub/repo",
+    "ref": "v1",
+    "pinned": true
+   }
+  },
+  {
+   "input": "git:bitbucket.org/user/repo",
+   "source": {
+    "type": "git",
+    "repo": "https://bitbucket.org/user/repo",
+    "host": "bitbucket.org",
+    "path": "user/repo",
+    "ref": null,
+    "pinned": false
+   }
+  },
+  {
+   "input": "git:gist.github.com/abc123",
+   "source": {
+    "type": "git",
+    "repo": "https://gist.github.com/abc123",
+    "host": "github.com",
+    "path": "gist.github.com/abc123",
+    "ref": null,
+    "pinned": false
+   }
+  },
+  {
+   "input": "git:git.sr.ht/~user/repo",
+   "source": {
+    "type": "git",
+    "repo": "https://git.sr.ht/~user/repo",
+    "host": "git.sr.ht",
+    "path": "~user/repo",
+    "ref": null,
+    "pinned": false
+   }
+  },
+  {
+   "input": "git:example.com/user/repo",
+   "source": {
+    "type": "git",
+    "repo": "https://example.com/user/repo",
+    "host": "example.com",
+    "path": "user/repo",
+    "ref": null,
+    "pinned": false
+   }
+  },
+  {
+   "input": "git:example.com/a/b/c",
+   "source": {
+    "type": "git",
+    "repo": "https://example.com/a/b/c",
+    "host": "example.com",
+    "path": "a/b/c",
+    "ref": null,
+    "pinned": false
+   }
+  },
+  {
+   "input": "git:localhost/user/repo",
+   "source": {
+    "type": "git",
+    "repo": "https://localhost/user/repo",
+    "host": "localhost",
+    "path": "user/repo",
+    "ref": null,
+    "pinned": false
+   }
+  },
+  {
+   "input": "git:user/repo/extra",
+   "source": null
+  },
+  {
+   "input": "git:user/repo@ref",
+   "source": {
+    "type": "git",
+    "repo": "https://user/repo",
+    "host": "github.com",
+    "path": "user/repo",
+    "ref": "ref",
+    "pinned": true
+   }
+  },
+  {
+   "input": "git:user/repo@",
+   "source": null
+  },
+  {
+   "input": "git:user/@ref",
+   "source": null
+  },
+  {
+   "input": "git:user/repo.git",
+   "source": {
+    "type": "git",
+    "repo": "https://user/repo.git",
+    "host": "github.com",
+    "path": "user/repo",
+    "ref": null,
+    "pinned": false
+   }
+  },
+  {
+   "input": "git:user/repo.git#main",
+   "source": {
+    "type": "git",
+    "repo": "https://user/repo.git#main",
+    "host": "github.com",
+    "path": "user/repo",
+    "ref": "main",
+    "pinned": true
+   }
+  },
+  {
+   "input": "https://github.com/user/repo",
+   "source": {
+    "type": "git",
+    "repo": "https://github.com/user/repo",
+    "host": "github.com",
+    "path": "user/repo",
+    "ref": null,
+    "pinned": false
+   }
+  },
+  {
+   "input": "https://github.com/user/repo.git",
+   "source": {
+    "type": "git",
+    "repo": "https://github.com/user/repo.git",
+    "host": "github.com",
+    "path": "user/repo",
+    "ref": null,
+    "pinned": false
+   }
+  },
+  {
+   "input": "https://github.com/user/repo#main",
+   "source": {
+    "type": "git",
+    "repo": "https://github.com/user/repo#main",
+    "host": "github.com",
+    "path": "user/repo",
+    "ref": "main",
+    "pinned": true
+   }
+  },
+  {
+   "input": "https://github.com/user/repo.git#v1.2.3",
+   "source": {
+    "type": "git",
+    "repo": "https://github.com/user/repo.git#v1.2.3",
+    "host": "github.com",
+    "path": "user/repo",
+    "ref": "v1.2.3",
+    "pinned": true
+   }
+  },
+  {
+   "input": "https://github.com/user/repo@ref",
+   "source": {
+    "type": "git",
+    "repo": "https://github.com/user/repo",
+    "host": "github.com",
+    "path": "user/repo",
+    "ref": "ref",
+    "pinned": true
+   }
+  },
+  {
+   "input": "http://github.com/user/repo",
+   "source": {
+    "type": "git",
+    "repo": "http://github.com/user/repo",
+    "host": "github.com",
+    "path": "user/repo",
+    "ref": null,
+    "pinned": false
+   }
+  },
+  {
+   "input": "ssh://git@github.com/user/repo.git",
+   "source": {
+    "type": "git",
+    "repo": "ssh://git@github.com/user/repo.git",
+    "host": "github.com",
+    "path": "user/repo",
+    "ref": null,
+    "pinned": false
+   }
+  },
+  {
+   "input": "git://github.com/user/repo.git",
+   "source": {
+    "type": "git",
+    "repo": "https:////github.com/user/repo.git",
+    "host": "github.com",
+    "path": "user/repo",
+    "ref": null,
+    "pinned": false
+   }
+  },
+  {
+   "input": "git+ssh://git@github.com/user/repo.git",
+   "source": null
+  },
+  {
+   "input": "git+https://github.com/user/repo.git",
+   "source": null
+  },
+  {
+   "input": "HTTPS://github.com/user/repo",
+   "source": {
+    "type": "git",
+    "repo": "https://HTTPS://github.com/user/repo",
+    "host": "github.com",
+    "path": "user/repo",
+    "ref": null,
+    "pinned": false
+   }
+  },
+  {
+   "input": "Git://github.com/user/repo",
+   "source": {
+    "type": "git",
+    "repo": "https://Git://github.com/user/repo",
+    "host": "github.com",
+    "path": "user/repo",
+    "ref": null,
+    "pinned": false
+   }
+  },
+  {
+   "input": "https://gitlab.com/group/sub/repo#v1",
+   "source": {
+    "type": "git",
+    "repo": "https://gitlab.com/group/sub/repo#v1",
+    "host": "gitlab.com",
+    "path": "group/sub/repo",
+    "ref": "v1",
+    "pinned": true
+   }
+  },
+  {
+   "input": "https://bitbucket.org/user/repo",
+   "source": {
+    "type": "git",
+    "repo": "https://bitbucket.org/user/repo",
+    "host": "bitbucket.org",
+    "path": "user/repo",
+    "ref": null,
+    "pinned": false
+   }
+  },
+  {
+   "input": "https://gist.github.com/user/abc123",
+   "source": {
+    "type": "git",
+    "repo": "https://gist.github.com/user/abc123",
+    "host": "gist.github.com",
+    "path": "user/abc123",
+    "ref": null,
+    "pinned": false
+   }
+  },
+  {
+   "input": "https://git.sr.ht/~user/repo",
+   "source": {
+    "type": "git",
+    "repo": "https://git.sr.ht/~user/repo",
+    "host": "git.sr.ht",
+    "path": "~user/repo",
+    "ref": null,
+    "pinned": false
+   }
+  },
+  {
+   "input": "https://example.com/user/repo",
+   "source": {
+    "type": "git",
+    "repo": "https://example.com/user/repo",
+    "host": "example.com",
+    "path": "user/repo",
+    "ref": null,
+    "pinned": false
+   }
+  },
+  {
+   "input": "https://example.com/user/repo.git",
+   "source": {
+    "type": "git",
+    "repo": "https://example.com/user/repo.git",
+    "host": "example.com",
+    "path": "user/repo",
+    "ref": null,
+    "pinned": false
+   }
+  },
+  {
+   "input": "https://example.com/a/b",
+   "source": {
+    "type": "git",
+    "repo": "https://example.com/a/b",
+    "host": "example.com",
+    "path": "a/b",
+    "ref": null,
+    "pinned": false
+   }
+  },
+  {
+   "input": "https://example.com/a",
+   "source": null
+  },
+  {
+   "input": "https://example.com",
+   "source": null
+  },
+  {
+   "input": "https://example.com/",
+   "source": null
+  },
+  {
+   "input": "https://localhost/user/repo",
+   "source": {
+    "type": "git",
+    "repo": "https://localhost/user/repo",
+    "host": "localhost",
+    "path": "user/repo",
+    "ref": null,
+    "pinned": false
+   }
+  },
+  {
+   "input": "https://user:pass@github.com/user/repo.git",
+   "source": {
+    "type": "git",
+    "repo": "https://user:pass@github.com/user/repo.git",
+    "host": "github.com",
+    "path": "user/repo",
+    "ref": null,
+    "pinned": false
+   }
+  },
+  {
+   "input": "https://user@github.com/user/repo.git",
+   "source": {
+    "type": "git",
+    "repo": "https://user@github.com/user/repo.git",
+    "host": "github.com",
+    "path": "user/repo",
+    "ref": null,
+    "pinned": false
+   }
+  },
+  {
+   "input": "https://github.com:443/user/repo",
+   "source": {
+    "type": "git",
+    "repo": "https://github.com:443/user/repo",
+    "host": "github.com",
+    "path": "user/repo",
+    "ref": null,
+    "pinned": false
+   }
+  },
+  {
+   "input": "https://www.github.com/user/repo",
+   "source": {
+    "type": "git",
+    "repo": "https://www.github.com/user/repo",
+    "host": "github.com",
+    "path": "user/repo",
+    "ref": null,
+    "pinned": false
+   }
+  },
+  {
+   "input": "https://github.com/user/repo/",
+   "source": {
+    "type": "git",
+    "repo": "https://github.com/user/repo/",
+    "host": "github.com",
+    "path": "user/repo",
+    "ref": null,
+    "pinned": false
+   }
+  },
+  {
+   "input": "https://github.com/user/repo/tree/main",
+   "source": {
+    "type": "git",
+    "repo": "https://github.com/user/repo/tree/main",
+    "host": "github.com",
+    "path": "user/repo",
+    "ref": "main",
+    "pinned": true
+   }
+  },
+  {
+   "input": "https://github.com/user/repo/issues",
+   "source": {
+    "type": "git",
+    "repo": "https://github.com/user/repo/issues",
+    "host": "github.com",
+    "path": "user/repo/issues",
+    "ref": null,
+    "pinned": false
+   }
+  },
+  {
+   "input": "https://github.com/user/repo/archive/refs/heads/main.tar.gz",
+   "source": {
+    "type": "git",
+    "repo": "https://github.com/user/repo/archive/refs/heads/main.tar.gz",
+    "host": "github.com",
+    "path": "user/repo/archive/refs/heads/main.tar.gz",
+    "ref": null,
+    "pinned": false
+   }
+  },
+  {
+   "input": "git:user/../repo",
+   "source": null
+  },
+  {
+   "input": "git:../user/repo",
+   "source": null
+  },
+  {
+   "input": "git:user/repo/../..",
+   "source": null
+  },
+  {
+   "input": "git:user%2F../repo",
+   "source": null
+  },
+  {
+   "input": "git:user/repo%2E%2E",
+   "source": {
+    "type": "git",
+    "repo": "https://user/repo%2E%2E",
+    "host": "github.com",
+    "path": "user/repo..",
+    "ref": null,
+    "pinned": false
+   }
+  },
+  {
+   "input": "git:us\\er/repo",
+   "source": null
+  },
+  {
+   "input": "git:user/re%5Cpo",
+   "source": null
+  },
+  {
+   "input": "git:/user/repo",
+   "source": null
+  },
+  {
+   "input": "git:user/repo%00",
+   "source": null
+  },
+  {
+   "input": "git:user/%2e%2e/repo",
+   "source": null
+  },
+  {
+   "input": "git:%2E%2E/user/repo",
+   "source": null
+  },
+  {
+   "input": "https://github.com/user/../repo",
+   "source": null
+  },
+  {
+   "input": "https://github.com/../user/repo",
+   "source": {
+    "type": "git",
+    "repo": "https://github.com/../user/repo",
+    "host": "github.com",
+    "path": "user/repo",
+    "ref": null,
+    "pinned": false
+   }
+  },
+  {
+   "input": "https://github.com/user/repo%2F..",
+   "source": null
+  },
+  {
+   "input": "https://github.com/user/%2e%2e",
+   "source": null
+  },
+  {
+   "input": "https://example.com/user/..",
+   "source": null
+  },
+  {
+   "input": "git:user/repo%zz",
+   "source": null
+  },
+  {
+   "input": "git:%zz/repo",
+   "source": null
+  },
+  {
+   "input": "https://github.com/%zz/repo",
+   "source": null
+  },
+  {
+   "input": "git:git@github.com:user/repo.git",
+   "source": {
+    "type": "git",
+    "repo": "git@github.com:user/repo.git",
+    "host": "github.com",
+    "path": "user/repo",
+    "ref": null,
+    "pinned": false
+   }
+  },
+  {
+   "input": "git:git@example.com:user/repo",
+   "source": {
+    "type": "git",
+    "repo": "git@example.com:user/repo",
+    "host": "example.com",
+    "path": "user/repo",
+    "ref": null,
+    "pinned": false
+   }
+  },
+  {
+   "input": "git:git@example.com:user/repo#v1",
+   "source": {
+    "type": "git",
+    "repo": "git@example.com:user/repo#v1",
+    "host": "example.com",
+    "path": "user/repo#v1",
+    "ref": null,
+    "pinned": false
+   }
+  },
+  {
+   "input": "git:git@github.com:user/repo@ref",
+   "source": {
+    "type": "git",
+    "repo": "git@github.com:user/repo",
+    "host": "github.com",
+    "path": "user/repo",
+    "ref": "ref",
+    "pinned": true
+   }
+  },
+  {
+   "input": "git:git@github.com:@ref",
+   "source": null
+  },
+  {
+   "input": "git:git@github.com:user/@ref",
+   "source": {
+    "type": "git",
+    "repo": "git@github.com:user/",
+    "host": "github.com",
+    "path": "user/",
+    "ref": "ref",
+    "pinned": true
+   }
+  },
+  {
+   "input": "user/repo",
+   "source": null
+  },
+  {
+   "input": "user/repo#main",
+   "source": null
+  },
+  {
+   "input": "github.com/user/repo",
+   "source": null
+  },
+  {
+   "input": "git@github.com:user/repo.git",
+   "source": null
+  },
+  {
+   "input": "git:",
+   "source": null
+  },
+  {
+   "input": "git:   ",
+   "source": null
+  },
+  {
+   "input": "",
+   "source": null
+  },
+  {
+   "input": "   ",
+   "source": null
+  },
+  {
+   "input": "git:user",
+   "source": null
+  },
+  {
+   "input": "git:/user",
+   "source": null
+  },
+  {
+   "input": "git:user/",
+   "source": null
+  },
+  {
+   "input": "git:user/repo#",
+   "source": {
+    "type": "git",
+    "repo": "https://user/repo#",
+    "host": "github.com",
+    "path": "user/repo",
+    "ref": null,
+    "pinned": false
+   }
+  },
+  {
+   "input": "git:user/repo#a b",
+   "source": {
+    "type": "git",
+    "repo": "https://user/repo#a b",
+    "host": "github.com",
+    "path": "user/repo",
+    "ref": "a b",
+    "pinned": true
+   }
+  },
+  {
+   "input": "git:user/repo#semver:^1.0.0",
+   "source": {
+    "type": "git",
+    "repo": "https://user/repo#semver:^1.0.0",
+    "host": "github.com",
+    "path": "user/repo",
+    "ref": "semver:^1.0.0",
+    "pinned": true
+   }
+  },
+  {
+   "input": "git:  user/repo  ",
+   "source": {
+    "type": "git",
+    "repo": "https://user/repo",
+    "host": "github.com",
+    "path": "user/repo",
+    "ref": null,
+    "pinned": false
+   }
+  },
+  {
+   "input": "git:  github.com/user/repo  ",
+   "source": {
+    "type": "git",
+    "repo": "https://github.com/user/repo",
+    "host": "github.com",
+    "path": "user/repo",
+    "ref": null,
+    "pinned": false
+   }
+  },
+  {
+   "input": "git:user/repo extra",
+   "source": null
+  },
+  {
+   "input": "git:user/repo%20extra",
+   "source": {
+    "type": "git",
+    "repo": "https://user/repo%20extra",
+    "host": "github.com",
+    "path": "user/repo extra",
+    "ref": null,
+    "pinned": false
+   }
+  },
+  {
+   "input": "  git:user/repo  ",
+   "source": {
+    "type": "git",
+    "repo": "https://user/repo",
+    "host": "github.com",
+    "path": "user/repo",
+    "ref": null,
+    "pinned": false
+   }
+  },
+  {
+   "input": "git:https://",
+   "source": null
+  },
+  {
+   "input": "git:https://github.com",
+   "source": null
+  },
+  {
+   "input": "git:https://github.com/",
+   "source": null
+  },
+  {
+   "input": "git:https://github.com/user",
+   "source": null
+  },
+  {
+   "input": "git:ftp://github.com/user/repo",
+   "source": null
+  },
+  {
+   "input": "git:file:///c:/user/repo",
+   "source": null
+  }
+ ],
+ "normalizeChangelogLinks": [
+  {
+   "markdown": "plain text",
+   "version": "1.2.3",
+   "expected": "plain text"
+  },
+  {
+   "markdown": "see [a](./docs/a.md)",
+   "version": "1.2.3",
+   "expected": "see [a](https://github.com/earendil-works/pi/blob/v1.2.3/packages/coding-agent/docs/a.md)"
+  },
+  {
+   "markdown": "see [a](docs/a.md)",
+   "version": "v1.2.3",
+   "expected": "see [a](https://github.com/earendil-works/pi/blob/v1.2.3/packages/coding-agent/docs/a.md)"
+  },
+  {
+   "markdown": "see [a](packages/coding-agent/src/x.ts)",
+   "version": "1.2.3",
+   "expected": "see [a](https://github.com/earendil-works/pi/blob/v1.2.3/packages/coding-agent/packages/coding-agent/src/x.ts)"
+  },
+  {
+   "markdown": "see [a](/packages/coding-agent/src/x.ts)",
+   "version": "1.2.3",
+   "expected": "see [a](https://github.com/earendil-works/pi/blob/v1.2.3/packages/coding-agent/src/x.ts)"
+  },
+  {
+   "markdown": "see [a](../outside.md)",
+   "version": "1.2.3",
+   "expected": "see [a](https://github.com/earendil-works/pi/blob/v1.2.3/packages/outside.md)"
+  },
+  {
+   "markdown": "see [a](../../outside.md)",
+   "version": "1.2.3",
+   "expected": "see [a](https://github.com/earendil-works/pi/blob/v1.2.3/outside.md)"
+  },
+  {
+   "markdown": "see [a](..)",
+   "version": "1.2.3",
+   "expected": "see [a](https://github.com/earendil-works/pi/tree/v1.2.3/packages)"
+  },
+  {
+   "markdown": "see [a](.)",
+   "version": "1.2.3",
+   "expected": "see [a](https://github.com/earendil-works/pi/tree/v1.2.3/packages/coding-agent)"
+  },
+  {
+   "markdown": "see [a](./)",
+   "version": "1.2.3",
+   "expected": "see [a](https://github.com/earendil-works/pi/tree/v1.2.3/packages/coding-agent/)"
+  },
+  {
+   "markdown": "see [a](docs/)",
+   "version": "1.2.3",
+   "expected": "see [a](https://github.com/earendil-works/pi/tree/v1.2.3/packages/coding-agent/docs/)"
+  },
+  {
+   "markdown": "see [a](docs)",
+   "version": "1.2.3",
+   "expected": "see [a](https://github.com/earendil-works/pi/tree/v1.2.3/packages/coding-agent/docs)"
+  },
+  {
+   "markdown": "see [a](docs#anchor)",
+   "version": "1.2.3",
+   "expected": "see [a](https://github.com/earendil-works/pi/tree/v1.2.3/packages/coding-agent/docs#anchor)"
+  },
+  {
+   "markdown": "see [a](docs/a.md?plain=1#L2)",
+   "version": "1.2.3",
+   "expected": "see [a](https://github.com/earendil-works/pi/blob/v1.2.3/packages/coding-agent/docs/a.md?plain=1#L2)"
+  },
+  {
+   "markdown": "see [a](#anchor)",
+   "version": "1.2.3",
+   "expected": "see [a](#anchor)"
+  },
+  {
+   "markdown": "see [a](//example.com/x)",
+   "version": "1.2.3",
+   "expected": "see [a](//example.com/x)"
+  },
+  {
+   "markdown": "see [a](https://example.com/x)",
+   "version": "1.2.3",
+   "expected": "see [a](https://example.com/x)"
+  },
+  {
+   "markdown": "see [a](mailto:x@y.z)",
+   "version": "1.2.3",
+   "expected": "see [a](mailto:x@y.z)"
+  },
+  {
+   "markdown": "see [a](javascript:alert(1))",
+   "version": "1.2.3",
+   "expected": "see [a](javascript:alert(1))"
+  },
+  {
+   "markdown": "see [a](HTTP://example.com/x)",
+   "version": "1.2.3",
+   "expected": "see [a](HTTP://example.com/x)"
+  },
+  {
+   "markdown": "see ![img](./docs/a.png)",
+   "version": "1.2.3",
+   "expected": "see ![img](https://github.com/earendil-works/pi/blob/v1.2.3/packages/coding-agent/docs/a.png)"
+  },
+  {
+   "markdown": "see [a](docs/a.md) and [b](docs/b.md)",
+   "version": "1.2.3",
+   "expected": "see [a](https://github.com/earendil-works/pi/blob/v1.2.3/packages/coding-agent/docs/a.md) and [b](https://github.com/earendil-works/pi/blob/v1.2.3/packages/coding-agent/docs/b.md)"
+  },
+  {
+   "markdown": "see [a](https://github.com/badlogic/pi-mono/blob/main/x.ts)",
+   "version": "1.2.3",
+   "expected": "see [a](https://github.com/earendil-works/pi/blob/v1.2.3/x.ts)"
+  },
+  {
+   "markdown": "see [a](https://github.com/earendil-works/pi-mono/tree/main/x)",
+   "version": "1.2.3",
+   "expected": "see [a](https://github.com/earendil-works/pi/tree/v1.2.3/x)"
+  },
+  {
+   "markdown": "see [a](https://github.com/earendil-works/pi-mono-other/blob/main/x.ts)",
+   "version": "1.2.3",
+   "expected": "see [a](https://github.com/earendil-works/pi-mono-other/blob/main/x.ts)"
+  },
+  {
+   "markdown": "see [a](https://github.com/user/repo/blob/main/x.ts)",
+   "version": "1.2.3",
+   "expected": "see [a](https://github.com/user/repo/blob/main/x.ts)"
+  },
+  {
+   "markdown": "see [a](https://github.com/user/repo/blob/master/x.ts)",
+   "version": "1.2.3",
+   "expected": "see [a](https://github.com/user/repo/blob/master/x.ts)"
+  },
+  {
+   "markdown": "see [a](https://github.com/user/repo/tree/main/dir)",
+   "version": "1.2.3",
+   "expected": "see [a](https://github.com/user/repo/tree/main/dir)"
+  },
+  {
+   "markdown": "see [a](https://github.com/user/repo/blob/dev/x.ts)",
+   "version": "1.2.3",
+   "expected": "see [a](https://github.com/user/repo/blob/dev/x.ts)"
+  },
+  {
+   "markdown": "see [a](docs/a b.md)",
+   "version": "1.2.3",
+   "expected": "see [a](https://github.com/earendil-works/pi/tree/v1.2.3/packages/coding-agent/docs/a b.md)"
+  },
+  {
+   "markdown": "see [a](docs/a.md \"title\")",
+   "version": "1.2.3",
+   "expected": "see [a](https://github.com/earendil-works/pi/blob/v1.2.3/packages/coding-agent/docs/a.md \"title\")"
+  },
+  {
+   "markdown": "see [a](  docs/a.md  )",
+   "version": "1.2.3",
+   "expected": "see [a](  docs/a.md  )"
+  },
+  {
+   "markdown": "see [a](docs\\a.md)",
+   "version": "1.2.3",
+   "expected": "see [a](https://github.com/earendil-works/pi/blob/v1.2.3/packages/coding-agent/docs/a.md)"
+  },
+  {
+   "markdown": "see [a](docs//a.md)",
+   "version": "1.2.3",
+   "expected": "see [a](https://github.com/earendil-works/pi/blob/v1.2.3/packages/coding-agent/docs/a.md)"
+  },
+  {
+   "markdown": "see [a](docs/./a.md)",
+   "version": "1.2.3",
+   "expected": "see [a](https://github.com/earendil-works/pi/blob/v1.2.3/packages/coding-agent/docs/a.md)"
+  },
+  {
+   "markdown": "see [a](docs/sub/../a.md)",
+   "version": "1.2.3",
+   "expected": "see [a](https://github.com/earendil-works/pi/blob/v1.2.3/packages/coding-agent/docs/a.md)"
+  },
+  {
+   "markdown": "see [a](src/core/tools/read.ts)",
+   "version": "1.2.3",
+   "expected": "see [a](https://github.com/earendil-works/pi/blob/v1.2.3/packages/coding-agent/src/core/tools/read.ts)"
+  },
+  {
+   "markdown": "see [a](CHANGELOG.md)",
+   "version": "1.2.3",
+   "expected": "see [a](https://github.com/earendil-works/pi/blob/v1.2.3/packages/coding-agent/CHANGELOG.md)"
+  },
+  {
+   "markdown": "see [a](README)",
+   "version": "1.2.3",
+   "expected": "see [a](https://github.com/earendil-works/pi/tree/v1.2.3/packages/coding-agent/README)"
+  },
+  {
+   "markdown": "see [a](a.b.c)",
+   "version": "1.2.3",
+   "expected": "see [a](https://github.com/earendil-works/pi/blob/v1.2.3/packages/coding-agent/a.b.c)"
+  },
+  {
+   "markdown": "see [a]()",
+   "version": "1.2.3",
+   "expected": "see [a]()"
+  },
+  {
+   "markdown": "see [a](   )",
+   "version": "1.2.3",
+   "expected": "see [a](   )"
+  },
+  {
+   "markdown": "see [a",
+   "version": "1.2.3",
+   "expected": "see [a"
+  },
+  {
+   "markdown": "see [](docs/a.md)",
+   "version": "1.2.3",
+   "expected": "see [](docs/a.md)"
+  },
+  {
+   "markdown": "see [a\nb](docs/a.md)",
+   "version": "1.2.3",
+   "expected": "see [a\nb](docs/a.md)"
+  },
+  {
+   "markdown": "see [中文](docs/中文.md)",
+   "version": "1.2.3",
+   "expected": "see [中文](https://github.com/earendil-works/pi/blob/v1.2.3/packages/coding-agent/docs/%E4%B8%AD%E6%96%87.md)"
+  },
+  {
+   "markdown": "see [a](docs/%E4%B8%AD.md)",
+   "version": "1.2.3",
+   "expected": "see [a](https://github.com/earendil-works/pi/blob/v1.2.3/packages/coding-agent/docs/%25E4%25B8%25AD.md)"
+  },
+  {
+   "markdown": "see [a](docs/中 文.md)",
+   "version": "1.2.3",
+   "expected": "see [a](https://github.com/earendil-works/pi/tree/v1.2.3/packages/coding-agent/docs/%E4%B8%AD 文.md)"
+  },
+  {
+   "markdown": "[a](docs/a.md)",
+   "version": {
+    "major": 2,
+    "minor": 0,
+    "patch": 0,
+    "content": ""
+   },
+   "expected": "[a](https://github.com/earendil-works/pi/blob/v2.0.0/packages/coding-agent/docs/a.md)"
+  },
+  {
+   "markdown": "[a](docs/a.md)",
+   "version": {
+    "major": 0,
+    "minor": 1,
+    "patch": 2,
+    "content": ""
+   },
+   "expected": "[a](https://github.com/earendil-works/pi/blob/v0.1.2/packages/coding-agent/docs/a.md)"
+  },
+  {
+   "markdown": "[a](docs/a.md)",
+   "version": {
+    "major": 10,
+    "minor": 20,
+    "patch": 30,
+    "content": ""
+   },
+   "expected": "[a](https://github.com/earendil-works/pi/blob/v10.20.30/packages/coding-agent/docs/a.md)"
+  },
+  {
+   "markdown": "no links here",
+   "version": "0.0.1",
+   "expected": "no links here"
+  }
+ ],
+ "parseChangelog": [
+  {
+   "name": "empty",
+   "content": "",
+   "expected": []
+  },
+  {
+   "name": "no-headers",
+   "content": "just text\nmore text\n",
+   "expected": []
+  },
+  {
+   "name": "single",
+   "content": "## 1.2.3\n\n- did a thing\n",
+   "expected": [
+    {
+     "major": 1,
+     "minor": 2,
+     "patch": 3,
+     "content": "## 1.2.3\n\n- did a thing"
+    }
+   ]
+  },
+  {
+   "name": "single-bracketed",
+   "content": "## [1.2.3] - 2024-01-01\n\n- did a thing\n",
+   "expected": [
+    {
+     "major": 1,
+     "minor": 2,
+     "patch": 3,
+     "content": "## [1.2.3] - 2024-01-01\n\n- did a thing"
+    }
+   ]
+  },
+  {
+   "name": "single-v",
+   "content": "## v1.2.3\n\n- did a thing\n",
+   "expected": []
+  },
+  {
+   "name": "multiple",
+   "content": "## 2.0.0\n\n- two\n\n## 1.0.0\n\n- one\n",
+   "expected": [
+    {
+     "major": 2,
+     "minor": 0,
+     "patch": 0,
+     "content": "## 2.0.0\n\n- two"
+    },
+    {
+     "major": 1,
+     "minor": 0,
+     "patch": 0,
+     "content": "## 1.0.0\n\n- one"
+    }
+   ]
+  },
+  {
+   "name": "mixed",
+   "content": "# Changelog\n\nintro\n\n## 2.0.0\n\n- two\n\n## Unreleased\n\n- wip\n\n## 1.0.0\n\n- one\n\ntrailing\n",
+   "expected": [
+    {
+     "major": 2,
+     "minor": 0,
+     "patch": 0,
+     "content": "## 2.0.0\n\n- two"
+    },
+    {
+     "major": 1,
+     "minor": 0,
+     "patch": 0,
+     "content": "## 1.0.0\n\n- one\n\ntrailing"
+    }
+   ]
+  },
+  {
+   "name": "header-without-version",
+   "content": "## Unreleased\n\n- wip\n",
+   "expected": []
+  },
+  {
+   "name": "two-digit",
+   "content": "## 10.20.30\n\n- big\n",
+   "expected": [
+    {
+     "major": 10,
+     "minor": 20,
+     "patch": 30,
+     "content": "## 10.20.30\n\n- big"
+    }
+   ]
+  },
+  {
+   "name": "blank-lines",
+   "content": "\n\n## 1.0.0\n\n\n\n- one\n\n\n",
+   "expected": [
+    {
+     "major": 1,
+     "minor": 0,
+     "patch": 0,
+     "content": "## 1.0.0\n\n\n\n- one"
+    }
+   ]
+  },
+  {
+   "name": "header-only",
+   "content": "## 1.0.0\n",
+   "expected": [
+    {
+     "major": 1,
+     "minor": 0,
+     "patch": 0,
+     "content": "## 1.0.0"
+    }
+   ]
+  },
+  {
+   "name": "header-only-multiple",
+   "content": "## 2.0.0\n## 1.0.0\n",
+   "expected": [
+    {
+     "major": 2,
+     "minor": 0,
+     "patch": 0,
+     "content": "## 2.0.0"
+    },
+    {
+     "major": 1,
+     "minor": 0,
+     "patch": 0,
+     "content": "## 1.0.0"
+    }
+   ]
+  },
+  {
+   "name": "crlf",
+   "content": "## 1.0.0\r\n\r\n- one\r\n",
+   "expected": [
+    {
+     "major": 1,
+     "minor": 0,
+     "patch": 0,
+     "content": "## 1.0.0\r\n\r\n- one"
+    }
+   ]
+  },
+  {
+   "name": "no-trailing-newline",
+   "content": "## 1.0.0\n\n- one",
+   "expected": [
+    {
+     "major": 1,
+     "minor": 0,
+     "patch": 0,
+     "content": "## 1.0.0\n\n- one"
+    }
+   ]
+  },
+  {
+   "name": "hash-in-body",
+   "content": "## 1.0.0\n\n# not a version\n\n## 0.9.0\n\n- nine\n",
+   "expected": [
+    {
+     "major": 1,
+     "minor": 0,
+     "patch": 0,
+     "content": "## 1.0.0\n\n# not a version"
+    },
+    {
+     "major": 0,
+     "minor": 9,
+     "patch": 0,
+     "content": "## 0.9.0\n\n- nine"
+    }
+   ]
+  },
+  {
+   "name": "h3-header",
+   "content": "## 1.0.0\n\n### Details\n\n- one\n",
+   "expected": [
+    {
+     "major": 1,
+     "minor": 0,
+     "patch": 0,
+     "content": "## 1.0.0\n\n### Details\n\n- one"
+    }
+   ]
+  },
+  {
+   "name": "leading-spaces",
+   "content": "  ## 1.0.0\n\n- one\n",
+   "expected": []
+  },
+  {
+   "name": "version-with-suffix",
+   "content": "## 1.0.0-beta.1\n\n- beta\n",
+   "expected": [
+    {
+     "major": 1,
+     "minor": 0,
+     "patch": 0,
+     "content": "## 1.0.0-beta.1\n\n- beta"
+    }
+   ]
+  },
+  {
+   "name": "version-partial",
+   "content": "## 1.0\n\n- partial\n",
+   "expected": []
+  }
+ ],
+ "parseChangelogMissing": {
+  "expected": []
+ },
+ "parseChangelogUnreadable": {
+  "expected": []
+ },
+ "compareChangelogVersions": [
+  {
+   "left": "1.0.0",
+   "right": "1.0.0",
+   "expected": 0
+  },
+  {
+   "left": "1.0.0",
+   "right": "1.0.1",
+   "expected": -1
+  },
+  {
+   "left": "1.0.1",
+   "right": "1.0.0",
+   "expected": 1
+  },
+  {
+   "left": "1.1.0",
+   "right": "1.0.9",
+   "expected": 1
+  },
+  {
+   "left": "2.0.0",
+   "right": "1.9.9",
+   "expected": 1
+  },
+  {
+   "left": "0.0.0",
+   "right": "0.0.0",
+   "expected": 0
+  },
+  {
+   "left": "10.20.30",
+   "right": "10.20.29",
+   "expected": 1
+  }
+ ],
+ "getNewChangelogEntries": [
+  {
+   "lastVersion": "1.0.0",
+   "entries": [
+    {
+     "major": 2,
+     "minor": 0,
+     "patch": 0,
+     "content": "two"
+    },
+    {
+     "major": 1,
+     "minor": 5,
+     "patch": 0,
+     "content": "one-five"
+    },
+    {
+     "major": 1,
+     "minor": 0,
+     "patch": 0,
+     "content": "one"
+    },
+    {
+     "major": 0,
+     "minor": 9,
+     "patch": 9,
+     "content": "zero"
+    }
+   ],
+   "expected": [
+    "two",
+    "one-five"
+   ]
+  },
+  {
+   "lastVersion": "0.0.0",
+   "entries": [
+    {
+     "major": 2,
+     "minor": 0,
+     "patch": 0,
+     "content": "two"
+    },
+    {
+     "major": 1,
+     "minor": 5,
+     "patch": 0,
+     "content": "one-five"
+    },
+    {
+     "major": 1,
+     "minor": 0,
+     "patch": 0,
+     "content": "one"
+    },
+    {
+     "major": 0,
+     "minor": 9,
+     "patch": 9,
+     "content": "zero"
+    }
+   ],
+   "expected": [
+    "two",
+    "one-five",
+    "one",
+    "zero"
+   ]
+  },
+  {
+   "lastVersion": "2.0.0",
+   "entries": [
+    {
+     "major": 2,
+     "minor": 0,
+     "patch": 0,
+     "content": "two"
+    },
+    {
+     "major": 1,
+     "minor": 5,
+     "patch": 0,
+     "content": "one-five"
+    },
+    {
+     "major": 1,
+     "minor": 0,
+     "patch": 0,
+     "content": "one"
+    },
+    {
+     "major": 0,
+     "minor": 9,
+     "patch": 9,
+     "content": "zero"
+    }
+   ],
+   "expected": []
+  },
+  {
+   "lastVersion": "1.5.0",
+   "entries": [
+    {
+     "major": 2,
+     "minor": 0,
+     "patch": 0,
+     "content": "two"
+    },
+    {
+     "major": 1,
+     "minor": 5,
+     "patch": 0,
+     "content": "one-five"
+    },
+    {
+     "major": 1,
+     "minor": 0,
+     "patch": 0,
+     "content": "one"
+    },
+    {
+     "major": 0,
+     "minor": 9,
+     "patch": 9,
+     "content": "zero"
+    }
+   ],
+   "expected": [
+    "two"
+   ]
+  },
+  {
+   "lastVersion": "3.0.0",
+   "entries": [
+    {
+     "major": 2,
+     "minor": 0,
+     "patch": 0,
+     "content": "two"
+    },
+    {
+     "major": 1,
+     "minor": 5,
+     "patch": 0,
+     "content": "one-five"
+    },
+    {
+     "major": 1,
+     "minor": 0,
+     "patch": 0,
+     "content": "one"
+    },
+    {
+     "major": 0,
+     "minor": 9,
+     "patch": 9,
+     "content": "zero"
+    }
+   ],
+   "expected": []
+  },
+  {
+   "lastVersion": "1",
+   "entries": [
+    {
+     "major": 2,
+     "minor": 0,
+     "patch": 0,
+     "content": "two"
+    },
+    {
+     "major": 1,
+     "minor": 5,
+     "patch": 0,
+     "content": "one-five"
+    },
+    {
+     "major": 1,
+     "minor": 0,
+     "patch": 0,
+     "content": "one"
+    },
+    {
+     "major": 0,
+     "minor": 9,
+     "patch": 9,
+     "content": "zero"
+    }
+   ],
+   "expected": [
+    "two",
+    "one-five"
+   ]
+  },
+  {
+   "lastVersion": "1.5",
+   "entries": [
+    {
+     "major": 2,
+     "minor": 0,
+     "patch": 0,
+     "content": "two"
+    },
+    {
+     "major": 1,
+     "minor": 5,
+     "patch": 0,
+     "content": "one-five"
+    },
+    {
+     "major": 1,
+     "minor": 0,
+     "patch": 0,
+     "content": "one"
+    },
+    {
+     "major": 0,
+     "minor": 9,
+     "patch": 9,
+     "content": "zero"
+    }
+   ],
+   "expected": [
+    "two"
+   ]
+  },
+  {
+   "lastVersion": "",
+   "entries": [
+    {
+     "major": 2,
+     "minor": 0,
+     "patch": 0,
+     "content": "two"
+    },
+    {
+     "major": 1,
+     "minor": 5,
+     "patch": 0,
+     "content": "one-five"
+    },
+    {
+     "major": 1,
+     "minor": 0,
+     "patch": 0,
+     "content": "one"
+    },
+    {
+     "major": 0,
+     "minor": 9,
+     "patch": 9,
+     "content": "zero"
+    }
+   ],
+   "expected": [
+    "two",
+    "one-five",
+    "one",
+    "zero"
+   ]
+  },
+  {
+   "lastVersion": "not-a-version",
+   "entries": [
+    {
+     "major": 2,
+     "minor": 0,
+     "patch": 0,
+     "content": "two"
+    },
+    {
+     "major": 1,
+     "minor": 5,
+     "patch": 0,
+     "content": "one-five"
+    },
+    {
+     "major": 1,
+     "minor": 0,
+     "patch": 0,
+     "content": "one"
+    },
+    {
+     "major": 0,
+     "minor": 9,
+     "patch": 9,
+     "content": "zero"
+    }
+   ],
+   "expected": [
+    "two",
+    "one-five",
+    "one",
+    "zero"
+   ]
+  },
+  {
+   "lastVersion": "1.5.0.1",
+   "entries": [
+    {
+     "major": 2,
+     "minor": 0,
+     "patch": 0,
+     "content": "two"
+    },
+    {
+     "major": 1,
+     "minor": 5,
+     "patch": 0,
+     "content": "one-five"
+    },
+    {
+     "major": 1,
+     "minor": 0,
+     "patch": 0,
+     "content": "one"
+    },
+    {
+     "major": 0,
+     "minor": 9,
+     "patch": 9,
+     "content": "zero"
+    }
+   ],
+   "expected": [
+    "two"
+   ]
+  },
+  {
+   "lastVersion": "01.0.0",
+   "entries": [
+    {
+     "major": 2,
+     "minor": 0,
+     "patch": 0,
+     "content": "two"
+    },
+    {
+     "major": 1,
+     "minor": 5,
+     "patch": 0,
+     "content": "one-five"
+    },
+    {
+     "major": 1,
+     "minor": 0,
+     "patch": 0,
+     "content": "one"
+    },
+    {
+     "major": 0,
+     "minor": 9,
+     "patch": 9,
+     "content": "zero"
+    }
+   ],
+   "expected": [
+    "two",
+    "one-five"
+   ]
+  },
+  {
+   "lastVersion": "1.0.0-rc.1",
+   "entries": [
+    {
+     "major": 2,
+     "minor": 0,
+     "patch": 0,
+     "content": "two"
+    },
+    {
+     "major": 1,
+     "minor": 5,
+     "patch": 0,
+     "content": "one-five"
+    },
+    {
+     "major": 1,
+     "minor": 0,
+     "patch": 0,
+     "content": "one"
+    },
+    {
+     "major": 0,
+     "minor": 9,
+     "patch": 9,
+     "content": "zero"
+    }
+   ],
+   "expected": [
+    "two",
+    "one-five"
+   ]
+  },
+  {
+   "lastVersion": " 1.0.0 ",
+   "entries": [
+    {
+     "major": 2,
+     "minor": 0,
+     "patch": 0,
+     "content": "two"
+    },
+    {
+     "major": 1,
+     "minor": 5,
+     "patch": 0,
+     "content": "one-five"
+    },
+    {
+     "major": 1,
+     "minor": 0,
+     "patch": 0,
+     "content": "one"
+    },
+    {
+     "major": 0,
+     "minor": 9,
+     "patch": 9,
+     "content": "zero"
+    }
+   ],
+   "expected": [
+    "two",
+    "one-five"
+   ]
+  }
+ ]
+}

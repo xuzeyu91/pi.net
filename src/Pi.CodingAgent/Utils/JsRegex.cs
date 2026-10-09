@@ -23,9 +23,18 @@ namespace Pi.CodingAgent.Utils;
 /// </remarks>
 public static class JsRegex
 {
+    /// <summary>
+    /// The body of JS <c>\s</c> without the enclosing brackets, so a caller can build its own class
+    /// (for example <c>[^\s)]</c>, which the changelog link pattern needs).
+    /// </summary>
+    public const string WhitespaceBody =
+        "\\t\\n\\v\\f\\r \\u00A0\\u1680\\u2000-\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000\\uFEFF";
+
     /// <summary>JS <c>\s</c> as a character class, for embedding into a pattern.</summary>
-    public const string WhitespaceClass =
-        "[\\t\\n\\v\\f\\r \\u00A0\\u1680\\u2000-\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000\\uFEFF]";
+    public const string WhitespaceClass = "[" + WhitespaceBody + "]";
+
+    /// <summary>The negation of <see cref="WhitespaceClass"/>, i.e. JS <c>\S</c>.</summary>
+    public const string NotWhitespaceClass = "[^" + WhitespaceBody + "]";
 
     /// <summary>JS <c>\d</c> as a character class.</summary>
     public const string DigitClass = "[0-9]";

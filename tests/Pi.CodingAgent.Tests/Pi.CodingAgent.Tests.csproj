@@ -16,6 +16,8 @@
     <None Include="utils-corpus.json" CopyToOutputDirectory="PreserveNewest" />
     <!-- Second slice: node path semantics, semver, version checks, clipboard routing, config/self-update. -->
     <None Include="core-utils-corpus.json" CopyToOutputDirectory="PreserveNewest" />
+    <!-- Third slice: git source parsing (git.ts + hosted-git-info) and the changelog helpers. -->
+    <None Include="git-corpus.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Pi.CodingAgent\Pi.CodingAgent.csproj" />
