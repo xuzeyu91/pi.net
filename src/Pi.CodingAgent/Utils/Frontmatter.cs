@@ -44,6 +44,17 @@ public static class Frontmatter
         .WithAttemptingUnquotedStringTypeDeserialization()
         .Build();
 
+    /// <summary>
+    /// yaml@2.9.0 treats end-of-input as a line break: the extracted block never ends with
+    /// <c>\n</c> (the slice stops before the closing delimiter's newline), and a block scalar
+    /// (<c>|</c> / <c>&gt;</c>) at EOF still keeps its final newline under clip chomping.
+    /// YamlDotNet only preserves that newline when the source itself ends with one, so the port
+    /// terminates the document the way the original's parser sees it. A no-op for every other
+    /// construct (plain scalars, flow collections and the malformed inputs parse identically).
+    /// </summary>
+    private static string TerminateDocument(string yaml) =>
+        yaml.EndsWith('\n') ? yaml : yaml + "\n";
+
     /// <summary>The TS <c>parseFrontmatter(content)</c>. Throws on malformed YAML, as the original does.</summary>
     public static ParsedFrontmatter Parse(string content)
     {
@@ -57,7 +68,7 @@ public static class Frontmatter
             return new ParsedFrontmatter(NoFields, body);
         }
 
-        return new ParsedFrontmatter(ToFields(Deserializer.Deserialize<object?>(yaml)), body);
+        return new ParsedFrontmatter(ToFields(Deserializer.Deserialize<object?>(TerminateDocument(yaml))), body);
     }
 
     /// <summary>The TS <c>stripFrontmatter(content)</c>: just the body.</summary>

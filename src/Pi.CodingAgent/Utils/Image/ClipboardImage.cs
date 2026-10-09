@@ -63,7 +63,10 @@ public static class ClipboardImageApi
     /// <summary>The TS backend result: <see cref="Image"/> null plus <see cref="IsUndefined"/> = backend failed.</summary>
     private readonly record struct ImageProbe(ClipboardImage? Image, bool IsUndefined)
     {
-        public static readonly ImageProbe Undefined = default;
+        // Must be new(null, true): the struct default has IsUndefined == false, which would make
+        // ReadClipboardImageAsync treat a failed backend as a definitive "no image" and skip the
+        // X11 / native fallbacks.
+        public static readonly ImageProbe Undefined = new(null, true);
         public static ImageProbe NoImage => new(null, false);
         public static ImageProbe Found(ClipboardImage image) => new(image, false);
     }

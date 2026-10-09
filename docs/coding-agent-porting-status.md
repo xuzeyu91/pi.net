@@ -177,6 +177,50 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 
 > 其余 4b 文件（settings-manager / trust-manager / auth-storage / model-config / models-store / mcp-servers / keybindings / virtual-models）目前**只有编译与人工核对**，尚无自动化测试；记为待办。
 
+## 4c 进度（工具系统）
+
+### ✅ 已完成（8/8 工具 + 6 个支撑文件，约 5,600 行 C# + 900 行测试）
+
+提交 `c003cf1`（本地，**待推送**——远端 `https://github.com/...` 在沙箱内无 git 凭据，由用户在本地 `git push`）。
+
+| 文件 | 对应 TS | 说明 |
+|---|---|---|
+| `Core/Tools/Truncate.cs` | `core/tools/truncate.ts` | head/tail/middle/line 截断，JS 兼容的 UTF-8 字节计数与 `F1` 体积格式 |
+| `Core/Tools/JsDiff.cs` | `diff@8.0.4` `dist/diff.js` | 移植 Myers 行 diff + `createTwoFilesPatch`（见 C86） |
+| `Core/Tools/EditDiff.cs` | `core/tools/edit-diff.ts` | BOM 处理、精确/模糊多编辑、行尾探测与还原、统一 patch、带行号展示 diff |
+| `Core/Tools/OutputAccumulator.cs` | `core/tools/output-accumulator.ts` | 有界流式输出，`Decoder` 复刻 `TextDecoder(stream:true)`，临时文件溢出与全量回读 |
+| `Core/Tools/ToolPathUtils.cs` | `core/tools/path-utils.ts` | `~` 展开、macOS 截图文件名变体（NBSP / NFD / 弯引号） |
+| `Core/Tools/FileMutationQueue.cs` | `core/tools/file-mutation-queue.ts` | 按解析后路径串行化同文件写 |
+| `Core/Tools/ToolDefinitionWrapper.cs` | `core/tools/tool-definition-wrapper.ts` | `ToolDefinition` ↔ 核心 `AgentTool` 桥接 + `ToolArgs` 参数读取 |
+| `Core/Tools/ReadTool.cs` / `WriteTool.cs` / `EditTool.cs` | `read.ts` / `write.ts` / `edit.ts` | 含 `operations` 注入点（远程文件系统） |
+| `Core/Tools/BashTool.cs` / `PowerShellTool.cs` | `bash.ts` / `powershell.ts` | 共用 shell 执行路径，节流更新、`PI_*` 环境变量、spawn hook |
+| `Core/Tools/GrepTool.cs` / `FindTool.cs` / `LsTool.cs` | `grep.ts` / `find.ts` / `ls.ts` | ripgrep / fd 子进程 + 截断与限额提示 |
+
+**顺带修复的真实缺陷**：
+
+1. `ChildProcess.cs` 事件重放解引用了可空委托（CS8602，`f78608b` 遗留）。
+2. `AgentTool` 没有 `PromptSnippet` / `PromptGuidelines`，导致包装后的工具丢失 TS 用 `Object.assign` 保留的提示元数据。
+3. `.gitignore` 的 `tools/` 规则未锚定到仓库根，把 `src/Pi.CodingAgent/Core/Tools` 整个目录从 git 里藏掉了（已改为 `/tools/`）。
+
+**测试**：`tests/Pi.CodingAgent.Tests/CoreToolsTests.cs`（47 项）复刻 TS `test/tools.test.ts` 的断言——read 的截断/offset/limit 分支、write 建目录、edit 的多编辑/重叠/失败不部分应用/模糊匹配、truncate 的四个入口、mutation queue 的同文件串行与跨文件并行、wrapper 桥接、edit 参数兼容垫片；另加 jsdiff/patch 对齐用例。解决方案构建 0 警告 0 错误。
+
+### 4c 收尾修复（本轮，提交前本地验证）
+
+`Pi.CodingAgent.Tests` 全量 432 项通过（0 失败）。本轮修了 5 个问题：
+
+1. **`ImageTests.cs` 的 `LargePng200` 固件转录损坏**（1772 → 1588 字符，PNG 结构乱码，Skia 解码失败）：用脚本从 TS `test/image-processing.test.ts` 原值整体替换，5 个图片固件（Tiny/Medium/Large/TinyJpeg/TinyJpeg2X1）现已逐一比对一致。它同时是 `ResizeImage_ResizesBeyondByteLimit` 与 `OversizedPngIsResizedAndAnnotated` 两个失败的根因。
+2. **`ClipboardImage.cs` 的 `ImageProbe.Undefined = default`**：record struct 的默认值 `IsUndefined == false`，导致「后端失败」被当成「确无图片」，linux 分支的 xclip / native 回退被跳过（10 个 ClipboardImageTests 失败）。改为 `new(null, true)`。
+3. **`ImageTests.cs` EXIF 测试公式笔误**：orientation 7/8 的期望映射写成 `(2 - x) * 3 + y`，TS 实现是 `(w - 1 - x) * h + y`（w=2 时应为 `(1 - x) * 3 + y`），越界且与生产代码不一致；生产代码本身是对的。
+4. **`ImageTests.cs` `CommandLog.RunAsync` 硬转型 `(string[])args`**：生产代码用集合表达式传 `IReadOnlyList<string>`，运行时不是 `string[]`（14 个 InvalidCastException）。改为 `args.ToArray()`。
+5. **`Frontmatter.cs` 块标量丢失末尾换行**：yaml@2.9.0 把 EOF 当行终止，`slice(4, endIndex)` 取出的 YAML 块永不以 `\n` 结尾，故 `|` / `>` 块标量在 clip 语义下总带末尾换行；YamlDotNet 只在源码有换行时保留。`Parse` 增加 `TerminateDocument`（缺失时补一个 `\n`），对其余构造是 no-op（47 条语料用例全绿）。
+
+**沙箱环境限制（非代码缺陷，勿追）**：本沙箱阻止 `HttpListener`（`句柄无效`），`Pi.Mcp.Tests` 4 项与 `Pi.Ai.Tests` 1 项因此失败；沙箱 `TMP` 路径超长（>108 字符）使 AF_UNIX socket 路径越界，`Pi.Server.Tests` 1 项失败。另 `Pi.Ai.Tests` 的 `BrowserLoginReceivesRealLoopbackCallback` 在回环服务器起不来时 `while (authUrl is null)` 无限空转（既有测试健壮性问题，非本轮引入）。`Pi.Durable.Tests` 的 2 项 bash 用例按设计在无 Git Bash 时跳过。
+
+### 4d 已确定的决策（尚未实现）
+
+1. **llama 拆分**：4d 只移植 `client.ts` / `provider.ts` / `huggingface.ts` / `index.ts`（963 行，HTTP 客户端 + 提供者注册）；`ui.ts`（503 行）依赖 4f 的 Theme 与交互组件，随 4f 落地。
+2. **扩展加载走 C# 原生插件路线**（与 `migration-plan.md` 一致）：扩展为 .NET 程序集，用 `AssemblyLoadContext` 加载。功能等价，但分发形式从「丢一个 `.ts` 文件」变为「放一个 `.dll`」。
+
 ## 关键设计差异（TS → C#）
 
 | # | 差异 | 说明 |
