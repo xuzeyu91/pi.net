@@ -30,6 +30,8 @@
     <!-- Sixth slice: core/model-resolver.ts, captured by importing the real source (the generator only
          rewrites its import header; see tools/gen-coding-agent-model-resolver-corpus.mjs). -->
     <None Include="model-resolver-corpus.json" CopyToOutputDirectory="PreserveNewest" />
+    <!-- 4d-6: extensions/tool-search/tool.ts (BM25 ranker, tokenizer, tool_search tool definition). -->
+    <None Include="tool-search-corpus.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Pi.CodingAgent\Pi.CodingAgent.csproj" />

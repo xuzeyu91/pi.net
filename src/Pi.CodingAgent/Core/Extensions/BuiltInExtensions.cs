@@ -9,12 +9,14 @@
 // llama.cpp is not replaceable.
 //
 // The factories themselves land with the per-extension batches — mcp with 4d-4, codemode with
-// 4d-5, tool-search with 4d-6, llama (non-UI) with 4d-7. Until then each entry carries a
+// 4d-5, tool-search with 4d-6 (landed), llama (non-UI) with 4d-7. Until then each entry carries a
 // placeholder factory that fails with a clear error naming its batch, the same placeholder
 // strategy the 4d-1 contract layer used for 4e/4f types (Types/Placeholders.cs). A placeholder
 // that runs surfaces as one aggregated load error, never a silent no-op.
 
 namespace Pi.CodingAgent.Core.Extensions;
+
+using Pi.CodingAgent.Extensions.ToolSearch;
 
 /// <summary>
 /// The built-in extensions, in load order. Port of <c>builtInExtensions</c> from
@@ -32,7 +34,7 @@ public static class BuiltInExtensions
         new InlineExtension.Described(
             "codemode", PlaceholderFactory("codemode", "4d-5"), Replaceable: true, Builtin: true),
         new InlineExtension.Described(
-            "tool-search", PlaceholderFactory("tool-search", "4d-6"), Replaceable: true, Builtin: true),
+            "tool-search", ToolSearch.CreateToolSearchExtension(), Replaceable: true, Builtin: true),
         new InlineExtension.Described(
             "mcp", PlaceholderFactory("mcp", "4d-4"), Replaceable: true, Builtin: true),
     };

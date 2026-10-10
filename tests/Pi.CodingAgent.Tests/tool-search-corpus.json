@@ -1,0 +1,1349 @@
+{
+ "constants": {
+  "toolSearchToolName": "tool_search",
+  "defaultToolSearchLimit": 8,
+  "description": "# Tool discovery\n\nSearches over deferred tool metadata with BM25 and exposes matching tools for the next model call.\n\nSome of the tools, such as tools of MCP servers, may not have been provided to you upfront, and you should use this tool (`tool_search`) to search for the required tools. For MCP tool discovery, always use `tool_search`.",
+  "schema": {
+   "type": "object",
+   "required": [
+    "query"
+   ],
+   "properties": {
+    "query": {
+     "type": "string",
+     "description": "Search query for deferred tools."
+    },
+    "limit": {
+     "type": "number",
+     "description": "Maximum number of tools to return. Defaults to 8."
+    }
+   }
+  }
+ },
+ "stem": [
+  {
+   "input": "issue",
+   "stem": "issue"
+  },
+  {
+   "input": "issues",
+   "stem": "issue"
+  },
+  {
+   "input": "ies",
+   "stem": "ies"
+  },
+  {
+   "input": "series",
+   "stem": "sery"
+  },
+  {
+   "input": "search",
+   "stem": "search"
+  },
+  {
+   "input": "searches",
+   "stem": "search"
+  },
+  {
+   "input": "matches",
+   "stem": "match"
+  },
+  {
+   "input": "boxes",
+   "stem": "box"
+  },
+  {
+   "input": "quizzes",
+   "stem": "quizz"
+  },
+  {
+   "input": "caches",
+   "stem": "cach"
+  },
+  {
+   "input": "wishes",
+   "stem": "wish"
+  },
+  {
+   "input": "glasses",
+   "stem": "glass"
+  },
+  {
+   "input": "process",
+   "stem": "process"
+  },
+  {
+   "input": "processes",
+   "stem": "process"
+  },
+  {
+   "input": "bus",
+   "stem": "bus"
+  },
+  {
+   "input": "buses",
+   "stem": "buse"
+  },
+  {
+   "input": "s",
+   "stem": "s"
+  },
+  {
+   "input": "ss",
+   "stem": "ss"
+  },
+  {
+   "input": "sss",
+   "stem": "sss"
+  },
+  {
+   "input": "news",
+   "stem": "new"
+  },
+  {
+   "input": "cities",
+   "stem": "city"
+  },
+  {
+   "input": "categorize",
+   "stem": "categorize"
+  },
+  {
+   "input": "analyzes",
+   "stem": "analyz"
+  },
+  {
+   "input": "spy",
+   "stem": "spy"
+  },
+  {
+   "input": "spies",
+   "stem": "spy"
+  },
+  {
+   "input": "class",
+   "stem": "class"
+  },
+  {
+   "input": "classes",
+   "stem": "class"
+  },
+  {
+   "input": "sssss",
+   "stem": "sssss"
+  }
+ ],
+ "tokenize": [
+  {
+   "input": "",
+   "terms": []
+  },
+  {
+   "input": "hello",
+   "terms": [
+    "hello"
+   ]
+  },
+  {
+   "input": "HelloWorld",
+   "terms": [
+    "hello",
+    "world"
+   ]
+  },
+  {
+   "input": "getUserName",
+   "terms": [
+    "get",
+    "user",
+    "name"
+   ]
+  },
+  {
+   "input": "HTTPServer",
+   "terms": [
+    "http",
+    "server"
+   ]
+  },
+  {
+   "input": "XMLHttpRequest",
+   "terms": [
+    "xml",
+    "http",
+    "request"
+   ]
+  },
+  {
+   "input": "search_tools now",
+   "terms": [
+    "search",
+    "tool",
+    "now"
+   ]
+  },
+  {
+   "input": "a the of and",
+   "terms": []
+  },
+  {
+   "input": "issues searches matches",
+   "terms": [
+    "issue",
+    "search",
+    "match"
+   ]
+  },
+  {
+   "input": "tool_search",
+   "terms": [
+    "tool",
+    "search"
+   ]
+  },
+  {
+   "input": "MCP server",
+   "terms": [
+    "mcp",
+    "server"
+   ]
+  },
+  {
+   "input": "read file 2 times",
+   "terms": [
+    "read",
+    "file",
+    "2",
+    "time"
+   ]
+  },
+  {
+   "input": "  leading and trailing  ",
+   "terms": [
+    "leading",
+    "trailing"
+   ]
+  },
+  {
+   "input": "snake_case-and-kebab.dot",
+   "terms": [
+    "snake",
+    "case",
+    "kebab",
+    "dot"
+   ]
+  },
+  {
+   "input": "ABCdef",
+   "terms": [
+    "ab",
+    "cdef"
+   ]
+  },
+  {
+   "input": "ABC",
+   "terms": [
+    "abc"
+   ]
+  },
+  {
+   "input": "aB",
+   "terms": [
+    "b"
+   ]
+  },
+  {
+   "input": "x1y2z3",
+   "terms": [
+    "x1y2z3"
+   ]
+  },
+  {
+   "input": "fetch_mcp_resources",
+   "terms": [
+    "fetch",
+    "mcp",
+    "resource"
+   ]
+  },
+  {
+   "input": "The quick brown fox",
+   "terms": [
+    "quick",
+    "brown",
+    "fox"
+   ]
+  },
+  {
+   "input": "工具 搜索",
+   "terms": []
+  },
+  {
+   "input": "café",
+   "terms": [
+    "caf"
+   ]
+  }
+ ],
+ "documents": [
+  {
+   "label": "name-description-only",
+   "tool": {
+    "name": "read",
+    "description": "Read a file",
+    "parameters": {
+     "type": "object"
+    }
+   },
+   "namespace": null,
+   "expected": {
+    "name": "read",
+    "text": "read read Read a file"
+   }
+  },
+  {
+   "label": "underscore-name",
+   "tool": {
+    "name": "mcp__docs__search",
+    "description": "Search docs",
+    "parameters": {
+     "type": "object"
+    }
+   },
+   "namespace": null,
+   "expected": {
+    "name": "mcp__docs__search",
+    "text": "mcp__docs__search mcp  docs  search Search docs"
+   }
+  },
+  {
+   "label": "schema-properties",
+   "tool": {
+    "name": "grep",
+    "description": "Search contents",
+    "parameters": {
+     "type": "object",
+     "properties": {
+      "pattern": {
+       "type": "string",
+       "description": "Regex pattern"
+      },
+      "glob": {
+       "type": "string",
+       "description": "Glob filter"
+      }
+     }
+    }
+   },
+   "namespace": null,
+   "expected": {
+    "name": "grep",
+    "text": "grep grep Search contents pattern Regex pattern glob Glob filter"
+   }
+  },
+  {
+   "label": "schema-items",
+   "tool": {
+    "name": "batch",
+    "description": "Batch calls",
+    "parameters": {
+     "type": "object",
+     "items": {
+      "description": "An item"
+     }
+    }
+   },
+   "namespace": null,
+   "expected": {
+    "name": "batch",
+    "text": "batch batch Batch calls An item"
+   }
+  },
+  {
+   "label": "schema-anyof-oneof-allof",
+   "tool": {
+    "name": "union",
+    "description": "Union type",
+    "parameters": {
+     "type": "object",
+     "anyOf": [
+      {
+       "description": "first variant"
+      },
+      {
+       "description": "second variant"
+      }
+     ],
+     "oneOf": [
+      {
+       "properties": {
+        "alpha": {
+         "description": "a"
+        }
+       }
+      }
+     ],
+     "allOf": [
+      {
+       "description": "third variant"
+      }
+     ]
+    }
+   },
+   "namespace": null,
+   "expected": {
+    "name": "union",
+    "text": "union union Union type first variant second variant alpha a third variant"
+   }
+  },
+  {
+   "label": "nested-properties",
+   "tool": {
+    "name": "nested",
+    "description": "Nested",
+    "parameters": {
+     "type": "object",
+     "properties": {
+      "outer": {
+       "type": "object",
+       "description": "Outer object",
+       "properties": {
+        "inner": {
+         "type": "string",
+         "description": "Inner field"
+        }
+       }
+      }
+     }
+    }
+   },
+   "namespace": null,
+   "expected": {
+    "name": "nested",
+    "text": "nested nested Nested outer Outer object inner Inner field"
+   }
+  },
+  {
+   "label": "blank-parts-filtered",
+   "tool": {
+    "name": "blank",
+    "description": "   ",
+    "parameters": {
+     "type": "object",
+     "description": "  "
+    }
+   },
+   "namespace": null,
+   "expected": {
+    "name": "blank",
+    "text": "blank blank"
+   }
+  },
+  {
+   "label": "with-namespace",
+   "tool": {
+    "name": "mcp__srv__ping",
+    "description": "Ping",
+    "parameters": {
+     "type": "object"
+    }
+   },
+   "namespace": {
+    "name": "mcp__srv",
+    "description": "Server tools",
+    "instructions": "Use sparingly"
+   },
+   "expected": {
+    "name": "mcp__srv__ping",
+    "text": "mcp__srv__ping mcp  srv  ping Ping mcp__srv Server tools Use sparingly"
+   }
+  },
+  {
+   "label": "namespace-blank-optional",
+   "tool": {
+    "name": "mcp__srv__ping",
+    "description": "Ping",
+    "parameters": {
+     "type": "object"
+    }
+   },
+   "namespace": {
+    "name": "mcp__srv"
+   },
+   "expected": {
+    "name": "mcp__srv__ping",
+    "text": "mcp__srv__ping mcp  srv  ping Ping mcp__srv"
+   }
+  }
+ ],
+ "rank": [
+  {
+   "query": "read",
+   "limit": 8,
+   "documents": [
+    {
+     "name": "read",
+     "text": "read file contents read"
+    },
+    {
+     "name": "write",
+     "text": "write file contents"
+    },
+    {
+     "name": "grep",
+     "text": "search file contents for patterns"
+    },
+    {
+     "name": "mcp__docs__search",
+     "text": "search documentation mcp server"
+    },
+    {
+     "name": "ls",
+     "text": "list directory contents"
+    }
+   ],
+   "expected": [
+    {
+     "name": "read",
+     "score": 1.8483924814931876
+    }
+   ]
+  },
+  {
+   "query": "file contents",
+   "limit": 8,
+   "documents": [
+    {
+     "name": "read",
+     "text": "read file contents read"
+    },
+    {
+     "name": "write",
+     "text": "write file contents"
+    },
+    {
+     "name": "grep",
+     "text": "search file contents for patterns"
+    },
+    {
+     "name": "mcp__docs__search",
+     "text": "search documentation mcp server"
+    },
+    {
+     "name": "ls",
+     "text": "list directory contents"
+    }
+   ],
+   "expected": [
+    {
+     "name": "write",
+     "score": 0.8871672492711367
+    },
+    {
+     "name": "read",
+     "score": 0.7907360265242738
+    },
+    {
+     "name": "grep",
+     "score": 0.7907360265242738
+    },
+    {
+     "name": "ls",
+     "score": 0.30873198019215514
+    }
+   ]
+  },
+  {
+   "query": "search",
+   "limit": 2,
+   "documents": [
+    {
+     "name": "read",
+     "text": "read file contents read"
+    },
+    {
+     "name": "write",
+     "text": "write file contents"
+    },
+    {
+     "name": "grep",
+     "text": "search file contents for patterns"
+    },
+    {
+     "name": "mcp__docs__search",
+     "text": "search documentation mcp server"
+    },
+    {
+     "name": "ls",
+     "text": "list directory contents"
+    }
+   ],
+   "expected": [
+    {
+     "name": "grep",
+     "score": 0.8374048792080783
+    },
+    {
+     "name": "mcp__docs__search",
+     "score": 0.8374048792080783
+    }
+   ]
+  },
+  {
+   "query": "search",
+   "limit": 0,
+   "documents": [
+    {
+     "name": "read",
+     "text": "read file contents read"
+    },
+    {
+     "name": "write",
+     "text": "write file contents"
+    },
+    {
+     "name": "grep",
+     "text": "search file contents for patterns"
+    },
+    {
+     "name": "mcp__docs__search",
+     "text": "search documentation mcp server"
+    },
+    {
+     "name": "ls",
+     "text": "list directory contents"
+    }
+   ],
+   "expected": []
+  },
+  {
+   "query": "search",
+   "limit": -1,
+   "documents": [
+    {
+     "name": "read",
+     "text": "read file contents read"
+    },
+    {
+     "name": "write",
+     "text": "write file contents"
+    },
+    {
+     "name": "grep",
+     "text": "search file contents for patterns"
+    },
+    {
+     "name": "mcp__docs__search",
+     "text": "search documentation mcp server"
+    },
+    {
+     "name": "ls",
+     "text": "list directory contents"
+    }
+   ],
+   "expected": []
+  },
+  {
+   "query": "",
+   "limit": 8,
+   "documents": [
+    {
+     "name": "read",
+     "text": "read file contents read"
+    },
+    {
+     "name": "write",
+     "text": "write file contents"
+    },
+    {
+     "name": "grep",
+     "text": "search file contents for patterns"
+    },
+    {
+     "name": "mcp__docs__search",
+     "text": "search documentation mcp server"
+    },
+    {
+     "name": "ls",
+     "text": "list directory contents"
+    }
+   ],
+   "expected": []
+  },
+  {
+   "query": "the of and",
+   "limit": 8,
+   "documents": [
+    {
+     "name": "read",
+     "text": "read file contents read"
+    },
+    {
+     "name": "write",
+     "text": "write file contents"
+    },
+    {
+     "name": "grep",
+     "text": "search file contents for patterns"
+    },
+    {
+     "name": "mcp__docs__search",
+     "text": "search documentation mcp server"
+    },
+    {
+     "name": "ls",
+     "text": "list directory contents"
+    }
+   ],
+   "expected": []
+  },
+  {
+   "query": "nonexistentterm",
+   "limit": 8,
+   "documents": [
+    {
+     "name": "read",
+     "text": "read file contents read"
+    },
+    {
+     "name": "write",
+     "text": "write file contents"
+    },
+    {
+     "name": "grep",
+     "text": "search file contents for patterns"
+    },
+    {
+     "name": "mcp__docs__search",
+     "text": "search documentation mcp server"
+    },
+    {
+     "name": "ls",
+     "text": "list directory contents"
+    }
+   ],
+   "expected": []
+  },
+  {
+   "query": "documentation",
+   "limit": 8,
+   "documents": [
+    {
+     "name": "read",
+     "text": "read file contents read"
+    },
+    {
+     "name": "write",
+     "text": "write file contents"
+    },
+    {
+     "name": "grep",
+     "text": "search file contents for patterns"
+    },
+    {
+     "name": "mcp__docs__search",
+     "text": "search documentation mcp server"
+    },
+    {
+     "name": "ls",
+     "text": "list directory contents"
+    }
+   ],
+   "expected": [
+    {
+     "name": "mcp__docs__search",
+     "score": 1.3260206932451128
+    }
+   ]
+  },
+  {
+   "query": "contents",
+   "limit": 100,
+   "documents": [
+    {
+     "name": "read",
+     "text": "read file contents read"
+    },
+    {
+     "name": "write",
+     "text": "write file contents"
+    },
+    {
+     "name": "grep",
+     "text": "search file contents for patterns"
+    },
+    {
+     "name": "mcp__docs__search",
+     "text": "search documentation mcp server"
+    },
+    {
+     "name": "ls",
+     "text": "list directory contents"
+    }
+   ],
+   "expected": [
+    {
+     "name": "write",
+     "score": 0.30873198019215514
+    },
+    {
+     "name": "ls",
+     "score": 0.30873198019215514
+    },
+    {
+     "name": "read",
+     "score": 0.2751741562582252
+    },
+    {
+     "name": "grep",
+     "score": 0.2751741562582252
+    }
+   ]
+  },
+  {
+   "query": "read write",
+   "limit": 8,
+   "documents": [
+    {
+     "name": "read",
+     "text": "read file contents read"
+    },
+    {
+     "name": "write",
+     "text": "write file contents"
+    },
+    {
+     "name": "grep",
+     "text": "search file contents for patterns"
+    },
+    {
+     "name": "mcp__docs__search",
+     "text": "search documentation mcp server"
+    },
+    {
+     "name": "ls",
+     "text": "list directory contents"
+    }
+   ],
+   "expected": [
+    {
+     "name": "read",
+     "score": 1.8483924814931876
+    },
+    {
+     "name": "write",
+     "score": 1.487730533884761
+    }
+   ]
+  },
+  {
+   "query": "mcp server search",
+   "limit": 3,
+   "documents": [
+    {
+     "name": "read",
+     "text": "read file contents read"
+    },
+    {
+     "name": "write",
+     "text": "write file contents"
+    },
+    {
+     "name": "grep",
+     "text": "search file contents for patterns"
+    },
+    {
+     "name": "mcp__docs__search",
+     "text": "search documentation mcp server"
+    },
+    {
+     "name": "ls",
+     "text": "list directory contents"
+    }
+   ],
+   "expected": [
+    {
+     "name": "mcp__docs__search",
+     "score": 3.489446265698304
+    },
+    {
+     "name": "grep",
+     "score": 0.8374048792080783
+    }
+   ]
+  },
+  {
+   "query": "Read",
+   "limit": 8,
+   "documents": [
+    {
+     "name": "read",
+     "text": "read file contents read"
+    },
+    {
+     "name": "write",
+     "text": "write file contents"
+    },
+    {
+     "name": "grep",
+     "text": "search file contents for patterns"
+    },
+    {
+     "name": "mcp__docs__search",
+     "text": "search documentation mcp server"
+    },
+    {
+     "name": "ls",
+     "text": "list directory contents"
+    }
+   ],
+   "expected": [
+    {
+     "name": "read",
+     "score": 1.8483924814931876
+    }
+   ]
+  }
+ ],
+ "rankCustom": [
+  {
+   "k1": 2,
+   "b": 0.5,
+   "query": "search contents",
+   "limit": 8,
+   "documents": [
+    {
+     "name": "read",
+     "text": "read file contents read"
+    },
+    {
+     "name": "write",
+     "text": "write file contents"
+    },
+    {
+     "name": "grep",
+     "text": "search file contents for patterns"
+    },
+    {
+     "name": "mcp__docs__search",
+     "text": "search documentation mcp server"
+    },
+    {
+     "name": "ls",
+     "text": "list directory contents"
+    }
+   ],
+   "expected": [
+    {
+     "name": "grep",
+     "score": 1.1216097094554778
+    },
+    {
+     "name": "mcp__docs__search",
+     "score": 0.8442019967341178
+    },
+    {
+     "name": "write",
+     "score": 0.30460454730188563
+    },
+    {
+     "name": "ls",
+     "score": 0.30460454730188563
+    },
+    {
+     "name": "read",
+     "score": 0.2774077127213601
+    }
+   ]
+  },
+  {
+   "k1": 0,
+   "b": 0,
+   "query": "search contents",
+   "limit": 8,
+   "documents": [
+    {
+     "name": "read",
+     "text": "read file contents read"
+    },
+    {
+     "name": "write",
+     "text": "write file contents"
+    },
+    {
+     "name": "grep",
+     "text": "search file contents for patterns"
+    },
+    {
+     "name": "mcp__docs__search",
+     "text": "search documentation mcp server"
+    },
+    {
+     "name": "ls",
+     "text": "list directory contents"
+    }
+   ],
+   "expected": [
+    {
+     "name": "grep",
+     "score": 1.1631508098056806
+    },
+    {
+     "name": "mcp__docs__search",
+     "score": 0.8754687373538999
+    },
+    {
+     "name": "read",
+     "score": 0.28768207245178085
+    },
+    {
+     "name": "write",
+     "score": 0.28768207245178085
+    },
+    {
+     "name": "ls",
+     "score": 0.28768207245178085
+    }
+   ]
+  },
+  {
+   "k1": null,
+   "b": 1,
+   "query": "read",
+   "limit": 8,
+   "documents": [
+    {
+     "name": "read",
+     "text": "read file contents read"
+    },
+    {
+     "name": "write",
+     "text": "write file contents"
+    },
+    {
+     "name": "grep",
+     "text": "search file contents for patterns"
+    },
+    {
+     "name": "mcp__docs__search",
+     "text": "search documentation mcp server"
+    },
+    {
+     "name": "ls",
+     "text": "list directory contents"
+    }
+   ],
+   "expected": [
+    {
+     "name": "read",
+     "score": 1.829908556678256
+    }
+   ]
+  }
+ ],
+ "allTools": [
+  {
+   "name": "read",
+   "description": "Read a file",
+   "parameters": {
+    "type": "object"
+   },
+   "exposure": "direct"
+  },
+  {
+   "name": "grep",
+   "description": "Search contents\nSecond line",
+   "parameters": {
+    "type": "object"
+   },
+   "exposure": "direct"
+  },
+  {
+   "name": "mcp__docs__search",
+   "description": "Search docs",
+   "parameters": {
+    "type": "object"
+   },
+   "exposure": "codemode",
+   "namespace": {
+    "name": "mcp__docs"
+   }
+  },
+  {
+   "name": "mcp__docs__fetch",
+   "description": "Fetch a doc",
+   "parameters": {
+    "type": "object"
+   },
+   "exposure": "deferred"
+  },
+  {
+   "name": "hidden_tool",
+   "description": "Hidden",
+   "parameters": {
+    "type": "object"
+   },
+   "exposure": "hidden"
+  },
+  {
+   "name": "tool_search",
+   "description": "Search tools",
+   "parameters": {
+    "type": "object"
+   },
+   "exposure": "model-only"
+  }
+ ],
+ "execute": [
+  {
+   "label": "empty-query",
+   "query": "  ",
+   "limit": null,
+   "withTools": true,
+   "activeBefore": [
+    "read"
+   ],
+   "activeAfter": [
+    "read"
+   ],
+   "content": null,
+   "details": null,
+   "error": "Error: query must not be empty"
+  },
+  {
+   "label": "empty-query-with-limit",
+   "query": "",
+   "limit": 3,
+   "withTools": true,
+   "activeBefore": [
+    "read"
+   ],
+   "activeAfter": [
+    "read"
+   ],
+   "content": null,
+   "details": null,
+   "error": "Error: query must not be empty"
+  },
+  {
+   "label": "zero-limit",
+   "query": "search",
+   "limit": 0,
+   "withTools": true,
+   "activeBefore": [
+    "read"
+   ],
+   "activeAfter": [
+    "read"
+   ],
+   "content": null,
+   "details": null,
+   "error": "Error: limit must be a positive integer"
+  },
+  {
+   "label": "negative-limit",
+   "query": "search",
+   "limit": -2,
+   "withTools": true,
+   "activeBefore": [
+    "read"
+   ],
+   "activeAfter": [
+    "read"
+   ],
+   "content": null,
+   "details": null,
+   "error": "Error: limit must be a positive integer"
+  },
+  {
+   "label": "fractional-limit",
+   "query": "search",
+   "limit": 1.5,
+   "withTools": true,
+   "activeBefore": [
+    "read"
+   ],
+   "activeAfter": [
+    "read"
+   ],
+   "content": null,
+   "details": null,
+   "error": "Error: limit must be a positive integer"
+  },
+  {
+   "label": "no-tools",
+   "query": "search",
+   "limit": null,
+   "withTools": false,
+   "activeBefore": [
+    "read"
+   ],
+   "activeAfter": [
+    "read"
+   ],
+   "content": [
+    {
+     "type": "text",
+     "text": "No matching tools found."
+    }
+   ],
+   "details": {
+    "loaded": []
+   },
+   "error": null
+  },
+  {
+   "label": "no-match",
+   "query": "zzzz",
+   "limit": null,
+   "withTools": true,
+   "activeBefore": [
+    "read"
+   ],
+   "activeAfter": [
+    "read"
+   ],
+   "content": [
+    {
+     "type": "text",
+     "text": "No matching tools found."
+    }
+   ],
+   "details": {
+    "loaded": []
+   },
+   "error": null
+  },
+  {
+   "label": "match-codemode",
+   "query": "docs search",
+   "limit": null,
+   "withTools": true,
+   "activeBefore": [
+    "read",
+    "grep"
+   ],
+   "activeAfter": [
+    "read",
+    "grep",
+    "mcp__docs__search",
+    "mcp__docs__fetch"
+   ],
+   "content": [
+    {
+     "type": "text",
+     "text": "Loaded 2 tools. They are available from your next call:\n- mcp__docs__search: Search docs\n- mcp__docs__fetch: Fetch a doc"
+    }
+   ],
+   "details": {
+    "loaded": [
+     "mcp__docs__search",
+     "mcp__docs__fetch"
+    ]
+   },
+   "error": null
+  },
+  {
+   "label": "match-deferred",
+   "query": "fetch doc",
+   "limit": null,
+   "withTools": true,
+   "activeBefore": [
+    "read"
+   ],
+   "activeAfter": [
+    "read",
+    "mcp__docs__fetch",
+    "mcp__docs__search"
+   ],
+   "content": [
+    {
+     "type": "text",
+     "text": "Loaded 2 tools. They are available from your next call:\n- mcp__docs__fetch: Fetch a doc\n- mcp__docs__search: Search docs"
+    }
+   ],
+   "details": {
+    "loaded": [
+     "mcp__docs__fetch",
+     "mcp__docs__search"
+    ]
+   },
+   "error": null
+  },
+  {
+   "label": "single-match-singular",
+   "query": "search docs",
+   "limit": 1,
+   "withTools": true,
+   "activeBefore": [],
+   "activeAfter": [
+    "mcp__docs__search"
+   ],
+   "content": [
+    {
+     "type": "text",
+     "text": "Loaded 1 tool. They are available from your next call:\n- mcp__docs__search: Search docs"
+    }
+   ],
+   "details": {
+    "loaded": [
+     "mcp__docs__search"
+    ]
+   },
+   "error": null
+  },
+  {
+   "label": "limit-default",
+   "query": "search",
+   "limit": null,
+   "withTools": true,
+   "activeBefore": [],
+   "activeAfter": [
+    "mcp__docs__search"
+   ],
+   "content": [
+    {
+     "type": "text",
+     "text": "Loaded 1 tool. They are available from your next call:\n- mcp__docs__search: Search docs"
+    }
+   ],
+   "details": {
+    "loaded": [
+     "mcp__docs__search"
+    ]
+   },
+   "error": null
+  },
+  {
+   "label": "already-active-excluded",
+   "query": "docs",
+   "limit": null,
+   "withTools": true,
+   "activeBefore": [
+    "mcp__docs__search"
+   ],
+   "activeAfter": [
+    "mcp__docs__search",
+    "mcp__docs__fetch"
+   ],
+   "content": [
+    {
+     "type": "text",
+     "text": "Loaded 1 tool. They are available from your next call:\n- mcp__docs__fetch: Fetch a doc"
+    }
+   ],
+   "details": {
+    "loaded": [
+     "mcp__docs__fetch"
+    ]
+   },
+   "error": null
+  }
+ ],
+ "identity": {
+  "match": true,
+  "nameOnly": false,
+  "otherName": false
+ }
+}

@@ -81,9 +81,11 @@
 - `tool.ts` 的工具描述生成（供模型选择）；
 - 输出截断与 `structuredContent` 形状。
 
-### 批次 4d-6：tool-search（`extensions/tool-search/tool.ts`，524 行）
+### 批次 4d-6：tool-search（`extensions/tool-search/tool.ts` 247 + `index.ts` 18 = 265 行）✅ 已完成（2026-10-10）
 
-BM25 排序 + 工具索引。独立，无外部依赖。
+BM25 排序 + 工具索引。独立，无外部依赖。已落地 `Extensions/ToolSearch/ToolSearch.cs` +
+65 项差分测试（语料 `tool-search-corpus.json`），并把 `BuiltInExtensions` 的 `tool-search` 占位
+工厂替换为真实工厂。
 
 ### 批次 4d-7：llama 非 UI 部分（963 行）
 
@@ -113,6 +115,7 @@ BM25 排序 + 工具索引。独立，无外部依赖。
 - [x] 4d-1 契约层（含占位类型策略落地）
 - [x] 4d-2 加载器（`AssemblyLoadContext` 方案细化）
 - [x] 4d-3 内置扩展注册表 + `IExtensionModuleLoader` 的 ALC 实现（factory 占位待 4d-4~4d-7 替换）
-- [ ] 4d-4 ~ 4d-7
+- [x] 4d-6 tool-search（工厂已接入注册表）
+- [ ] 4d-4 ~ 4d-5、4d-7
 - [ ] llama `ui.ts` → 4f
 - [ ] renderers 的 `renderCall` / `renderResult` → 4f

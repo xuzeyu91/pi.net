@@ -30,7 +30,7 @@
 | **4a** | `src/utils/*`（37 文件）+ 无依赖的根级模块（`config.ts` / `migrations.ts` / `core/defaults.ts` 等） | ~4,500 | ✅ utils 36/36 + `config.ts` 完成（2026-10-09） |
 | **4b** | 配置 / 信任 / 模型层：settings-manager、trust-manager、project-trust、auth-storage、model-config/registry/resolver、models-store、radius、virtual-models、mcp-servers、keybindings | 6,844（实测） | ✅ 16/16 文件（6,844 行）完成（2026-10-09） |
 | **4c** | 工具系统：`core/tools/*` + `core/tools/renderers/*` | ~9,000 | ✅ 8/8 工具 + 6 个支撑文件完成（2026-10-09）；renderers 的 renderCall/renderResult 依赖 Theme，随 4f 落地 |
-| **4d** | 扩展系统：`core/extensions/*`（types / runner / loader）+ `extensions/*`（codemode / llama / mcp / tool-search） | ~12,000 | ⏳ 4d-1 契约层 + 4d-2a 事件总线 + 4d-2b 加载器 + 4d-3 ALC 加载器与内置扩展注册完成（2026-10-10）；4d-4~4d-7 内置扩展包 / runner 待办 |
+| **4d** | 扩展系统：`core/extensions/*`（types / runner / loader）+ `extensions/*`（codemode / llama / mcp / tool-search） | ~12,000 | ⏳ 4d-1 契约层 + 4d-2a 事件总线 + 4d-2b 加载器 + 4d-3 ALC 加载器与内置扩展注册 + 4d-4a/4b MCP 配置与工具适配 + **4d-6 tool-search 完成**（2026-10-10）；4d-4c/4d-4d、4d-5 codemode、4d-7 llama 待办 |
 | **4e** | 会话与资源：agent-session、session-manager、resource-loader、package-manager、compaction、export-html、system-prompt、telemetry、sdk | ~20,000 | ⏳ |
 | **4f** | 模式层：`modes/rpc/*`、`modes/interactive/*`（含 7,082 行的 `interactive-mode.ts` 与 components / theme） | ~23,700 | ⏳ |
 | **4g** | 入口与实验层：`cli/*`、`main.ts`、`cli.ts`、`rpc-entry.ts`、`package-manager-cli.ts`、`bun/*`、`client/*`、`experimental/*` | ~12,000 | ⏳ |
@@ -633,3 +633,50 @@ runner（随 4e）、`extensions/index.ts` 注册表中占位工厂的逐项替�
 
 4d-4 剩余子批：4d-4c `index.ts` 主入口（依赖 4e 的 `pi.ui` / `pi.config`）、
 4d-4d `ui.ts`（依赖 4f Theme）。
+
+## 4d-6 进度（2026-10-10）：tool-search 扩展
+
+`extensions/tool-search/tool.ts`（247 行）与 `index.ts`（18 行）已移植。构建 0 警告 0 错误；
+`Pi.CodingAgent.Tests` 645 项中 639 通过（65 项新增差分测试全绿；6 项既有失败见文末「环境相关失败」）。
+
+新增文件：
+
+| 文件 | 内容 |
+|---|---|
+| `src/Pi.CodingAgent/Extensions/ToolSearch/ToolSearch.cs` | `Tokenize` / `Stem`（camelCase 切分、非字母数字切分、停用词、朴素单数化）、`CreateToolSearchDocument`（名称、`_`→空格、描述、schema 描述与属性名递归、命名空间）、`Bm25Ranker`（Okapi BM25，k1=1.2 / b=0.75）、`CreateToolSearchToolDefinition`（`tool_search` 工具：空查询/非正整数 limit 校验、`searchAndLoad` 激活匹配工具、结果文案）、`CreateToolSearchExtension`（注册为 `defaultActive: false`）、`IsToolSearchTool`（schema 身份守卫） |
+| `tests/Pi.CodingAgent.Tests/ToolSearchCorpusTests.cs` | 65 项差分测试 |
+| `tests/Pi.CodingAgent.Tests/tool-search-corpus.json` | 语料：stem 28 / tokenize 22 / documents 9 / rank 13 / rankCustom 3 / execute 12 |
+
+同时把 `BuiltInExtensions` 中 `tool-search` 的占位工厂替换为真实工厂（`codemode` / `mcp` / `llama.cpp`
+仍为占位，分别随 4d-5 / 4d-4 / 4d-7 替换）。
+
+与 TS 的差异：
+
+| # | 差异 | 理由 |
+|---|---|---|
+| C112 | `tool_search` 读取的 `Pick<ExtensionAPI, "getAllTools" \| "getActiveTools" \| "setActiveTools">` 落为最小接口 `IToolSearchTools` + `ExtensionApiToolSearchTools` 适配器 | C# 无结构化类型（同 C84）；`IExtensionApi` 经适配器满足该接口，测试可注入轻量桩 |
+| C113 | `IsToolSearchTool` 用 `ReferenceEquals(tool.Parameters, ToolSearchSchema)` 判定 | TS 是 `tool.parameters === toolSearchSchema`（TypeBox schema 对象同一性）；`ToolSchema` 是包装字典的 record，其 `==` 对字典是引用比较，但显式 `ReferenceEquals` 更清晰 |
+| C114 | BM25 排序用 `OrderByDescending`（稳定），不用 `List<T>.Sort`（不稳定） | JS `Array.prototype.sort` 自 ES2019 起稳定；语料含打平分数（`write` 与 `ls` 同分），顺序必须一致 |
+| C115 | `limit` 校验显式实现 `Number.isInteger` 语义（`!NaN && !Infinity && Floor==value`），非整数抛错 | TS `Number.isInteger(max) \|\| max <= 0` 抛 `limit must be a positive integer`；`ToolArgs.GetInt` 会截断小数，故必须读原始 double |
+| C116 | 校验错误抛 `InvalidOperationException`（JS `Error` 的 C# 落点），消息文本逐字保留 | 与 C14 的 `Error`/`AggregateError` 映射同策略；语料记录 `Error: <message>`，测试比对消息文本 |
+| C117 | `Tokenize` 用小写化 `ToLowerInvariant` | JS `toLowerCase()` 对 ASCII 完全一致；语料含 `café` / 中日韩输入，实测两侧同结果（`[^a-z0-9]+` 均切分）。非 ASCII 大小写映射（如 U+0130）理论上可能与 V8 不同，但不在本工具的真实输入域内 |
+
+语料生成器 `tools/gen-coding-agent-tool-search-corpus.mjs`（gitignored），Node 直接跑原 TS 源
+（`--experimental-strip-types`；tool.ts 的扩展类型是 type-only 导入，被类型擦除，运行时只依赖 `typebox`）。
+`stem` 是模块私有函数，语料经其唯一调用者 `tokenize` 反推（生成器断言单词输入必得单元素）。
+
+变异验证：把 `Stem` 的 `ies` 分支切片长度改 3→2、把 `Bm25Ranker` 默认 `k1` 改 1.2→1.3，
+分别令 3 项 / 2 项测试失败，再还原。
+
+## 环境相关失败（非移植缺陷，2026-10-10 记录）
+
+`Pi.CodingAgent.Tests` 在本沙箱内恒定有 6 项失败：`ModelResolverTests`（2）+ `CoreModelRuntimeTests`（4），
+全部与「provider 是否已配置可用」的判定有关。根因：**沙箱进程注入了真实凭据环境变量**
+（`ANTHROPIC_AUTH_TOKEN` / `OPENAI_API_KEY` / `ANTHROPIC_BASE_URL` 等），内置 provider 的凭据解析会读到它们，
+于是测试里「唯一可用的 solo provider」不再是唯一，回退分支选中了 `anthropic/claude-sonnet-4-5`。
+
+- 验证：`env -u ANTHROPIC_AUTH_TOKEN -u ANTHROPIC_API_KEY … <test.exe>` 后，这 6 项全部通过（645/645）。
+- 结论：环境导致，与移植代码无关；宿主（用户本机）未注入这些变量时应为全绿。
+- 待办（可选，4b/model-runtime 范围）：`ModelRuntime` 的内置 provider 凭据解析目前读真实 `process.env`，
+  未走注入的 `Env` 缝，导致测试对宿主环境敏感。若要让测试在任何环境都确定，需要把内置 provider 的
+  env 读取也纳入注入缝。
