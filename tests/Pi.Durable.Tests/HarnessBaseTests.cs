@@ -207,11 +207,17 @@ public class HarnessBaseTests
     [Fact]
     public void AddUsage_AccumulatesAllCounters()
     {
-        var total = Usage.ToJson(new Pi.Ai.Types.Usage(10, 20, Cost: 1.5));
-        Usage.AddUsage(total, new Pi.Ai.Types.Usage(1, 2, Cost: 0.25));
+        var total = Usage.ToJson(new Pi.Ai.Types.Usage(10, 20)
+        {
+            Cost = new Pi.Ai.Types.UsageCost(Total: 1.5),
+        });
+        Usage.AddUsage(total, new Pi.Ai.Types.Usage(1, 2)
+        {
+            Cost = new Pi.Ai.Types.UsageCost(Total: 0.25),
+        });
         Assert.Equal(11L, total["input"]);
         Assert.Equal(22L, total["output"]);
-        Assert.Equal(1.75, (double)total["cost"]!, 5);
+        Assert.Equal(1.75, CostTotal(total), 5);
     }
 
     [Fact]
@@ -222,10 +228,10 @@ public class HarnessBaseTests
             async tx => (await tx.CreateConversationAsync(new ConversationOwnership.Ownerless())).Id, Ctx);
         await session.CommitAsync(tx => Usage.RecordUsageAsync(
             (Transaction)tx, conv, Usage.ModelsBucket, "prov/m1",
-            new Pi.Ai.Types.Usage(10, 20, Cost: 1.0)), Ctx);
+            new Pi.Ai.Types.Usage(10, 20) { Cost = new Pi.Ai.Types.UsageCost(Total: 1.0) }), Ctx);
         await session.CommitAsync(tx => Usage.RecordUsageAsync(
             (Transaction)tx, conv, Usage.ModelsBucket, "prov/m1",
-            new Pi.Ai.Types.Usage(1, 2, Cost: 0.5)), Ctx);
+            new Pi.Ai.Types.Usage(1, 2) { Cost = new Pi.Ai.Types.UsageCost(Total: 0.5) }), Ctx);
         var snapshot = await session.SnapshotAsync(Usage.UsageDoc, conv, Ctx);
         Assert.NotNull(snapshot);
         var models = snapshot["models"] as IReadOnlyDictionary<string, object?>;
@@ -234,6 +240,10 @@ public class HarnessBaseTests
         Assert.NotNull(m1);
         Assert.Equal(11L, m1["input"]);
         Assert.Equal(22L, m1["output"]);
-        Assert.Equal(1.5, (double)m1["cost"]!, 5);
+        Assert.Equal(1.5, CostTotal(m1), 5);
     }
+
+    /// <summary>从 usage JSON 表示里取 cost 子对象的 total。</summary>
+    private static double CostTotal(IReadOnlyDictionary<string, object?> usageJson)
+        => (double)((IReadOnlyDictionary<string, object?>)usageJson["cost"]!)["total"]!;
 }

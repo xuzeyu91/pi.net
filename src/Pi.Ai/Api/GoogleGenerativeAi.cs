@@ -540,13 +540,18 @@ public static class GoogleGenerativeAi
                 var cached = (long)(usage.Num("cachedContentTokenCount") ?? 0);
                 var candidatesTokens = (long)(usage.Num("candidatesTokenCount") ?? 0);
                 var thoughts = (long)(usage.Num("thoughtsTokenCount") ?? 0);
-                output.Usage = new Usage(
-                    Math.Max(0, prompt - cached),
-                    candidatesTokens + thoughts,
-                    cached,
-                    0,
-                    null,
-                    thoughts);
+                var stats = new Usage(
+                    // TS 此处不夹取下界：cached 大于 prompt 时会得到负的 input。
+                    Input: prompt - cached,
+                    Output: candidatesTokens + thoughts,
+                    CacheRead: cached,
+                    CacheWrite: 0)
+                {
+                    Reasoning = thoughts,
+                    // TS：直接用 provider 的 totalTokenCount（未上报即 0），非全桶求和。
+                    TotalTokens = (long)(usage.Num("totalTokenCount") ?? 0),
+                };
+                output.Usage = ModelOperations.CalculateCost(model, stats);
             }
         }
 

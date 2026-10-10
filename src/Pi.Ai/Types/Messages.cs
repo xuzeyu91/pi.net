@@ -89,18 +89,62 @@ public enum ThinkingLevel
     Max,
 }
 
-/// <summary>用量统计。对应 TS <c>Usage</c>。</summary>
-public sealed record Usage(
-    long Input,
-    long Output,
-    long CacheRead = 0,
-    long CacheWrite = 0,
-    double? Cost = null,
-    long Reasoning = 0)
+/// <summary>
+/// 用量成本明细（美元）。对应 TS <c>Usage["cost"]</c>：provider 定价后逐桶写入，
+/// <see cref="Total"/> 恒等于四桶之和。TS 侧是可变的 <c>usage.cost</c> 对象，端口用
+/// 不可变记录 + <c>with</c> 表达（provider 重建 <see cref="Usage"/>）。
+/// </summary>
+public sealed record UsageCost(
+    [property: JsonPropertyName("input")] double Input = 0,
+    [property: JsonPropertyName("output")] double Output = 0,
+    [property: JsonPropertyName("cacheRead")] double CacheRead = 0,
+    [property: JsonPropertyName("cacheWrite")] double CacheWrite = 0,
+    [property: JsonPropertyName("total")] double Total = 0)
 {
-    /// <summary>输入 + 输出 token 合计（不含缓存读写）。</summary>
-    [JsonIgnore]
-    public long TotalTokens => Input + Output;
+    /// <summary>全零成本：provider 初始化用量时的起点（TS 的 <c>{ input: 0, …, total: 0 }</c>）。</summary>
+    public static UsageCost Zero { get; } = new();
+
+    /// <summary>按倍率缩放四桶与总价（服务档位加价）。对应 TS 侧对 <c>cost.total</c> 的乘法。</summary>
+    public UsageCost Scale(double multiplier)
+        => new(Input * multiplier, Output * multiplier, CacheRead * multiplier,
+            CacheWrite * multiplier, Total * multiplier);
+
+    /// <summary>按四桶重算 <see cref="Total"/>。对应 TS <c>calculateCost</c> 的末行。</summary>
+    public UsageCost WithRecomputedTotal() => this with { Total = Input + Output + CacheRead + CacheWrite };
+}
+
+/// <summary>
+/// 用量统计。对应 TS <c>Usage</c>。
+/// </summary>
+/// <remarks>
+/// <see cref="TotalTokens"/> 是**存储字段**而非计算属性：TS 各 provider 定义不一致
+/// （anthropic/google 用全桶之和，bedrock 用 input+output，mistral 用 wire 的 total_tokens，
+/// openai 用全桶之和），故端口不再用 <c>Input + Output</c> 推断。需要「无上报则回退」的调用点
+/// 应显式写 <c>usage.TotalTokens != 0 ? usage.TotalTokens : usage.Input + usage.Output +
+/// usage.CacheRead + usage.CacheWrite</c>（对应 TS <c>utils/estimate.ts</c> 的 <c>||</c> 回退）。
+/// </remarks>
+public sealed record Usage(long Input, long Output, long CacheRead = 0, long CacheWrite = 0)
+{
+    /// <summary>1h 保留期的缓存写子集；仅 Anthropic 上报。对应 TS <c>cacheWrite1h?</c>。</summary>
+    [JsonPropertyName("cacheWrite1h")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public long? CacheWrite1h { get; init; }
+
+    /// <summary>
+    /// 推理/思维 token，<see cref="Output"/> 的子集；provider 未上报时为 null。
+    /// 对应 TS <c>reasoning?</c>。
+    /// </summary>
+    [JsonPropertyName("reasoning")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public long? Reasoning { get; init; }
+
+    /// <summary>总 token（provider 上报值）。对应 TS <c>totalTokens</c>。</summary>
+    [JsonPropertyName("totalTokens")]
+    public long TotalTokens { get; init; }
+
+    /// <summary>成本明细。对应 TS <c>cost</c>。</summary>
+    [JsonPropertyName("cost")]
+    public UsageCost Cost { get; init; } = UsageCost.Zero;
 }
 
 /// <summary>

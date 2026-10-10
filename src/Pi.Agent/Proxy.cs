@@ -161,7 +161,7 @@ public static class Proxy
             _partial = new AssistantMessage(
                 Content: [],
                 StopReason: StopReason.Pending,
-                UsageStats: new Usage(0, 0, Cost: 0),
+                UsageStats: new Usage(0, 0),
                 Model: model.Id,
                 Api: model.Api,
                 Provider: model.Provider,
@@ -325,8 +325,8 @@ public static class Proxy
 
         /// <summary>
         /// wire 用量 JSON → <see cref="Usage"/>。对应 TS 侧直接透传 server 的 usage 对象：
-        /// cost 取 <c>total</c>（C# <see cref="Usage.Cost"/> 是单一总价，见 ModelOperations 约定），
-        /// totalTokens 由 Input+Output 计算得出故忽略 wire 值。
+        /// 逐字段照抄（含嵌套 cost 五桶与存储的 totalTokens），可选桶按 wire 是否存在决定
+        /// 是 null 还是 0。
         /// </summary>
         private static Usage? ConvertUsage(JsonObject? usage)
         {
@@ -336,10 +336,24 @@ public static class Proxy
                 ReadTokenCount(usage["input"]),
                 ReadTokenCount(usage["output"]),
                 ReadTokenCount(usage["cacheRead"]),
-                ReadTokenCount(usage["cacheWrite"]),
-                cost?["total"] is JsonValue total && total.TryGetValue<double>(out var totalCost) ? totalCost : null,
-                ReadTokenCount(usage["reasoning"]));
+                ReadTokenCount(usage["cacheWrite"]))
+            {
+                CacheWrite1h = usage["cacheWrite1h"] is JsonValue ? ReadTokenCount(usage["cacheWrite1h"]) : null,
+                Reasoning = usage["reasoning"] is JsonValue ? ReadTokenCount(usage["reasoning"]) : null,
+                TotalTokens = ReadTokenCount(usage["totalTokens"]),
+                Cost = cost is null
+                    ? UsageCost.Zero
+                    : new UsageCost(
+                        ReadCost(cost["input"]),
+                        ReadCost(cost["output"]),
+                        ReadCost(cost["cacheRead"]),
+                        ReadCost(cost["cacheWrite"]),
+                        ReadCost(cost["total"])),
+            };
         }
+
+        private static double ReadCost(JsonNode? node)
+            => node is JsonValue value && value.TryGetValue<double>(out var number) ? number : 0;
 
         private static long ReadTokenCount(JsonNode? node)
             => node is JsonValue value && value.TryGetValue<double>(out var number)

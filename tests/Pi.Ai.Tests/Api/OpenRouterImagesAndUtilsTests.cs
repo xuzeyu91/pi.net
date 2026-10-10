@@ -222,7 +222,7 @@ public class OpenRouterImagesTests
         Assert.Equal(10, result.Usage.CacheWrite);
         // 成本 = 0.30/1M*60 + 2.50/1M*20 + 0.03/1M*30 + 0.125/1M*10
         Assert.Equal(0.30 / 1e6 * 60 + 2.50 / 1e6 * 20 + 0.03 / 1e6 * 30 + 0.125 / 1e6 * 10,
-            result.Usage.Cost!.Value, 12);
+            result.Usage.Cost.Total, 12);
 
         var request = handler.Requests.Single();
         Assert.Equal("https://openrouter.ai/api/v1/chat/completions", request.Url);

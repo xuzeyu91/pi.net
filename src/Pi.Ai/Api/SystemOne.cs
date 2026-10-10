@@ -267,6 +267,7 @@ public static class SystemOne
         }
         var input = TokenCount(usage["input_tokens"]);
         var output = TokenCount(usage["output_tokens"]);
-        return ModelOperations.CalculateCost(model, new Usage(input, output));
+        // TS：totalTokens = input + output（该 provider 不区分缓存桶）。
+        return ModelOperations.CalculateCost(model, new Usage(input, output) { TotalTokens = input + output });
     }
 }

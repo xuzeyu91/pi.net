@@ -199,9 +199,7 @@ public static class OpenAiCompletions
                         // usage 块（include_usage 时最后一块）。
                         if (chunk["usage"] is JsonObject usageJson)
                         {
-                            usage = new Usage(
-                                (long?)usageJson["prompt_tokens"] ?? 0,
-                                (long?)usageJson["completion_tokens"] ?? 0);
+                            usage = ParseUsage(usageJson);
                         }
 
                         if (chunk["choices"] is not JsonArray choices || choices.Count == 0) return;
@@ -297,6 +295,36 @@ public static class OpenAiCompletions
         {
             Finalize(stream, partial, StopReason.Error, error.Message, timestamp);
         }
+    }
+
+    /// <summary>
+    /// chat completions 的 usage 解析。对应 TS <c>parseUsage</c>（openai-completions.ts）。
+    /// </summary>
+    /// <remarks>
+    /// 与 TS 一致的三处细节：① <c>input</c> 扣掉缓存读与缓存写（OpenAI 的 prompt_tokens 含二者）；
+    /// ② 缓存读的取值链是 <c>prompt_tokens_details.cached_tokens ?? prompt_cache_hit_tokens ??
+    /// cached_tokens ?? 0</c>（用 <c>??</c> 而非 <c>||</c>，显式 0 会截断链）；③
+    /// <c>reasoning</c> 取 <c>completion_tokens_details.reasoning_tokens</c>，未上报即 0。
+    /// 未移植：<c>calculateCost</c>——该 provider 走 <c>LazyApis.ToRuntime</c> 的轻量
+    /// <c>Model</c>，无目录费率，故 <see cref="Usage.Cost"/> 保持零。
+    /// </remarks>
+    private static Usage ParseUsage(JsonObject rawUsage)
+    {
+        var promptTokens = (long)(rawUsage.Num("prompt_tokens") ?? 0);
+        var details = rawUsage.Obj("prompt_tokens_details");
+        var cacheReadTokens = (long)(
+            details?.Num("cached_tokens")
+            ?? rawUsage.Num("prompt_cache_hit_tokens")
+            ?? rawUsage.Num("cached_tokens")
+            ?? 0);
+        var cacheWriteTokens = (long)(details?.Num("cache_write_tokens") ?? 0);
+        var input = Math.Max(0, promptTokens - cacheReadTokens - cacheWriteTokens);
+        var outputTokens = (long)(rawUsage.Num("completion_tokens") ?? 0);
+        return new Usage(input, outputTokens, cacheReadTokens, cacheWriteTokens)
+        {
+            Reasoning = (long)(rawUsage.Obj("completion_tokens_details")?.Num("reasoning_tokens") ?? 0),
+            TotalTokens = input + outputTokens + cacheReadTokens + cacheWriteTokens,
+        };
     }
 
     private static void Finalize(AssistantMessageEventStream stream, AssistantMessage partial,

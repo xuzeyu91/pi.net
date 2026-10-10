@@ -5,8 +5,8 @@ namespace Pi.Durable.Harness;
 
 /// <summary>
 /// 一个对话自身开销的账本：它的条目，以及没有模型开销的压缩总结尝试。对应 TS <c>harness/usage.ts</c> 的
-/// <c>UsageState</c>（值是 usage 的 JSON 表示；C# 侧形状随 <see cref="Pi.Ai.Types.Usage"/>：
-/// input/output/cacheRead/cacheWrite/cost/reasoning —— TS 另有 totalTokens 与 cost 子对象，见差异记录）。
+/// <c>UsageState</c>（值是 usage 的 JSON 表示，形状即 <see cref="Pi.Ai.Types.Usage"/> 的 wire 形态：
+/// input/output/cacheRead/cacheWrite/totalTokens + 可选 cacheWrite1h/reasoning + cost 五桶子对象）。
 /// </summary>
 public static class Usage
 {
@@ -36,7 +36,12 @@ public static class Usage
         [ToolsBucket] = new Dictionary<string, object?>(),
     };
 
-    /// <summary>Usage 的 JSON 表示（与 <see cref="Pi.Ai.Types.Usage"/> 的序列化形状一致，省略 null 开销）。</summary>
+    /// <summary>
+    /// Usage 的 JSON 表示（与 <see cref="Pi.Ai.Types.Usage"/> 的 wire 形状一致）。
+    /// 对应 TS <c>copyJson(usage, { omitUndefinedProperties: true })</c>：可选桶
+    /// （cacheWrite1h / reasoning）仅在存在时写入——注意 reasoning 为 0 时**要写**，
+    /// 只有缺失（null）才省略；cost 恒为五桶子对象。
+    /// </summary>
     public static Dictionary<string, object?> ToJson(Pi.Ai.Types.Usage usage)
     {
         var json = new Dictionary<string, object?>
@@ -45,19 +50,45 @@ public static class Usage
             ["output"] = usage.Output,
             ["cacheRead"] = usage.CacheRead,
             ["cacheWrite"] = usage.CacheWrite,
+            ["totalTokens"] = usage.TotalTokens,
         };
-        if (usage.Cost is { } cost) json["cost"] = cost;
-        if (usage.Reasoning != 0) json["reasoning"] = usage.Reasoning;
+        if (usage.CacheWrite1h is { } cacheWrite1h) json["cacheWrite1h"] = cacheWrite1h;
+        if (usage.Reasoning is { } reasoning) json["reasoning"] = reasoning;
+        json["cost"] = new Dictionary<string, object?>
+        {
+            ["input"] = usage.Cost.Input,
+            ["output"] = usage.Cost.Output,
+            ["cacheRead"] = usage.Cost.CacheRead,
+            ["cacheWrite"] = usage.Cost.CacheWrite,
+            ["total"] = usage.Cost.Total,
+        };
         return json;
     }
 
-    public static Pi.Ai.Types.Usage FromJson(IReadOnlyDictionary<string, object?> json) => new(
-        GetLong(json, "input"),
-        GetLong(json, "output"),
-        GetLong(json, "cacheRead"),
-        GetLong(json, "cacheWrite"),
-        json.TryGetValue("cost", out var cost) && cost is double d ? d : null,
-        GetLong(json, "reasoning"));
+    public static Pi.Ai.Types.Usage FromJson(IReadOnlyDictionary<string, object?> json)
+    {
+        var cost = json.TryGetValue("cost", out var costValue)
+            ? costValue as IReadOnlyDictionary<string, object?>
+            : null;
+        return new Pi.Ai.Types.Usage(
+            GetLong(json, "input"),
+            GetLong(json, "output"),
+            GetLong(json, "cacheRead"),
+            GetLong(json, "cacheWrite"))
+        {
+            CacheWrite1h = json.ContainsKey("cacheWrite1h") ? GetLong(json, "cacheWrite1h") : null,
+            Reasoning = json.ContainsKey("reasoning") ? GetLong(json, "reasoning") : null,
+            TotalTokens = GetLong(json, "totalTokens"),
+            Cost = cost is null
+                ? Pi.Ai.Types.UsageCost.Zero
+                : new Pi.Ai.Types.UsageCost(
+                    GetDouble(cost, "input"),
+                    GetDouble(cost, "output"),
+                    GetDouble(cost, "cacheRead"),
+                    GetDouble(cost, "cacheWrite"),
+                    GetDouble(cost, "total")),
+        };
+    }
 
     /// <summary>
     /// 在记录响应的提交里，把 usage 加进对话 pi.usage 的一个桶。对应 TS <c>recordUsage</c>。
@@ -93,17 +124,33 @@ public static class Usage
         change.Set(Pi.Chord.Delta.Path.Root.Append(Pi.Chord.Delta.Seg.Key(bucket)), updated);
     }
 
-    /// <summary>把 usage 的每个计数加到 total。对应 TS <c>addUsage</c>。</summary>
+    /// <summary>
+    /// 把 usage 的每个计数加到 total。对应 TS <c>addUsage</c>：五个必选计数直接相加，
+    /// cacheWrite1h / reasoning 仅当本侧上报时才累加（任一侧上报即开始计），cost 五桶逐项相加。
+    /// </summary>
     public static void AddUsage(Dictionary<string, object?> total, Pi.Ai.Types.Usage usage)
     {
         total["input"] = GetLong(total, "input") + usage.Input;
         total["output"] = GetLong(total, "output") + usage.Output;
         total["cacheRead"] = GetLong(total, "cacheRead") + usage.CacheRead;
         total["cacheWrite"] = GetLong(total, "cacheWrite") + usage.CacheWrite;
-        // C# Usage 无独立 totalTokens 计数（计算属性），不存储。
-        total["reasoning"] = GetLong(total, "reasoning") + usage.Reasoning;
-        if (usage.Cost is { } cost)
-            total["cost"] = (total.TryGetValue("cost", out var existing) && existing is double d ? d : 0d) + cost;
+        total["totalTokens"] = GetLong(total, "totalTokens") + usage.TotalTokens;
+        if (usage.CacheWrite1h is { } cacheWrite1h)
+            total["cacheWrite1h"] = GetLong(total, "cacheWrite1h") + cacheWrite1h;
+        if (usage.Reasoning is { } reasoning)
+            total["reasoning"] = GetLong(total, "reasoning") + reasoning;
+
+        if (total.TryGetValue("cost", out var costValue) is false
+            || costValue is not Dictionary<string, object?> cost)
+        {
+            cost = new Dictionary<string, object?>(StringComparer.Ordinal);
+            total["cost"] = cost;
+        }
+        cost["input"] = GetDouble(cost, "input") + usage.Cost.Input;
+        cost["output"] = GetDouble(cost, "output") + usage.Cost.Output;
+        cost["cacheRead"] = GetDouble(cost, "cacheRead") + usage.Cost.CacheRead;
+        cost["cacheWrite"] = GetDouble(cost, "cacheWrite") + usage.Cost.CacheWrite;
+        cost["total"] = GetDouble(cost, "total") + usage.Cost.Total;
     }
 
     /// <summary>把 state 的每个桶并入 sum。对应 TS <c>addUsageState</c>。</summary>
@@ -133,5 +180,12 @@ public static class Usage
     }
 
     private static long GetLong(IReadOnlyDictionary<string, object?> json, string key) =>
-        json.TryGetValue(key, out var value) && value is long l ? l : 0;
+        json.TryGetValue(key, out var value)
+            ? value switch { long l => l, double d => (long)d, _ => 0 }
+            : 0;
+
+    private static double GetDouble(IReadOnlyDictionary<string, object?> json, string key) =>
+        json.TryGetValue(key, out var value)
+            ? value switch { double d => d, long l => l, _ => 0d }
+            : 0d;
 }

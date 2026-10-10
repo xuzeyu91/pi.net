@@ -79,7 +79,7 @@ public class SystemOneTests
         var boolean = Assert.IsType<ClassifierBoolAnswer>(result.Answers["q-bool"]);
         Assert.Equal(0.95, boolean.Probability);
         // usage 按目录报价计费：10/1M·1 + 5/1M·2 ≈ 0.00002（浮点经 1e-6 除法）。
-        Assert.True(Math.Abs(result.Usage!.Cost!.Value - 0.00002) < 1e-12);
+        Assert.True(Math.Abs(result.Usage!.Cost.Total - 0.00002) < 1e-12);
     }
 
     [Fact]

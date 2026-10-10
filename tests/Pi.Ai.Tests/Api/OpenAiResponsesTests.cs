@@ -211,7 +211,7 @@ public class OpenAiResponsesTests
         Assert.Equal(40, final.UsageStats.CacheRead);
         Assert.Equal(5, final.UsageStats.Reasoning);
         // 成本 = 1.25/1M×60 + 10/1M×20 + 0.125/1M×40
-        Assert.Equal(1.25 / 1e6 * 60 + 10 / 1e6 * 20 + 0.125 / 1e6 * 40, final.UsageStats.Cost!.Value, 12);
+        Assert.Equal(1.25 / 1e6 * 60 + 10 / 1e6 * 20 + 0.125 / 1e6 * 40, final.UsageStats.Cost.Total, 12);
     }
 
     [Fact]
@@ -391,10 +391,10 @@ public class OpenAiResponsesTests
     [Fact]
     public void ServiceTierPricingAppliesMultiplier()
     {
-        var usage = new Usage(100, 200) { Cost = 1.0 };
+        var usage = new Usage(100, 200) { Cost = new UsageCost(Total: 1.0) };
         var priced = OpenAiResponses.ApplyServiceTierPricing(usage, "flex", ResponsesModel());
-        Assert.Equal(0.5, priced.Cost!.Value, 12);
+        Assert.Equal(0.5, priced.Cost.Total, 12);
         var priority = OpenAiResponses.ApplyServiceTierPricing(usage, "priority", ResponsesModel());
-        Assert.Equal(2.0, priority.Cost!.Value, 12);
+        Assert.Equal(2.0, priority.Cost.Total, 12);
     }
 }

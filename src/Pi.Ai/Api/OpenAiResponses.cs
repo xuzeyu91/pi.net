@@ -427,7 +427,7 @@ public static class OpenAiResponses
     {
         var multiplier = GetServiceTierCostMultiplier(model, serviceTier);
         if (multiplier == 1) return usage;
-        return usage with { Cost = (usage.Cost ?? 0) * multiplier };
+        return usage with { Cost = usage.Cost.Scale(multiplier) };
     }
 
     /// <summary>

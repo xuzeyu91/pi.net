@@ -33,9 +33,10 @@ public class EstimateAndOptionsTests
     {
         var context = Context(
             new SystemMessage("be brief", Timestamp: 0),
-            new UserMessage([new TextContent("hello world")], 1), // 11 chars → 3 tokens
+            // 字符 → token 用 TS 的 ceil(len / 3.5)。
+            new UserMessage([new TextContent("hello world")], 1), // 11 chars → 4 tokens
             new AssistantMessage(
-                [new TextContent("hi there")], StopReason.Stop, Timestamp: 2,  // 8 chars → 2 tokens
+                [new TextContent("hi there")], StopReason.Stop, Timestamp: 2,  // 8 chars → 3 tokens
                 UsageStats: new Usage(10, 5)));
         var estimate = Estimate.EstimateContextTokens(context);
         Assert.Equal(15, estimate.UsageTokens);
@@ -47,9 +48,9 @@ public class EstimateAndOptionsTests
     public void EstimateFallsBackToPerMessageWhenNoUsage()
     {
         var context = Context(
-            new UserMessage([new TextContent("abcd")], 1)); // 4 chars → 1 token
+            new UserMessage([new TextContent("abcd")], 1)); // 4 chars → ceil(4/3.5) = 2 tokens
         var estimate = Estimate.EstimateContextTokens(context);
-        Assert.Equal(1, estimate.Tokens);
+        Assert.Equal(2, estimate.Tokens);
         Assert.Null(estimate.LastUsageIndex);
     }
 
@@ -61,7 +62,8 @@ public class EstimateAndOptionsTests
             new AssistantMessage([], StopReason.Aborted, Timestamp: 2, UsageStats: new Usage(999, 999)));
         var estimate = Estimate.EstimateContextTokens(context);
         Assert.Null(estimate.LastUsageIndex);
-        Assert.Equal(1, estimate.Tokens);
+        // "abcd" → ceil(4/3.5) = 2；被中止的助手用量不参与。
+        Assert.Equal(2, estimate.Tokens);
     }
 
     [Fact]

@@ -11,4 +11,9 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Pi.Ai\Pi.Ai.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <!-- Differential corpus captured from the TypeScript originals by
+         tools/gen-ai-usage-corpus.mjs. -->
+    <None Include="usage-corpus.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
 </Project>

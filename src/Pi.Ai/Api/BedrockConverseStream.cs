@@ -1114,19 +1114,30 @@ public static class BedrockConverseStream
         var outputTokens = (long)(usage.Num("outputTokens") ?? 0);
         var cacheRead = (long)(usage.Num("cacheReadInputTokens") ?? 0);
         var cacheWrite = (long)(usage.Num("cacheWriteInputTokens") ?? 0);
-        long cacheWrite1h = 0;
+        // TS：cacheDetails 缺失时 cacheWrite1h 为 undefined（而非 0），calculateCost 的
+        // 1h 加价按 `?? 0` 取值，故两种形态成本相同，但序列化形状不同。
+        long? cacheWrite1h = null;
         if (usage["cacheDetails"] is JsonArray details)
         {
+            long total = 0;
             foreach (var detail in details.OfType<JsonObject>())
             {
                 if (detail.Str("ttl") == "1h")
                 {
-                    cacheWrite1h += (long)(detail.Num("inputTokens") ?? 0);
+                    total += (long)(detail.Num("inputTokens") ?? 0);
                 }
             }
+            cacheWrite1h = total;
         }
-        var cost = ModelOperations.CalculateCost(model, new Usage(input, outputTokens, cacheRead, cacheWrite));
-        output.Usage = cost with { Cost = cacheWrite1h > 0 ? (cost.Cost ?? 0) : cost.Cost };
+        var stats = new Usage(input, outputTokens, cacheRead, cacheWrite)
+        {
+            CacheWrite1h = cacheWrite1h,
+            // TS：totalTokens 优先取 wire 值，回退到 input + output（不含缓存桶）。
+            TotalTokens = (long)(usage.Num("totalTokens") ?? 0) is var reported && reported != 0
+                ? reported
+                : input + outputTokens,
+        };
+        output.Usage = ModelOperations.CalculateCost(model, stats);
     }
 
     // =============================================================================

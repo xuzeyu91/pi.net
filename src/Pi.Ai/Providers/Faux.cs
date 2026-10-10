@@ -187,7 +187,8 @@ public static class Faux
         {
             StopReason = response.StopReason,
             ErrorMessage = response.ErrorMessage,
-            UsageStats = response.Usage ?? new Usage(10, 5),
+            // TS：totalTokens = input + output + cacheRead + cacheWrite（此处缓存桶为 0）。
+            UsageStats = response.Usage ?? new Usage(10, 5) { TotalTokens = 15 },
             Model = "faux-1",
             Api = "faux",
             Provider = "faux",

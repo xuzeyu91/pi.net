@@ -471,15 +471,34 @@ public static class PiMessages
             _ => terminal ? StopReason.Error : StopReason.Pending,
         };
 
-    /// <summary>done/error 事件上的 usage 字段（wire 原样）。</summary>
+    /// <summary>
+    /// done/error 事件上的 usage 字段。TS 侧是 <c>event.usage</c> 原样透传
+    /// （pi-messages.ts 的 <c>usage: event.usage</c>），故这里按 wire 的完整形状重建：
+    /// 可选桶仅在 wire 存在时才带（区分 undefined 与 0），cost 取嵌套对象的五桶。
+    /// </summary>
     private static Usage? ParseUsage(JsonNode? usage)
-        => usage is JsonObject usageObject
-            ? new Usage(
-                (long)(usageObject.Num("input") ?? 0),
-                (long)(usageObject.Num("output") ?? 0),
-                (long)(usageObject.Num("cacheRead") ?? 0),
-                (long)(usageObject.Num("cacheWrite") ?? 0))
-            : new Usage(0, 0);
+    {
+        if (usage is not JsonObject usageObject) return new Usage(0, 0);
+        var cost = usageObject.Obj("cost");
+        return new Usage(
+            (long)(usageObject.Num("input") ?? 0),
+            (long)(usageObject.Num("output") ?? 0),
+            (long)(usageObject.Num("cacheRead") ?? 0),
+            (long)(usageObject.Num("cacheWrite") ?? 0))
+        {
+            CacheWrite1h = usageObject.Num("cacheWrite1h") is { } cacheWrite1h ? (long)cacheWrite1h : null,
+            Reasoning = usageObject.Num("reasoning") is { } reasoning ? (long)reasoning : null,
+            TotalTokens = (long)(usageObject.Num("totalTokens") ?? 0),
+            Cost = cost is null
+                ? UsageCost.Zero
+                : new UsageCost(
+                    cost.Num("input") ?? 0,
+                    cost.Num("output") ?? 0,
+                    cost.Num("cacheRead") ?? 0,
+                    cost.Num("cacheWrite") ?? 0,
+                    cost.Num("total") ?? 0),
+        };
+    }
 
     private static PiMessagesResponseError CreateResponseError(
         ModelSpec model, string url, System.Net.Http.HttpResponseMessage response, string body)

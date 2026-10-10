@@ -302,7 +302,15 @@ public static class AnthropicMessages
                         stopReason ?? StopReason.Stop, null, timestamp,
                         inputTokens is null && outputTokens is null
                             ? null
-                            : new Usage(inputTokens ?? 0, outputTokens ?? 0));
+                            // TS：totalTokens = input + output + cacheRead + cacheWrite。本实现尚未
+                            // 解析缓存桶与 1h 明细（message_start / message_delta 的
+                            // cache_read_input_tokens、cache_creation_input_tokens、
+                            // cache_creation.ephemeral_1h_input_tokens、output_tokens_details.thinking_tokens），
+                            // 故此处退化为 input + output；补全属 provider 保真工作（见状态文档）。
+                            : new Usage(inputTokens ?? 0, outputTokens ?? 0)
+                            {
+                                TotalTokens = (inputTokens ?? 0) + (outputTokens ?? 0),
+                            });
                 }, cancellationToken).ConfigureAwait(false);
         }
         catch (OperationCanceledException)

@@ -796,11 +796,16 @@ public static class MistralConversations
             {
                 var promptTokens = (long)(usage.Num("prompt_tokens") ?? 0);
                 var cachedPromptTokens = GetMistralCachedPromptTokens(usage, promptTokens);
-                output.Usage = new Usage(
-                    Math.Max(0, promptTokens - cachedPromptTokens),
-                    (long)(usage.Num("completion_tokens") ?? 0),
-                    cachedPromptTokens,
-                    0);
+                var input = Math.Max(0, promptTokens - cachedPromptTokens);
+                var outputTokens = (long)(usage.Num("completion_tokens") ?? 0);
+                var stats = new Usage(input, outputTokens, cachedPromptTokens, 0)
+                {
+                    // TS：totalTokens 优先取 wire 的 total_tokens，回退到全桶之和。
+                    TotalTokens = (long)(usage.Num("total_tokens") ?? 0) is var reported && reported != 0
+                        ? reported
+                        : input + outputTokens + cachedPromptTokens,
+                };
+                output.Usage = ModelOperations.CalculateCost(model, stats);
             }
 
             if (@event["choices"] is not JsonArray choices || choices.Count == 0

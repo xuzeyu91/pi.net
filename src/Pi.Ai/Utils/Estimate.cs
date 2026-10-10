@@ -14,18 +14,31 @@ public sealed record ContextUsageEstimate(
 /// </summary>
 public static class Estimate
 {
-    private const int CharsPerToken = 4;
+    /// <summary>TS <c>CHARS_PER_TOKEN</c>（3.5，非整数——取整只发生在 <c>Math.ceil</c> 处）。</summary>
+    private const double CharsPerToken = 3.5;
+
     private const int EstimatedImageChars = 4800;
 
     /// <summary>上下文占用：优先最近可用助手消息的用量，其余为尾部估算。对应 TS <c>calculateContextTokens</c>。</summary>
+    /// <remarks>
+    /// TS：<c>usage.totalTokens || input + output + cacheRead + cacheWrite</c>——provider 上报的
+    /// totalTokens 为 0 或缺失时回退到全桶求和。各 provider 的 totalTokens 定义不一致
+    /// （bedrock 用 input+output），故此处保留该回退而非直接求和。
+    /// </remarks>
     public static long CalculateContextTokens(Usage usage)
-        => usage.Input + usage.Output + usage.CacheRead + usage.CacheWrite;
+        => usage.TotalTokens != 0
+            ? usage.TotalTokens
+            : usage.Input + usage.Output + usage.CacheRead + usage.CacheWrite;
 
     /// <summary>纯文本 token 估算。</summary>
     public static long EstimateTextTokens(string text)
-        => (long)Math.Ceiling(text.Length / (double)CharsPerToken);
+        => (long)Math.Ceiling(text.Length / CharsPerToken);
 
-    /// <summary>user/toolResult 内容块（文本/图片）token 估算。</summary>
+    /// <summary>
+    /// user/toolResult 内容块（文本/图片）token 估算。
+    /// 对应 TS <c>estimateTextAndImageContentTokens(content: string | Array&lt;TextContent | ImageContent&gt;)</c>：
+    /// 非文本块一律按图片计（<c>block.type === "text" ? text.length : 4800</c>），字符串入参按其长度计。
+    /// </summary>
     public static long EstimateTextAndImageContentTokens(IReadOnlyList<ContentBlock> content)
     {
         long chars = 0;
@@ -34,12 +47,15 @@ public static class Estimate
             chars += block switch
             {
                 TextContent text => (text.Text ?? "").Length,
-                ImageContent => EstimatedImageChars,
-                _ => 0,
+                _ => EstimatedImageChars,
             };
         }
-        return (long)Math.Ceiling(chars / (double)CharsPerToken);
+        return (long)Math.Ceiling(chars / CharsPerToken);
     }
+
+    /// <summary>字符串入参的重载（TS 的联合入参在 C# 拆成两个重载）。</summary>
+    public static long EstimateTextAndImageContentTokens(string content)
+        => (long)Math.Ceiling(content.Length / CharsPerToken);
 
     /// <summary>单条消息 token 估算。对应 TS <c>estimateMessageTokens</c>。</summary>
     public static long EstimateMessageTokens(ChatMessage message)

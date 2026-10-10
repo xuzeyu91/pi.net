@@ -57,23 +57,28 @@ public static class ModelOperations
     }
 
     /// <summary>
-    /// 按目录费率折算用量成本（写回 <see cref="Usage.Cost"/> 总价）。
-    /// 对应 TS <c>calculateCost</c> 的简化版：C# Usage.Cost 是单一总价
-    /// （TS 是 input/output/cacheRead/cacheWrite/total 子对象），且暂不支持
-    /// 阶梯费率（cost.tiers）与 Anthropic 1h 缓存写加价。
+    /// 按目录费率把用量折算为成本明细（写回 <see cref="Usage.Cost"/> 四桶与总价）。
+    /// 对应 TS <c>calculateCost</c>。
     /// </summary>
+    /// <remarks>
+    /// 与 TS 一致的两处细节：① Anthropic 的 1h 缓存写按 2 倍基础输入价计费
+    /// （<c>rates.cacheWrite * 短写 + rates.input * 2 * 长写</c>）；② 总价由四桶求和得出。
+    /// 未移植：请求级阶梯费率 <c>cost.tiers</c>（<see cref="ModelCostRates"/> 尚无该字段，
+    /// 目录解析与回写同样省略——见 <c>ModelSpecJson</c> 的说明）。
+    /// </remarks>
     public static Usage CalculateCost(ModelSpec model, Usage usage)
     {
         var rates = model.Cost;
-        if (rates is null) return usage with { Cost = 0 };
-        return usage with
-        {
-            Cost =
-                rates.Input / 1_000_000 * usage.Input
-                + rates.Output / 1_000_000 * usage.Output
-                + (rates.CacheRead ?? 0) / 1_000_000 * usage.CacheRead
-                + (rates.CacheWrite ?? 0) / 1_000_000 * usage.CacheWrite,
-        };
+        if (rates is null) return usage with { Cost = UsageCost.Zero };
+
+        var longWrite = usage.CacheWrite1h ?? 0;
+        var shortWrite = usage.CacheWrite - longWrite;
+        var cost = new UsageCost(
+            Input: rates.Input / 1_000_000 * usage.Input,
+            Output: rates.Output / 1_000_000 * usage.Output,
+            CacheRead: (rates.CacheRead ?? 0) / 1_000_000 * usage.CacheRead,
+            CacheWrite: ((rates.CacheWrite ?? 0) * shortWrite + rates.Input * 2 * longWrite) / 1_000_000);
+        return usage with { Cost = cost.WithRecomputedTotal() };
     }
 
     public static AssistantImages ImageErrorResult(ModelSpec model, Exception error, bool aborted = false)

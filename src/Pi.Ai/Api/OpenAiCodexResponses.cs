@@ -324,7 +324,7 @@ public static partial class OpenAiCodexResponses
     {
         var multiplier = GetServiceTierCostMultiplier(model, serviceTier);
         if (multiplier == 1) return usage;
-        return usage with { Cost = (usage.Cost ?? 0) * multiplier };
+        return usage with { Cost = usage.Cost.Scale(multiplier) };
     }
 
     /// <summary>响应 tier "default" 回退到请求 tier（flex/priority）。对应 TS <c>resolveCodexServiceTier</c>。</summary>

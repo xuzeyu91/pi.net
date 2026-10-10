@@ -82,7 +82,9 @@ public static class OpenRouterImages
             CacheRead: cacheReadTokens,
             CacheWrite: cacheWriteTokens)
         {
-            Cost = costInput + costOutput + costCacheRead + costCacheWrite,
+            // TS：totalTokens = 全桶之和（含缓存读写）。
+            TotalTokens = input + output + cacheReadTokens + cacheWriteTokens,
+            Cost = new UsageCost(costInput, costOutput, costCacheRead, costCacheWrite).WithRecomputedTotal(),
         };
     }
 

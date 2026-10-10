@@ -841,6 +841,171 @@ huggingface.ts 只导入 `node:fs/promises` / `node:os` / `node:path`；生成�
 > 注册了处理器，先整份还原再 `os._exit(130)`；另外提交前一律用锚点表扫一遍「`frm` 出现 0 次、
 > `to` 出现 1 次」来查残留。
 
+## 4e-1 进度（2026-10-10）：core 无会话依赖的叶子模块
+
+4e 的第一批，挑的是 `core/` 下**不依赖 `SessionManager` / `AgentSession`** 的模块：它们既是后续
+4e 的输入（`resource-loader` / `skills` 要 `prompt-templates` 与 `diagnostics`，`agent-session`
+要 `session-cwd` 与 `crash-log`），又全是纯函数 + 文件 I/O，能立刻用差分钉死。
+
+| TS 文件 | 行数 | .NET | 说明 |
+|---|---:|---|---|
+| `core/diagnostics.ts` | 15 | `Core/Diagnostics.cs` | `ResourceType` / `ResourceDiagnosticType` / `ResourceCollision` / `ResourceDiagnostic`（含 `Warning` / `CollisionOf` 简写，C132） |
+| `core/telemetry.ts` | 13 | `Core/Telemetry.cs` | 安装遥测闸门；环境变量「存在即胜出」（空串也算「已设置且为假」） |
+| `core/experimental.ts` | 3 | `Core/Experimental.cs` | `PI_EXPERIMENTAL === "1"` |
+| `core/session-cwd.ts` | 59 | `Core/SessionCwd.cs` | `ISessionCwdSource` 缝、`MissingSessionCwdException`（`name` 常量）、两条格式化与 `AssertSessionCwdExists` |
+| `core/auth-guidance.ts` | 25 | `Core/AuthGuidance.cs` | 无模型可用 / 未选模型 / 无 API key 三条文案，共用一段 `/login` 提示 |
+| `core/slash-commands.ts` | 44 | `Core/SlashCommands.cs` | 24 条内置命令（顺序 load-bearing）；`SlashCommandInfo` 从 `Placeholders.cs` 的占位迁入并补齐 `Source` / `SourceInfo` |
+| `core/prompt-templates.ts` | 320 | `Core/PromptTemplates.cs` | `ParseCommandArgs`（bash 式引号）、`SubstituteArgs`（`$N` / `$@` / `${N:-d}` / `${@:N:L}`）、`ExpandPromptTemplate`、`Load`（agent 目录 + 项目 `.pi/prompts` + 显式路径，含符号链接与 front matter） |
+| `core/provider-attribution.ts` | 97 | `Core/ProviderAttribution.cs` | 会话头（opencode）与归因头（OpenRouter / NVIDIA NIM / Cloudflare，受遥测闸门约束），后者可被调用方逐层覆盖 |
+| `core/crash-log.ts` | 170 | `Core/CrashLog.cs` | 有界崩溃日志（5 条上限 / 7 天窗口 / 只报一次）+ `FindExtensionStackMatches` |
+| （`utils/uri.ts` 的 `decodeURI`） | — | `Utils/JsUri.cs`（+135） | `decodeURI` 保留 `; / ? : @ & = + $ , #` 的转义形态（与 `decodeURIComponent` 的唯一差别） |
+
+合计 1,393 行 C# ← 746 行 TS。`Placeholders.cs` 里 `SlashCommandInfo` 的占位已移除。
+
+### 4e-1 设计差异
+
+| # | 差异 | 说明 |
+|---|---|---|
+| C130 | **`CrashRecord` 用「成员袋」而非具名属性** | TS 的守卫只检查 `timestamp` / `message` 是字符串，其余成员是文件里恰好有什么。首版按「具名属性 + `Extra` 兜底」实现，会把缺失键变成 `null`、并把已知键排到前面。改为 `[JsonExtensionData] Dictionary<string, JsonElement>` + 只读访问器后，缺失键真正缺失、成员顺序原样保住 |
+| C131 | **`notified` 用 JS 真值语义** | `"notified": "yes"` 在 TS 里算「已通报」；按 `== true` 实现会二次弹窗。`IsTruthy` 覆盖 true / 数字非 0 / 非空串 / 对象 |
+| C132 | `ResourceDiagnostic.Collision` → **`CollisionOf`** | TS 的静态方法名 `collision` 与接口字段 `collision` 同名；C# 里构成 CS0102，改名并保留原义 |
+| C133 | **提示模板的 BOM 归属在 `parseFrontmatter`，不在读取层** | `readFileSync(path, "utf8")` 保留 BOM，剥 BOM 是 `parseFrontmatter(stripBom)` 的职责。首版用 `File.ReadAllText`（自动剥 BOM）把两份职责压在一起。改为按字节读 + 非 BOM 的 `UTF8Encoding` 解码。当前不可观测（两条路径等价），但层级正确 |
+
+### 4e-1 差分验证
+
+`tools/gen-coding-agent-core-prompt-corpus.mjs` 直接 `import` 真实 TS 模块，产出 20 段语料
+（`prompt-corpus.json`，约 46 KB），`PromptCorpusTests` 16 项逐条回放全绿：
+
+| 语料段 | 向量数 | 语料段 | 向量数 |
+|---|---:|---|---:|
+| `diagnostics` | 4 | `telemetry` | 6 |
+| `experimental` | 3 | `sessionCwd` | 5 |
+| `authGuidance` | 4 | `slashCommands` | 3 |
+| `parseCommandArgs` | 9 | `substituteArgs` | 18 |
+| `expandPromptTemplate` | 15 | `loadPromptTemplates` | 12 |
+| `providerAttribution` | 8 | `crashLogRead` | 6 |
+| `crashLogRecord` | 4 | `takeUnnotified` | 3 |
+| `findExtensionStackMatches` | 7 | `decodeUri` | 16 |
+| （其余 4 段为边界补充） | — | | |
+
+本轮**发现并修复 5 处真实缺陷**：
+
+1. **`DecodeUri` 的 lead byte 守卫写错**：`lead < 0x80 || lead >= 0xC2` 把整个多字节区间当成
+   单字节值，`%E4%B8%AD` / `%F0%9F%98%80` / `%F4%8F%BF%BF` 全部抛错。改为三分支
+   （`<0x80` ASCII / `0xC2..0xF4` 解码 / 其余直接抛）。
+2. **`ExpansionPattern` 少了命令名捕获组**（TS 是 `^\/([^\s]+)(?:\s+([\s\S]*))?$`）：`Groups[1]`
+   变成参数串，`ExpandPromptTemplate` 对任何输入都原样返回——15 条向量全灭。
+3. **`crashLogRead` 的 `bom` 向量载荷无区分度**：`"\uFEFF[]"` 两种实现都读成零条记录。
+   换成 `"\uFEFF" + 一条记录`（`bom-with-records`）。
+4. **`argument-hint` 为空时成员应缺席**：TS 的 `argumentHint && { argumentHint }` 让空串不写成员，
+   不是写空串。
+5. **读取层不该剥 BOM**（见 C133）。
+
+语料补充：UTF-8 边界 6 条（`%C2%80` 合法下界 / `%E0%80%80` 过长 / `%F0%80%80%80` 过长 /
+`%ED%BF%BF` 末尾代理 / `%BF` 孤立续字节 / `%F4%90%80%80` 超出 U+10FFFF）；`take` 段新增
+`notified-string-is-truthy`（`"yes"`）与 `notified-zero-is-falsy`（`0`）。
+
+### 4e-1 变异验证
+
+`tools/mutate-check.py` 从「只跑 llama」改为**多套件**（`--suite llama|prompt`），新增 **72 处**
+prompt 变异。首轮 **67/72 被捕获**，5 处盲点补语料后重跑，**72/72 全部捕获**：
+
+| 盲点 | 补的向量 |
+|---|---|
+| `load-defaults-order` | 断言 user-scope 模板先于 project-scope（顺序 load-bearing） |
+| `load-relative-path-trim` | `padded-path` 载入向量（路径两侧空白） |
+| `decodeuri-continuation-range` | `%80` / `%BF` 孤立续字节 |
+| `crash-stack-skip-first` | 首行即帧的 stack |
+| `crash-stack-boundary` / `crash-stack-dedup` | 含 `)` / `(native)` 的帧与重复帧 |
+
+两处「变异体本身编译不过」（`TreatWarningsAsErrors`）：`args-unsplit-at-end` → CS0162（`if (false)`
+不可达），`sub-default-priority` → CS8603（`value` 是 `string?`）。一处**等价变异**：
+`decodeuri-lead-range`（`0xC0`/`0xC1` 恒过长、`0xF5` 恒越界，改边界不可观测），换成
+`decodeuri-lead-else`（抛 → `codePoint = lead`），由 `%80`/`%BF` 捕获。
+
+> 第三次踩到「被 SIGKILL 的运行留下变异」：`TaskStop` 打在**管道**上（`python … | tail`）不会把信号
+> 交给 Python，`finally` 不跑，源码被留在变异态。第一次用「字符串猜测回滚」修，对
+> `load-scope-global-vs-project` 失效（替换串在文件里本就出现两次）。现在改为**磁盘日志**
+> （`tools/.mutate-check-journal.json`）：首次变异前把每个可能被改的文件的原始内容落盘，
+> 最后一次还原后才删除，任何时刻被杀都能在下次启动时**精确**回滚。教训：等待变异检查时不要动源码
+> ——`TaskStop` 之后 Python 可能仍在跑，其 `finally` 会用启动时的快照覆盖你刚做的编辑。
+
+## 4e-2a 进度（2026-10-10）：`Usage` 升级为 TS 完整形态
+
+4e 会话层的第一个前置：`session-manager` / `usage-totals` / `cache-stats` / `bug-report` 都要读写
+TS `Usage` 的**嵌套 cost 明细**，而 Pi.Ai 侧首版把 `Usage.Cost` 简化成了单一 `double?` 总价
+（见 `ModelOperations.CalculateCost` 的旧注释）。本轮把它改回 TS 形态。
+
+### 类型变更（`src/Pi.Ai/Types/Messages.cs`）
+
+| 之前 | 之后 |
+|---|---|
+| `Usage(long Input, long Output, long CacheRead, long CacheWrite, double? Cost, long Reasoning)` | `Usage(long Input, long Output, long CacheRead, long CacheWrite)` + init 属性 |
+| `double? Cost` | **`UsageCost Cost`**（`{input, output, cacheRead, cacheWrite, total}` 五桶，恒非 null） |
+| `long Reasoning = 0` | `long? Reasoning`（provider 未上报时**缺席**，与 TS `reasoning?` 一致） |
+| 无 | `long? CacheWrite1h`（仅 Anthropic / Bedrock 上报） |
+| `TotalTokens => Input + Output`（计算属性） | `long TotalTokens`（**存储字段**） |
+
+`TotalTokens` 从计算属性改成存储字段是必须的：TS 各 provider 的定义并不一致——anthropic / google /
+openai-completions 用「全桶之和」，**bedrock 用 `input + output`**，mistral 用 wire 的 `total_tokens`，
+google 用 `totalTokenCount`。原来的 `Input + Output` 对大多数 provider 都是错的。需要「无上报则回退」
+的调用点显式写回退（`utils/estimate.ts` 的 `||` 语义）。
+
+### 同步改动
+
+| 位置 | 改动 |
+|---|---|
+| `Pi.Ai/Utils/ModelOperations.CalculateCost` | 全量移植：四桶分别计价 + **Anthropic 1h 缓存写按 2 倍基础输入价**（`cacheWrite*短写 + input*2*长写`），总价由四桶求和。未移植 `cost.tiers`（见下） |
+| `Pi.Ai/Utils/Estimate` | **`CharsPerToken` 4 → 3.5**（真实缺陷，见下）；`CalculateContextTokens` 补 `totalTokens \|\|` 回退；`EstimateTextAndImageContentTokens` 非文本块一律按图片计（`_ => 4800`）并补字符串重载 |
+| `Pi.Ai/Api/OpenAiCompletions` | 新增 `ParseUsage`：缓存读的取值链 `prompt_tokens_details.cached_tokens ?? prompt_cache_hit_tokens ?? cached_tokens ?? 0`（用 `??` 而非 `\|\|`）、`input` 扣掉缓存读写、`reasoning`、`totalTokens` |
+| `Pi.Ai/Api/BedrockConverseStream` | `cacheWrite1h` 由 `cacheDetails` 求和（**缺失时为 null 而非 0**，与 TS `undefined` 一致）；`totalTokens = wire ?? input + output` |
+| `Pi.Ai/Api/GoogleGenerativeAi` | 补 `calculateCost`；`totalTokens` 取 `totalTokenCount`；**不夹取 `input` 下界**（TS 允许为负） |
+| `Pi.Ai/Api/MistralConversations` | 补 `calculateCost` + `totalTokens = total_tokens ?? 全桶之和` |
+| `Pi.Ai/Api/OpenRouterImages` | `cost` 改为五桶对象 + `totalTokens` |
+| `Pi.Ai/Api/PiMessages` | `ParseUsage` 按 wire 完整形状重建（含嵌套 cost 与存储的 `totalTokens`）；TS 是 `event.usage` 原样透传 |
+| `Pi.Ai/Api/SystemOne`、`Pi.Ai/Providers/Faux` | 补 `totalTokens` |
+| `Pi.Agent/Proxy` | `ConvertUsage` 按 wire 逐字段重建（嵌套 cost 五桶、`cacheWrite1h` / `reasoning` 按存在与否区分 null 与 0） |
+| `Pi.Durable/Harness/Usage` | `ToJson` / `FromJson` / `AddUsage` 对齐 TS `harness/usage.ts`：`totalTokens` 参与累加、`cacheWrite1h` / `reasoning` **仅在上报时累加**、cost 五桶逐项相加、`reasoning = 0` 必须写出（TS 只省略 `undefined`） |
+| `OpenAiResponses` / `OpenAiCodexResponses` | 服务档位加价改为缩放整个 `UsageCost`（`Cost.Scale(multiplier)`） |
+
+### 4e-2a 发现并修复的真实缺陷
+
+1. **`Estimate.CharsPerToken` 写成 4**，TS 是 **3.5**（`Math.ceil(len / 3.5)`）。影响全部上下文
+   估算：`"abcd"` 应为 2 而非 1，100 字符应为 29 而非 25，一张图片应为 1372 而非 1200。
+   已由语料 `estimateTextTokens` / `estimateTextAndImageContentTokens` 段钉住。
+2. **`CalculateContextTokens` 丢了 `totalTokens ||` 回退**。旧实现直接四桶求和，与 TS
+   （`usage.totalTokens || input+output+cacheRead+cacheWrite`）在「provider 上报了 totalTokens」
+   时结果不同——例如 bedrock 上报 `input + output`（不含缓存桶）。
+3. **`reasoning` 被当成「0 即省略」**。TS 只省略 `undefined`；`reasoning: 0` 是有效值且必须写出，
+   否则会话 JSONL 与 TS 不一致。
+4. **`EstimateTextAndImageContentTokens` 对非文本块返回 0**，TS 是 `block.type === "text" ? … : 4800`。
+
+### 4e-2a 差分验证
+
+`tools/gen-ai-usage-corpus.mjs`（新）直接驱动真实 TS 的 `models.ts` 与 `utils/estimate.ts`：
+
+| 语料段 | 向量数 | 覆盖 |
+|---|---:|---|
+| `calculateCost` | 11 | 普通费率 / 无缓存 / 1h 拆分 / 1h=0 / 全部为 1h / **1h 超过写总量（短写为负）** / 零用量 / 零费率 / 极小费率 / 循环小数 / 大数值 |
+| `calculateContextTokens` | 6 | `totalTokens` 为 0 时回退、非 0 时胜出、全零、回退计入缓存桶 |
+| `estimateTextTokens` | 9 | 空串 / 1 / 3 / 4 / 7 / 100 / 1000 字符、emoji（2 个 UTF-16 单元）、中文 |
+| `estimateTextAndImageContentTokens` | 8 | 字符串入参、块入参、纯图片、图片 + 文本、空数组、两张图片 |
+
+`tests/Pi.Ai.Tests/UsageCorpusTests.cs`（6 项）回放全部 34 条向量，并额外钉住 `Usage` 的 wire 形状
+（`cost` 恒为五桶对象；`cacheWrite1h` / `reasoning` 缺席时省略、显式 0 时写出）。
+
+`cost.tiers`（请求级阶梯费率）**不在语料内**：`ModelCostRates` 尚无 `Tiers` 字段，目录解析与回写
+同样丢弃（`ModelSpecJson` 已注明）。这是一个**已知且已记录的缺口**，落地时需同步补语料。
+
+### 4e-2a 遗留（provider 保真，非本批范围）
+
+`AnthropicMessages` 与 `OpenAiCompletions` 走 `LazyApis.ToRuntime` 的轻量 `Pi.Ai.Types.Model`
+（**没有目录费率**），因此这两个 provider 仍不调用 `calculateCost`，`Usage.Cost` 保持零；此外
+`AnthropicMessages` 尚未解析 `message_start` / `message_delta` 上的
+`cache_read_input_tokens`、`cache_creation_input_tokens`、`cache_creation.ephemeral_1h_input_tokens`、
+`output_tokens_details.thinking_tokens`（TS 都有）。这两处属于 **provider 保真工作**（与 4d-7 的
+provider 尾巴同源），不在 4e-2a 的类型升级范围内，已在代码里留注释指向本节。
+
 ## 环境相关失败（非移植缺陷，2026-10-10 记录）
 
 `Pi.CodingAgent.Tests` 在本沙箱内恒定有 6 项失败：`ModelResolverTests`（2）+ `CoreModelRuntimeTests`（4），

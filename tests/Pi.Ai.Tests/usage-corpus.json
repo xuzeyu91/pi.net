@@ -1,0 +1,430 @@
+{
+	"generatedBy": "tools/gen-ai-usage-corpus.mjs",
+	"note": "Node drives the real TS implementations; numbers are JS doubles (compare with a small epsilon).",
+	"calculateCost": [
+		{
+			"name": "plain",
+			"rates": {
+				"input": 3,
+				"output": 15,
+				"cacheRead": 0.3,
+				"cacheWrite": 3.75
+			},
+			"usage": {
+				"input": 1000,
+				"output": 500,
+				"cacheRead": 200,
+				"cacheWrite": 100
+			},
+			"cost": {
+				"input": 0.003,
+				"output": 0.007500000000000001,
+				"cacheRead": 0.000059999999999999995,
+				"cacheWrite": 0.000375,
+				"total": 0.010935
+			}
+		},
+		{
+			"name": "no-cache",
+			"rates": {
+				"input": 3,
+				"output": 15,
+				"cacheRead": 0.3,
+				"cacheWrite": 3.75
+			},
+			"usage": {
+				"input": 1000,
+				"output": 500,
+				"cacheRead": 0,
+				"cacheWrite": 0
+			},
+			"cost": {
+				"input": 0.003,
+				"output": 0.007500000000000001,
+				"cacheRead": 0,
+				"cacheWrite": 0,
+				"total": 0.0105
+			}
+		},
+		{
+			"name": "one-hour-split",
+			"rates": {
+				"input": 3,
+				"output": 15,
+				"cacheRead": 0.3,
+				"cacheWrite": 3.75
+			},
+			"usage": {
+				"input": 1000,
+				"output": 500,
+				"cacheRead": 200,
+				"cacheWrite": 100,
+				"cacheWrite1h": 40
+			},
+			"cost": {
+				"input": 0.003,
+				"output": 0.007500000000000001,
+				"cacheRead": 0.000059999999999999995,
+				"cacheWrite": 0.000465,
+				"total": 0.011025
+			}
+		},
+		{
+			"name": "one-hour-zero",
+			"rates": {
+				"input": 3,
+				"output": 15,
+				"cacheRead": 0.3,
+				"cacheWrite": 3.75
+			},
+			"usage": {
+				"input": 1000,
+				"output": 500,
+				"cacheRead": 0,
+				"cacheWrite": 100,
+				"cacheWrite1h": 0
+			},
+			"cost": {
+				"input": 0.003,
+				"output": 0.007500000000000001,
+				"cacheRead": 0,
+				"cacheWrite": 0.000375,
+				"total": 0.010875000000000001
+			}
+		},
+		{
+			"name": "one-hour-all",
+			"rates": {
+				"input": 3,
+				"output": 15,
+				"cacheRead": 0.3,
+				"cacheWrite": 3.75
+			},
+			"usage": {
+				"input": 0,
+				"output": 0,
+				"cacheRead": 0,
+				"cacheWrite": 40,
+				"cacheWrite1h": 40
+			},
+			"cost": {
+				"input": 0,
+				"output": 0,
+				"cacheRead": 0,
+				"cacheWrite": 0.00024,
+				"total": 0.00024
+			}
+		},
+		{
+			"name": "one-hour-exceeds-write",
+			"rates": {
+				"input": 3,
+				"output": 15,
+				"cacheRead": 0.3,
+				"cacheWrite": 3.75
+			},
+			"usage": {
+				"input": 1000,
+				"output": 0,
+				"cacheRead": 0,
+				"cacheWrite": 100,
+				"cacheWrite1h": 150
+			},
+			"cost": {
+				"input": 0.003,
+				"output": 0,
+				"cacheRead": 0,
+				"cacheWrite": 0.0007125,
+				"total": 0.0037125
+			}
+		},
+		{
+			"name": "zero-usage",
+			"rates": {
+				"input": 3,
+				"output": 15,
+				"cacheRead": 0.3,
+				"cacheWrite": 3.75
+			},
+			"usage": {
+				"input": 0,
+				"output": 0,
+				"cacheRead": 0,
+				"cacheWrite": 0
+			},
+			"cost": {
+				"input": 0,
+				"output": 0,
+				"cacheRead": 0,
+				"cacheWrite": 0,
+				"total": 0
+			}
+		},
+		{
+			"name": "zero-rates",
+			"rates": {
+				"input": 0,
+				"output": 0,
+				"cacheRead": 0,
+				"cacheWrite": 0
+			},
+			"usage": {
+				"input": 1000,
+				"output": 500,
+				"cacheRead": 200,
+				"cacheWrite": 100
+			},
+			"cost": {
+				"input": 0,
+				"output": 0,
+				"cacheRead": 0,
+				"cacheWrite": 0,
+				"total": 0
+			}
+		},
+		{
+			"name": "fractional-rates",
+			"rates": {
+				"input": 0.0001,
+				"output": 0.0002,
+				"cacheRead": 0.00003,
+				"cacheWrite": 0.000125
+			},
+			"usage": {
+				"input": 7,
+				"output": 3,
+				"cacheRead": 11,
+				"cacheWrite": 13
+			},
+			"cost": {
+				"input": 7.000000000000001e-10,
+				"output": 6e-10,
+				"cacheRead": 3.3e-10,
+				"cacheWrite": 1.625e-9,
+				"total": 3.255e-9
+			}
+		},
+		{
+			"name": "repeating-decimal",
+			"rates": {
+				"input": 0.333333,
+				"output": 1.666667,
+				"cacheRead": 0.033333,
+				"cacheWrite": 0.416667
+			},
+			"usage": {
+				"input": 1234,
+				"output": 567,
+				"cacheRead": 89,
+				"cacheWrite": 42,
+				"cacheWrite1h": 17
+			},
+			"cost": {
+				"input": 0.000411332922,
+				"output": 0.000945000189,
+				"cacheRead": 0.0000029666370000000005,
+				"cacheWrite": 0.000021749997000000002,
+				"total": 0.001381049745
+			}
+		},
+		{
+			"name": "large-values",
+			"rates": {
+				"input": 3,
+				"output": 15,
+				"cacheRead": 0.3,
+				"cacheWrite": 3.75
+			},
+			"usage": {
+				"input": 5000000,
+				"output": 2500000,
+				"cacheRead": 1000000,
+				"cacheWrite": 500000,
+				"cacheWrite1h": 250000
+			},
+			"cost": {
+				"input": 15,
+				"output": 37.5,
+				"cacheRead": 0.3,
+				"cacheWrite": 2.4375,
+				"total": 55.2375
+			}
+		}
+	],
+	"calculateContextTokens": [
+		{
+			"name": "total-tokens-zero-falls-back",
+			"usage": {
+				"input": 100,
+				"output": 50,
+				"cacheRead": 20,
+				"cacheWrite": 5,
+				"totalTokens": 0
+			},
+			"tokens": 175
+		},
+		{
+			"name": "total-tokens-reported-wins",
+			"usage": {
+				"input": 100,
+				"output": 50,
+				"cacheRead": 20,
+				"cacheWrite": 5,
+				"totalTokens": 123
+			},
+			"tokens": 123
+		},
+		{
+			"name": "total-tokens-reported-ignores-buckets",
+			"usage": {
+				"input": 0,
+				"output": 0,
+				"cacheRead": 0,
+				"cacheWrite": 0,
+				"totalTokens": 999
+			},
+			"tokens": 999
+		},
+		{
+			"name": "all-zero",
+			"usage": {
+				"input": 0,
+				"output": 0,
+				"cacheRead": 0,
+				"cacheWrite": 0,
+				"totalTokens": 0
+			},
+			"tokens": 0
+		},
+		{
+			"name": "fallback-counts-cache-buckets",
+			"usage": {
+				"input": 0,
+				"output": 0,
+				"cacheRead": 40,
+				"cacheWrite": 0,
+				"totalTokens": 0
+			},
+			"tokens": 40
+		},
+		{
+			"name": "total-equals-sum",
+			"usage": {
+				"input": 100,
+				"output": 50,
+				"cacheRead": 20,
+				"cacheWrite": 5,
+				"totalTokens": 175
+			},
+			"tokens": 175
+		}
+	],
+	"estimateTextTokens": [
+		{
+			"text": "",
+			"tokens": 0
+		},
+		{
+			"text": "a",
+			"tokens": 1
+		},
+		{
+			"text": "abc",
+			"tokens": 1
+		},
+		{
+			"text": "abcd",
+			"tokens": 2
+		},
+		{
+			"text": "1234567",
+			"tokens": 2
+		},
+		{
+			"text": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+			"tokens": 29
+		},
+		{
+			"text": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+			"tokens": 286
+		},
+		{
+			"text": "😀",
+			"tokens": 1
+		},
+		{
+			"text": "中文字符",
+			"tokens": 2
+		}
+	],
+	"estimateTextAndImageContentTokens": [
+		{
+			"content": "",
+			"tokens": 0
+		},
+		{
+			"content": "hello",
+			"tokens": 2
+		},
+		{
+			"content": "aaaaaaa",
+			"tokens": 2
+		},
+		{
+			"content": [
+				{
+					"type": "text",
+					"text": "abc"
+				}
+			],
+			"tokens": 1
+		},
+		{
+			"content": [
+				{
+					"type": "image",
+					"data": "QUJD",
+					"mimeType": "image/png"
+				}
+			],
+			"tokens": 1372
+		},
+		{
+			"content": [
+				{
+					"type": "text",
+					"text": "abc"
+				},
+				{
+					"type": "image",
+					"data": "QUJD",
+					"mimeType": "image/png"
+				},
+				{
+					"type": "text",
+					"text": "de"
+				}
+			],
+			"tokens": 1373
+		},
+		{
+			"content": [],
+			"tokens": 0
+		},
+		{
+			"content": [
+				{
+					"type": "image",
+					"data": "",
+					"mimeType": "image/png"
+				},
+				{
+					"type": "image",
+					"data": "",
+					"mimeType": "image/jpeg"
+				}
+			],
+			"tokens": 2743
+		}
+	]
+}

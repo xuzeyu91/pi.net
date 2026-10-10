@@ -811,7 +811,12 @@ public class ToolTaskTests
                 new ToolDiagnostic { Severity = "warn", Code = "truncated", Message = "Output truncated: 2 lines, 100 bytes dropped" },
                 new ToolDiagnostic { Severity = "error", Code = "tool_error", Message = "boom" },
             ],
-            Usage = new Pi.Ai.Types.Usage(10, 5, 0, 0, 0.5, 0),
+            Usage = new Pi.Ai.Types.Usage(10, 5)
+            {
+                Reasoning = 0,
+                TotalTokens = 15,
+                Cost = new Pi.Ai.Types.UsageCost(Total: 0.5),
+            },
         };
 
         var entry = await session.CommitAsync(
@@ -834,7 +839,7 @@ public class ToolTaskTests
         var total = (IReadOnlyDictionary<string, object?>)tools["read"]!;
         Assert.Equal(10L, total["input"]);
         Assert.Equal(5L, total["output"]);
-        Assert.Equal(0.5, total["cost"]);
+        Assert.Equal(0.5, (double)((IReadOnlyDictionary<string, object?>)total["cost"]!)["total"]!);
     }
 
     [Fact]

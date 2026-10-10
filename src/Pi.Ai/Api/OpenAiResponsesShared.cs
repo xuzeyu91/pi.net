@@ -761,8 +761,12 @@ public static class OpenAiResponsesShared
                     Input: Math.Max(0, (long)(usage.Num("input_tokens") ?? 0) - cachedTokens - cacheWriteTokens),
                     Output: (long)(usage.Num("output_tokens") ?? 0),
                     CacheRead: cachedTokens,
-                    CacheWrite: cacheWriteTokens,
-                    Reasoning: (long)(usage.Obj("output_tokens_details")?.Num("reasoning_tokens") ?? 0));
+                    CacheWrite: cacheWriteTokens)
+                {
+                    // TS：reasoning 恒为数字（未上报即 0），与 cacheWrite1h 的「可缺省」不同。
+                    Reasoning = (long)(usage.Obj("output_tokens_details")?.Num("reasoning_tokens") ?? 0),
+                    TotalTokens = (long)(usage.Num("total_tokens") ?? 0),
+                };
             }
             if (state.Owner.Usage is { } stats)
             {
