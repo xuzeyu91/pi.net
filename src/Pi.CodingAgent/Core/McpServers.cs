@@ -34,6 +34,19 @@ public static partial class McpServers
     public static readonly IReadOnlyList<string> AllExposures =
         [Exposures.Codemode, Exposures.Deferred, Exposures.Direct, Exposures.Hidden];
 
+    /// <summary>Names of the tools the MCP extension registers for a server's resources.</summary>
+    public static class ToolNames
+    {
+        /// <summary>Lists a server's resources.</summary>
+        public const string ListMcpResources = "list_mcp_resources";
+
+        /// <summary>Lists a server's resource templates.</summary>
+        public const string ListMcpResourceTemplates = "list_mcp_resource_templates";
+
+        /// <summary>Reads one resource of a server.</summary>
+        public const string ReadMcpResource = "read_mcp_resource";
+    }
+
     /// <summary>Older exposure names, accepted in configs and replaced by their current name when validated.</summary>
     private static readonly Dictionary<string, string> ExposureAliases = new(StringComparer.Ordinal)
     {

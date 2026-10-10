@@ -464,6 +464,7 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 | `BuiltInExtensionsTests` | 2 | 4d-3 注册表差分（向量为 TS `extensions/index.ts` 的数组）：四项的名称/顺序/builtin/replaceable 标志逐条比对；占位工厂抛 `NotSupportedException` 且消息点名批次（llama.cpp→4d-7、mcp→4d-4） |
 | `AssemblyLoadContextLoaderTests` | 8 | 4d-3 ALC 加载器差分（对齐 TS jiti import 的三种结局）：入口程序集返回可注册工具的 factory（经 `LoadExtensionFromFactory` 端到端）、同路径重复加载返回同一 factory、无入口程序集返回 null（TS「无 default export」）、文件缺失抛 `FileNotFoundException`（消息含 `Cannot find extension module`）、非程序集抛 `InvalidOperationException`（`Could not load extension assembly`）、多入口（`PersistedAssemblyBuilder` 动态生成的双入口程序集）报错而非静默选择、卸载后重载得到新 factory（热重载）、卸载未加载路径为 no-op |
 | `McpConfigTests` | 27 | 4d-4a MCP 配置与日志差分：全局/项目合并（项目条目替换同名全局条目）、override 仅覆盖 enabled/exposure/toolExposure 且保留全局字段、override 无基座报错、override 带额外键报错、`-`/`_` 命名空间冲突、项目 url 带 auth 报错、`autoEnableCodemode` 布尔校验、无效 JSON / 非对象 / `mcpServers` 非对象 / 校验器错误四种错误消息、未信任项目忽略项目文件、文件缺失为空配置、`/mcp` 写回（enabled=true 删除默认键、override 保留显式值、exposure=codemode 删除键而 deferred 设键、缺失服务器抛错、`@override` 建文件、保留外来键与缩进）、`add` 新建/替换、`remove` 存在/缺失/无文件、日志格式（level/logger/默认 info/多行缩进/非 record 包装/空 logger 省略）、追加写入与 5 MiB 轮转 |
+| `McpToolsTests` | 32 | 4d-4b MCP 工具适配差分：工具名生成（`mcp__server__tool` 前缀、非 `[A-Za-z0-9_]` 转 `_`、超长加 8 位哈希后缀、sanitize 冲突加哈希）、exposure 映射（codemode→deferred）、`CallToolResult` 输出 schema（content 必填、structuredContent/isError/_meta、无结构化 schema 时省略键）、20KB 输出限制（未超原样返回、超限截断并保存全文、保存失败报错、图片保留在文本后）、结果转换（文本/图片直通、isError 保留结构化结果且无 `_meta`、isError 无文本时补兜底文案、无 content 但有 structuredContent 转 JSON、resource_link 带 mimeType/size/描述与 read 提示、无 readableResources 时无 read 提示、内嵌文本资源直通、内嵌图片资源转图片、二进制资源保存为文件、文本类 blob 直显、保存失败报错、音频资源占位）、工具定义（schema 补 type/properties、description 回退链 annotations.title→title→默认、annotations 四个 hint 提取）、MCP 内容转换（文本/图片、无块但有结构化内容转 JSON、audio 占位、resource_link、内嵌图片资源、二进制资源占位、未知类型占位） |
 
 ## 4d-1 进度（2026-10-10）：扩展系统契约层
 
@@ -605,7 +606,30 @@ runner（随 4e）、`extensions/index.ts` 注册表中占位工厂的逐项替�
 | C107 | 缺 `data` 键时格式化为 `null`（TS `JSON.stringify(undefined)` 得到 `undefined`） | C# 中「缺失」与「JSON null」同为 `JsonNode?`；`null` 是更自然的日志文本 |
 | C108 | 轮转用 `File.Move`（目标存在即失败并丢弃该条消息），与 TS `renameSync` 语义一致；但轮转前会重新 `statSync` 确认大小，避免多进程下误判 | 多进程共享同一日志文件（TS 注释明确说明），重判更稳 |
 
-4d-4 剩余子批：4d-4b `transport.ts`（stdio/HTTP 传输，Pi.Mcp 已有底层）、
-4d-4c `tool.ts` + `prompts.ts`（工具包装与提示词）、
-4d-4d `index.ts` 主入口（依赖 4e 的 `pi.ui` / `pi.config`）、
-4d-4e `ui.ts`（依赖 4f Theme）。
+4d-4 剩余子批：4d-4c `index.ts` 主入口（依赖 4e 的 `pi.ui` / `pi.config`）、
+4d-4d `ui.ts`（依赖 4f Theme）。
+
+## 4d-4b 进度（2026-10-10）：MCP 工具适配
+
+`extensions/mcp/tools.ts`（335 行）已移植，并在 Pi.Mcp 协议层补齐 TS `packages/mcp` 的
+`toLlmContent` / `blockToLlmContent`（此前 .NET 侧只有结果类型）。构建 0 警告 0 错误；
+`Pi.CodingAgent.Tests` 580/580 通过（548 + 新增 32 项差分测试）。
+
+新增文件：
+
+| 文件 | 内容 |
+|---|---|
+| `src/Pi.Mcp/Protocol/Content.cs` | `LlmContent` / `LlmTextContent` / `LlmImageContent` 与 `McpContent.ToLlmContent` / `BlockToLlmContent`：文本与图片直通、内嵌文本资源转文本、内嵌图片资源转图片、audio/resource_link/二进制资源转占位文本；无 content 块但有 `structuredContent` 时转其 JSON |
+| `src/Pi.CodingAgent/Extensions/Mcp/Tools.cs` | `McpToolLimits`（64 字符工具名 / 20KB 输出 / 5 行预览）、`McpToolDetails`、`IMcpToolCaller` / `McpCallOptions` / `McpProgress`、`ConvertMcpResultOptions` 与 `McpTools`：`CreateMcpToolName`（sanitize + 哈希后缀）、`CreateMcpResultSchema`（codemode 用的 `CallToolResult` schema）、`LimitMcpContentAsync`（20KB 中部截断 + 全文落盘）、`ToModelContentAsync` / `ConvertMcpResultAsync`（含 resource_link 的 read 提示、二进制资源落盘、isError 语义）、`CreateMcpToolDefinition`（schema 归一化、annotations 四 hint、exposure 映射） |
+| `tests/Pi.CodingAgent.Tests/McpToolsTests.cs` | 32 项差分测试 |
+
+与 TS 的差异：
+
+| # | 差异 | 理由 |
+|---|---|---|
+| C109 | MCP 工具暂不挂 `renderers`（TS 用 TUI 组件 + Theme 渲染调用与结果） | 依赖 4f 的 Theme 与交互组件；`CreateMcpToolRenderers` 已留空实现并注明，与 4d-1 的 C85 占位策略一致 |
+| C110 | `resource_link` 的 `size` 经 `ToJsonString()` 解析为 double | `JsonValue` 对 JSON 数字是强类型节点（`JsonValue<int>` 等），`GetValue<JsonElement>()` 会抛 `InvalidOperationException`；走 JSON 文本最稳 |
+| C111 | `McpTool` 增加 `Title` 属性承载 TS 的 `tool.title`，`annotations.title` 仍走 `Annotations["title"]` | 4b 的 `McpTool` 只映射了 `title`→`Title`，TS 的 `annotations.title` 是另一个字段；description 回退链按 TS 顺序 `description → annotations.title → title → 默认` |
+
+4d-4 剩余子批：4d-4c `index.ts` 主入口（依赖 4e 的 `pi.ui` / `pi.config`）、
+4d-4d `ui.ts`（依赖 4f Theme）。

@@ -35,7 +35,14 @@ public sealed record McpTool(
     string Name,
     JsonObject InputSchema,
     string? Description = null,
-    string? Title = null);
+    string? Title = null)
+{
+    /// <summary>工具注解（readOnlyHint 等行为提示与 title）。对应 TS <c>annotations</c>。</summary>
+    public JsonObject? Annotations { get; init; }
+
+    /// <summary>工具声明的输出 schema（<c>outputSchema</c>）。</summary>
+    public JsonObject? OutputSchema { get; init; }
+}
 
 /// <summary>MCP 资源描述。对应 TS <c>Resource</c>（规范要求 name，但省略时以 uri 代替）。</summary>
 public sealed record McpResource(string Uri, string? Name = null);
