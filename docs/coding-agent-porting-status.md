@@ -30,7 +30,7 @@
 | **4a** | `src/utils/*`（37 文件）+ 无依赖的根级模块（`config.ts` / `migrations.ts` / `core/defaults.ts` 等） | ~4,500 | ✅ utils 36/36 + `config.ts` 完成（2026-10-09） |
 | **4b** | 配置 / 信任 / 模型层：settings-manager、trust-manager、project-trust、auth-storage、model-config/registry/resolver、models-store、radius、virtual-models、mcp-servers、keybindings | 6,844（实测） | ✅ 16/16 文件（6,844 行）完成（2026-10-09） |
 | **4c** | 工具系统：`core/tools/*` + `core/tools/renderers/*` | ~9,000 | ✅ 8/8 工具 + 6 个支撑文件完成（2026-10-09）；renderers 的 renderCall/renderResult 依赖 Theme，随 4f 落地 |
-| **4d** | 扩展系统：`core/extensions/*`（types / runner / loader）+ `extensions/*`（codemode / llama / mcp / tool-search） | ~12,000 | ⏳ 4d-1 契约层 + 4d-2a 事件总线 + 4d-2b 加载器完成（2026-10-10）；4d-3 加载器实现 / runner 待办 |
+| **4d** | 扩展系统：`core/extensions/*`（types / runner / loader）+ `extensions/*`（codemode / llama / mcp / tool-search） | ~12,000 | ⏳ 4d-1 契约层 + 4d-2a 事件总线 + 4d-2b 加载器 + 4d-3 ALC 加载器与内置扩展注册完成（2026-10-10）；4d-4~4d-7 内置扩展包 / runner 待办 |
 | **4e** | 会话与资源：agent-session、session-manager、resource-loader、package-manager、compaction、export-html、system-prompt、telemetry、sdk | ~20,000 | ⏳ |
 | **4f** | 模式层：`modes/rpc/*`、`modes/interactive/*`（含 7,082 行的 `interactive-mode.ts` 与 components / theme） | ~23,700 | ⏳ |
 | **4g** | 入口与实验层：`cli/*`、`main.ts`、`cli.ts`、`rpc-entry.ts`、`package-manager-cli.ts`、`bun/*`、`client/*`、`experimental/*` | ~12,000 | ⏳ |
@@ -461,6 +461,8 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 | `ExtensionContractTests` | 15 | 4d-1 契约层差分：35 个事件线名集合、56 个事件变体名单、12 组字面量联合取值、`ISessionEvent` / `IToolCallEvent` / `IToolResultEvent` 三组标记接口覆盖、`isToolCallEventType` 守卫、`ExtensionAPI` / 四组上下文的公开方法名集合（与 TS 逐条对齐）、`ProviderHeaders` 的 null 即删除语义 |
 | `EventBusTests` | 19 | 4d-2a 事件总线差分：注册顺序分发、快照语义（分发中退订/新订不影响当次 emit）、同 handler 重复注册的独立退订、退订幂等、sync/async handler 异常的捕获与 `Event handler error (<channel>):` 日志（不传播、不阻断其他 handler）、`clear()` 全清与可再注册、null 参数拒绝、工厂返回的控制器可经 `EventBus` 接口使用 |
 | `ExtensionLoaderTests` | 45 | 4d-2b 加载器差分（向量取自 TS `8423-extension-factory-failure` / `extension-factory-cache` / `extensions-discovery`）：内联工厂注册工具/命令/flag/快捷键与 source-info 标记、错误聚合（工厂抛错、无工厂、无模块加载器、相对路径解析）、注册 API 校验（工具 schema 缺失、命令名空、flag 默认值类型）、flag 默认值提交与不覆盖既有值、provider 注册入队与失败回滚、MCP 注册（配置校验、属主冲突、`-`/`_` 命名空间冲突、退订属主语义）、`pi.events` 门面（注册/退订/跨扩展收发）、运行时桩与失效语义（action 抛错、`setModel` faulted task、失效后 API 拒绝服务、失效退订事件）、模块缓存（导入一次工厂每次重跑、`clearExtensionCache` 强制重导、cwd 变更失效）、目录发现（直接 `*.ts`/`*.js`、`index.ts`/`index.js`、`package.json` 清单优先与缺失回退、目录不存在）、加载顺序与去重（project → global → configured） |
+| `BuiltInExtensionsTests` | 2 | 4d-3 注册表差分（向量为 TS `extensions/index.ts` 的数组）：四项的名称/顺序/builtin/replaceable 标志逐条比对；占位工厂抛 `NotSupportedException` 且消息点名批次（llama.cpp→4d-7、mcp→4d-4） |
+| `AssemblyLoadContextLoaderTests` | 8 | 4d-3 ALC 加载器差分（对齐 TS jiti import 的三种结局）：入口程序集返回可注册工具的 factory（经 `LoadExtensionFromFactory` 端到端）、同路径重复加载返回同一 factory、无入口程序集返回 null（TS「无 default export」）、文件缺失抛 `FileNotFoundException`（消息含 `Cannot find extension module`）、非程序集抛 `InvalidOperationException`（`Could not load extension assembly`）、多入口（`PersistedAssemblyBuilder` 动态生成的双入口程序集）报错而非静默选择、卸载后重载得到新 factory（热重载）、卸载未加载路径为 no-op |
 
 ## 4d-1 进度（2026-10-10）：扩展系统契约层
 
@@ -550,5 +552,33 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 | C100 | `core/source-info.ts` 只移植 loader 子集；`createSourceInfo` 未移植 | 其入参 `PathMetadata` 来自 `core/package-manager.ts`（4e） |
 | C101 | `getCreateJiti` / `jiti-loader` / `jiti-static-loader` / `virtual-modules` / `getAliases` 未移植 | jiti 与 ESM specifier 别名是 TS 运行时机制，.NET 无对应物（决策 D2） |
 
-4d-2b 之后剩余：4d-3 扩展加载器真实实现（AssemblyLoadContext + 内置扩展注册）、
-runner（随 4e）、codemode/llama/mcp/tool-search 四个内置扩展包。
+4d-2b 之后剩余：4d-4~4d-7 四个内置扩展包（mcp / codemode / tool-search / llama）、
+runner（随 4e）、`extensions/index.ts` 注册表中占位工厂的逐项替换。
+
+## 4d-3 进度（2026-10-10）：AssemblyLoadContext 加载器与内置扩展注册
+
+`core/extensions/loader.ts` 的模块加载接缝（差异 C97）已落地真实实现，`extensions/index.ts`
+（15 行，计划文档中写的 `core/extensions/builtin.ts` 1,151 行不存在，见差异 C105）已移植。
+构建 0 警告 0 错误；`Pi.CodingAgent.Tests` 521/521 通过（511 + 新增 10 项差分测试）。
+
+新增文件：
+
+| 文件 | 内容 |
+|---|---|
+| `src/Pi.CodingAgent/Core/Extensions/AssemblyLoadContextExtensionLoader.cs` | `IExtensionEntry` 插件入口约定、可卸载 `ExtensionAssemblyLoadContext`、`AssemblyLoadContextExtensionLoader`（加载 / 无入口返回 null / 加载失败抛错 / 多入口报错 / `Unload` 热重载） |
+| `src/Pi.CodingAgent/Core/Extensions/BuiltInExtensions.cs` | `builtInExtensions` 注册表：llama.cpp（builtin）、codemode / tool-search / mcp（replaceable + builtin），顺序与 TS 一致 |
+| `tests/Pi.CodingAgent.Tests/BuiltInExtensionsTests.cs` | 注册表结构差分（2 项） |
+| `tests/Pi.CodingAgent.Tests/AssemblyLoadContextLoaderTests.cs` | ALC 加载器差分（8 项，含 `PersistedAssemblyBuilder` 动态生成的双入口程序集） |
+
+与 TS 的差异：
+
+| # | 差异 | 理由 |
+|---|---|---|
+| C102 | 文件缺失时抛 `FileNotFoundException`（消息 `Cannot find extension module '…'`），TS 为 Node ESM 的 `ERR_MODULE_NOT_FOUND`（`Cannot find module '…'`） | 错误文本来自各自运行时；上层包装 `Failed to load extension: …` 一致 |
+| C103 | 插件入口约定：TS 的 default export → 程序集中**唯一**的 public `IExtensionEntry` 实现；多入口抛 `InvalidOperationException` 而非静然选择 | TS default export 天然唯一；C# 侧多入口是插件违约，显式报错；非 public / 抽象 / 泛型定义被忽略 |
+| C104 | 注册表 4 个 factory 以占位工厂落地（抛 `NotSupportedException` 并点名批次），4d-4（mcp）/ 4d-5（codemode）/ 4d-6（tool-search）/ 4d-7（llama）逐项替换 | 与 4d-1 的 4e/4f 占位策略一致；注册表形状（名称、顺序、标志）已定型 |
+| C105 | `replaceable` / `builtin:` 路径前缀的消费逻辑（`omitReplacedExtensions` / `isBuiltinExtension`）未随本批移植 | 它们在 `core/resource-loader.ts`（4e），随 4e 落地；本批只落注册表本身 |
+
+`AssemblyLoadContext` 依赖解析：`Load` 返回 null 走默认行为——插件目录优先（私有依赖随插件
+分发），随后默认上下文（宿主契约程序集如 `Pi.CodingAgent`，保证 `IExtensionEntry` /
+`ExtensionFactory` 跨上下文类型同一）。

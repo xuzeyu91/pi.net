@@ -57,7 +57,12 @@
 - TS 的 ESM 顶层 await → C# 的异步 `ActivateAsync`。
 - 保留 TS 的**错误聚合**语义：一个扩展加载失败不影响其他扩展，错误收集后统一上报。
 
-### 批次 4d-3：内置扩展注册（`core/extensions/builtin.ts`，1,151 行）
+### 批次 4d-3：内置扩展注册（`extensions/index.ts`，15 行）✅ 已完成（2026-10-10）
+
+> 计划原写 `core/extensions/builtin.ts`（1,151 行）有误：该文件不存在。实际注册表是
+> `extensions/index.ts`（15 行），4 项 InlineExtension 描述；`replaceable` / `builtin:` 前缀的
+> 消费逻辑在 `core/resource-loader.ts`（4e）。本批已落地注册表 + `AssemblyLoadContext`
+> 模块加载器（`IExtensionEntry` 入口约定），4 个 factory 为占位实现，随 4d-4~4d-7 替换。
 
 把内置扩展（mcp / codemode / tool-search / llama）按 D1/D2 注册进加载器。
 
@@ -105,8 +110,9 @@ BM25 排序 + 工具索引。独立，无外部依赖。
 
 ## 5. 待办 / 未决
 
-- [ ] 4d-1 契约层（含占位类型策略落地）
-- [ ] 4d-2 加载器（`AssemblyLoadContext` 方案细化）
-- [ ] 4d-3 ~ 4d-7
+- [x] 4d-1 契约层（含占位类型策略落地）
+- [x] 4d-2 加载器（`AssemblyLoadContext` 方案细化）
+- [x] 4d-3 内置扩展注册表 + `IExtensionModuleLoader` 的 ALC 实现（factory 占位待 4d-4~4d-7 替换）
+- [ ] 4d-4 ~ 4d-7
 - [ ] llama `ui.ts` → 4f
 - [ ] renderers 的 `renderCall` / `renderResult` → 4f
