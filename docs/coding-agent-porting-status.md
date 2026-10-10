@@ -30,7 +30,7 @@
 | **4a** | `src/utils/*`（37 文件）+ 无依赖的根级模块（`config.ts` / `migrations.ts` / `core/defaults.ts` 等） | ~4,500 | ✅ utils 36/36 + `config.ts` 完成（2026-10-09） |
 | **4b** | 配置 / 信任 / 模型层：settings-manager、trust-manager、project-trust、auth-storage、model-config/registry/resolver、models-store、radius、virtual-models、mcp-servers、keybindings | 6,844（实测） | ✅ 16/16 文件（6,844 行）完成（2026-10-09） |
 | **4c** | 工具系统：`core/tools/*` + `core/tools/renderers/*` | ~9,000 | ✅ 8/8 工具 + 6 个支撑文件完成（2026-10-09）；renderers 的 renderCall/renderResult 依赖 Theme，随 4f 落地 |
-| **4d** | 扩展系统：`core/extensions/*`（types / runner / loader）+ `extensions/*`（codemode / llama / mcp / tool-search） | ~12,000 | ⏳ |
+| **4d** | 扩展系统：`core/extensions/*`（types / runner / loader）+ `extensions/*`（codemode / llama / mcp / tool-search） | ~12,000 | ⏳ 4d-1 契约层完成（2026-10-10）；4d-2 事件总线 / 4d-3 加载器待办 |
 | **4e** | 会话与资源：agent-session、session-manager、resource-loader、package-manager、compaction、export-html、system-prompt、telemetry、sdk | ~20,000 | ⏳ |
 | **4f** | 模式层：`modes/rpc/*`、`modes/interactive/*`（含 7,082 行的 `interactive-mode.ts` 与 components / theme） | ~23,700 | ⏳ |
 | **4g** | 入口与实验层：`cli/*`、`main.ts`、`cli.ts`、`rpc-entry.ts`、`package-manager-cli.ts`、`bun/*`、`client/*`、`experimental/*` | ~12,000 | ⏳ |
@@ -458,3 +458,32 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 | `SyntaxHighlightCorpusTests` | 5 | `syntax-highlight-corpus.json` 的 323 条：手工 HTML、真实 highlight.js 输出、`highlight` 的委派与分支选择、`supportsLanguage` 委派、plaintext 回退与真实 highlight.js 等价 |
 | `MinimatchCorpusTests` | 10 | `minimatch-corpus.json` 的 5,673 条：`minimatch()` / `Minimatch.match()` / `makeRe()` 的逐路径答案、`globSet` / `globParts` / `set`（含正则源与 `_glob` 重建文本）/ `hasMagic` / `braceExpand` 的结构比对、`escape` / `unescape`、`matchList`，外加宿主平台与包版本守卫 |
 | `MinimatchTests` | 44 | 语料覆盖不到的部分：`GlobStar` 单例与 `Sep`、`Filter`、64 KiB 上限、`makeRe()` 为空集返回 null、`hasMagic` 的 `magicalBraces` 门槛、**盘符改写只影响本实例**、`BraceExpansion` 的四个 DoS 上限与 Bash 怪癖、`escape` / `unescape` 的相反默认与「不读 `allowWindowsEscape`」、以及 `model-resolver` 那句 `minimatch(fullId, glob, { nocase: true }) \|\| minimatch(m.id, glob, { nocase: true })` 的端到端行为 |
+| `ExtensionContractTests` | 15 | 4d-1 契约层差分：35 个事件线名集合、56 个事件变体名单、12 组字面量联合取值、`ISessionEvent` / `IToolCallEvent` / `IToolResultEvent` 三组标记接口覆盖、`isToolCallEventType` 守卫、`ExtensionAPI` / 四组上下文的公开方法名集合（与 TS 逐条对齐）、`ProviderHeaders` 的 null 即删除语义 |
+
+## 4d-1 进度（2026-10-10）：扩展系统契约层
+
+`core/extensions/types.ts`（2,272 行，纯类型模块）已移植，构建 0 警告 0 错误，
+`Pi.CodingAgent.Tests` 447/447 通过（含新增 15 项契约差分测试）。
+
+新增文件：
+
+| 文件 | 内容 |
+|---|---|
+| `src/Pi.CodingAgent/Core/Extensions/ExtensionContexts.cs` | `ExtensionMode` / `WidgetPlacement` / `NotifyType` / `ForkPosition` / `DeliverAs` 字面量联合；`ExtensionUIContext`（29 个成员）、`ExtensionContext`（18）、`ExtensionToolContext`（2）、`ExtensionCommandContext`（7）、`ReplacedSessionContext`（2）四组上下文；`ContextUsage` / `CompactOptions` / `ExecuteToolOptions` / `NewSessionOptions` / `ForkOptions` / `NavigateTreeOptions` / `SwitchSessionOptions` / `SendMessageOptions` / `SendUserMessageOptions` / `CustomMessageDraft` |
+| `src/Pi.CodingAgent/Core/Extensions/ExtensionEvents.cs` | `ExtensionEvent` 联合的 56 个变体（含 10 个 session 事件、8 个 tool_call 事件、9 个 tool_result 事件）、`BoundaryState` / `BoundaryResult` / 4 种 `SessionBoundaryDraft`、`TreePreparation`、12 个事件结果类型、`MessageRenderer` / `EntryRenderer` / `MarkdownTransformer` / `ToolRendererResolver` 委托、`ExtensionEventGuards` 类型守卫 |
+| `src/Pi.CodingAgent/Core/Extensions/ExtensionApi.cs` | `ExtensionAPI`（34 个成员）、`RegisteredCommand` / `ResolvedCommand` / `RegisteredTool` / `ExtensionFlag` / `ExtensionShortcut` / `ToolInfo`、12 个 handler 委托、`ExtensionFactory` / `InlineExtension` / `ExtensionVirtualModel` |
+| `src/Pi.CodingAgent/Core/Extensions/Types/Placeholders.cs` | 4e/4f 占位类型（`SourceInfo` / `EventBus` / `ExecOptions` / `ExecResult` / `BashResult` / `BashOperations` / `ReadonlyFooterDataProvider` / `CompactionPreparation` / `CompactionResult` / `CacheWarmingDecisionEvent` / `CustomMessage<T>` / `CustomEntry<T>` / 5 个 session 条目类型 / `ReadonlySessionManager` / `SessionManager` / `SlashCommandInfo` / `BuildSystemPromptOptions` / `AppKeybinding` / `OverlayHandle` / `ProviderHeaders` / `Provider` / `Theme`），每处均有 `// 4e/4f 接入后替换` 标记 |
+
+与 TS 的差异（均为 C# 表达力限制下的等价选择，已在代码注释标注）：
+
+| # | 差异 | 理由 |
+|---|---|---|
+| C86 | `on()` 用泛型 `On<E>` / `On<E,R>` + 事件名字符串，而非 35 个字面量重载 | C# 无字符串字面量类型；重载会与 lambda 推断冲突 |
+| C87 | `registerProvider(name, config)` 复用 4b 已落地的 `ProviderConfigInput` | 避免重复声明同一形状 |
+| C88 | `ExtensionVirtualModel` 不带泛型 `TState` | 路由状态在 C# 侧以 `JsonNode` 承载（与 `VirtualModelDefinition` 一致） |
+| C89 | `SendUserMessage` 的 handler 用 `UserMessageContent`（Text / Blocks 联合）包装 string 与 content-block 数组 | 委托参数需要单一类型 |
+| C90 | 事件变体命名沿用仓库既有约定（`AgentEvent` 无 `Event` 后缀），但 `InputEvent` / `ContextEvent` / `ContextWithSystemEvent` 保留后缀 | 前者与 `Pi.Agent.Types.AgentEvent` 一致；后者因 `Input` / `Context` 与事件负载字段名冲突，且本就是 TS 接口名 |
+| C91 | `BoundaryState` 默认 `continue: true`、`outcome: "completed"`、`entries: []` | 对齐 TS 运行时构造该状态时传入的值 |
+| C92 | `cache_warming_decision` 暂无事件变体（线名已登记） | `cache-warmer.ts` 属 4e，负载未知 |
+
+4d-2 起（事件总线、runner、loader）依赖 4e/4f 的真实类型，届时按占位标记逐项收敛。
