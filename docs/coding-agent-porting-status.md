@@ -463,6 +463,7 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 | `ExtensionLoaderTests` | 45 | 4d-2b 加载器差分（向量取自 TS `8423-extension-factory-failure` / `extension-factory-cache` / `extensions-discovery`）：内联工厂注册工具/命令/flag/快捷键与 source-info 标记、错误聚合（工厂抛错、无工厂、无模块加载器、相对路径解析）、注册 API 校验（工具 schema 缺失、命令名空、flag 默认值类型）、flag 默认值提交与不覆盖既有值、provider 注册入队与失败回滚、MCP 注册（配置校验、属主冲突、`-`/`_` 命名空间冲突、退订属主语义）、`pi.events` 门面（注册/退订/跨扩展收发）、运行时桩与失效语义（action 抛错、`setModel` faulted task、失效后 API 拒绝服务、失效退订事件）、模块缓存（导入一次工厂每次重跑、`clearExtensionCache` 强制重导、cwd 变更失效）、目录发现（直接 `*.ts`/`*.js`、`index.ts`/`index.js`、`package.json` 清单优先与缺失回退、目录不存在）、加载顺序与去重（project → global → configured） |
 | `BuiltInExtensionsTests` | 2 | 4d-3 注册表差分（向量为 TS `extensions/index.ts` 的数组）：四项的名称/顺序/builtin/replaceable 标志逐条比对；占位工厂抛 `NotSupportedException` 且消息点名批次（llama.cpp→4d-7、mcp→4d-4） |
 | `AssemblyLoadContextLoaderTests` | 8 | 4d-3 ALC 加载器差分（对齐 TS jiti import 的三种结局）：入口程序集返回可注册工具的 factory（经 `LoadExtensionFromFactory` 端到端）、同路径重复加载返回同一 factory、无入口程序集返回 null（TS「无 default export」）、文件缺失抛 `FileNotFoundException`（消息含 `Cannot find extension module`）、非程序集抛 `InvalidOperationException`（`Could not load extension assembly`）、多入口（`PersistedAssemblyBuilder` 动态生成的双入口程序集）报错而非静默选择、卸载后重载得到新 factory（热重载）、卸载未加载路径为 no-op |
+| `McpConfigTests` | 27 | 4d-4a MCP 配置与日志差分：全局/项目合并（项目条目替换同名全局条目）、override 仅覆盖 enabled/exposure/toolExposure 且保留全局字段、override 无基座报错、override 带额外键报错、`-`/`_` 命名空间冲突、项目 url 带 auth 报错、`autoEnableCodemode` 布尔校验、无效 JSON / 非对象 / `mcpServers` 非对象 / 校验器错误四种错误消息、未信任项目忽略项目文件、文件缺失为空配置、`/mcp` 写回（enabled=true 删除默认键、override 保留显式值、exposure=codemode 删除键而 deferred 设键、缺失服务器抛错、`@override` 建文件、保留外来键与缩进）、`add` 新建/替换、`remove` 存在/缺失/无文件、日志格式（level/logger/默认 info/多行缩进/非 record 包装/空 logger 省略）、追加写入与 5 MiB 轮转 |
 
 ## 4d-1 进度（2026-10-10）：扩展系统契约层
 
@@ -582,3 +583,29 @@ runner（随 4e）、`extensions/index.ts` 注册表中占位工厂的逐项替�
 `AssemblyLoadContext` 依赖解析：`Load` 返回 null 走默认行为——插件目录优先（私有依赖随插件
 分发），随后默认上下文（宿主契约程序集如 `Pi.CodingAgent`，保证 `IExtensionEntry` /
 `ExtensionFactory` 跨上下文类型同一）。
+
+## 4d-4a 进度（2026-10-10）：MCP 配置与服务器日志
+
+`extensions/mcp/config.ts`（273 行）与 `extensions/mcp/log.ts`（84 行）已移植。构建 0 警告
+0 错误；`Pi.CodingAgent.Tests` 548/548 通过（521 + 新增 27 项差分测试）。
+
+新增文件：
+
+| 文件 | 内容 |
+|---|---|
+| `src/Pi.CodingAgent/Extensions/Mcp/Config.cs` | `McpServerEntry` / `LoadedMcpConfig` / `McpServerConfigPatch` 与 `McpConfig`：`Load`（全局 + 受信任项目的 `<project>/.pi/mcp.json`）、`Update`（`/mcp` 改设置，`@override` 补建条目）、`Add` / `Remove`；override 合并、命名空间冲突、项目 url 禁 auth 等校验 |
+| `src/Pi.CodingAgent/Extensions/Mcp/Log.cs` | `McpServerLogFormat.FormatMessage`（时间戳/level/logger/多行缩进）与 `McpServerLog`（同步追加、5 MiB 轮转到 `mcp.log.1`、写失败静默） |
+| `tests/Pi.CodingAgent.Tests/McpConfigTests.cs` | 27 项差分测试 |
+
+与 TS 的差异：
+
+| # | 差异 | 理由 |
+|---|---|---|
+| C106 | JSON 解析失败的消息文本不同（Node `Unexpected token …` vs .NET `'x' is an invalid …`） | 消息来自各自运行时；错误条目均带 `mcp.json` 路径前缀，测试只断言前缀 |
+| C107 | 缺 `data` 键时格式化为 `null`（TS `JSON.stringify(undefined)` 得到 `undefined`） | C# 中「缺失」与「JSON null」同为 `JsonNode?`；`null` 是更自然的日志文本 |
+| C108 | 轮转用 `File.Move`（目标存在即失败并丢弃该条消息），与 TS `renameSync` 语义一致；但轮转前会重新 `statSync` 确认大小，避免多进程下误判 | 多进程共享同一日志文件（TS 注释明确说明），重判更稳 |
+
+4d-4 剩余子批：4d-4b `transport.ts`（stdio/HTTP 传输，Pi.Mcp 已有底层）、
+4d-4c `tool.ts` + `prompts.ts`（工具包装与提示词）、
+4d-4d `index.ts` 主入口（依赖 4e 的 `pi.ui` / `pi.config`）、
+4d-4e `ui.ts`（依赖 4f Theme）。
