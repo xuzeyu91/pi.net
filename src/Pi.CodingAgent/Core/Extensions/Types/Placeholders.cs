@@ -8,7 +8,7 @@ namespace Pi.CodingAgent.Core.Extensions.Types;
 // ============================================================================
 //
 // TS `core/extensions/types.ts` 引用了一批尚未移植的模块类型（session-manager / compaction /
-// event-bus / exec / bash-executor / cache-warmer / messages / slash-commands / system-prompt /
+// exec / bash-executor / cache-warmer / messages / slash-commands / system-prompt /
 // footer-data-provider / theme / source-info）。按 4d 执行方案（docs/4d-extension-system-plan.md
 // 批次 4d-1），这里为每个类型定义**最小占位**，使契约层可以独立编译；4e/4f 落地时把这些记录
 // 换成真实实现并统一收敛（每处均有 `// 4e/4f 接入后替换` 标记）。
@@ -29,17 +29,6 @@ public sealed record SourceInfo
 {
     /// <summary>来源文件路径（内置扩展为 null）。</summary>
     public string? Path { get; init; }
-}
-
-// ---------------------------------------------------------------------------
-// event-bus.ts（4e）
-// ---------------------------------------------------------------------------
-
-/// <summary>
-/// 扩展间通信的共享事件总线（TS <c>EventBus</c>）。占位：标记类型。// 4e/4f 接入后替换
-/// </summary>
-public sealed class EventBus
-{
 }
 
 // ---------------------------------------------------------------------------

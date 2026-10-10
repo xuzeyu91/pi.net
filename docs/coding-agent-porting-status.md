@@ -30,7 +30,7 @@
 | **4a** | `src/utils/*`（37 文件）+ 无依赖的根级模块（`config.ts` / `migrations.ts` / `core/defaults.ts` 等） | ~4,500 | ✅ utils 36/36 + `config.ts` 完成（2026-10-09） |
 | **4b** | 配置 / 信任 / 模型层：settings-manager、trust-manager、project-trust、auth-storage、model-config/registry/resolver、models-store、radius、virtual-models、mcp-servers、keybindings | 6,844（实测） | ✅ 16/16 文件（6,844 行）完成（2026-10-09） |
 | **4c** | 工具系统：`core/tools/*` + `core/tools/renderers/*` | ~9,000 | ✅ 8/8 工具 + 6 个支撑文件完成（2026-10-09）；renderers 的 renderCall/renderResult 依赖 Theme，随 4f 落地 |
-| **4d** | 扩展系统：`core/extensions/*`（types / runner / loader）+ `extensions/*`（codemode / llama / mcp / tool-search） | ~12,000 | ⏳ 4d-1 契约层完成（2026-10-10）；4d-2 事件总线 / 4d-3 加载器待办 |
+| **4d** | 扩展系统：`core/extensions/*`（types / runner / loader）+ `extensions/*`（codemode / llama / mcp / tool-search） | ~12,000 | ⏳ 4d-1 契约层 + 4d-2a 事件总线完成（2026-10-10）；4d-2b 加载器 / runner 待办 |
 | **4e** | 会话与资源：agent-session、session-manager、resource-loader、package-manager、compaction、export-html、system-prompt、telemetry、sdk | ~20,000 | ⏳ |
 | **4f** | 模式层：`modes/rpc/*`、`modes/interactive/*`（含 7,082 行的 `interactive-mode.ts` 与 components / theme） | ~23,700 | ⏳ |
 | **4g** | 入口与实验层：`cli/*`、`main.ts`、`cli.ts`、`rpc-entry.ts`、`package-manager-cli.ts`、`bun/*`、`client/*`、`experimental/*` | ~12,000 | ⏳ |
@@ -459,6 +459,7 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 | `MinimatchCorpusTests` | 10 | `minimatch-corpus.json` 的 5,673 条：`minimatch()` / `Minimatch.match()` / `makeRe()` 的逐路径答案、`globSet` / `globParts` / `set`（含正则源与 `_glob` 重建文本）/ `hasMagic` / `braceExpand` 的结构比对、`escape` / `unescape`、`matchList`，外加宿主平台与包版本守卫 |
 | `MinimatchTests` | 44 | 语料覆盖不到的部分：`GlobStar` 单例与 `Sep`、`Filter`、64 KiB 上限、`makeRe()` 为空集返回 null、`hasMagic` 的 `magicalBraces` 门槛、**盘符改写只影响本实例**、`BraceExpansion` 的四个 DoS 上限与 Bash 怪癖、`escape` / `unescape` 的相反默认与「不读 `allowWindowsEscape`」、以及 `model-resolver` 那句 `minimatch(fullId, glob, { nocase: true }) \|\| minimatch(m.id, glob, { nocase: true })` 的端到端行为 |
 | `ExtensionContractTests` | 15 | 4d-1 契约层差分：35 个事件线名集合、56 个事件变体名单、12 组字面量联合取值、`ISessionEvent` / `IToolCallEvent` / `IToolResultEvent` 三组标记接口覆盖、`isToolCallEventType` 守卫、`ExtensionAPI` / 四组上下文的公开方法名集合（与 TS 逐条对齐）、`ProviderHeaders` 的 null 即删除语义 |
+| `EventBusTests` | 19 | 4d-2a 事件总线差分：注册顺序分发、快照语义（分发中退订/新订不影响当次 emit）、同 handler 重复注册的独立退订、退订幂等、sync/async handler 异常的捕获与 `Event handler error (<channel>):` 日志（不传播、不阻断其他 handler）、`clear()` 全清与可再注册、null 参数拒绝、工厂返回的控制器可经 `EventBus` 接口使用 |
 
 ## 4d-1 进度（2026-10-10）：扩展系统契约层
 
@@ -472,7 +473,7 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 | `src/Pi.CodingAgent/Core/Extensions/ExtensionContexts.cs` | `ExtensionMode` / `WidgetPlacement` / `NotifyType` / `ForkPosition` / `DeliverAs` 字面量联合；`ExtensionUIContext`（29 个成员）、`ExtensionContext`（18）、`ExtensionToolContext`（2）、`ExtensionCommandContext`（7）、`ReplacedSessionContext`（2）四组上下文；`ContextUsage` / `CompactOptions` / `ExecuteToolOptions` / `NewSessionOptions` / `ForkOptions` / `NavigateTreeOptions` / `SwitchSessionOptions` / `SendMessageOptions` / `SendUserMessageOptions` / `CustomMessageDraft` |
 | `src/Pi.CodingAgent/Core/Extensions/ExtensionEvents.cs` | `ExtensionEvent` 联合的 56 个变体（含 10 个 session 事件、8 个 tool_call 事件、9 个 tool_result 事件）、`BoundaryState` / `BoundaryResult` / 4 种 `SessionBoundaryDraft`、`TreePreparation`、12 个事件结果类型、`MessageRenderer` / `EntryRenderer` / `MarkdownTransformer` / `ToolRendererResolver` 委托、`ExtensionEventGuards` 类型守卫 |
 | `src/Pi.CodingAgent/Core/Extensions/ExtensionApi.cs` | `ExtensionAPI`（34 个成员）、`RegisteredCommand` / `ResolvedCommand` / `RegisteredTool` / `ExtensionFlag` / `ExtensionShortcut` / `ToolInfo`、12 个 handler 委托、`ExtensionFactory` / `InlineExtension` / `ExtensionVirtualModel` |
-| `src/Pi.CodingAgent/Core/Extensions/Types/Placeholders.cs` | 4e/4f 占位类型（`SourceInfo` / `EventBus` / `ExecOptions` / `ExecResult` / `BashResult` / `BashOperations` / `ReadonlyFooterDataProvider` / `CompactionPreparation` / `CompactionResult` / `CacheWarmingDecisionEvent` / `CustomMessage<T>` / `CustomEntry<T>` / 5 个 session 条目类型 / `ReadonlySessionManager` / `SessionManager` / `SlashCommandInfo` / `BuildSystemPromptOptions` / `AppKeybinding` / `OverlayHandle` / `ProviderHeaders` / `Provider` / `Theme`），每处均有 `// 4e/4f 接入后替换` 标记 |
+| `src/Pi.CodingAgent/Core/Extensions/Types/Placeholders.cs` | 4e/4f 占位类型（`SourceInfo` / `ExecOptions` / `ExecResult` / `BashResult` / `BashOperations` / `ReadonlyFooterDataProvider` / `CompactionPreparation` / `CompactionResult` / `CacheWarmingDecisionEvent` / `CustomMessage<T>` / `CustomEntry<T>` / 5 个 session 条目类型 / `ReadonlySessionManager` / `SessionManager` / `SlashCommandInfo` / `BuildSystemPromptOptions` / `AppKeybinding` / `OverlayHandle` / `ProviderHeaders` / `Provider` / `Theme`），每处均有 `// 4e/4f 接入后替换` 标记（`EventBus` 占位已在 4d-2a 移除） |
 
 与 TS 的差异（均为 C# 表达力限制下的等价选择，已在代码注释标注）：
 
@@ -486,4 +487,36 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 | C91 | `BoundaryState` 默认 `continue: true`、`outcome: "completed"`、`entries: []` | 对齐 TS 运行时构造该状态时传入的值 |
 | C92 | `cache_warming_decision` 暂无事件变体（线名已登记） | `cache-warmer.ts` 属 4e，负载未知 |
 
-4d-2 起（事件总线、runner、loader）依赖 4e/4f 的真实类型，届时按占位标记逐项收敛。
+## 4d-2a 进度（2026-10-10）：事件总线
+
+`core/event-bus.ts`（34 行）已移植为 `src/Pi.CodingAgent/Core/EventBus.cs`，构建 0 警告 0 错误，
+`Pi.CodingAgent.Tests` 466/466 通过（447 + 新增 19 项事件总线差分测试）。
+
+| TS 符号 | C# 落点 |
+|---|---|
+| `EventBus`（接口：`emit` / `on`） | `Pi.CodingAgent.Core.EventBus` 接口（`Emit` / `On`） |
+| `EventBusController extends EventBus`（+ `clear()`） | `Pi.CodingAgent.Core.EventBusController` 密封类（+ `Clear()`） |
+| `createEventBus()` | `EventBusController.CreateEventBus()` |
+
+行为契约（差分测试逐条锁定）：
+
+- `on` 每次注册独立（即使同一 handler 传两次也是两个订阅，各自退订互不影响）；返回的退订函数幂等
+  （对应 Node `off` 对已移除监听是 no-op）；
+- `emit` 按注册顺序同步分发；handler 可以是同步或异步（TS `safeHandler` 对返回值 `await`，
+  C# 对应 `Func<object?, Task>``）；
+- handler 异常被 `safeHandler` 捕获并写 `Event handler error (<channel>): …`，不传播给 `emit`
+  调用方，也不影响同频道其他 handler；同步 throw 在 `emit` 期间即落日志（与 TS 异步包装器的
+  同步前缀一致），异步 reject 在 await 恢复后落日志；
+- `emit` 采用「加锁快照 + 锁外调用」：分发过程中退订/新订不影响当次 emit（Node 在监听数 > 1 时
+  克隆监听数组，语义相同），且 handler 内再次 `on`/退订不会死锁；
+- `clear()` 移除全部频道的全部监听，可重复调用，清空后可重新注册。
+
+与 TS 的差异：
+
+| # | 差异 | 理由 |
+|---|---|---|
+| C93 | TS 的 `EventBusController` 是接口，`createEventBus()` 返回对象字面量；C# 落为 `EventBus` 接口 + `EventBusController` 密封类 | 消费方（loader）只依赖 `EventBus` 接口面，行为一致；密封类省一次间接 |
+| C94 | 分发用「加锁快照 + 锁外调用」，而非 Node 的同步数组克隆 | 语义等价（见上），且避免 handler 内注册/退订时的重入死锁 |
+| C95 | 错误日志为单行 `Event handler error (<channel>): <Exception.ToString()>`（堆栈在后续行） | TS `console.error(msg, err)` 两参数在项目既有约定（`Deprecation` / `ModelResolver`）里均为单行 `WriteLine` |
+
+4d-2b（loader / runner）起依赖 4e/4f 的真实类型，届时按占位标记逐项收敛。

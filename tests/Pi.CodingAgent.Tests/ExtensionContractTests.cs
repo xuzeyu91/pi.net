@@ -277,7 +277,7 @@ public class ExtensionContractTests
     {
         Assert.NotNull(new SourceInfo { Path = "a.ts" });
         Assert.Null(new SourceInfo().Path);
-        Assert.NotNull(new EventBus());
+        Assert.NotNull(EventBusController.CreateEventBus());
         Assert.NotNull(new Theme());
         Assert.NotNull(new OverlayHandle());
         Assert.NotNull(new CustomMessage<int> { CustomType = "t", Content = "c" });
