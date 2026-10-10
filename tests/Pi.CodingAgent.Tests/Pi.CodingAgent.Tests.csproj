@@ -34,6 +34,10 @@
     <None Include="tool-search-corpus.json" CopyToOutputDirectory="PreserveNewest" />
     <!-- 4d-7a: extensions/llama/{client,huggingface}.ts (llama.cpp server client, Hugging Face API). -->
     <None Include="llama-corpus.json" CopyToOutputDirectory="PreserveNewest" />
+    <!-- 4e-1: the core modules with no session dependency — prompt templates, slash commands, auth
+         guidance, the telemetry/experimental gates, the missing-cwd guard, provider attribution, the
+         crash log, and decodeURI. -->
+    <None Include="prompt-corpus.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Pi.CodingAgent\Pi.CodingAgent.csproj" />

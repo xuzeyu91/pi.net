@@ -9,6 +9,7 @@
 using System.Text.Json.Nodes;
 using Pi.Agent.Types;
 using Pi.Ai.Types;
+using Pi.CodingAgent.Core;
 using Pi.CodingAgent.Core.Extensions.Types;
 
 namespace Pi.CodingAgent.Core.Extensions;

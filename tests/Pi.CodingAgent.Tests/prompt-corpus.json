@@ -1,0 +1,2033 @@
+{
+  "parseCommandArgs": [
+    {
+      "input": "",
+      "args": []
+    },
+    {
+      "input": "   ",
+      "args": []
+    },
+    {
+      "input": "a b c",
+      "args": [
+        "a",
+        "b",
+        "c"
+      ]
+    },
+    {
+      "input": "a  b",
+      "args": [
+        "a",
+        "b"
+      ]
+    },
+    {
+      "input": "a\tb\nc",
+      "args": [
+        "a",
+        "b",
+        "c"
+      ]
+    },
+    {
+      "input": "'a b' c",
+      "args": [
+        "a b",
+        "c"
+      ]
+    },
+    {
+      "input": "\"a b\" c",
+      "args": [
+        "a b",
+        "c"
+      ]
+    },
+    {
+      "input": "'a' 'b'",
+      "args": [
+        "a",
+        "b"
+      ]
+    },
+    {
+      "input": "\"unclosed",
+      "args": [
+        "unclosed"
+      ]
+    },
+    {
+      "input": "'unclosed",
+      "args": [
+        "unclosed"
+      ]
+    },
+    {
+      "input": "a '' b",
+      "args": [
+        "a",
+        "b"
+      ]
+    },
+    {
+      "input": "\"\"",
+      "args": []
+    },
+    {
+      "input": "a'b c'd",
+      "args": [
+        "ab cd"
+      ]
+    },
+    {
+      "input": "he said \"hi there\" now",
+      "args": [
+        "he",
+        "said",
+        "hi there",
+        "now"
+      ]
+    },
+    {
+      "input": "\\a \\b",
+      "args": [
+        "\\a",
+        "\\b"
+      ]
+    },
+    {
+      "input": "a\\ b",
+      "args": [
+        "a\\",
+        "b"
+      ]
+    },
+    {
+      "input": "$1 $2",
+      "args": [
+        "$1",
+        "$2"
+      ]
+    },
+    {
+      "input": "-\t-",
+      "args": [
+        "-",
+        "-"
+      ]
+    },
+    {
+      "input": " a b",
+      "args": [
+        "a",
+        "b"
+      ]
+    },
+    {
+      "input": "﻿a b",
+      "args": [
+        "a",
+        "b"
+      ]
+    },
+    {
+      "input": "a b",
+      "args": [
+        "a",
+        "b"
+      ]
+    },
+    {
+      "input": "emoji 😀 pair",
+      "args": [
+        "emoji",
+        "😀",
+        "pair"
+      ]
+    }
+  ],
+  "substituteArgs": [
+    {
+      "content": "$1",
+      "args": [
+        "a",
+        "b"
+      ],
+      "result": "a"
+    },
+    {
+      "content": "$1 $2 $3",
+      "args": [
+        "a"
+      ],
+      "result": "a  "
+    },
+    {
+      "content": "$1$2",
+      "args": [
+        "a",
+        "b"
+      ],
+      "result": "ab"
+    },
+    {
+      "content": "$@",
+      "args": [
+        "a",
+        "b"
+      ],
+      "result": "a b"
+    },
+    {
+      "content": "$@",
+      "args": [],
+      "result": ""
+    },
+    {
+      "content": "$ARGUMENTS",
+      "args": [
+        "a",
+        "b",
+        "c"
+      ],
+      "result": "a b c"
+    },
+    {
+      "content": "$ARGUMENTS",
+      "args": [],
+      "result": ""
+    },
+    {
+      "content": "${1:-x}",
+      "args": [],
+      "result": "x"
+    },
+    {
+      "content": "${1:-x}",
+      "args": [
+        "y"
+      ],
+      "result": "y"
+    },
+    {
+      "content": "${1:-x}",
+      "args": [
+        ""
+      ],
+      "result": "x"
+    },
+    {
+      "content": "${2:-d}",
+      "args": [
+        "a"
+      ],
+      "result": "d"
+    },
+    {
+      "content": "${2:-d}",
+      "args": [
+        "a",
+        "b"
+      ],
+      "result": "b"
+    },
+    {
+      "content": "${@:-x}",
+      "args": [],
+      "result": "x"
+    },
+    {
+      "content": "${@:-x}",
+      "args": [
+        "a",
+        "b"
+      ],
+      "result": "a b"
+    },
+    {
+      "content": "${ARGUMENTS:-x}",
+      "args": [],
+      "result": "x"
+    },
+    {
+      "content": "${ARGUMENTS:-x}",
+      "args": [
+        "a"
+      ],
+      "result": "a"
+    },
+    {
+      "content": "${@:2}",
+      "args": [
+        "a",
+        "b",
+        "c"
+      ],
+      "result": "b c"
+    },
+    {
+      "content": "${@:2}",
+      "args": [
+        "a"
+      ],
+      "result": ""
+    },
+    {
+      "content": "${@:0}",
+      "args": [
+        "a",
+        "b"
+      ],
+      "result": "a b"
+    },
+    {
+      "content": "${@:2:2}",
+      "args": [
+        "a",
+        "b",
+        "c",
+        "d"
+      ],
+      "result": "b c"
+    },
+    {
+      "content": "${@:1:0}",
+      "args": [
+        "a",
+        "b"
+      ],
+      "result": ""
+    },
+    {
+      "content": "${@:3:5}",
+      "args": [
+        "a",
+        "b",
+        "c"
+      ],
+      "result": "c"
+    },
+    {
+      "content": "${@:9}",
+      "args": [
+        "a"
+      ],
+      "result": ""
+    },
+    {
+      "content": "$10",
+      "args": [
+        "a",
+        "b",
+        "c",
+        "d",
+        "e",
+        "f",
+        "g",
+        "h",
+        "i",
+        "j"
+      ],
+      "result": "j"
+    },
+    {
+      "content": "${10:-z}",
+      "args": [
+        "a"
+      ],
+      "result": "z"
+    },
+    {
+      "content": "${1:-$2}",
+      "args": [
+        "a",
+        "b"
+      ],
+      "result": "a"
+    },
+    {
+      "content": "${1:-a b c}",
+      "args": [],
+      "result": "a b c"
+    },
+    {
+      "content": "$$1",
+      "args": [
+        "a"
+      ],
+      "result": "$a"
+    },
+    {
+      "content": "$",
+      "args": [],
+      "result": "$"
+    },
+    {
+      "content": "${",
+      "args": [],
+      "result": "${"
+    },
+    {
+      "content": "${1:}",
+      "args": [
+        "a"
+      ],
+      "result": "${1:}"
+    },
+    {
+      "content": "${1:-}",
+      "args": [
+        "a"
+      ],
+      "result": "a"
+    },
+    {
+      "content": "${@:-}",
+      "args": [],
+      "result": ""
+    },
+    {
+      "content": "no placeholders here",
+      "args": [
+        "a"
+      ],
+      "result": "no placeholders here"
+    },
+    {
+      "content": "a$1b$2c",
+      "args": [
+        "x",
+        "y"
+      ],
+      "result": "axbyc"
+    },
+    {
+      "content": "$ARGUMENTS$@$1",
+      "args": [
+        "x"
+      ],
+      "result": "xxx"
+    },
+    {
+      "content": "${@:-a}$@",
+      "args": [],
+      "result": "a"
+    }
+  ],
+  "expandPromptTemplate": {
+    "templates": [
+      {
+        "name": "foo",
+        "content": "Hello $1!"
+      },
+      {
+        "name": "bar",
+        "content": "$@"
+      },
+      {
+        "name": "with-default",
+        "content": "${1:-none}"
+      }
+    ],
+    "cases": [
+      {
+        "text": "/foo world",
+        "result": "Hello world!"
+      },
+      {
+        "text": "/foo",
+        "result": "Hello !"
+      },
+      {
+        "text": "/foo a b c",
+        "result": "Hello a!"
+      },
+      {
+        "text": "/bar x y",
+        "result": "x y"
+      },
+      {
+        "text": "/with-default",
+        "result": "none"
+      },
+      {
+        "text": "/with-default z",
+        "result": "z"
+      },
+      {
+        "text": "/nope x",
+        "result": "/nope x"
+      },
+      {
+        "text": "not a command",
+        "result": "not a command"
+      },
+      {
+        "text": "/",
+        "result": "/"
+      },
+      {
+        "text": "/foo a 'b c'",
+        "result": "Hello a!"
+      },
+      {
+        "text": "/foo\nline2",
+        "result": "Hello line2!"
+      },
+      {
+        "text": "/foo   ",
+        "result": "Hello !"
+      },
+      {
+        "text": " /foo",
+        "result": " /foo"
+      },
+      {
+        "text": "/foo  ",
+        "result": "Hello !"
+      },
+      {
+        "text": "/foo\tx",
+        "result": "Hello x!"
+      }
+    ]
+  },
+  "builtinSlashCommands": [
+    {
+      "name": "settings",
+      "description": "Open settings menu",
+      "argumentHint": null
+    },
+    {
+      "name": "model",
+      "description": "Select model (opens selector UI)",
+      "argumentHint": "<provider/model>"
+    },
+    {
+      "name": "tree",
+      "description": "Navigate session tree (switch branches)",
+      "argumentHint": null
+    },
+    {
+      "name": "thinking",
+      "description": "Set thinking level",
+      "argumentHint": "<level>"
+    },
+    {
+      "name": "scoped-models",
+      "description": "Enable/disable models for Ctrl+P cycling",
+      "argumentHint": null
+    },
+    {
+      "name": "export",
+      "description": "Export session (HTML default, or specify path: .html/.jsonl)",
+      "argumentHint": null
+    },
+    {
+      "name": "import",
+      "description": "Import and resume a session from a JSONL file",
+      "argumentHint": null
+    },
+    {
+      "name": "share",
+      "description": "Share session as a secret GitHub gist",
+      "argumentHint": null
+    },
+    {
+      "name": "bug",
+      "description": "Report a bug to the Pi developers",
+      "argumentHint": "<description>"
+    },
+    {
+      "name": "copy",
+      "description": "Copy last agent message to clipboard",
+      "argumentHint": null
+    },
+    {
+      "name": "name",
+      "description": "Set session display name",
+      "argumentHint": null
+    },
+    {
+      "name": "session",
+      "description": "Show session info and stats",
+      "argumentHint": null
+    },
+    {
+      "name": "changelog",
+      "description": "Show changelog entries",
+      "argumentHint": null
+    },
+    {
+      "name": "hotkeys",
+      "description": "Show all keyboard shortcuts",
+      "argumentHint": null
+    },
+    {
+      "name": "fork",
+      "description": "Create a new fork from a previous user message",
+      "argumentHint": null
+    },
+    {
+      "name": "clone",
+      "description": "Duplicate the current session at the current position",
+      "argumentHint": null
+    },
+    {
+      "name": "trust",
+      "description": "Save project trust decision for future sessions",
+      "argumentHint": null
+    },
+    {
+      "name": "login",
+      "description": "Configure provider authentication",
+      "argumentHint": "<provider>"
+    },
+    {
+      "name": "logout",
+      "description": "Remove provider authentication",
+      "argumentHint": null
+    },
+    {
+      "name": "new",
+      "description": "Start a new session",
+      "argumentHint": null
+    },
+    {
+      "name": "compact",
+      "description": "Manually compact the session context",
+      "argumentHint": null
+    },
+    {
+      "name": "resume",
+      "description": "Resume a different session",
+      "argumentHint": null
+    },
+    {
+      "name": "reload",
+      "description": "Reload keybindings, extensions, skills, prompts, themes, and context files",
+      "argumentHint": null
+    },
+    {
+      "name": "quit",
+      "description": "Quit pi",
+      "argumentHint": null
+    }
+  ],
+  "authGuidance": [
+    {
+      "kind": "login-help",
+      "result": "Use /login to log into a provider via OAuth or API key. See:\n  <DOCS>\\providers.md\n  <DOCS>\\models.md"
+    },
+    {
+      "kind": "no-models",
+      "result": "No models available. Use /login to log into a provider via OAuth or API key. See:\n  <DOCS>\\providers.md\n  <DOCS>\\models.md"
+    },
+    {
+      "kind": "no-model-selected",
+      "result": "No model selected.\n\nUse /login to log into a provider via OAuth or API key. See:\n  <DOCS>\\providers.md\n  <DOCS>\\models.md\n\nThen use /model to select a model."
+    },
+    {
+      "kind": "no-api-key-unknown",
+      "result": "No API key found for the selected model.\n\nUse /login to log into a provider via OAuth or API key. See:\n  <DOCS>\\providers.md\n  <DOCS>\\models.md"
+    },
+    {
+      "kind": "no-api-key-anthropic",
+      "result": "No API key found for anthropic.\n\nUse /login to log into a provider via OAuth or API key. See:\n  <DOCS>\\providers.md\n  <DOCS>\\models.md"
+    },
+    {
+      "kind": "no-api-key-empty",
+      "result": "No API key found for .\n\nUse /login to log into a provider via OAuth or API key. See:\n  <DOCS>\\providers.md\n  <DOCS>\\models.md"
+    }
+  ],
+  "telemetryEnvFlag": [
+    {
+      "value": null,
+      "result": false
+    },
+    {
+      "value": "",
+      "result": false
+    },
+    {
+      "value": "1",
+      "result": true
+    },
+    {
+      "value": "0",
+      "result": false
+    },
+    {
+      "value": "true",
+      "result": true
+    },
+    {
+      "value": "TRUE",
+      "result": true
+    },
+    {
+      "value": "True",
+      "result": true
+    },
+    {
+      "value": "yes",
+      "result": true
+    },
+    {
+      "value": "YES",
+      "result": true
+    },
+    {
+      "value": "Yes",
+      "result": true
+    },
+    {
+      "value": "no",
+      "result": false
+    },
+    {
+      "value": "on",
+      "result": false
+    },
+    {
+      "value": "2",
+      "result": false
+    },
+    {
+      "value": " 1",
+      "result": false
+    },
+    {
+      "value": "true ",
+      "result": false
+    },
+    {
+      "value": "tru",
+      "result": false
+    },
+    {
+      "value": "y",
+      "result": false
+    }
+  ],
+  "telemetryEnabled": [
+    {
+      "env": null,
+      "setting": true,
+      "result": true
+    },
+    {
+      "env": null,
+      "setting": false,
+      "result": false
+    },
+    {
+      "env": "",
+      "setting": true,
+      "result": false
+    },
+    {
+      "env": "",
+      "setting": false,
+      "result": false
+    },
+    {
+      "env": "1",
+      "setting": false,
+      "result": true
+    },
+    {
+      "env": "0",
+      "setting": true,
+      "result": false
+    },
+    {
+      "env": "yes",
+      "setting": false,
+      "result": true
+    },
+    {
+      "env": "no",
+      "setting": true,
+      "result": false
+    },
+    {
+      "env": "true",
+      "setting": false,
+      "result": true
+    }
+  ],
+  "telemetryFromEnv": [
+    {
+      "env": null,
+      "setting": true,
+      "result": true
+    },
+    {
+      "env": "",
+      "setting": true,
+      "result": false
+    },
+    {
+      "env": "1",
+      "setting": true,
+      "result": true
+    },
+    {
+      "env": "true",
+      "setting": true,
+      "result": true
+    },
+    {
+      "env": "0",
+      "setting": true,
+      "result": false
+    }
+  ],
+  "experimentalEnabled": [
+    {
+      "env": null,
+      "result": false
+    },
+    {
+      "env": "",
+      "result": false
+    },
+    {
+      "env": "1",
+      "result": true
+    },
+    {
+      "env": "true",
+      "result": false
+    },
+    {
+      "env": "0",
+      "result": false
+    },
+    {
+      "env": "01",
+      "result": false
+    }
+  ],
+  "sessionCwdIssue": [
+    {
+      "sessionFile": "/s/session.jsonl",
+      "cwd": "<TMP>\\cwd-exists",
+      "hasSessionFile": true,
+      "issue": null
+    },
+    {
+      "sessionFile": "/s/session.jsonl",
+      "cwd": "<TMP>\\cwd-gone",
+      "hasSessionFile": true,
+      "issue": {
+        "sessionFile": "/s/session.jsonl",
+        "sessionCwd": "<TMP>\\cwd-gone",
+        "fallbackCwd": "<FALLBACK>"
+      }
+    },
+    {
+      "sessionFile": null,
+      "cwd": "<TMP>\\cwd-gone",
+      "hasSessionFile": false,
+      "issue": null
+    },
+    {
+      "sessionFile": "",
+      "cwd": "<TMP>\\cwd-gone",
+      "hasSessionFile": true,
+      "issue": null
+    },
+    {
+      "sessionFile": "/s/session.jsonl",
+      "cwd": "",
+      "hasSessionFile": true,
+      "issue": null
+    }
+  ],
+  "sessionCwdFormat": [
+    {
+      "issue": {
+        "sessionFile": "/s/session.jsonl",
+        "sessionCwd": "/gone/dir",
+        "fallbackCwd": "/now/here"
+      },
+      "error": "Stored session working directory does not exist: /gone/dir\nSession file: /s/session.jsonl\nCurrent working directory: /now/here",
+      "prompt": "cwd from session file does not exist\n/gone/dir\n\ncontinue in current cwd\n/now/here",
+      "exceptionName": "MissingSessionCwdError"
+    },
+    {
+      "issue": {
+        "sessionCwd": "/gone/dir",
+        "fallbackCwd": "/now/here"
+      },
+      "error": "Stored session working directory does not exist: /gone/dir\nCurrent working directory: /now/here",
+      "prompt": "cwd from session file does not exist\n/gone/dir\n\ncontinue in current cwd\n/now/here",
+      "exceptionName": "MissingSessionCwdError"
+    },
+    {
+      "issue": {
+        "sessionFile": "",
+        "sessionCwd": "/gone/dir",
+        "fallbackCwd": "/now/here"
+      },
+      "error": "Stored session working directory does not exist: /gone/dir\nCurrent working directory: /now/here",
+      "prompt": "cwd from session file does not exist\n/gone/dir\n\ncontinue in current cwd\n/now/here",
+      "exceptionName": "MissingSessionCwdError"
+    }
+  ],
+  "providerAttribution": [
+    {
+      "provider": "openrouter",
+      "baseUrl": "https://openrouter.ai/api/v1",
+      "telemetry": true,
+      "sessionId": null,
+      "sources": [],
+      "result": {
+        "HTTP-Referer": "https://pi.dev",
+        "X-OpenRouter-Title": "pi",
+        "X-OpenRouter-Categories": "cli-agent"
+      }
+    },
+    {
+      "provider": "openrouter",
+      "baseUrl": "https://openrouter.ai/api/v1",
+      "telemetry": false,
+      "sessionId": null,
+      "sources": [],
+      "result": null
+    },
+    {
+      "provider": "other",
+      "baseUrl": "https://openrouter.ai/api/v1",
+      "telemetry": true,
+      "sessionId": null,
+      "sources": [],
+      "result": {
+        "HTTP-Referer": "https://pi.dev",
+        "X-OpenRouter-Title": "pi",
+        "X-OpenRouter-Categories": "cli-agent"
+      }
+    },
+    {
+      "provider": "other",
+      "baseUrl": "https://proxy.example/openrouter.ai/x",
+      "telemetry": true,
+      "sessionId": null,
+      "sources": [],
+      "result": {
+        "HTTP-Referer": "https://pi.dev",
+        "X-OpenRouter-Title": "pi",
+        "X-OpenRouter-Categories": "cli-agent"
+      }
+    },
+    {
+      "provider": "nvidia",
+      "baseUrl": "https://integrate.api.nvidia.com/v1",
+      "telemetry": true,
+      "sessionId": null,
+      "sources": [],
+      "result": {
+        "X-BILLING-INVOKE-ORIGIN": "Pi"
+      }
+    },
+    {
+      "provider": "other",
+      "baseUrl": "https://integrate.api.nvidia.com/v1",
+      "telemetry": true,
+      "sessionId": null,
+      "sources": [],
+      "result": {
+        "X-BILLING-INVOKE-ORIGIN": "Pi"
+      }
+    },
+    {
+      "provider": "other",
+      "baseUrl": "https://integrate.api.nvidia.com.evil.com/v1",
+      "telemetry": true,
+      "sessionId": null,
+      "sources": [],
+      "result": null
+    },
+    {
+      "provider": "cloudflare-workers-ai",
+      "baseUrl": "https://api.cloudflare.com/x",
+      "telemetry": true,
+      "sessionId": null,
+      "sources": [],
+      "result": {
+        "User-Agent": "pi-coding-agent"
+      }
+    },
+    {
+      "provider": "cloudflare-ai-gateway",
+      "baseUrl": "https://gateway.ai.cloudflare.com/x",
+      "telemetry": true,
+      "sessionId": null,
+      "sources": [],
+      "result": {
+        "User-Agent": "pi-coding-agent"
+      }
+    },
+    {
+      "provider": "other",
+      "baseUrl": "https://api.cloudflare.com/x",
+      "telemetry": true,
+      "sessionId": null,
+      "sources": [],
+      "result": {
+        "User-Agent": "pi-coding-agent"
+      }
+    },
+    {
+      "provider": "other",
+      "baseUrl": "https://example.com/v1",
+      "telemetry": true,
+      "sessionId": null,
+      "sources": [],
+      "result": null
+    },
+    {
+      "provider": "other",
+      "baseUrl": "not a url",
+      "telemetry": true,
+      "sessionId": null,
+      "sources": [],
+      "result": null
+    },
+    {
+      "provider": "opencode",
+      "baseUrl": "https://opencode.ai/v1",
+      "telemetry": true,
+      "sessionId": "sess-1",
+      "sources": [],
+      "result": {
+        "x-opencode-session": "sess-1",
+        "x-opencode-client": "pi"
+      }
+    },
+    {
+      "provider": "opencode-go",
+      "baseUrl": "https://example.com/v1",
+      "telemetry": true,
+      "sessionId": "sess-1",
+      "sources": [],
+      "result": {
+        "x-opencode-session": "sess-1",
+        "x-opencode-client": "pi"
+      }
+    },
+    {
+      "provider": "other",
+      "baseUrl": "https://opencode.ai/v1",
+      "telemetry": true,
+      "sessionId": "sess-1",
+      "sources": [],
+      "result": {
+        "x-opencode-session": "sess-1",
+        "x-opencode-client": "pi"
+      }
+    },
+    {
+      "provider": "opencode",
+      "baseUrl": "https://opencode.ai/v1",
+      "telemetry": true,
+      "sessionId": null,
+      "sources": [],
+      "result": null
+    },
+    {
+      "provider": "opencode",
+      "baseUrl": "https://opencode.ai/v1",
+      "telemetry": true,
+      "sessionId": "",
+      "sources": [],
+      "result": null
+    },
+    {
+      "provider": "opencode",
+      "baseUrl": "https://opencode.ai/v1",
+      "telemetry": false,
+      "sessionId": "sess-1",
+      "sources": [],
+      "result": {
+        "x-opencode-session": "sess-1",
+        "x-opencode-client": "pi"
+      }
+    },
+    {
+      "provider": "openrouter",
+      "baseUrl": "https://openrouter.ai/api/v1",
+      "telemetry": true,
+      "sessionId": null,
+      "sources": [
+        {
+          "X-OpenRouter-Title": "override"
+        },
+        {
+          "HTTP-Referer": null
+        }
+      ],
+      "result": {
+        "HTTP-Referer": null,
+        "X-OpenRouter-Title": "override",
+        "X-OpenRouter-Categories": "cli-agent"
+      }
+    },
+    {
+      "provider": "other",
+      "baseUrl": "https://example.com/v1",
+      "telemetry": true,
+      "sessionId": null,
+      "sources": [
+        {
+          "X-Custom": "1"
+        }
+      ],
+      "result": {
+        "X-Custom": "1"
+      }
+    },
+    {
+      "provider": "other",
+      "baseUrl": "https://example.com/v1",
+      "telemetry": true,
+      "sessionId": null,
+      "sources": [
+        null,
+        {
+          "X-Custom": "1"
+        }
+      ],
+      "result": {
+        "X-Custom": "1"
+      }
+    },
+    {
+      "provider": "opencode",
+      "baseUrl": "https://opencode.ai/v1",
+      "telemetry": true,
+      "sessionId": "sess-1",
+      "sources": [
+        {
+          "x-opencode-session": "override"
+        }
+      ],
+      "result": {
+        "x-opencode-session": "override",
+        "x-opencode-client": "pi"
+      }
+    }
+  ],
+  "findExtensionStackMatches": {
+    "extensions": [
+      {
+        "path": "local-a",
+        "resolvedPath": "/proj/ext-a.ts",
+        "sourceInfo": {
+          "path": "/proj/ext-a.ts",
+          "source": "local",
+          "scope": "project",
+          "origin": "top-level"
+        }
+      },
+      {
+        "path": "local-b",
+        "resolvedPath": "/proj/ext-b/index.ts",
+        "sourceInfo": {
+          "path": "/proj/ext-b/index.ts",
+          "source": "local",
+          "scope": "project",
+          "origin": "top-level"
+        }
+      },
+      {
+        "path": "pkg-c",
+        "resolvedPath": "/nm/pkg-c/index.js",
+        "sourceInfo": {
+          "path": "/nm/pkg-c/index.js",
+          "source": "npm:pkg-c",
+          "scope": "user",
+          "origin": "package",
+          "baseDir": "/nm/pkg-c"
+        }
+      },
+      {
+        "path": "pkg-d",
+        "resolvedPath": "/nm/pkg-d/single.js",
+        "sourceInfo": {
+          "path": "/nm/pkg-d/single.js",
+          "source": "single.js",
+          "scope": "user",
+          "origin": "package",
+          "baseDir": "/nm/pkg-d"
+        }
+      },
+      {
+        "path": "git-e",
+        "resolvedPath": "/nm/git-e/index.js",
+        "sourceInfo": {
+          "path": "/nm/git-e/index.js",
+          "source": "git:github.com/u/r",
+          "scope": "user",
+          "origin": "package",
+          "baseDir": "/nm/git-e"
+        }
+      },
+      {
+        "path": "<inline:z>",
+        "resolvedPath": "builtin:z",
+        "sourceInfo": {
+          "path": "builtin:z",
+          "source": "builtin",
+          "scope": "temporary",
+          "origin": "top-level"
+        }
+      },
+      {
+        "path": "windows",
+        "resolvedPath": "C:\\proj\\win-ext.ts",
+        "sourceInfo": {
+          "path": "C:\\proj\\win-ext.ts",
+          "source": "local",
+          "scope": "project",
+          "origin": "top-level"
+        }
+      },
+      {
+        "path": "dup-1",
+        "resolvedPath": "/nm/dup-1/index.js",
+        "sourceInfo": {
+          "path": "/nm/dup-1/index.js",
+          "source": "npm:dup",
+          "scope": "user",
+          "origin": "package",
+          "baseDir": "/nm/shared"
+        }
+      },
+      {
+        "path": "dup-2",
+        "resolvedPath": "/nm/dup-2/index.js",
+        "sourceInfo": {
+          "path": "/nm/dup-2/index.js",
+          "source": "npm:dup",
+          "scope": "user",
+          "origin": "package",
+          "baseDir": "/nm/shared"
+        }
+      }
+    ],
+    "cases": [
+      {
+        "stack": null,
+        "hasStack": false,
+        "result": []
+      },
+      {
+        "stack": "",
+        "hasStack": true,
+        "result": []
+      },
+      {
+        "stack": "Error: boom\n    at /proj/ext-a.ts:1:1\n    at /other.ts:2:2",
+        "hasStack": true,
+        "result": [
+          "local-a"
+        ]
+      },
+      {
+        "stack": "Error: boom\nat /proj/ext-a.ts:1:1",
+        "hasStack": true,
+        "result": []
+      },
+      {
+        "stack": "Error: boom\n    at /proj/ext-a.ts:1:1",
+        "hasStack": true,
+        "result": [
+          "local-a"
+        ]
+      },
+      {
+        "stack": "Error: boom\n    at /proj/ext-a.tsx:1:1",
+        "hasStack": true,
+        "result": []
+      },
+      {
+        "stack": "Error: boom\n    at /proj/ext-b/index.ts:1:1",
+        "hasStack": true,
+        "result": [
+          "local-b"
+        ]
+      },
+      {
+        "stack": "Error: boom\n    at /proj/ext-b/other.ts:1:1",
+        "hasStack": true,
+        "result": [
+          "local-b"
+        ]
+      },
+      {
+        "stack": "Error: boom\n    at /nm/pkg-c/dist/loader.js:1:1",
+        "hasStack": true,
+        "result": [
+          "npm:pkg-c"
+        ]
+      },
+      {
+        "stack": "Error: boom\n    at /nm/pkg-c/index.js:1:1",
+        "hasStack": true,
+        "result": [
+          "npm:pkg-c"
+        ]
+      },
+      {
+        "stack": "Error: boom\n    at /nm/pkg-d/single.js:1:1",
+        "hasStack": true,
+        "result": [
+          "single.js"
+        ]
+      },
+      {
+        "stack": "Error: boom\n    at /nm/git-e/index.js:1:1",
+        "hasStack": true,
+        "result": [
+          "git:github.com/u/r"
+        ]
+      },
+      {
+        "stack": "Error: boom\n    at /proj/ext-a.ts:1:1\n    at /proj/ext-b/index.ts:2:2",
+        "hasStack": true,
+        "result": [
+          "local-a",
+          "local-b"
+        ]
+      },
+      {
+        "stack": "Error: boom\n    at file:///proj/ext%2Da.ts:1:1",
+        "hasStack": true,
+        "result": [
+          "local-a"
+        ]
+      },
+      {
+        "stack": "Error: boom\n    at file:///proj/ext-a.ts:1:1",
+        "hasStack": true,
+        "result": [
+          "local-a"
+        ]
+      },
+      {
+        "stack": "Error: boom\n    at C:\\proj\\win-ext.ts:1:1",
+        "hasStack": true,
+        "result": [
+          "windows"
+        ]
+      },
+      {
+        "stack": "Error: boom\n    at c:/proj/win-ext.ts:1:1",
+        "hasStack": true,
+        "result": [
+          "windows"
+        ]
+      },
+      {
+        "stack": "Error: boom\n    at C:\\PROJ\\WIN-EXT.TS:1:1",
+        "hasStack": true,
+        "result": [
+          "windows"
+        ]
+      },
+      {
+        "stack": "Error: boom\n    at /proj/ext-a.ts:1:1)",
+        "hasStack": true,
+        "result": [
+          "local-a"
+        ]
+      },
+      {
+        "stack": "Error: boom\n    at /proj/ext-a.ts:1:1 ",
+        "hasStack": true,
+        "result": [
+          "local-a"
+        ]
+      },
+      {
+        "stack": "Error: boom\n    at /proj/ext-abc.ts:1:1",
+        "hasStack": true,
+        "result": []
+      },
+      {
+        "stack": "    at /proj/ext-a.ts:1:1\n    at /other.ts:2:2",
+        "hasStack": true,
+        "result": []
+      },
+      {
+        "stack": "Error: boom\n    at fn (/proj/ext-a.ts)\n    at /other.ts:1:1",
+        "hasStack": true,
+        "result": [
+          "local-a"
+        ]
+      },
+      {
+        "stack": "Error: boom\n    at /proj/ext-a.ts (native)\n    at /other.ts:1:1",
+        "hasStack": true,
+        "result": [
+          "local-a"
+        ]
+      },
+      {
+        "stack": "Error: boom\n    at /nm/shared/loader.js:1:1",
+        "hasStack": true,
+        "result": [
+          "npm:dup"
+        ]
+      }
+    ]
+  },
+  "crashLogRead": [
+    {
+      "label": "missing",
+      "contents": null,
+      "records": []
+    },
+    {
+      "label": "malformed",
+      "contents": "{",
+      "records": []
+    },
+    {
+      "label": "not-array",
+      "contents": "{\"a\":1}",
+      "records": []
+    },
+    {
+      "label": "empty-array",
+      "contents": "[]",
+      "records": []
+    },
+    {
+      "label": "mixed",
+      "contents": "[{\"timestamp\":\"t\",\"message\":\"m\",\"extra\":1},42,null,\"str\",{\"timestamp\":1,\"message\":\"m\"},{\"timestamp\":\"t\"},{\"message\":\"m\"}]",
+      "records": [
+        {
+          "timestamp": "t",
+          "message": "m",
+          "extra": 1
+        }
+      ]
+    },
+    {
+      "label": "bom",
+      "contents": "﻿[]",
+      "records": []
+    },
+    {
+      "label": "bom-with-records",
+      "contents": "﻿[{\"timestamp\":\"t\",\"message\":\"m\"}]",
+      "records": []
+    },
+    {
+      "label": "whitespace",
+      "contents": "  \n [] \n",
+      "records": []
+    }
+  ],
+  "crashLogRecord": [
+    {
+      "label": "string-error",
+      "kind": "fatal_error",
+      "error": "boom",
+      "sessionFile": "/s/session.jsonl",
+      "cwd": "/cwd",
+      "record": {
+        "timestamp": "2026-10-10T14:41:23.575Z",
+        "version": "<VERSION>",
+        "kind": "fatal_error",
+        "message": "boom",
+        "stack": null,
+        "sessionFile": "/s/session.jsonl",
+        "cwd": "/cwd"
+      },
+      "fileContents": "[\n  {\n    \"timestamp\": \"2026-10-10T14:41:23.575Z\",\n    \"version\": \"<VERSION>\",\n    \"kind\": \"fatal_error\",\n    \"message\": \"boom\",\n    \"stack\": null,\n    \"sessionFile\": \"/s/session.jsonl\",\n    \"cwd\": \"/cwd\"\n  }\n]\n"
+    },
+    {
+      "label": "null-error",
+      "kind": "uncaught_exception",
+      "error": null,
+      "sessionFile": null,
+      "cwd": "/cwd",
+      "record": {
+        "timestamp": "2026-10-10T14:41:23.585Z",
+        "version": "<VERSION>",
+        "kind": "uncaught_exception",
+        "message": "null",
+        "stack": null,
+        "sessionFile": null,
+        "cwd": "/cwd"
+      },
+      "fileContents": "[\n  {\n    \"timestamp\": \"2026-10-10T14:41:23.585Z\",\n    \"version\": \"<VERSION>\",\n    \"kind\": \"uncaught_exception\",\n    \"message\": \"null\",\n    \"stack\": null,\n    \"sessionFile\": null,\n    \"cwd\": \"/cwd\"\n  }\n]\n"
+    },
+    {
+      "label": "number-error",
+      "kind": "fatal_error",
+      "error": 42,
+      "sessionFile": null,
+      "cwd": "/cwd",
+      "record": {
+        "timestamp": "2026-10-10T14:41:23.592Z",
+        "version": "<VERSION>",
+        "kind": "fatal_error",
+        "message": "42",
+        "stack": null,
+        "sessionFile": null,
+        "cwd": "/cwd"
+      },
+      "fileContents": "[\n  {\n    \"timestamp\": \"2026-10-10T14:41:23.592Z\",\n    \"version\": \"<VERSION>\",\n    \"kind\": \"fatal_error\",\n    \"message\": \"42\",\n    \"stack\": null,\n    \"sessionFile\": null,\n    \"cwd\": \"/cwd\"\n  }\n]\n"
+    }
+  ],
+  "crashLogRecordCap": {
+    "fileContents": "[\n  {\n    \"timestamp\": \"2026-10-10T14:41:23.605Z\",\n    \"version\": \"<VERSION>\",\n    \"kind\": \"fatal_error\",\n    \"message\": \"e2\",\n    \"stack\": null,\n    \"sessionFile\": null,\n    \"cwd\": \"/cwd\"\n  },\n  {\n    \"timestamp\": \"2026-10-10T14:41:23.608Z\",\n    \"version\": \"<VERSION>\",\n    \"kind\": \"fatal_error\",\n    \"message\": \"e3\",\n    \"stack\": null,\n    \"sessionFile\": null,\n    \"cwd\": \"/cwd\"\n  },\n  {\n    \"timestamp\": \"2026-10-10T14:41:23.612Z\",\n    \"version\": \"<VERSION>\",\n    \"kind\": \"fatal_error\",\n    \"message\": \"e4\",\n    \"stack\": null,\n    \"sessionFile\": null,\n    \"cwd\": \"/cwd\"\n  },\n  {\n    \"timestamp\": \"2026-10-10T14:41:23.616Z\",\n    \"version\": \"<VERSION>\",\n    \"kind\": \"fatal_error\",\n    \"message\": \"e5\",\n    \"stack\": null,\n    \"sessionFile\": null,\n    \"cwd\": \"/cwd\"\n  },\n  {\n    \"timestamp\": \"2026-10-10T14:41:23.619Z\",\n    \"version\": \"<VERSION>\",\n    \"kind\": \"fatal_error\",\n    \"message\": \"e6\",\n    \"stack\": null,\n    \"sessionFile\": null,\n    \"cwd\": \"/cwd\"\n  }\n]\n",
+    "count": 5,
+    "messages": [
+      "e2",
+      "e3",
+      "e4",
+      "e5",
+      "e6"
+    ]
+  },
+  "crashLogTake": [
+    {
+      "label": "fresh",
+      "seedContents": "[\n  {\n    \"timestamp\": \"2026-01-02T03:04:05.678Z\",\n    \"version\": \"<VERSION>\",\n    \"kind\": \"fatal_error\",\n    \"message\": \"old\",\n    \"stack\": null,\n    \"sessionFile\": null,\n    \"cwd\": \"/cwd\"\n  }\n]\n",
+      "now": 1767323046678,
+      "taken": {
+        "timestamp": "2026-01-02T03:04:05.678Z",
+        "version": "<VERSION>",
+        "kind": "fatal_error",
+        "message": "old",
+        "stack": null,
+        "sessionFile": null,
+        "cwd": "/cwd"
+      },
+      "afterContents": "[\n  {\n    \"timestamp\": \"2026-01-02T03:04:05.678Z\",\n    \"version\": \"<VERSION>\",\n    \"kind\": \"fatal_error\",\n    \"message\": \"old\",\n    \"stack\": null,\n    \"sessionFile\": null,\n    \"cwd\": \"/cwd\",\n    \"notified\": true\n  }\n]\n",
+      "second": null
+    },
+    {
+      "label": "exactly-max-age",
+      "seedContents": "[\n  {\n    \"timestamp\": \"2026-01-02T03:04:05.678Z\",\n    \"version\": \"<VERSION>\",\n    \"kind\": \"fatal_error\",\n    \"message\": \"ancient\",\n    \"stack\": null,\n    \"sessionFile\": null,\n    \"cwd\": \"/cwd\"\n  }\n]\n",
+      "now": 1767927845678,
+      "taken": {
+        "timestamp": "2026-01-02T03:04:05.678Z",
+        "version": "<VERSION>",
+        "kind": "fatal_error",
+        "message": "ancient",
+        "stack": null,
+        "sessionFile": null,
+        "cwd": "/cwd"
+      },
+      "afterContents": "[\n  {\n    \"timestamp\": \"2026-01-02T03:04:05.678Z\",\n    \"version\": \"<VERSION>\",\n    \"kind\": \"fatal_error\",\n    \"message\": \"ancient\",\n    \"stack\": null,\n    \"sessionFile\": null,\n    \"cwd\": \"/cwd\",\n    \"notified\": true\n  }\n]\n",
+      "second": null
+    },
+    {
+      "label": "too-old",
+      "seedContents": "[\n  {\n    \"timestamp\": \"2026-01-02T03:04:05.678Z\",\n    \"version\": \"<VERSION>\",\n    \"kind\": \"fatal_error\",\n    \"message\": \"ancient\",\n    \"stack\": null,\n    \"sessionFile\": null,\n    \"cwd\": \"/cwd\"\n  }\n]\n",
+      "now": 1767927845679,
+      "taken": null,
+      "afterContents": "[\n  {\n    \"timestamp\": \"2026-01-02T03:04:05.678Z\",\n    \"version\": \"<VERSION>\",\n    \"kind\": \"fatal_error\",\n    \"message\": \"ancient\",\n    \"stack\": null,\n    \"sessionFile\": null,\n    \"cwd\": \"/cwd\"\n  }\n]\n",
+      "second": null
+    },
+    {
+      "label": "already-notified",
+      "seedContents": "[\n  {\n    \"timestamp\": \"2026-01-02T03:04:05.678Z\",\n    \"version\": \"<VERSION>\",\n    \"kind\": \"fatal_error\",\n    \"message\": \"seen\",\n    \"stack\": null,\n    \"sessionFile\": null,\n    \"cwd\": \"/cwd\",\n    \"notified\": true\n  }\n]\n",
+      "now": 1767323046678,
+      "taken": null,
+      "afterContents": "[\n  {\n    \"timestamp\": \"2026-01-02T03:04:05.678Z\",\n    \"version\": \"<VERSION>\",\n    \"kind\": \"fatal_error\",\n    \"message\": \"seen\",\n    \"stack\": null,\n    \"sessionFile\": null,\n    \"cwd\": \"/cwd\",\n    \"notified\": true\n  }\n]\n",
+      "second": null
+    },
+    {
+      "label": "notified-string-is-truthy",
+      "seedContents": "[\n  {\n    \"timestamp\": \"2026-01-02T03:04:05.678Z\",\n    \"version\": \"<VERSION>\",\n    \"kind\": \"fatal_error\",\n    \"message\": \"text\",\n    \"stack\": null,\n    \"sessionFile\": null,\n    \"cwd\": \"/cwd\",\n    \"notified\": \"yes\"\n  }\n]\n",
+      "now": 1767323046678,
+      "taken": null,
+      "afterContents": "[\n  {\n    \"timestamp\": \"2026-01-02T03:04:05.678Z\",\n    \"version\": \"<VERSION>\",\n    \"kind\": \"fatal_error\",\n    \"message\": \"text\",\n    \"stack\": null,\n    \"sessionFile\": null,\n    \"cwd\": \"/cwd\",\n    \"notified\": \"yes\"\n  }\n]\n",
+      "second": null
+    },
+    {
+      "label": "notified-zero-is-falsy",
+      "seedContents": "[\n  {\n    \"timestamp\": \"2026-01-02T03:04:05.678Z\",\n    \"version\": \"<VERSION>\",\n    \"kind\": \"fatal_error\",\n    \"message\": \"zero\",\n    \"stack\": null,\n    \"sessionFile\": null,\n    \"cwd\": \"/cwd\",\n    \"notified\": 0\n  }\n]\n",
+      "now": 1767323046678,
+      "taken": {
+        "timestamp": "2026-01-02T03:04:05.678Z",
+        "version": "<VERSION>",
+        "kind": "fatal_error",
+        "message": "zero",
+        "stack": null,
+        "sessionFile": null,
+        "cwd": "/cwd",
+        "notified": 0
+      },
+      "afterContents": "[\n  {\n    \"timestamp\": \"2026-01-02T03:04:05.678Z\",\n    \"version\": \"<VERSION>\",\n    \"kind\": \"fatal_error\",\n    \"message\": \"zero\",\n    \"stack\": null,\n    \"sessionFile\": null,\n    \"cwd\": \"/cwd\",\n    \"notified\": true\n  }\n]\n",
+      "second": null
+    },
+    {
+      "label": "skips-notified-picks-latest",
+      "seedContents": "[\n  {\n    \"timestamp\": \"2026-01-01T00:00:00.000Z\",\n    \"version\": \"<VERSION>\",\n    \"kind\": \"fatal_error\",\n    \"message\": \"seen\",\n    \"stack\": null,\n    \"sessionFile\": null,\n    \"cwd\": \"/cwd\",\n    \"notified\": true\n  },\n  {\n    \"timestamp\": \"2026-01-02T00:00:00.000Z\",\n    \"version\": \"<VERSION>\",\n    \"kind\": \"fatal_error\",\n    \"message\": \"newer\",\n    \"stack\": null,\n    \"sessionFile\": null,\n    \"cwd\": \"/cwd\"\n  },\n  {\n    \"timestamp\": \"2026-01-01T12:00:00.000Z\",\n    \"version\": \"<VERSION>\",\n    \"kind\": \"fatal_error\",\n    \"message\": \"older\",\n    \"stack\": null,\n    \"sessionFile\": null,\n    \"cwd\": \"/cwd\"\n  }\n]\n",
+      "now": 1767323046678,
+      "taken": {
+        "timestamp": "2026-01-01T12:00:00.000Z",
+        "version": "<VERSION>",
+        "kind": "fatal_error",
+        "message": "older",
+        "stack": null,
+        "sessionFile": null,
+        "cwd": "/cwd"
+      },
+      "afterContents": "[\n  {\n    \"timestamp\": \"2026-01-01T00:00:00.000Z\",\n    \"version\": \"<VERSION>\",\n    \"kind\": \"fatal_error\",\n    \"message\": \"seen\",\n    \"stack\": null,\n    \"sessionFile\": null,\n    \"cwd\": \"/cwd\",\n    \"notified\": true\n  },\n  {\n    \"timestamp\": \"2026-01-02T00:00:00.000Z\",\n    \"version\": \"<VERSION>\",\n    \"kind\": \"fatal_error\",\n    \"message\": \"newer\",\n    \"stack\": null,\n    \"sessionFile\": null,\n    \"cwd\": \"/cwd\",\n    \"notified\": true\n  },\n  {\n    \"timestamp\": \"2026-01-01T12:00:00.000Z\",\n    \"version\": \"<VERSION>\",\n    \"kind\": \"fatal_error\",\n    \"message\": \"older\",\n    \"stack\": null,\n    \"sessionFile\": null,\n    \"cwd\": \"/cwd\",\n    \"notified\": true\n  }\n]\n",
+      "second": null
+    },
+    {
+      "label": "empty-file",
+      "seedContents": "[]\n",
+      "now": 1767323046678,
+      "taken": null,
+      "afterContents": "[]\n",
+      "second": null
+    },
+    {
+      "label": "no-file",
+      "seedContents": null,
+      "now": 1767323046678,
+      "taken": null,
+      "afterContents": null,
+      "second": null
+    }
+  ],
+  "crashLogClear": {
+    "existedBefore": true,
+    "existsAfter": false
+  },
+  "loadPromptTemplates": [
+    {
+      "label": "defaults-only",
+      "includeDefaults": true,
+      "promptPaths": [],
+      "templates": [
+        {
+          "name": "alpha",
+          "description": "Alpha template",
+          "argumentHint": "<name>",
+          "content": "Do $1 things.",
+          "filePath": "<TMP>\\tpl\\agent\\prompts\\alpha.md",
+          "source": "local",
+          "scope": "user",
+          "origin": "top-level",
+          "baseDir": "<TMP>\\tpl\\agent\\prompts"
+        },
+        {
+          "name": "beta",
+          "description": "Beta first line",
+          "argumentHint": null,
+          "content": "Beta first line\nsecond line\n",
+          "filePath": "<TMP>\\tpl\\agent\\prompts\\beta.md",
+          "source": "local",
+          "scope": "user",
+          "origin": "top-level",
+          "baseDir": "<TMP>\\tpl\\agent\\prompts"
+        },
+        {
+          "name": "bom",
+          "description": "BOM template",
+          "argumentHint": null,
+          "content": "Bom body",
+          "filePath": "<TMP>\\tpl\\agent\\prompts\\bom.md",
+          "source": "local",
+          "scope": "user",
+          "origin": "top-level",
+          "baseDir": "<TMP>\\tpl\\agent\\prompts"
+        },
+        {
+          "name": "empty-hint",
+          "description": "Empty hint",
+          "argumentHint": null,
+          "content": "Body",
+          "filePath": "<TMP>\\tpl\\agent\\prompts\\empty-hint.md",
+          "source": "local",
+          "scope": "user",
+          "origin": "top-level",
+          "baseDir": "<TMP>\\tpl\\agent\\prompts"
+        },
+        {
+          "name": "gamma",
+          "description": "Gamma description",
+          "argumentHint": null,
+          "content": "Gamma description\nbody\n",
+          "filePath": "<TMP>\\tpl\\proj\\.pi\\prompts\\gamma.md",
+          "source": "local",
+          "scope": "project",
+          "origin": "top-level",
+          "baseDir": "<TMP>\\tpl\\proj\\.pi\\prompts"
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "label": "no-defaults",
+      "includeDefaults": false,
+      "promptPaths": [],
+      "templates": [],
+      "diagnostics": []
+    },
+    {
+      "label": "explicit-file",
+      "includeDefaults": false,
+      "promptPaths": [
+        "<TMP>\\tpl\\explicit\\delta.md"
+      ],
+      "templates": [
+        {
+          "name": "delta",
+          "description": "Delta body",
+          "argumentHint": "<x>",
+          "content": "Delta body",
+          "filePath": "<TMP>\\tpl\\explicit\\delta.md",
+          "source": "local",
+          "scope": "temporary",
+          "origin": "top-level",
+          "baseDir": "<TMP>\\tpl\\explicit"
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "label": "explicit-dir",
+      "includeDefaults": false,
+      "promptPaths": [
+        "<TMP>\\tpl\\extra"
+      ],
+      "templates": [
+        {
+          "name": "epsilon",
+          "description": "# Epsilon heading",
+          "argumentHint": null,
+          "content": "# Epsilon heading\nrest\n",
+          "filePath": "<TMP>\\tpl\\extra\\epsilon.md",
+          "source": "local",
+          "scope": "temporary",
+          "origin": "top-level",
+          "baseDir": "<TMP>\\tpl\\extra"
+        },
+        {
+          "name": "very-long-line",
+          "description": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx...",
+          "argumentHint": null,
+          "content": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\nrest\n",
+          "filePath": "<TMP>\\tpl\\extra\\very-long-line.md",
+          "source": "local",
+          "scope": "temporary",
+          "origin": "top-level",
+          "baseDir": "<TMP>\\tpl\\extra"
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "label": "missing-path",
+      "includeDefaults": false,
+      "promptPaths": [
+        "<TMP>\\tpl\\nope"
+      ],
+      "templates": [],
+      "diagnostics": []
+    },
+    {
+      "label": "both",
+      "includeDefaults": true,
+      "promptPaths": [
+        "<TMP>\\tpl\\extra"
+      ],
+      "templates": [
+        {
+          "name": "alpha",
+          "description": "Alpha template",
+          "argumentHint": "<name>",
+          "content": "Do $1 things.",
+          "filePath": "<TMP>\\tpl\\agent\\prompts\\alpha.md",
+          "source": "local",
+          "scope": "user",
+          "origin": "top-level",
+          "baseDir": "<TMP>\\tpl\\agent\\prompts"
+        },
+        {
+          "name": "beta",
+          "description": "Beta first line",
+          "argumentHint": null,
+          "content": "Beta first line\nsecond line\n",
+          "filePath": "<TMP>\\tpl\\agent\\prompts\\beta.md",
+          "source": "local",
+          "scope": "user",
+          "origin": "top-level",
+          "baseDir": "<TMP>\\tpl\\agent\\prompts"
+        },
+        {
+          "name": "bom",
+          "description": "BOM template",
+          "argumentHint": null,
+          "content": "Bom body",
+          "filePath": "<TMP>\\tpl\\agent\\prompts\\bom.md",
+          "source": "local",
+          "scope": "user",
+          "origin": "top-level",
+          "baseDir": "<TMP>\\tpl\\agent\\prompts"
+        },
+        {
+          "name": "empty-hint",
+          "description": "Empty hint",
+          "argumentHint": null,
+          "content": "Body",
+          "filePath": "<TMP>\\tpl\\agent\\prompts\\empty-hint.md",
+          "source": "local",
+          "scope": "user",
+          "origin": "top-level",
+          "baseDir": "<TMP>\\tpl\\agent\\prompts"
+        },
+        {
+          "name": "epsilon",
+          "description": "# Epsilon heading",
+          "argumentHint": null,
+          "content": "# Epsilon heading\nrest\n",
+          "filePath": "<TMP>\\tpl\\extra\\epsilon.md",
+          "source": "local",
+          "scope": "temporary",
+          "origin": "top-level",
+          "baseDir": "<TMP>\\tpl\\extra"
+        },
+        {
+          "name": "gamma",
+          "description": "Gamma description",
+          "argumentHint": null,
+          "content": "Gamma description\nbody\n",
+          "filePath": "<TMP>\\tpl\\proj\\.pi\\prompts\\gamma.md",
+          "source": "local",
+          "scope": "project",
+          "origin": "top-level",
+          "baseDir": "<TMP>\\tpl\\proj\\.pi\\prompts"
+        },
+        {
+          "name": "very-long-line",
+          "description": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx...",
+          "argumentHint": null,
+          "content": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\nrest\n",
+          "filePath": "<TMP>\\tpl\\extra\\very-long-line.md",
+          "source": "local",
+          "scope": "temporary",
+          "origin": "top-level",
+          "baseDir": "<TMP>\\tpl\\extra"
+        }
+      ],
+      "diagnostics": []
+    },
+    {
+      "label": "padded-path",
+      "includeDefaults": false,
+      "promptPaths": [
+        "  <TMP>\\tpl\\extra  "
+      ],
+      "templates": [
+        {
+          "name": "epsilon",
+          "description": "# Epsilon heading",
+          "argumentHint": null,
+          "content": "# Epsilon heading\nrest\n",
+          "filePath": "<TMP>\\tpl\\extra\\epsilon.md",
+          "source": "local",
+          "scope": "temporary",
+          "origin": "top-level",
+          "baseDir": "<TMP>\\tpl\\extra"
+        },
+        {
+          "name": "very-long-line",
+          "description": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx...",
+          "argumentHint": null,
+          "content": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\nrest\n",
+          "filePath": "<TMP>\\tpl\\extra\\very-long-line.md",
+          "source": "local",
+          "scope": "temporary",
+          "origin": "top-level",
+          "baseDir": "<TMP>\\tpl\\extra"
+        }
+      ],
+      "diagnostics": []
+    }
+  ],
+  "decodeUri": [
+    {
+      "input": "abc",
+      "result": "abc",
+      "threw": false
+    },
+    {
+      "input": "%41",
+      "result": "A",
+      "threw": false
+    },
+    {
+      "input": "%2F",
+      "result": "%2F",
+      "threw": false
+    },
+    {
+      "input": "%2f",
+      "result": "%2f",
+      "threw": false
+    },
+    {
+      "input": "%20",
+      "result": " ",
+      "threw": false
+    },
+    {
+      "input": "a%20b",
+      "result": "a b",
+      "threw": false
+    },
+    {
+      "input": "%E4%B8%AD",
+      "result": "中",
+      "threw": false
+    },
+    {
+      "input": "%3F",
+      "result": "%3F",
+      "threw": false
+    },
+    {
+      "input": "%23",
+      "result": "%23",
+      "threw": false
+    },
+    {
+      "input": "%25",
+      "result": "%",
+      "threw": false
+    },
+    {
+      "input": "%GG",
+      "result": null,
+      "threw": true,
+      "errorName": "URIError"
+    },
+    {
+      "input": "%E4",
+      "result": null,
+      "threw": true,
+      "errorName": "URIError"
+    },
+    {
+      "input": "%C0%80",
+      "result": null,
+      "threw": true,
+      "errorName": "URIError"
+    },
+    {
+      "input": "%ED%A0%80",
+      "result": null,
+      "threw": true,
+      "errorName": "URIError"
+    },
+    {
+      "input": "%F0%9F%98%80",
+      "result": "😀",
+      "threw": false
+    },
+    {
+      "input": "%F4%8F%BF%BF",
+      "result": "􏿿",
+      "threw": false
+    },
+    {
+      "input": "%F5%80%80%80",
+      "result": null,
+      "threw": true,
+      "errorName": "URIError"
+    },
+    {
+      "input": "%80",
+      "result": null,
+      "threw": true,
+      "errorName": "URIError"
+    },
+    {
+      "input": "%C2",
+      "result": null,
+      "threw": true,
+      "errorName": "URIError"
+    },
+    {
+      "input": "%C2%80",
+      "result": "",
+      "threw": false
+    },
+    {
+      "input": "%E0%80%80",
+      "result": null,
+      "threw": true,
+      "errorName": "URIError"
+    },
+    {
+      "input": "%F0%80%80%80",
+      "result": null,
+      "threw": true,
+      "errorName": "URIError"
+    },
+    {
+      "input": "%ED%BF%BF",
+      "result": null,
+      "threw": true,
+      "errorName": "URIError"
+    },
+    {
+      "input": "%BF",
+      "result": null,
+      "threw": true,
+      "errorName": "URIError"
+    },
+    {
+      "input": "%F4%90%80%80",
+      "result": null,
+      "threw": true,
+      "errorName": "URIError"
+    },
+    {
+      "input": "%E4%C0%80",
+      "result": null,
+      "threw": true,
+      "errorName": "URIError"
+    },
+    {
+      "input": "100%25",
+      "result": "100%",
+      "threw": false
+    },
+    {
+      "input": "%",
+      "result": null,
+      "threw": true,
+      "errorName": "URIError"
+    },
+    {
+      "input": "a%",
+      "result": null,
+      "threw": true,
+      "errorName": "URIError"
+    },
+    {
+      "input": "%E4%B8%AD%2F",
+      "result": "中%2F",
+      "threw": false
+    }
+  ]
+}

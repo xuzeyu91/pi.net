@@ -176,16 +176,8 @@ public interface ISessionManager : IReadonlySessionManager
 }
 
 // ---------------------------------------------------------------------------
-// slash-commands.ts（4e）
+// slash-commands.ts（4e-1）—— 占位已移除，真实类型见 Core/SlashCommands.cs
 // ---------------------------------------------------------------------------
-
-/// <summary>TS <c>SlashCommandInfo</c> 占位。// 4e/4f 接入后替换</summary>
-public sealed record SlashCommandInfo
-{
-    public required string Name { get; init; }
-
-    public string? Description { get; init; }
-}
 
 // ---------------------------------------------------------------------------
 // system-prompt.ts（4e）

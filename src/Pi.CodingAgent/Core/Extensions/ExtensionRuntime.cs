@@ -8,6 +8,7 @@
 // runner (4e) completes the runtime by replacing the loader's throwing action stubs.
 
 using Pi.Ai.Types;
+using Pi.CodingAgent.Core;
 using Pi.CodingAgent.Core.Extensions.Types;
 
 namespace Pi.CodingAgent.Core.Extensions;
