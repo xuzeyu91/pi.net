@@ -275,8 +275,7 @@ public class ExtensionContractTests
     [Fact]
     public void PlaceholderTypes_AreConstructible()
     {
-        Assert.NotNull(new SourceInfo { Path = "a.ts" });
-        Assert.Null(new SourceInfo().Path);
+        Assert.NotNull(SourceInfos.CreateSynthetic("builtin:read", "builtin"));
         Assert.NotNull(EventBusController.CreateEventBus());
         Assert.NotNull(new Theme());
         Assert.NotNull(new OverlayHandle());

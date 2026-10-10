@@ -8,52 +8,18 @@ namespace Pi.CodingAgent.Core.Extensions.Types;
 // ============================================================================
 //
 // TS `core/extensions/types.ts` 引用了一批尚未移植的模块类型（session-manager / compaction /
-// exec / bash-executor / cache-warmer / messages / slash-commands / system-prompt /
-// footer-data-provider / theme / source-info）。按 4d 执行方案（docs/4d-extension-system-plan.md
+// bash-executor / cache-warmer / messages / slash-commands / system-prompt /
+// footer-data-provider / theme）。按 4d 执行方案（docs/4d-extension-system-plan.md
 // 批次 4d-1），这里为每个类型定义**最小占位**，使契约层可以独立编译；4e/4f 落地时把这些记录
 // 换成真实实现并统一收敛（每处均有 `// 4e/4f 接入后替换` 标记）。
+//
+// 已随 4d-2a/4d-2b 移除的占位：`EventBus`（→ Core/EventBus.cs）、`SourceInfo`
+// （→ Core/SourceInfo.cs）、`ExecOptions` / `ExecResult`（→ Core/Exec.cs）。
 //
 // 占位原则：
 // - 只保留契约面用到的成员（事件负载的字段、回调的签名）；
 // - 不实现任何行为；
 // - 命名空间固定在 Pi.CodingAgent.Core.Extensions.Types，真实类型落地后删除对应占位即可。
-
-// ---------------------------------------------------------------------------
-// source-info.ts（4e）
-// ---------------------------------------------------------------------------
-
-/// <summary>
-/// 扩展/工具/命令的来源信息。占位：只保留路径字段。// 4e/4f 接入后替换
-/// </summary>
-public sealed record SourceInfo
-{
-    /// <summary>来源文件路径（内置扩展为 null）。</summary>
-    public string? Path { get; init; }
-}
-
-// ---------------------------------------------------------------------------
-// exec.ts（4e）
-// ---------------------------------------------------------------------------
-
-/// <summary>TS <c>ExecOptions</c> 占位。// 4e/4f 接入后替换</summary>
-public sealed record ExecOptions
-{
-    public string? Cwd { get; init; }
-
-    public IReadOnlyDictionary<string, string?>? Env { get; init; }
-
-    public int? TimeoutMs { get; init; }
-}
-
-/// <summary>TS <c>ExecResult</c> 占位。// 4e/4f 接入后替换</summary>
-public sealed record ExecResult
-{
-    public int ExitCode { get; init; }
-
-    public string Stdout { get; init; } = "";
-
-    public string Stderr { get; init; } = "";
-}
 
 // ---------------------------------------------------------------------------
 // bash-executor.ts（4e）

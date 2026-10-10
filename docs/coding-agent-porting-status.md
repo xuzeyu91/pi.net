@@ -30,7 +30,7 @@
 | **4a** | `src/utils/*`（37 文件）+ 无依赖的根级模块（`config.ts` / `migrations.ts` / `core/defaults.ts` 等） | ~4,500 | ✅ utils 36/36 + `config.ts` 完成（2026-10-09） |
 | **4b** | 配置 / 信任 / 模型层：settings-manager、trust-manager、project-trust、auth-storage、model-config/registry/resolver、models-store、radius、virtual-models、mcp-servers、keybindings | 6,844（实测） | ✅ 16/16 文件（6,844 行）完成（2026-10-09） |
 | **4c** | 工具系统：`core/tools/*` + `core/tools/renderers/*` | ~9,000 | ✅ 8/8 工具 + 6 个支撑文件完成（2026-10-09）；renderers 的 renderCall/renderResult 依赖 Theme，随 4f 落地 |
-| **4d** | 扩展系统：`core/extensions/*`（types / runner / loader）+ `extensions/*`（codemode / llama / mcp / tool-search） | ~12,000 | ⏳ 4d-1 契约层 + 4d-2a 事件总线完成（2026-10-10）；4d-2b 加载器 / runner 待办 |
+| **4d** | 扩展系统：`core/extensions/*`（types / runner / loader）+ `extensions/*`（codemode / llama / mcp / tool-search） | ~12,000 | ⏳ 4d-1 契约层 + 4d-2a 事件总线 + 4d-2b 加载器完成（2026-10-10）；4d-3 加载器实现 / runner 待办 |
 | **4e** | 会话与资源：agent-session、session-manager、resource-loader、package-manager、compaction、export-html、system-prompt、telemetry、sdk | ~20,000 | ⏳ |
 | **4f** | 模式层：`modes/rpc/*`、`modes/interactive/*`（含 7,082 行的 `interactive-mode.ts` 与 components / theme） | ~23,700 | ⏳ |
 | **4g** | 入口与实验层：`cli/*`、`main.ts`、`cli.ts`、`rpc-entry.ts`、`package-manager-cli.ts`、`bun/*`、`client/*`、`experimental/*` | ~12,000 | ⏳ |
@@ -460,6 +460,7 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 | `MinimatchTests` | 44 | 语料覆盖不到的部分：`GlobStar` 单例与 `Sep`、`Filter`、64 KiB 上限、`makeRe()` 为空集返回 null、`hasMagic` 的 `magicalBraces` 门槛、**盘符改写只影响本实例**、`BraceExpansion` 的四个 DoS 上限与 Bash 怪癖、`escape` / `unescape` 的相反默认与「不读 `allowWindowsEscape`」、以及 `model-resolver` 那句 `minimatch(fullId, glob, { nocase: true }) \|\| minimatch(m.id, glob, { nocase: true })` 的端到端行为 |
 | `ExtensionContractTests` | 15 | 4d-1 契约层差分：35 个事件线名集合、56 个事件变体名单、12 组字面量联合取值、`ISessionEvent` / `IToolCallEvent` / `IToolResultEvent` 三组标记接口覆盖、`isToolCallEventType` 守卫、`ExtensionAPI` / 四组上下文的公开方法名集合（与 TS 逐条对齐）、`ProviderHeaders` 的 null 即删除语义 |
 | `EventBusTests` | 19 | 4d-2a 事件总线差分：注册顺序分发、快照语义（分发中退订/新订不影响当次 emit）、同 handler 重复注册的独立退订、退订幂等、sync/async handler 异常的捕获与 `Event handler error (<channel>):` 日志（不传播、不阻断其他 handler）、`clear()` 全清与可再注册、null 参数拒绝、工厂返回的控制器可经 `EventBus` 接口使用 |
+| `ExtensionLoaderTests` | 45 | 4d-2b 加载器差分（向量取自 TS `8423-extension-factory-failure` / `extension-factory-cache` / `extensions-discovery`）：内联工厂注册工具/命令/flag/快捷键与 source-info 标记、错误聚合（工厂抛错、无工厂、无模块加载器、相对路径解析）、注册 API 校验（工具 schema 缺失、命令名空、flag 默认值类型）、flag 默认值提交与不覆盖既有值、provider 注册入队与失败回滚、MCP 注册（配置校验、属主冲突、`-`/`_` 命名空间冲突、退订属主语义）、`pi.events` 门面（注册/退订/跨扩展收发）、运行时桩与失效语义（action 抛错、`setModel` faulted task、失效后 API 拒绝服务、失效退订事件）、模块缓存（导入一次工厂每次重跑、`clearExtensionCache` 强制重导、cwd 变更失效）、目录发现（直接 `*.ts`/`*.js`、`index.ts`/`index.js`、`package.json` 清单优先与缺失回退、目录不存在）、加载顺序与去重（project → global → configured） |
 
 ## 4d-1 进度（2026-10-10）：扩展系统契约层
 
@@ -520,3 +521,34 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 | C95 | 错误日志为单行 `Event handler error (<channel>): <Exception.ToString()>`（堆栈在后续行） | TS `console.error(msg, err)` 两参数在项目既有约定（`Deprecation` / `ModelResolver`）里均为单行 `WriteLine` |
 
 4d-2b（loader / runner）起依赖 4e/4f 的真实类型，届时按占位标记逐项收敛。
+
+## 4d-2b 进度（2026-10-10）：扩展加载器
+
+`core/extensions/loader.ts`（1,395 行）已移植，并随行落地 loader 直接依赖的三个小模块。
+构建 0 警告 0 错误；`Pi.CodingAgent.Tests` 511/511 通过（466 + 新增 45 项加载器差分测试）。
+
+新增文件：
+
+| 文件 | 内容 |
+|---|---|
+| `src/Pi.CodingAgent/Core/Extensions/ExtensionLoader.cs` | `loadExtensions` / `loadExtensionsCached` / `discoverAndLoadExtensions` / `loadExtensionFromFactory` / `createExtensionRuntime` / `createExtensionAPI`、模块缓存（按 cwd 失效）、目录发现（直接文件 / index.ts / index.js / package.json 清单优先）、`IExtensionModuleLoader` 接缝 |
+| `src/Pi.CodingAgent/Core/Extensions/ExtensionLoaderImpl.cs` | `ExtensionRuntimeImpl`（共享状态 + 抛错 action 桩 + 失效/退订跟踪）与 `ExtensionApiImpl`（注册、loading 期入队、commit/discard、`pi.events` 门面） |
+| `src/Pi.CodingAgent/Core/Extensions/ExtensionRuntime.cs` | `Extension` / `ExtensionLoadError` / `ExtensionLoadWarning` / `LoadExtensionsResult` / `IExtensionRuntime` / `ExtensionEventHandler` |
+| `src/Pi.CodingAgent/Core/SourceInfo.cs` | `SourceInfo` / `SourceScope` / `SourceOrigin` / `getSyntheticPathSource` / `isSyntheticPath` / `createSyntheticSourceInfo` |
+| `src/Pi.CodingAgent/Core/Timings.cs` | `time` / `resetTimings` / `printTimings`，`PI_TIMING=1` 门控 |
+| `src/Pi.CodingAgent/Core/Exec.cs` | `execCommand`（shell:false、输出累积、超时/中止 kill、等待失败 code=1） |
+| `tests/Pi.CodingAgent.Tests/ExtensionLoaderTests.cs` | 差分测试，向量取自 TS `8423-extension-factory-failure.test.ts` / `extension-factory-cache.test.ts` / `extensions-discovery.test.ts` |
+
+与 TS 的差异：
+
+| # | 差异 | 理由 |
+|---|---|---|
+| C96 | `Extension` 的各集合在 C# 侧 eager 初始化为空集合（TS 懒建、首次使用前为 undefined）；`MessageRenderers` / `EntryRenderers` 以 `Delegate` 承载闭合泛型委托 | 消费方无需 null 检查；泛型擦除方式与 TS 把 `MessageRenderer<T>` 擦除到默认实例化同构，runner 分发时转型 |
+| C97 | TS 用 jiti 运行时编译 TS 模块；C# 侧按决策 D2 走 `AssemblyLoadContext`，本批以 `IExtensionModuleLoader` 接缝占位，未提供加载器时聚合清晰错误而不中断其余扩展 | 4d-3 落地真实加载器；接缝让其余行为（缓存/发现/错误聚合/注册 API）先行可测 |
+| C98 | `core/extensions/runner.ts` 未随本批移植 | 其依赖 Theme / SessionManager / ModelRegistry / system-prompt 均属 4e/4f，随 4e 一起落地 |
+| C99 | `setModel` 桩返回 faulted `Task<bool>`（TS 为 rejected promise）；其余 action 桩同步 throw（与 TS 一致） | C# 中同步 throw 与 rejected promise 的观察时机不同，用 faulted task 保持 await 时可观测 |
+| C100 | `core/source-info.ts` 只移植 loader 子集；`createSourceInfo` 未移植 | 其入参 `PathMetadata` 来自 `core/package-manager.ts`（4e） |
+| C101 | `getCreateJiti` / `jiti-loader` / `jiti-static-loader` / `virtual-modules` / `getAliases` 未移植 | jiti 与 ESM specifier 别名是 TS 运行时机制，.NET 无对应物（决策 D2） |
+
+4d-2b 之后剩余：4d-3 扩展加载器真实实现（AssemblyLoadContext + 内置扩展注册）、
+runner（随 4e）、codemode/llama/mcp/tool-search 四个内置扩展包。
