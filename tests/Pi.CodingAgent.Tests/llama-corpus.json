@@ -809,6 +809,2190 @@
    "error": null
   }
  ],
+ "llamaClientWatch": [
+  {
+   "label": "single-frame",
+   "queue": [
+    {
+     "chunks": [
+      "data: {\"model\":\"m1\",\"event\":\"model_status\",\"data\":{\"status\":\"loaded\"}}\n\n"
+     ],
+     "status": 200
+    }
+   ],
+   "apiKey": null,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/sse",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "exhausted": 0,
+   "events": [
+    {
+     "model": "m1",
+     "event": "model_status",
+     "data": {
+      "status": "loaded"
+     }
+    }
+   ],
+   "error": null
+  },
+  {
+   "label": "two-frames-one-chunk",
+   "queue": [
+    {
+     "chunks": [
+      "data: {\"model\":\"m1\",\"event\":\"a\",\"data\":1}\n\ndata: {\"model\":\"m1\",\"event\":\"b\",\"data\":2}\n\n"
+     ],
+     "status": 200
+    }
+   ],
+   "apiKey": null,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/sse",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "exhausted": 0,
+   "events": [
+    {
+     "model": "m1",
+     "event": "a",
+     "data": 1
+    },
+    {
+     "model": "m1",
+     "event": "b",
+     "data": 2
+    }
+   ],
+   "error": null
+  },
+  {
+   "label": "frame-split-across-chunks",
+   "queue": [
+    {
+     "chunks": [
+      "data: {\"model\":\"m1\",\"event\":\"a\",\"data\":{\"x\":",
+      "1}}\n",
+      "\n"
+     ],
+     "status": 200
+    }
+   ],
+   "apiKey": null,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/sse",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "exhausted": 0,
+   "events": [
+    {
+     "model": "m1",
+     "event": "a",
+     "data": {
+      "x": 1
+     }
+    }
+   ],
+   "error": null
+  },
+  {
+   "label": "crlf-separators",
+   "queue": [
+    {
+     "chunks": [
+      "data: {\"model\":\"m1\",\"event\":\"a\"}\r\n\r\n"
+     ],
+     "status": 200
+    }
+   ],
+   "apiKey": null,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/sse",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "exhausted": 0,
+   "events": [
+    {
+     "model": "m1",
+     "event": "a"
+    }
+   ],
+   "error": null
+  },
+  {
+   "label": "crlf-split-across-chunks",
+   "queue": [
+    {
+     "chunks": [
+      "data: {\"model\":\"m1\",\"event\":\"a\"}\r",
+      "\n\r\n"
+     ],
+     "status": 200
+    }
+   ],
+   "apiKey": null,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/sse",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "exhausted": 0,
+   "events": [
+    {
+     "model": "m1",
+     "event": "a"
+    }
+   ],
+   "error": null
+  },
+  {
+   "label": "multiple-data-lines",
+   "queue": [
+    {
+     "chunks": [
+      "data: {\"model\":\"m1\",\ndata: \"event\":\"a\"}\n\n"
+     ],
+     "status": 200
+    }
+   ],
+   "apiKey": null,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/sse",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "exhausted": 0,
+   "events": [
+    {
+     "model": "m1",
+     "event": "a"
+    }
+   ],
+   "error": null
+  },
+  {
+   "label": "non-data-lines-ignored",
+   "queue": [
+    {
+     "chunks": [
+      ": keep-alive\nevent: ping\nid: 7\ndata: {\"model\":\"m1\",\"event\":\"a\"}\nretry: 100\n\n"
+     ],
+     "status": 200
+    }
+   ],
+   "apiKey": null,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/sse",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "exhausted": 0,
+   "events": [
+    {
+     "model": "m1",
+     "event": "a"
+    }
+   ],
+   "error": null
+  },
+  {
+   "label": "no-data-line",
+   "queue": [
+    {
+     "chunks": [
+      "event: ping\nid: 7\n\n"
+     ],
+     "status": 200
+    }
+   ],
+   "apiKey": null,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/sse",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "exhausted": 0,
+   "events": [],
+   "error": null
+  },
+  {
+   "label": "blank-data",
+   "queue": [
+    {
+     "chunks": [
+      "data:\n\n"
+     ],
+     "status": 200
+    }
+   ],
+   "apiKey": null,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/sse",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "exhausted": 0,
+   "events": [],
+   "error": null
+  },
+  {
+   "label": "malformed-json",
+   "queue": [
+    {
+     "chunks": [
+      "data: {oops\n\n"
+     ],
+     "status": 200
+    }
+   ],
+   "apiKey": null,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/sse",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "exhausted": 0,
+   "events": [],
+   "error": null
+  },
+  {
+   "label": "json-string-payload",
+   "queue": [
+    {
+     "chunks": [
+      "data: \"hello\"\n\n"
+     ],
+     "status": 200
+    }
+   ],
+   "apiKey": null,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/sse",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "exhausted": 0,
+   "events": [],
+   "error": null
+  },
+  {
+   "label": "json-null-payload",
+   "queue": [
+    {
+     "chunks": [
+      "data: null\n\n"
+     ],
+     "status": 200
+    }
+   ],
+   "apiKey": null,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/sse",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "exhausted": 0,
+   "events": [],
+   "error": null
+  },
+  {
+   "label": "json-array-payload",
+   "queue": [
+    {
+     "chunks": [
+      "data: []\n\n"
+     ],
+     "status": 200
+    }
+   ],
+   "apiKey": null,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/sse",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "exhausted": 0,
+   "events": [],
+   "error": null
+  },
+  {
+   "label": "missing-event",
+   "queue": [
+    {
+     "chunks": [
+      "data: {\"model\":\"m1\",\"data\":1}\n\n"
+     ],
+     "status": 200
+    }
+   ],
+   "apiKey": null,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/sse",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "exhausted": 0,
+   "events": [],
+   "error": null
+  },
+  {
+   "label": "missing-model",
+   "queue": [
+    {
+     "chunks": [
+      "data: {\"event\":\"a\"}\n\n"
+     ],
+     "status": 200
+    }
+   ],
+   "apiKey": null,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/sse",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "exhausted": 0,
+   "events": [],
+   "error": null
+  },
+  {
+   "label": "non-string-model",
+   "queue": [
+    {
+     "chunks": [
+      "data: {\"model\":7,\"event\":\"a\"}\n\n"
+     ],
+     "status": 200
+    }
+   ],
+   "apiKey": null,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/sse",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "exhausted": 0,
+   "events": [],
+   "error": null
+  },
+  {
+   "label": "data-null",
+   "queue": [
+    {
+     "chunks": [
+      "data: {\"model\":\"m1\",\"event\":\"a\",\"data\":null}\n\n"
+     ],
+     "status": 200
+    }
+   ],
+   "apiKey": null,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/sse",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "exhausted": 0,
+   "events": [
+    {
+     "model": "m1",
+     "event": "a",
+     "data": null
+    }
+   ],
+   "error": null
+  },
+  {
+   "label": "no-data-key",
+   "queue": [
+    {
+     "chunks": [
+      "data: {\"model\":\"m1\",\"event\":\"a\"}\n\n"
+     ],
+     "status": 200
+    }
+   ],
+   "apiKey": null,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/sse",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "exhausted": 0,
+   "events": [
+    {
+     "model": "m1",
+     "event": "a"
+    }
+   ],
+   "error": null
+  },
+  {
+   "label": "frame-without-boundary",
+   "queue": [
+    {
+     "chunks": [
+      "data: {\"model\":\"m1\",\"event\":\"a\"}"
+     ],
+     "status": 200
+    }
+   ],
+   "apiKey": null,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/sse",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "exhausted": 0,
+   "events": [],
+   "error": null
+  },
+  {
+   "label": "trailing-partial-frame",
+   "queue": [
+    {
+     "chunks": [
+      "data: {\"model\":\"m1\",\"event\":\"first\"}\n\ndata: {\"model\":\"m1\",\"event\":\"sec"
+     ],
+     "status": 200
+    }
+   ],
+   "apiKey": null,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/sse",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "exhausted": 0,
+   "events": [
+    {
+     "model": "m1",
+     "event": "first"
+    }
+   ],
+   "error": null
+  },
+  {
+   "label": "empty-stream",
+   "queue": [
+    {
+     "chunks": [],
+     "status": 200
+    }
+   ],
+   "apiKey": null,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/sse",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "exhausted": 0,
+   "events": [],
+   "error": null
+  },
+  {
+   "label": "utf8-split-multibyte",
+   "queue": [
+    {
+     "chunks": [
+      [
+       100,
+       97,
+       116,
+       97,
+       58,
+       32,
+       123,
+       34,
+       109,
+       111,
+       100,
+       101,
+       108,
+       34,
+       58,
+       34,
+       109,
+       49,
+       34,
+       44,
+       34,
+       101,
+       118,
+       101,
+       110,
+       116,
+       34,
+       58,
+       34,
+       97,
+       34,
+       44,
+       34,
+       100,
+       97,
+       116,
+       97,
+       34,
+       58,
+       34
+      ],
+      [
+       228
+      ],
+      [
+       184,
+       173
+      ],
+      [
+       230,
+       150,
+       135,
+       34,
+       125,
+       10,
+       10
+      ]
+     ],
+     "status": 200
+    }
+   ],
+   "apiKey": null,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/sse",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "exhausted": 0,
+   "events": [
+    {
+     "model": "m1",
+     "event": "a",
+     "data": "中文"
+    }
+   ],
+   "error": null
+  },
+  {
+   "label": "leading-bom",
+   "queue": [
+    {
+     "chunks": [
+      [
+       239,
+       187,
+       191,
+       100,
+       97,
+       116,
+       97,
+       58,
+       32,
+       123,
+       34,
+       109,
+       111,
+       100,
+       101,
+       108,
+       34,
+       58,
+       34,
+       109,
+       49,
+       34,
+       44,
+       34,
+       101,
+       118,
+       101,
+       110,
+       116,
+       34,
+       58,
+       34,
+       97,
+       34,
+       125,
+       10,
+       10
+      ]
+     ],
+     "status": 200
+    }
+   ],
+   "apiKey": null,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/sse",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "exhausted": 0,
+   "events": [
+    {
+     "model": "m1",
+     "event": "a"
+    }
+   ],
+   "error": null
+  },
+  {
+   "label": "bom-split-across-chunks",
+   "queue": [
+    {
+     "chunks": [
+      [
+       239
+      ],
+      [
+       187,
+       191,
+       100,
+       97,
+       116,
+       97,
+       58,
+       32,
+       123,
+       34,
+       109,
+       111,
+       100,
+       101,
+       108,
+       34,
+       58,
+       34,
+       109,
+       49,
+       34,
+       44,
+       34,
+       101,
+       118,
+       101,
+       110,
+       116,
+       34,
+       58,
+       34,
+       97,
+       34,
+       125,
+       10,
+       10
+      ]
+     ],
+     "status": 200
+    }
+   ],
+   "apiKey": null,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/sse",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "exhausted": 0,
+   "events": [
+    {
+     "model": "m1",
+     "event": "a"
+    }
+   ],
+   "error": null
+  },
+  {
+   "label": "pending-lead-invalidated-by-next-chunk",
+   "queue": [
+    {
+     "chunks": [
+      [
+       100,
+       97,
+       116,
+       97,
+       58,
+       32,
+       123,
+       34,
+       109,
+       111,
+       100,
+       101,
+       108,
+       34,
+       58,
+       34,
+       109,
+       49,
+       34,
+       44,
+       34,
+       101,
+       118,
+       101,
+       110,
+       116,
+       34,
+       58,
+       34,
+       97,
+       34,
+       44,
+       34,
+       100,
+       97,
+       116,
+       97,
+       34,
+       58,
+       34
+      ],
+      [
+       228
+      ],
+      [
+       34,
+       125,
+       10,
+       10
+      ]
+     ],
+     "status": 200
+    }
+   ],
+   "apiKey": null,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/sse",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "exhausted": 0,
+   "events": [
+    {
+     "model": "m1",
+     "event": "a",
+     "data": "�"
+    }
+   ],
+   "error": null
+  },
+  {
+   "label": "truncated-tail-at-eof",
+   "queue": [
+    {
+     "chunks": [
+      [
+       100,
+       97,
+       116,
+       97,
+       58,
+       32,
+       123,
+       34,
+       109,
+       111,
+       100,
+       101,
+       108,
+       34,
+       58,
+       34,
+       109,
+       49,
+       34,
+       44,
+       34,
+       101,
+       118,
+       101,
+       110,
+       116,
+       34,
+       58,
+       34,
+       108,
+       97,
+       116,
+       101,
+       34,
+       44,
+       34,
+       100,
+       97,
+       116,
+       97,
+       34,
+       58,
+       34
+      ],
+      [
+       228
+      ]
+     ],
+     "status": 200
+    }
+   ],
+   "apiKey": null,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/sse",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "exhausted": 0,
+   "events": [],
+   "error": null
+  },
+  {
+   "label": "invalid-byte-in-data",
+   "queue": [
+    {
+     "chunks": [
+      [
+       100,
+       97,
+       116,
+       97,
+       58,
+       32
+      ],
+      [
+       255
+      ],
+      [
+       10,
+       10
+      ]
+     ],
+     "status": 200
+    }
+   ],
+   "apiKey": null,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/sse",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "exhausted": 0,
+   "events": [],
+   "error": null
+  },
+  {
+   "label": "http-error",
+   "queue": [
+    {
+     "chunks": [],
+     "status": 500
+    }
+   ],
+   "apiKey": "k",
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/sse",
+     "method": "GET",
+     "headers": {
+      "authorization": "Bearer k"
+     },
+     "body": null
+    }
+   ],
+   "exhausted": 0,
+   "events": [],
+   "error": "Error: llama.cpp SSE returned HTTP 500"
+  },
+  {
+   "label": "no-body",
+   "queue": [
+    {
+     "status": 200,
+     "body": null
+    }
+   ],
+   "apiKey": null,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/sse",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "exhausted": 0,
+   "events": [],
+   "error": "Error: llama.cpp SSE returned HTTP 200"
+  }
+ ],
+ "llamaClientLoadAndWait": [
+  {
+   "label": "first-poll-loaded",
+   "queue": [
+    {
+     "chunks": [],
+     "status": 200
+    },
+    {
+     "status": 200,
+     "body": "{}"
+    },
+    {
+     "status": 200,
+     "body": "{\"object\":\"list\",\"data\":[{\"id\":\"m1\",\"status\":{\"value\":\"loaded\"}}]}"
+    }
+   ],
+   "assertRequests": true,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/sse",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    },
+    {
+     "url": "http://127.0.0.1:8080/models/load",
+     "method": "POST",
+     "headers": {
+      "content-type": "application/json"
+     },
+     "body": "{\"model\":\"m1\"}"
+    },
+    {
+     "url": "http://127.0.0.1:8080/models",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "exhausted": 0,
+   "progress": [
+    {
+     "message": "Loading model"
+    }
+   ],
+   "result": {
+    "id": "m1",
+    "status": {
+     "value": "loaded"
+    }
+   },
+   "error": null
+  },
+  {
+   "label": "event-loaded-without-entry",
+   "queue": [
+    {
+     "chunks": [
+      "data: {\"model\":\"m1\",\"event\":\"model_status\",\"data\":{\"status\":\"loaded\"}}\n\n"
+     ],
+     "status": 200
+    },
+    {
+     "status": 200,
+     "body": "{}"
+    },
+    {
+     "status": 200,
+     "body": "{\"object\":\"list\",\"data\":[]}"
+    }
+   ],
+   "assertRequests": false,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/sse",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    },
+    {
+     "url": "http://127.0.0.1:8080/models/load",
+     "method": "POST",
+     "headers": {
+      "content-type": "application/json"
+     },
+     "body": "{\"model\":\"m1\"}"
+    },
+    {
+     "url": "http://127.0.0.1:8080/models",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "exhausted": 0,
+   "progress": [
+    {
+     "message": "Loading model"
+    }
+   ],
+   "result": {
+    "id": "m1",
+    "status": {
+     "value": "loaded"
+    }
+   },
+   "error": null
+  },
+  {
+   "label": "ignores-other-model-events",
+   "queue": [
+    {
+     "chunks": [
+      "data: {\"model\":\"m2\",\"event\":\"model_status\",\"data\":{\"status\":\"loaded\"}}\n\n"
+     ],
+     "status": 200
+    },
+    {
+     "status": 200,
+     "body": "{}"
+    },
+    {
+     "status": 200,
+     "body": "{\"object\":\"list\",\"data\":[{\"id\":\"m1\",\"status\":{\"value\":\"loaded\"}}]}"
+    }
+   ],
+   "assertRequests": true,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/sse",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    },
+    {
+     "url": "http://127.0.0.1:8080/models/load",
+     "method": "POST",
+     "headers": {
+      "content-type": "application/json"
+     },
+     "body": "{\"model\":\"m1\"}"
+    },
+    {
+     "url": "http://127.0.0.1:8080/models",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "exhausted": 0,
+   "progress": [
+    {
+     "message": "Loading model"
+    }
+   ],
+   "result": {
+    "id": "m1",
+    "status": {
+     "value": "loaded"
+    }
+   },
+   "error": null
+  },
+  {
+   "label": "other-model-loaded-event-is-not-a-shortcut",
+   "queue": [
+    {
+     "chunks": [
+      "data: {\"model\":\"m2\",\"event\":\"model_status\",\"data\":{\"status\":\"loaded\"}}\n\n"
+     ],
+     "status": 200
+    },
+    {
+     "status": 200,
+     "body": "{}"
+    },
+    {
+     "status": 200,
+     "body": "{\"object\":\"list\",\"data\":[]}"
+    },
+    {
+     "status": 200,
+     "body": "{\"object\":\"list\",\"data\":[{\"id\":\"m1\",\"status\":{\"value\":\"loading\",\"failed\":true,\"exit_code\":5}}]}"
+    }
+   ],
+   "assertRequests": false,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/sse",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    },
+    {
+     "url": "http://127.0.0.1:8080/models/load",
+     "method": "POST",
+     "headers": {
+      "content-type": "application/json"
+     },
+     "body": "{\"model\":\"m1\"}"
+    },
+    {
+     "url": "http://127.0.0.1:8080/models",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    },
+    {
+     "url": "http://127.0.0.1:8080/models",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "exhausted": 0,
+   "progress": [
+    {
+     "message": "Loading model"
+    }
+   ],
+   "result": null,
+   "error": "Error: Model exited with code 5"
+  },
+  {
+   "label": "failed-with-exit-code",
+   "queue": [
+    {
+     "chunks": [],
+     "status": 200
+    },
+    {
+     "status": 200,
+     "body": "{}"
+    },
+    {
+     "status": 200,
+     "body": "{\"object\":\"list\",\"data\":[{\"id\":\"m1\",\"status\":{\"value\":\"loading\",\"failed\":true,\"exit_code\":137}}]}"
+    }
+   ],
+   "assertRequests": true,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/sse",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    },
+    {
+     "url": "http://127.0.0.1:8080/models/load",
+     "method": "POST",
+     "headers": {
+      "content-type": "application/json"
+     },
+     "body": "{\"model\":\"m1\"}"
+    },
+    {
+     "url": "http://127.0.0.1:8080/models",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "exhausted": 0,
+   "progress": [
+    {
+     "message": "Loading model"
+    }
+   ],
+   "result": null,
+   "error": "Error: Model exited with code 137"
+  },
+  {
+   "label": "failed-without-exit-code",
+   "queue": [
+    {
+     "chunks": [],
+     "status": 200
+    },
+    {
+     "status": 200,
+     "body": "{}"
+    },
+    {
+     "status": 200,
+     "body": "{\"object\":\"list\",\"data\":[{\"id\":\"m1\",\"status\":{\"value\":\"loading\",\"failed\":true}}]}"
+    }
+   ],
+   "assertRequests": true,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/sse",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    },
+    {
+     "url": "http://127.0.0.1:8080/models/load",
+     "method": "POST",
+     "headers": {
+      "content-type": "application/json"
+     },
+     "body": "{\"model\":\"m1\"}"
+    },
+    {
+     "url": "http://127.0.0.1:8080/models",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "exhausted": 0,
+   "progress": [
+    {
+     "message": "Loading model"
+    }
+   ],
+   "result": null,
+   "error": "Error: Model failed to load"
+  },
+  {
+   "label": "exit-code-wins-over-event-error",
+   "queue": [
+    {
+     "chunks": [
+      "data: {\"model\":\"m1\",\"event\":\"model_status\",\"data\":{\"status\":\"unloaded\"}}\n\n"
+     ],
+     "status": 200
+    },
+    {
+     "status": 200,
+     "body": "{}"
+    },
+    {
+     "status": 200,
+     "body": "{\"object\":\"list\",\"data\":[{\"id\":\"m1\",\"status\":{\"value\":\"loading\",\"failed\":true,\"exit_code\":9}}]}"
+    }
+   ],
+   "assertRequests": true,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/sse",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    },
+    {
+     "url": "http://127.0.0.1:8080/models/load",
+     "method": "POST",
+     "headers": {
+      "content-type": "application/json"
+     },
+     "body": "{\"model\":\"m1\"}"
+    },
+    {
+     "url": "http://127.0.0.1:8080/models",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "exhausted": 0,
+   "progress": [
+    {
+     "message": "Loading model"
+    }
+   ],
+   "result": null,
+   "error": "Error: Model exited with code 9"
+  },
+  {
+   "label": "event-unloaded-without-entry",
+   "queue": [
+    {
+     "chunks": [
+      "data: {\"model\":\"m1\",\"event\":\"model_status\",\"data\":{\"status\":\"unloaded\"}}\n\n"
+     ],
+     "status": 200
+    },
+    {
+     "status": 200,
+     "body": "{}"
+    },
+    {
+     "status": 200,
+     "body": "{\"object\":\"list\",\"data\":[]}"
+    }
+   ],
+   "assertRequests": false,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/sse",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    },
+    {
+     "url": "http://127.0.0.1:8080/models/load",
+     "method": "POST",
+     "headers": {
+      "content-type": "application/json"
+     },
+     "body": "{\"model\":\"m1\"}"
+    },
+    {
+     "url": "http://127.0.0.1:8080/models",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "exhausted": 0,
+   "progress": [
+    {
+     "message": "Loading model"
+    }
+   ],
+   "result": null,
+   "error": "Error: Model failed to load"
+  },
+  {
+   "label": "status-change-event-is-accepted",
+   "queue": [
+    {
+     "chunks": [
+      "data: {\"model\":\"m1\",\"event\":\"status_change\",\"data\":{\"status\":\"loaded\"}}\n\n"
+     ],
+     "status": 200
+    },
+    {
+     "status": 200,
+     "body": "{}"
+    },
+    {
+     "status": 200,
+     "body": "{\"object\":\"list\",\"data\":[]}"
+    }
+   ],
+   "assertRequests": false,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/sse",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    },
+    {
+     "url": "http://127.0.0.1:8080/models/load",
+     "method": "POST",
+     "headers": {
+      "content-type": "application/json"
+     },
+     "body": "{\"model\":\"m1\"}"
+    },
+    {
+     "url": "http://127.0.0.1:8080/models",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "exhausted": 0,
+   "progress": [
+    {
+     "message": "Loading model"
+    }
+   ],
+   "result": {
+    "id": "m1",
+    "status": {
+     "value": "loaded"
+    }
+   },
+   "error": null
+  },
+  {
+   "label": "unrelated-event-kind-ignored",
+   "queue": [
+    {
+     "chunks": [
+      "data: {\"model\":\"m1\",\"event\":\"download_progress\",\"data\":{\"status\":\"loaded\"}}\n\n"
+     ],
+     "status": 200
+    },
+    {
+     "status": 200,
+     "body": "{}"
+    },
+    {
+     "status": 200,
+     "body": "{\"object\":\"list\",\"data\":[]}"
+    },
+    {
+     "status": 200,
+     "body": "{\"object\":\"list\",\"data\":[]}"
+    },
+    {
+     "status": 200,
+     "body": "{\"object\":\"list\",\"data\":[{\"id\":\"m1\",\"status\":{\"value\":\"loaded\",\"meta\":{\"n_ctx\":4096}}}]}"
+    }
+   ],
+   "assertRequests": false,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/sse",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    },
+    {
+     "url": "http://127.0.0.1:8080/models/load",
+     "method": "POST",
+     "headers": {
+      "content-type": "application/json"
+     },
+     "body": "{\"model\":\"m1\"}"
+    },
+    {
+     "url": "http://127.0.0.1:8080/models",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    },
+    {
+     "url": "http://127.0.0.1:8080/models",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    },
+    {
+     "url": "http://127.0.0.1:8080/models",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "exhausted": 0,
+   "progress": [
+    {
+     "message": "Loading model"
+    }
+   ],
+   "result": {
+    "id": "m1",
+    "status": {
+     "value": "loaded",
+     "meta": {
+      "n_ctx": 4096
+     }
+    }
+   },
+   "error": null
+  },
+  {
+   "label": "progress-from-event",
+   "queue": [
+    {
+     "chunks": [
+      "data: {\"model\":\"m1\",\"event\":\"model_status\",\"data\":{\"status\":\"loading\",\"progress\":{\"stages\":[\"a\",\"b\"],\"current\":\"b\",\"value\":0.5}}}\n\n"
+     ],
+     "status": 200
+    },
+    {
+     "status": 200,
+     "body": "{}"
+    },
+    {
+     "status": 200,
+     "body": "{\"object\":\"list\",\"data\":[{\"id\":\"m1\",\"status\":{\"value\":\"loaded\"}}]}"
+    }
+   ],
+   "assertRequests": false,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/sse",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    },
+    {
+     "url": "http://127.0.0.1:8080/models/load",
+     "method": "POST",
+     "headers": {
+      "content-type": "application/json"
+     },
+     "body": "{\"model\":\"m1\"}"
+    },
+    {
+     "url": "http://127.0.0.1:8080/models",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "exhausted": 0,
+   "progress": [
+    {
+     "message": "Loading b",
+     "ratio": 0.75
+    },
+    {
+     "message": "Loading model"
+    }
+   ],
+   "result": {
+    "id": "m1",
+    "status": {
+     "value": "loaded"
+    }
+   },
+   "error": null
+  }
+ ],
+ "llamaClientDownloadAndWait": [
+  {
+   "label": "polling-two-rounds",
+   "queue": [
+    {
+     "chunks": [],
+     "status": 200
+    },
+    {
+     "status": 200,
+     "body": "{}"
+    },
+    {
+     "status": 200,
+     "body": "{\"object\":\"list\",\"data\":[{\"id\":\"m1\",\"status\":{\"value\":\"downloading\"}}]}"
+    },
+    {
+     "status": 200,
+     "body": "{\"object\":\"list\",\"data\":[{\"id\":\"m1\",\"status\":{\"value\":\"loaded\"}}]}"
+    },
+    {
+     "status": 200,
+     "body": "{\"object\":\"list\",\"data\":[{\"id\":\"m1\",\"status\":{\"value\":\"loaded\"}}]}"
+    }
+   ],
+   "assertRequests": true,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/sse",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    },
+    {
+     "url": "http://127.0.0.1:8080/models",
+     "method": "POST",
+     "headers": {
+      "content-type": "application/json"
+     },
+     "body": "{\"model\":\"m1\"}"
+    },
+    {
+     "url": "http://127.0.0.1:8080/models",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    },
+    {
+     "url": "http://127.0.0.1:8080/models",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    },
+    {
+     "url": "http://127.0.0.1:8080/models?reload=1",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "exhausted": 0,
+   "progress": [
+    {
+     "message": "Downloading model"
+    }
+   ],
+   "result": [
+    {
+     "id": "m1",
+     "status": {
+      "value": "loaded"
+     }
+    }
+   ],
+   "error": null
+  },
+  {
+   "label": "polls-threshold-without-downloading",
+   "queue": [
+    {
+     "chunks": [],
+     "status": 200
+    },
+    {
+     "status": 200,
+     "body": "{}"
+    },
+    {
+     "status": 200,
+     "body": "{\"object\":\"list\",\"data\":[{\"id\":\"m1\",\"status\":{\"value\":\"loaded\"}}]}"
+    },
+    {
+     "status": 200,
+     "body": "{\"object\":\"list\",\"data\":[{\"id\":\"m1\",\"status\":{\"value\":\"loaded\"}}]}"
+    },
+    {
+     "status": 200,
+     "body": "{\"object\":\"list\",\"data\":[{\"id\":\"m1\",\"status\":{\"value\":\"loaded\"}}]}"
+    }
+   ],
+   "assertRequests": true,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/sse",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    },
+    {
+     "url": "http://127.0.0.1:8080/models",
+     "method": "POST",
+     "headers": {
+      "content-type": "application/json"
+     },
+     "body": "{\"model\":\"m1\"}"
+    },
+    {
+     "url": "http://127.0.0.1:8080/models",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    },
+    {
+     "url": "http://127.0.0.1:8080/models",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    },
+    {
+     "url": "http://127.0.0.1:8080/models?reload=1",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "exhausted": 0,
+   "progress": [
+    {
+     "message": "Downloading model"
+    }
+   ],
+   "result": [
+    {
+     "id": "m1",
+     "status": {
+      "value": "loaded"
+     }
+    }
+   ],
+   "error": null
+  },
+  {
+   "label": "progress-from-status",
+   "queue": [
+    {
+     "chunks": [],
+     "status": 200
+    },
+    {
+     "status": 200,
+     "body": "{}"
+    },
+    {
+     "status": 200,
+     "body": "{\"object\":\"list\",\"data\":[{\"id\":\"m1\",\"status\":{\"value\":\"downloading\",\"progress\":{\"f1\":{\"done\":100,\"total\":400}}}}]}"
+    },
+    {
+     "status": 200,
+     "body": "{\"object\":\"list\",\"data\":[{\"id\":\"m1\",\"status\":{\"value\":\"loaded\"}}]}"
+    },
+    {
+     "status": 200,
+     "body": "{\"object\":\"list\",\"data\":[{\"id\":\"m1\",\"status\":{\"value\":\"loaded\"}}]}"
+    }
+   ],
+   "assertRequests": true,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/sse",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    },
+    {
+     "url": "http://127.0.0.1:8080/models",
+     "method": "POST",
+     "headers": {
+      "content-type": "application/json"
+     },
+     "body": "{\"model\":\"m1\"}"
+    },
+    {
+     "url": "http://127.0.0.1:8080/models",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    },
+    {
+     "url": "http://127.0.0.1:8080/models",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    },
+    {
+     "url": "http://127.0.0.1:8080/models?reload=1",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "exhausted": 0,
+   "progress": [
+    {
+     "message": "Downloading model"
+    },
+    {
+     "message": "Downloading model",
+     "ratio": 0.25,
+     "detail": "100 B / 400 B"
+    }
+   ],
+   "result": [
+    {
+     "id": "m1",
+     "status": {
+      "value": "loaded"
+     }
+    }
+   ],
+   "error": null
+  },
+  {
+   "label": "finished-event",
+   "queue": [
+    {
+     "chunks": [
+      "data: {\"model\":\"m1\",\"event\":\"download_finished\"}\n\n"
+     ],
+     "status": 200
+    },
+    {
+     "status": 200,
+     "body": "{}"
+    },
+    {
+     "status": 200,
+     "body": "{\"object\":\"list\",\"data\":[]}"
+    }
+   ],
+   "assertRequests": false,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/sse",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    },
+    {
+     "url": "http://127.0.0.1:8080/models",
+     "method": "POST",
+     "headers": {
+      "content-type": "application/json"
+     },
+     "body": "{\"model\":\"m1\"}"
+    },
+    {
+     "url": "http://127.0.0.1:8080/models",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    },
+    {
+     "url": "http://127.0.0.1:8080/models?reload=1",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "exhausted": 1,
+   "progress": [
+    {
+     "message": "Downloading model"
+    }
+   ],
+   "result": [],
+   "error": null
+  },
+  {
+   "label": "failed-event",
+   "queue": [
+    {
+     "chunks": [
+      "data: {\"model\":\"m1\",\"event\":\"download_failed\",\"data\":{\"error\":\"boom\"}}\n\n"
+     ],
+     "status": 200
+    },
+    {
+     "status": 200,
+     "body": "{}"
+    },
+    {
+     "status": 200,
+     "body": "{\"object\":\"list\",\"data\":[]}"
+    }
+   ],
+   "assertRequests": false,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/sse",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    },
+    {
+     "url": "http://127.0.0.1:8080/models",
+     "method": "POST",
+     "headers": {
+      "content-type": "application/json"
+     },
+     "body": "{\"model\":\"m1\"}"
+    }
+   ],
+   "exhausted": 0,
+   "progress": [
+    {
+     "message": "Downloading model"
+    }
+   ],
+   "result": null,
+   "error": "Error: Download failed"
+  },
+  {
+   "label": "failed-event-message-fallback",
+   "queue": [
+    {
+     "chunks": [
+      "data: {\"model\":\"m1\",\"event\":\"download_failed\",\"data\":{\"message\":\"nope\"}}\n\n"
+     ],
+     "status": 200
+    },
+    {
+     "status": 200,
+     "body": "{}"
+    },
+    {
+     "status": 200,
+     "body": "{\"object\":\"list\",\"data\":[]}"
+    }
+   ],
+   "assertRequests": false,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/sse",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    },
+    {
+     "url": "http://127.0.0.1:8080/models",
+     "method": "POST",
+     "headers": {
+      "content-type": "application/json"
+     },
+     "body": "{\"model\":\"m1\"}"
+    }
+   ],
+   "exhausted": 0,
+   "progress": [
+    {
+     "message": "Downloading model"
+    }
+   ],
+   "result": null,
+   "error": "Error: Download failed"
+  },
+  {
+   "label": "progress-event",
+   "queue": [
+    {
+     "chunks": [
+      "data: {\"model\":\"m1\",\"event\":\"download_progress\",\"data\":{\"f1\":{\"done\":50,\"total\":200}}}\n\n",
+      "data: {\"model\":\"m1\",\"event\":\"download_finished\"}\n\n"
+     ],
+     "status": 200
+    },
+    {
+     "status": 200,
+     "body": "{}"
+    },
+    {
+     "status": 200,
+     "body": "{\"object\":\"list\",\"data\":[]}"
+    }
+   ],
+   "assertRequests": false,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/sse",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    },
+    {
+     "url": "http://127.0.0.1:8080/models",
+     "method": "POST",
+     "headers": {
+      "content-type": "application/json"
+     },
+     "body": "{\"model\":\"m1\"}"
+    },
+    {
+     "url": "http://127.0.0.1:8080/models",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    },
+    {
+     "url": "http://127.0.0.1:8080/models?reload=1",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "exhausted": 1,
+   "progress": [
+    {
+     "message": "Downloading model",
+     "ratio": 0.25,
+     "detail": "50 B / 200 B"
+    },
+    {
+     "message": "Downloading model"
+    }
+   ],
+   "result": [],
+   "error": null
+  },
+  {
+   "label": "ignores-model-status-event",
+   "queue": [
+    {
+     "chunks": [
+      "data: {\"model\":\"m1\",\"event\":\"model_status\",\"data\":{\"f1\":{\"done\":50,\"total\":200}}}\n\n",
+      "data: {\"model\":\"m1\",\"event\":\"download_finished\"}\n\n"
+     ],
+     "status": 200
+    },
+    {
+     "status": 200,
+     "body": "{}"
+    },
+    {
+     "status": 200,
+     "body": "{\"object\":\"list\",\"data\":[]}"
+    }
+   ],
+   "assertRequests": false,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/sse",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    },
+    {
+     "url": "http://127.0.0.1:8080/models",
+     "method": "POST",
+     "headers": {
+      "content-type": "application/json"
+     },
+     "body": "{\"model\":\"m1\"}"
+    },
+    {
+     "url": "http://127.0.0.1:8080/models",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    },
+    {
+     "url": "http://127.0.0.1:8080/models?reload=1",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "exhausted": 1,
+   "progress": [
+    {
+     "message": "Downloading model"
+    }
+   ],
+   "result": [],
+   "error": null
+  },
+  {
+   "label": "other-model-ignored",
+   "queue": [
+    {
+     "chunks": [
+      "data: {\"model\":\"m2\",\"event\":\"download_finished\"}\n\n"
+     ],
+     "status": 200
+    },
+    {
+     "status": 200,
+     "body": "{}"
+    },
+    {
+     "status": 200,
+     "body": "{\"object\":\"list\",\"data\":[{\"id\":\"m1\",\"status\":{\"value\":\"loaded\"}}]}"
+    },
+    {
+     "status": 200,
+     "body": "{\"object\":\"list\",\"data\":[{\"id\":\"m1\",\"status\":{\"value\":\"loaded\"}}]}"
+    },
+    {
+     "status": 200,
+     "body": "{\"object\":\"list\",\"data\":[{\"id\":\"m1\",\"status\":{\"value\":\"loaded\"}}]}"
+    }
+   ],
+   "assertRequests": true,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/sse",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    },
+    {
+     "url": "http://127.0.0.1:8080/models",
+     "method": "POST",
+     "headers": {
+      "content-type": "application/json"
+     },
+     "body": "{\"model\":\"m1\"}"
+    },
+    {
+     "url": "http://127.0.0.1:8080/models",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    },
+    {
+     "url": "http://127.0.0.1:8080/models",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    },
+    {
+     "url": "http://127.0.0.1:8080/models?reload=1",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "exhausted": 0,
+   "progress": [
+    {
+     "message": "Downloading model"
+    }
+   ],
+   "result": [
+    {
+     "id": "m1",
+     "status": {
+      "value": "loaded"
+     }
+    }
+   ],
+   "error": null
+  }
+ ],
  "parseLoadProgress": [
   {
    "data": null,

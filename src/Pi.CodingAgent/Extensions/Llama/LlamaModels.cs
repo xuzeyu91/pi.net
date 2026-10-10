@@ -60,6 +60,13 @@ public sealed record LlamaProgress
     public string? Detail { get; init; }
 }
 
+/// <summary>
+/// Port of the TS <c>LlamaModelEvent</c>: one frame off the <c>/models/sse</c> stream. Only frames whose
+/// <c>model</c> and <c>event</c> are both strings reach a watcher, which is what makes
+/// <see cref="LlamaModelEvent"/> non-nullable here.
+/// </summary>
+public sealed record LlamaModelEvent(string Model, string Event, JsonNode? Data);
+
 /// <summary>The pure helpers and progress parsers of <c>extensions/llama/client.ts</c>.</summary>
 public static partial class LlamaModels
 {

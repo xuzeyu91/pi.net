@@ -1,3 +1,5 @@
+using System.Globalization;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Pi.CodingAgent.Extensions.Llama;
@@ -239,6 +241,119 @@ public class LlamaCorpusTests
         }
     }
 
+    // ------------------------------------------------------------------ LlamaClient: SSE + polling
+    //
+    // Every streaming vector runs under a deadline. The scripted queue repeats its last entry, so a port
+    // whose SSE framing regressed would never see the event that breaks `loadAndWait`/`downloadAndWait`
+    // out of their poll loops — the test would hang instead of failing. The deadline turns that into an
+    // ordinary failure (`OperationCanceledException` is not the exception the vector expects), and it is
+    // far above the real cost of a vector (the slowest is one 500 ms poll).
+
+    private static readonly TimeSpan VectorDeadline = TimeSpan.FromSeconds(10);
+
+    [Fact]
+    public async Task LlamaClientWatch_MatchesTypeScript()
+    {
+        foreach (var vector in Corpus.GetProperty("llamaClientWatch").EnumerateArray())
+        {
+            var label = vector.GetProperty("label").GetString()!;
+            var scripted = new ScriptedStreamingFetch(vector.GetProperty("queue"));
+            var client = new LlamaClient("http://127.0.0.1:8080", GetOptionalString(vector, "apiKey"), scripted.Invoke, scripted.OpenStream);
+            var events = new List<LlamaModelEvent>();
+            var expectedError = vector.GetProperty("error");
+            using var deadline = new CancellationTokenSource(VectorDeadline);
+
+            if (expectedError.ValueKind != JsonValueKind.Null)
+            {
+                var error = await Assert.ThrowsAsync<InvalidOperationException>(
+                    () => client.WatchAsync(events.Add, deadline.Token));
+                Assert.Equal(MessageOf(expectedError.GetString()!), error.Message);
+            }
+            else
+            {
+                await client.WatchAsync(events.Add, deadline.Token);
+            }
+
+            CheckEvents(label, vector.GetProperty("events"), events);
+            Assert.Equal(vector.GetProperty("exhausted").GetInt32(), scripted.Exhausted);
+            CheckRequests(vector.GetProperty("requests"), scripted.Requests);
+        }
+    }
+
+    [Fact]
+    public async Task LlamaClientLoadAndWait_MatchesTypeScript()
+    {
+        foreach (var vector in Corpus.GetProperty("llamaClientLoadAndWait").EnumerateArray())
+        {
+            var label = vector.GetProperty("label").GetString()!;
+            var scripted = new ScriptedStreamingFetch(vector.GetProperty("queue"));
+            var client = new LlamaClient("http://127.0.0.1:8080", null, scripted.Invoke, scripted.OpenStream);
+            var progress = new List<LlamaProgress>();
+            var expectedError = vector.GetProperty("error");
+            var expectedResult = vector.GetProperty("result");
+            using var deadline = new CancellationTokenSource(VectorDeadline);
+
+            if (expectedError.ValueKind != JsonValueKind.Null)
+            {
+                var error = await Assert.ThrowsAsync<InvalidOperationException>(
+                    () => client.LoadAndWaitAsync("m1", progress.Add, deadline.Token));
+                Assert.Equal(MessageOf(expectedError.GetString()!), error.Message);
+                Assert.Equal(JsonValueKind.Null, expectedResult.ValueKind);
+            }
+            else
+            {
+                var result = await client.LoadAndWaitAsync("m1", progress.Add, deadline.Token);
+                CheckModel(label, expectedResult, result.Raw);
+            }
+
+            CheckProgressSet(label, vector.GetProperty("progress"), progress);
+            Assert.Equal(vector.GetProperty("exhausted").GetInt32(), scripted.Exhausted);
+            if (vector.GetProperty("assertRequests").GetBoolean())
+            {
+                CheckRequests(vector.GetProperty("requests"), scripted.Requests);
+            }
+        }
+    }
+
+    [Fact]
+    public async Task LlamaClientDownloadAndWait_MatchesTypeScript()
+    {
+        foreach (var vector in Corpus.GetProperty("llamaClientDownloadAndWait").EnumerateArray())
+        {
+            var label = vector.GetProperty("label").GetString()!;
+            var scripted = new ScriptedStreamingFetch(vector.GetProperty("queue"));
+            var client = new LlamaClient("http://127.0.0.1:8080", null, scripted.Invoke, scripted.OpenStream);
+            var progress = new List<LlamaProgress>();
+            var expectedError = vector.GetProperty("error");
+            var expectedResult = vector.GetProperty("result");
+            using var deadline = new CancellationTokenSource(VectorDeadline);
+
+            if (expectedError.ValueKind != JsonValueKind.Null)
+            {
+                var error = await Assert.ThrowsAsync<InvalidOperationException>(
+                    () => client.DownloadAndWaitAsync("m1", progress.Add, deadline.Token));
+                Assert.Equal(MessageOf(expectedError.GetString()!), error.Message);
+                Assert.Equal(JsonValueKind.Null, expectedResult.ValueKind);
+            }
+            else
+            {
+                var result = await client.DownloadAndWaitAsync("m1", progress.Add, deadline.Token);
+                Assert.Equal(expectedResult.GetArrayLength(), result.Count);
+                for (var index = 0; index < result.Count; index++)
+                {
+                    CheckModel(label, expectedResult[index], result[index].Raw);
+                }
+            }
+
+            CheckProgressSet(label, vector.GetProperty("progress"), progress);
+            Assert.Equal(vector.GetProperty("exhausted").GetInt32(), scripted.Exhausted);
+            if (vector.GetProperty("assertRequests").GetBoolean())
+            {
+                CheckRequests(vector.GetProperty("requests"), scripted.Requests);
+            }
+        }
+    }
+
     // ------------------------------------------------------------------ HuggingFaceClient
 
     [Fact]
@@ -365,9 +480,37 @@ public class LlamaCorpusTests
         Assert.Equal(26, Corpus.GetProperty("formatBytes").GetArrayLength());
         Assert.Equal(46, Corpus.GetProperty("normalizeLlamaServerUrl").GetArrayLength());
         Assert.Equal(6, Corpus.GetProperty("llamaClientList").GetArrayLength());
+        Assert.Equal(29, Corpus.GetProperty("llamaClientWatch").GetArrayLength());
+        Assert.Equal(11, Corpus.GetProperty("llamaClientLoadAndWait").GetArrayLength());
+        Assert.Equal(9, Corpus.GetProperty("llamaClientDownloadAndWait").GetArrayLength());
         Assert.Equal(6, Corpus.GetProperty("huggingFaceSearch").GetArrayLength());
         Assert.Equal(8, Corpus.GetProperty("huggingFaceDetails").GetArrayLength());
         Assert.Equal(8, Corpus.GetProperty("findHuggingFaceToken").GetArrayLength());
+
+        // The streaming sections keep their own blind spots visible.
+        var watch = Corpus.GetProperty("llamaClientWatch").EnumerateArray().ToList();
+        Assert.Contains(watch, item => item.GetProperty("error").ValueKind != JsonValueKind.Null);
+        Assert.Contains(
+            watch,
+            item => item.GetProperty("queue").EnumerateArray()
+                .Any(entry => entry.TryGetProperty("chunks", out var chunks)
+                    && chunks.EnumerateArray().Any(chunk => chunk.ValueKind == JsonValueKind.Array)));
+        Assert.Contains(watch, item => item.GetProperty("events").GetArrayLength() > 0);
+        Assert.Contains(watch, item => item.GetProperty("events").GetArrayLength() == 0);
+
+        // The poll-driven sections: an event-driven shortcut, a real poll, an error and a varied progress run.
+        foreach (var name in new[] { "llamaClientLoadAndWait", "llamaClientDownloadAndWait" })
+        {
+            var section = Corpus.GetProperty(name).EnumerateArray().ToList();
+            Assert.Contains(section, item => !item.GetProperty("assertRequests").GetBoolean());
+            Assert.Contains(section, item => item.GetProperty("error").ValueKind != JsonValueKind.Null);
+            Assert.Contains(section, item => item.GetProperty("progress").GetArrayLength() > 1);
+        }
+
+        // At least one scripted queue runs dry, so the repeat-the-last-entry fallback is exercised.
+        Assert.Contains(
+            Corpus.GetProperty("llamaClientDownloadAndWait").EnumerateArray(),
+            item => item.GetProperty("exhausted").GetInt32() > 0);
 
         // Both URL error kinds are represented.
         var normalize = Corpus.GetProperty("normalizeLlamaServerUrl").EnumerateArray()
@@ -399,6 +542,110 @@ public class LlamaCorpusTests
     }
 
     // ------------------------------------------------------------------ helpers
+
+    private sealed class ScriptedStreamingFetch
+    {
+        private readonly JsonElement[] _queue;
+
+        private int _index;
+
+        public ScriptedStreamingFetch(JsonElement queue) => _queue = queue.EnumerateArray().ToArray();
+
+        /// <summary>How often the queue ran dry. The catalog poll count is timing-dependent, so the last
+        /// scripted entry repeats; the count keeps that from happening silently.</summary>
+        public int Exhausted { get; private set; }
+
+        public List<(string Url, string Method, IReadOnlyDictionary<string, string> Headers, string? Body)> Requests { get; } = [];
+
+        public Task<LlamaStreamResponse> OpenStream(string url, LlamaHttpRequest request, CancellationToken cancellationToken)
+        {
+            Record(url, request);
+            var entry = Next();
+            if (TryGet(entry, "chunks", out var chunks) && chunks.ValueKind == JsonValueKind.Array)
+            {
+                return Task.FromResult(new LlamaStreamResponse(Status(entry), ByteChunks(chunks)));
+            }
+
+            // A non-streaming scripted response: the TS `new Response(entry.body ?? null)`. A null body
+            // means `response.body === null`, which `watch()` reports as an error.
+            return Task.FromResult(new LlamaStreamResponse(
+                Status(entry),
+                TryGet(entry, "body", out var body) && body.ValueKind == JsonValueKind.String
+                    ? ByteChunks(body.GetString()!)
+                    : null));
+        }
+
+        public Task<LlamaHttpResponse> Invoke(string url, LlamaHttpRequest request, CancellationToken cancellationToken)
+        {
+            Record(url, request);
+            var entry = Next();
+            var headers = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            if (TryGet(entry, "headers", out var headerElement))
+            {
+                foreach (var property in headerElement.EnumerateObject())
+                {
+                    headers[property.Name] = property.Value.GetString()!;
+                }
+            }
+
+            var body = TryGet(entry, "body", out var bodyElement) && bodyElement.ValueKind == JsonValueKind.String
+                ? bodyElement.GetString()!
+                : "";
+            return Task.FromResult(new LlamaHttpResponse(Status(entry), body, headers));
+        }
+
+        private static bool TryGet(JsonElement entry, string name, out JsonElement value)
+        {
+            if (entry.ValueKind == JsonValueKind.Object && entry.TryGetProperty(name, out value))
+            {
+                return true;
+            }
+
+            value = default;
+            return false;
+        }
+
+        private static int Status(JsonElement entry) =>
+            TryGet(entry, "status", out var status) ? status.GetInt32() : 500;
+
+        private static IAsyncEnumerable<byte[]> ByteChunks(JsonElement chunks) => ChunkIterator(chunks);
+
+        private static async IAsyncEnumerable<byte[]> ChunkIterator(JsonElement chunks)
+        {
+            foreach (var chunk in chunks.EnumerateArray())
+            {
+                // The generator stores a chunk as a string when it is pure ASCII and as byte values when
+                // the vector has to split a multi-byte character across chunks.
+                yield return chunk.ValueKind == JsonValueKind.String
+                    ? Encoding.UTF8.GetBytes(chunk.GetString()!)
+                    : chunk.EnumerateArray().Select(value => (byte)value.GetInt32()).ToArray();
+            }
+
+            await Task.CompletedTask.ConfigureAwait(false);
+        }
+
+        private static IAsyncEnumerable<byte[]> ByteChunks(string body) => SingleChunk(body);
+
+        private static async IAsyncEnumerable<byte[]> SingleChunk(string body)
+        {
+            yield return Encoding.UTF8.GetBytes(body);
+            await Task.CompletedTask.ConfigureAwait(false);
+        }
+
+        private JsonElement Next()
+        {
+            if (_index < _queue.Length)
+            {
+                return _queue[_index++];
+            }
+
+            Exhausted++;
+            return _queue.Length > 0 ? _queue[^1] : default;
+        }
+
+        private void Record(string url, LlamaHttpRequest request) =>
+            Requests.Add((url, request.Method, request.Headers ?? new Dictionary<string, string>(), request.Body));
+    }
 
     private sealed class ScriptedFetch
     {
@@ -468,6 +715,69 @@ public class LlamaCorpusTests
             }
         }
     }
+
+    private static void CheckEvents(string label, JsonElement expected, IReadOnlyList<LlamaModelEvent> actual)
+    {
+        var expectedList = expected.EnumerateArray().ToList();
+        Assert.True(
+            expectedList.Count == actual.Count,
+            $"{label}: expected {expectedList.Count} events, got {actual.Count}");
+        for (var index = 0; index < expectedList.Count; index++)
+        {
+            Assert.Equal(expectedList[index].GetProperty("model").GetString(), actual[index].Model);
+            Assert.Equal(expectedList[index].GetProperty("event").GetString(), actual[index].Event);
+            if (!expectedList[index].TryGetProperty("data", out var data) || data.ValueKind == JsonValueKind.Null)
+            {
+                // The TS payload had `data: undefined` (dropped by JSON.stringify) or `data: null`.
+                Assert.Null(actual[index].Data);
+                continue;
+            }
+
+            Assert.NotNull(actual[index].Data);
+            Assert.True(
+                JsonNode.DeepEquals(JsonNode.Parse(data.GetRawText()), actual[index].Data),
+                $"{label} event #{index} data differs");
+        }
+    }
+
+    /// <summary>
+    /// Compares progress runs as multisets. `watch()` is fired in the background, so whether an
+    /// event-driven progress lands before or after the poll-driven one is implementation-defined; the
+    /// corpus records one interleaving. The set of messages, ratios and details still has to match
+    /// exactly, so a dropped, duplicated or mis-shaped progress still fails.
+    /// </summary>
+    private static void CheckProgressSet(string label, JsonElement expected, IReadOnlyList<LlamaProgress> actual)
+    {
+        var expectedList = expected.EnumerateArray().Select(Describe).ToList();
+        var actualList = actual.Select(Describe).ToList();
+        Assert.Equal(expectedList.Count, actualList.Count);
+        expectedList.Sort(StringComparer.Ordinal);
+        actualList.Sort(StringComparer.Ordinal);
+        Assert.True(
+            expectedList.SequenceEqual(actualList, StringComparer.Ordinal),
+            $"{label}: progress [{string.Join(", ", actualList)}] != [{string.Join(", ", expectedList)}]");
+    }
+
+    private static string Describe(JsonElement progress) => string.Join(
+        "|",
+        progress.GetProperty("message").GetString(),
+        progress.TryGetProperty("ratio", out var ratio) && ratio.ValueKind == JsonValueKind.Number
+            ? ratio.GetDouble().ToString("R", CultureInfo.InvariantCulture)
+            : "-",
+        progress.TryGetProperty("detail", out var detail) && detail.ValueKind == JsonValueKind.String
+            ? detail.GetString()
+            : "-");
+
+    private static string Describe(LlamaProgress progress) => string.Join(
+        "|",
+        progress.Message,
+        progress.Ratio?.ToString("R", CultureInfo.InvariantCulture) ?? "-",
+        progress.Detail ?? "-");
+
+    private static void CheckModel(string label, JsonElement expected, JsonObject actual) =>
+        Assert.True(
+            JsonNode.DeepEquals(JsonNode.Parse(expected.GetRawText()), actual),
+            $"{label}: model JSON differs: {actual.ToJsonString()}");
 
     private static (string Name, string Message) SplitError(string error)
     {

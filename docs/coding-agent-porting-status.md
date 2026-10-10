@@ -466,7 +466,7 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 | `McpConfigTests` | 27 | 4d-4a MCP 配置与日志差分：全局/项目合并（项目条目替换同名全局条目）、override 仅覆盖 enabled/exposure/toolExposure 且保留全局字段、override 无基座报错、override 带额外键报错、`-`/`_` 命名空间冲突、项目 url 带 auth 报错、`autoEnableCodemode` 布尔校验、无效 JSON / 非对象 / `mcpServers` 非对象 / 校验器错误四种错误消息、未信任项目忽略项目文件、文件缺失为空配置、`/mcp` 写回（enabled=true 删除默认键、override 保留显式值、exposure=codemode 删除键而 deferred 设键、缺失服务器抛错、`@override` 建文件、保留外来键与缩进）、`add` 新建/替换、`remove` 存在/缺失/无文件、日志格式（level/logger/默认 info/多行缩进/非 record 包装/空 logger 省略）、追加写入与 5 MiB 轮转 |
 | `McpToolsTests` | 32 | 4d-4b MCP 工具适配差分：工具名生成（`mcp__server__tool` 前缀、非 `[A-Za-z0-9_]` 转 `_`、超长加 8 位哈希后缀、sanitize 冲突加哈希）、exposure 映射（codemode→deferred）、`CallToolResult` 输出 schema（content 必填、structuredContent/isError/_meta、无结构化 schema 时省略键）、20KB 输出限制（未超原样返回、超限截断并保存全文、保存失败报错、图片保留在文本后）、结果转换（文本/图片直通、isError 保留结构化结果且无 `_meta`、isError 无文本时补兜底文案、无 content 但有 structuredContent 转 JSON、resource_link 带 mimeType/size/描述与 read 提示、无 readableResources 时无 read 提示、内嵌文本资源直通、内嵌图片资源转图片、二进制资源保存为文件、文本类 blob 直显、保存失败报错、音频资源占位）、工具定义（schema 补 type/properties、description 回退链 annotations.title→title→默认、annotations 四个 hint 提取）、MCP 内容转换（文本/图片、无块但有结构化内容转 JSON、audio 占位、resource_link、内嵌图片资源、二进制资源占位、未知类型占位） |
 
-| `LlamaCorpusTests` | 85 | 4d-7a llama 差分：`formatBytes`（26 条含 KiB/MiB 进位与 `>=10` 精度切换）、`normalizeLlamaServerUrl`（46 条含 23 条 IPv6：校验、规范压缩、内嵌 IPv4、非法字面量）、`llamaInferenceUrl`、`LlamaClient` 的 `list`/`props`/`load`/`unload`/`download`/`unloadAndWait`（脚本化 fetch，逐请求比对 URL/方法/头/体 + 错误文案）、`parseLoadProgress` / `parseDownloadProgress`、`HuggingFaceClient` 的 `search` / `details`（量化解析、分片合并、`Q4_K_M` 优先与同名次排序）、`findHuggingFaceToken`（临时目录回放发现顺序） |
+| `LlamaCorpusTests` | 88 | 4d-7a/4d-7b llama 差分：`formatBytes`（26 条含 KiB/MiB 进位与 `>=10` 精度切换）、`normalizeLlamaServerUrl`（46 条含 23 条 IPv6：校验、规范压缩、内嵌 IPv4、非法字面量）、`llamaInferenceUrl`、`LlamaClient` 的 `list`/`props`/`load`/`unload`/`download`/`unloadAndWait`（脚本化 fetch，逐请求比对 URL/方法/头/体 + 错误文案）、`watch`（29 条：SSE 分帧、CRLF、多 `data:` 行、畸形 JSON、BOM、多字节跨块、非法字节、无 body/HTTP 错）、`loadAndWait`（11 条：首轮即 loaded、事件短路、事件失败、退出码优先、其他模型事件不短路、事件进度）、`downloadAndWait`（9 条：两轮轮询、阈值兜底、状态进度、finished/failed 事件、事件过滤）、`parseLoadProgress` / `parseDownloadProgress`、`HuggingFaceClient` 的 `search` / `details`（量化解析、分片合并、`Q4_K_M` 优先与同名次排序）、`findHuggingFaceToken`（临时目录回放发现顺序） |
 
 ## 4d-1 进度（2026-10-10）：扩展系统契约层
 
@@ -749,6 +749,94 @@ huggingface.ts 只导入 `node:fs/promises` / `node:os` / `node:path`；生成�
 > 从而污染源码（本轮真把 `QuantizationPattern` 误改成了 `ShardSuffixPattern`，且被增量构建掩盖了一轮）。
 > 现改为「开始时快照、`finally` 整份还原、并校验锚点唯一」，且提交前一律 `--no-incremental` 全量重建。
 
+## 4d-7b 进度（2026-10-10）：llama SSE 流式层
+
+`extensions/llama/client.ts` 的流式半部（`watch` / `loadAndWait` / `downloadAndWait`）已移植，至此
+**`client.ts` 全部完成**。构建 0 警告 0 错误；`Pi.CodingAgent.Tests` 733/733 通过
+（新增 3 项流式差分测试，语料新增 49 条向量；清空沙箱凭据环境变量后全绿，见文末「环境相关失败」）。
+
+改动文件：
+
+| 文件 | 内容 |
+|---|---|
+| `src/Pi.CodingAgent/Extensions/Llama/LlamaHttp.cs` | 新增 `LlamaStreamResponse`（`Status` + `IAsyncEnumerable<byte[]>? Chunks`）、`LlamaOpenStream` 委托、`LlamaStreamDefaults.OpenStream`（`HttpCompletionOption.ResponseHeadersRead` + 8 KiB 分块读） |
+| `src/Pi.CodingAgent/Extensions/Llama/LlamaModels.cs` | 新增 `LlamaModelEvent(Model, Event, Data)` |
+| `src/Pi.CodingAgent/Extensions/Llama/LlamaClient.cs` | 新增 `WatchAsync`（SSE 分帧 + UTF-8 增量解码）、`LoadAndWaitAsync`（250 ms 轮询）、`DownloadAndWaitAsync`（500 ms 轮询）、`WatchState` / `Forget` / `ThrowIfCancelled` / `CancelAsync` / `DecodeChunk` / `DrainFrames` |
+| `tests/Pi.CodingAgent.Tests/LlamaCorpusTests.cs` | 新增 3 项差分测试（88 项）与 `ScriptedStreamingFetch`（同一队列同时回放流式与 JSON 两种响应） |
+| `tests/Pi.CodingAgent.Tests/llama-corpus.json` | 语料新增 `llamaClientWatch` 29 / `llamaClientLoadAndWait` 11 / `llamaClientDownloadAndWait` 9 |
+
+与 TS 的差异：
+
+| # | 差异 | 理由 |
+|---|---|---|
+| C125 | 新增与 `LlamaFetch` 对称的流式缝 `LlamaOpenStream` / `LlamaStreamResponse` | `watch()` 要逐块读 `response.body.getReader()`；`LlamaFetch` 一次性返回整串 body，承载不了增量。解码与分帧刻意**不**放进缝里，而是留在 `LlamaClient`，这样跨块多字节、非法字节、BOM 等边界才能被差分向量钉住 |
+| C126 | `WatchState` 的 5 个标志位用 `volatile` | TS 闭包在单线程事件循环里读写；C# 里 watcher 任务与轮询循环真并发，需要可见性保证 |
+| C127 | `reader.read()` 循环 → `await foreach` + `IAsyncEnumerable<byte[]>`；`TextDecoder` → `Encoding.UTF8.GetDecoder()`，**首个非空解码结果显式剥掉 `\uFEFF`**，且**从不 flush** | WHATWG `TextDecoder` 会剥掉流首 BOM，.NET 的 `Decoder` 不会（`leading-bom` / `bom-split-across-chunks` 两条向量钉住，后者还要求「首个非空块」而非「首块」，因为 `[0xEF]` 单独一块解出 0 个字符）；两者对非法字节都产出 U+FFFD；`{stream:true}` 不 flush ⇒ EOF 处未完成的尾字节被丢弃，而非变成 U+FFFD |
+| C128 | 后台 watcher 用 `Forget(task)`（`ContinueWith` 读取 `Exception`）对应 TS 的 `void promise.catch(() => {})` | C# 的未观察 Task 异常默认在终结器里升级为 `UnobservedTaskException`；必须显式观察后丢弃 |
+| C129 | 默认流式缝对 101/103/204/205/304 返回 `Chunks = null` | WHATWG 把这些状态定为「null body status」，TS 的 `!response.body` 会抛错；`HttpClient` 则会给出一个空流，若不过滤就会静默变成「0 个事件」 |
+
+语料的确定性设计（`watch()` 是 fire-and-forget，事件与轮询的交错是实现定义）：
+
+- 队列整体入档（`queue`），而不是只记「第几条响应」——脚本队列与请求顺序一一对应，回放时按同一顺序出队。
+- 队列用尽时**重复最后一条**并累加 `exhausted` 计数：轮询次数是时序相关的，但「跑干」这件事仍然可观测，测试对 `exhausted` 逐条断言。
+- `progress` 按**多重集**比较（事件驱动的进度与轮询驱动的进度谁先谁后是时序相关的）；消息文本、ratio、detail 仍逐字校验。
+- 事件驱动的短路向量（如 `event-loaded-without-entry`）标 `assertRequests: false`，只钉结果、不钉请求条数。
+- 每个向量都在 10 s 的 `CancellationTokenSource` 下运行。脚本队列会重复末条响应，因此**分帧一旦回归，`loadAndWait` / `downloadAndWait` 就永远等不到那个打破轮询的事件**——没有这个截止时间，测试会挂死而不是失败。截止时间把挂死变成普通的断言失败（`OperationCanceledException` 不是向量期望的异常），而真实代价最高的向量也只有一次 500 ms 轮询。
+
+`provider.ts`（299 行）与 `index.ts`（230 行）仍留给 4d-7b 的尾巴，二者依赖 4e/4f 的 `modelRegistry` 与 `ui`；
+因此 `BuiltInExtensions` 里 `llama.cpp` 仍是占位工厂。
+
+变异验证（`tools/mutate-check.py`，现共 **48 处**，全部被捕获）：
+
+4d-7a 的 25 处在本轮源码增长后重新跑过一遍，结论不变；其中 `auth-header-scheme` 的锚点被加宽到
+`RequestAsync` 的 `using var timeout = …` 那几行——`WatchAsync` 现在会写出同一行 `Authorization`，
+原来的单行锚点已不再唯一。新增的 23 处：
+
+| 变异 | 捕获数 |
+|---|---:|
+| `watch` 分帧边界 `\n\n` → `\n` | 1 |
+| `watch` 不做 `\r\n` → `\n` 归一 | 1 |
+| `watch` 过滤前缀 `data:` → `Data:` | 3 |
+| `watch` 取载荷偏移 `line[5..]` → `line[4..]` | 3 |
+| `watch` 不剥首块 BOM | 1 |
+| `watch` BOM 守卫去掉「首块必须非空」条件 | 1 |
+| `watch` 解码器 `throwOnInvalidBytes` → `true` | 1 |
+| `watch` 构造事件时 `Model`/`Event` 互换 | 3 |
+| `watch` 状态守卫 `!Ok` → `Ok` | 3 |
+| `watch` SSE 错误文案改写 | 1 |
+| `loadAndWait` 去掉 watcher 的 `model` 过滤 | 1 |
+| `loadAndWait` 事件状态比较 `Loaded` → `Downloading` | 1 |
+| `loadAndWait` 事件状态比较 `Unloaded` → `Loading` | 1 |
+| `loadAndWait` 轮询不读 watcher 的 `eventError` | 1 |
+| `loadAndWait` 合成条目状态 `Loaded` → `Unloaded` | 1 |
+| `loadAndWait` 错误优先级两个分支互换 | 1 |
+| `loadAndWait` 引导进度文案改写 | 1 |
+| `loadAndWait` 事件进度改用 `ParseDownloadProgress` | 1 |
+| `downloadAndWait` 事件过滤 `download_progress` → `model_status` | 1 |
+| `downloadAndWait` 阈值 `polls >= 2` → `>= 3` | 1 |
+| `downloadAndWait` 收尾 `reload: true` → 默认 | 1 |
+| `downloadAndWait` 失败文案回退改写 | 1 |
+| `downloadAndWait` 引导进度文案改写 | 1 |
+
+三处「首轮编译不过」，与 4d-7a 的两处 CS0162 同类，都是**变异体本身触发 `TreatWarningsAsErrors`**，
+已改写成可编译的等价形式后重跑：
+
+1. `watch-chunks-null-guard`（删掉 `response.Chunks is null`）→ CS8604：`response.Chunks` 变成可能的
+   空解引用。改写为「`!response.Ok` → `response.Ok`」。**`Chunks is null` 这半边因此由可空引用分析
+   强制存在**——删掉就编译不过——比向量更强，故不再单独变异。
+2. `load-event-error-branch`（`state.EventError = …` → `state.EventLoaded = true;`）→ CS0649：
+   `WatchState.EventError` 再无赋值点。拆成三条：`Loaded` 分支常量改写、`Unloaded` 分支常量改写、
+   以及「轮询不读 `state.EventError`」（`var eventError = state.EventError;` → `string? eventError = null;`）。
+3. `load-exit-code-precedence`（`entry?.StatusExitCode is null` → `is not null`）→ CS8602：`else` 分支里的
+   `entry.StatusExitCode` 变成可能的空解引用。改写为**原地互换两个分支**（两边都写成 `entry?.`），
+   既保持可编译，又同样钉住「退出码优先于事件错误」。
+
+> 复盘的复盘：本轮又一次踩到「被杀死的运行留下变异」——`TaskStop` 发的 SIGTERM 不跑 Python 的
+> `finally`，于是 `if (!started && text.Length > 0)` 被留在源码里，表现为 `bom-split-across-chunks`
+> 诡异失败（而所有向量此前都通过）。现在 `tools/mutate-check.py` 为 `SIGTERM`/`SIGINT`/`SIGBREAK`
+> 注册了处理器，先整份还原再 `os._exit(130)`；另外提交前一律用锚点表扫一遍「`frm` 出现 0 次、
+> `to` 出现 1 次」来查残留。
+
 ## 环境相关失败（非移植缺陷，2026-10-10 记录）
 
 `Pi.CodingAgent.Tests` 在本沙箱内恒定有 6 项失败：`ModelResolverTests`（2）+ `CoreModelRuntimeTests`（4），
@@ -756,7 +844,7 @@ huggingface.ts 只导入 `node:fs/promises` / `node:os` / `node:path`；生成�
 （`ANTHROPIC_AUTH_TOKEN` / `OPENAI_API_KEY` / `ANTHROPIC_BASE_URL` 等），内置 provider 的凭据解析会读到它们，
 于是测试里「唯一可用的 solo provider」不再是唯一，回退分支选中了 `anthropic/claude-sonnet-4-5`。
 
-- 验证：`env -u ANTHROPIC_AUTH_TOKEN -u ANTHROPIC_API_KEY … <test.exe>` 后，这 6 项全部通过（现为 730/730）。
+- 验证：`env -u ANTHROPIC_AUTH_TOKEN -u ANTHROPIC_API_KEY … <test.exe>` 后，这 6 项全部通过（4d-7b 后为 733/733）。
 - 结论：环境导致，与移植代码无关；宿主（用户本机）未注入这些变量时应为全绿。
 - 待办（可选，4b/model-runtime 范围）：`ModelRuntime` 的内置 provider 凭据解析目前读真实 `process.env`，
   未走注入的 `Env` 缝，导致测试对宿主环境敏感。若要让测试在任何环境都确定，需要把内置 provider 的
