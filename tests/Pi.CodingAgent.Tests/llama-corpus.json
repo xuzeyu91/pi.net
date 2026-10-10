@@ -1,0 +1,1556 @@
+{
+ "formatBytes": [
+  {
+   "input": 0,
+   "output": "0 B"
+  },
+  {
+   "input": 1,
+   "output": "1 B"
+  },
+  {
+   "input": 2,
+   "output": "2 B"
+  },
+  {
+   "input": 512,
+   "output": "512 B"
+  },
+  {
+   "input": 1023,
+   "output": "1023 B"
+  },
+  {
+   "input": 1024,
+   "output": "1.00 KiB"
+  },
+  {
+   "input": 1025,
+   "output": "1.00 KiB"
+  },
+  {
+   "input": 1536,
+   "output": "1.50 KiB"
+  },
+  {
+   "input": 2048,
+   "output": "2.00 KiB"
+  },
+  {
+   "input": 10240,
+   "output": "10.0 KiB"
+  },
+  {
+   "input": 1048576,
+   "output": "1.00 MiB"
+  },
+  {
+   "input": 1073741824,
+   "output": "1.00 GiB"
+  },
+  {
+   "input": 1099511627776,
+   "output": "1.00 TiB"
+  },
+  {
+   "input": 1572864,
+   "output": "1.50 MiB"
+  },
+  {
+   "input": 1234567890,
+   "output": "1.15 GiB"
+  },
+  {
+   "input": 999,
+   "output": "999 B"
+  },
+  {
+   "input": 1000,
+   "output": "1000 B"
+  },
+  {
+   "input": 1023.5,
+   "output": "1023.5 B"
+  },
+  {
+   "input": 1073741824,
+   "output": "1.00 GiB"
+  },
+  {
+   "input": 1099511627776,
+   "output": "1.00 TiB"
+  },
+  {
+   "input": 5368709120,
+   "output": "5.00 GiB"
+  },
+  {
+   "input": 102400,
+   "output": "100.0 KiB"
+  },
+  {
+   "input": 1024000,
+   "output": "1000.0 KiB"
+  },
+  {
+   "input": 1048575,
+   "output": "1024.0 KiB"
+  },
+  {
+   "input": 1048576,
+   "output": "1.00 MiB"
+  },
+  {
+   "input": 1048577,
+   "output": "1.00 MiB"
+  }
+ ],
+ "normalizeLlamaServerUrl": [
+  {
+   "input": "http://127.0.0.1:8080",
+   "output": "http://127.0.0.1:8080",
+   "error": null
+  },
+  {
+   "input": "http://127.0.0.1:8080/",
+   "output": "http://127.0.0.1:8080",
+   "error": null
+  },
+  {
+   "input": "http://127.0.0.1:8080///",
+   "output": "http://127.0.0.1:8080",
+   "error": null
+  },
+  {
+   "input": "http://127.0.0.1:8080/v1",
+   "output": "http://127.0.0.1:8080",
+   "error": null
+  },
+  {
+   "input": "http://127.0.0.1:8080/v1/",
+   "output": "http://127.0.0.1:8080",
+   "error": null
+  },
+  {
+   "input": "http://127.0.0.1:8080/v1/models",
+   "output": "http://127.0.0.1:8080/v1/models",
+   "error": null
+  },
+  {
+   "input": "http://localhost:1234",
+   "output": "http://localhost:1234",
+   "error": null
+  },
+  {
+   "input": "https://example.com/llama",
+   "output": "https://example.com/llama",
+   "error": null
+  },
+  {
+   "input": "https://example.com/llama/",
+   "output": "https://example.com/llama",
+   "error": null
+  },
+  {
+   "input": "http://host:8080?x=1",
+   "output": "http://host:8080",
+   "error": null
+  },
+  {
+   "input": "http://host:8080#frag",
+   "output": "http://host:8080",
+   "error": null
+  },
+  {
+   "input": "http://host:8080/path?x=1#frag",
+   "output": "http://host:8080/path",
+   "error": null
+  },
+  {
+   "input": "  http://127.0.0.1:8080  ",
+   "output": "http://127.0.0.1:8080",
+   "error": null
+  },
+  {
+   "input": "HTTP://HOST:8080/",
+   "output": "http://host:8080",
+   "error": null
+  },
+  {
+   "input": "http://user:pass@host:8080/",
+   "output": "http://user:pass@host:8080",
+   "error": null
+  },
+  {
+   "input": "http://[::1]:8080/",
+   "output": "http://[::1]:8080",
+   "error": null
+  },
+  {
+   "input": "http://[::1]",
+   "output": "http://[::1]",
+   "error": null
+  },
+  {
+   "input": "http://[::1]:8080",
+   "output": "http://[::1]:8080",
+   "error": null
+  },
+  {
+   "input": "https://[::1]:8080/v1/",
+   "output": "https://[::1]:8080",
+   "error": null
+  },
+  {
+   "input": "http://[0:0:0:0:0:0:0:1]:8080/",
+   "output": "http://[::1]:8080",
+   "error": null
+  },
+  {
+   "input": "http://[2001:db8::1]:8080/path",
+   "output": "http://[2001:db8::1]:8080/path",
+   "error": null
+  },
+  {
+   "input": "http://[::ffff:1.2.3.4]:8080/x",
+   "output": "http://[::ffff:102:304]:8080/x",
+   "error": null
+  },
+  {
+   "input": "http://[::1.2.3.4]:8080/",
+   "output": "http://[::102:304]:8080",
+   "error": null
+  },
+  {
+   "input": "http://[1:2:3:4:5:6:1.2.3.4]:8080/",
+   "output": "http://[1:2:3:4:5:6:102:304]:8080",
+   "error": null
+  },
+  {
+   "input": "http://[1:2:3:4:5:6:7:1.2.3.4]:8080/",
+   "output": null,
+   "error": "TypeError: Invalid URL"
+  },
+  {
+   "input": "http://[1:2:3:4:5:6:7:8.1.2.3]:8080/",
+   "output": null,
+   "error": "TypeError: Invalid URL"
+  },
+  {
+   "input": "http://[1:2:3:4:5:6:7:8]:8080/",
+   "output": "http://[1:2:3:4:5:6:7:8]:8080",
+   "error": null
+  },
+  {
+   "input": "http://[1:2:3:4:5:6:0:0]:8080/",
+   "output": "http://[1:2:3:4:5:6::]:8080",
+   "error": null
+  },
+  {
+   "input": "http://[::1:2:3:4:5:6:7]:8080/",
+   "output": "http://[0:1:2:3:4:5:6:7]:8080",
+   "error": null
+  },
+  {
+   "input": "http://[1::]:8080/",
+   "output": "http://[1::]:8080",
+   "error": null
+  },
+  {
+   "input": "http://[::]:8080/",
+   "output": "http://[::]:8080",
+   "error": null
+  },
+  {
+   "input": "http://[0:0:0:0:0:0:0:0]:8080/",
+   "output": "http://[::]:8080",
+   "error": null
+  },
+  {
+   "input": "http://[::1]extra/",
+   "output": null,
+   "error": "TypeError: Invalid URL"
+  },
+  {
+   "input": "http://[:::]/",
+   "output": null,
+   "error": "TypeError: Invalid URL"
+  },
+  {
+   "input": "http://[]/",
+   "output": null,
+   "error": "TypeError: Invalid URL"
+  },
+  {
+   "input": "http://[1:2:3:4:5:6:7:8:9]/",
+   "output": null,
+   "error": "TypeError: Invalid URL"
+  },
+  {
+   "input": "http://[::1",
+   "output": null,
+   "error": "TypeError: Invalid URL"
+  },
+  {
+   "input": "http://[fe80::1%25eth0]:8080/",
+   "output": null,
+   "error": "TypeError: Invalid URL"
+  },
+  {
+   "input": "https://example.com/v1/v1",
+   "output": "https://example.com/v1",
+   "error": null
+  },
+  {
+   "input": "https://example.com/a/v1",
+   "output": "https://example.com/a",
+   "error": null
+  },
+  {
+   "input": "ftp://host/x",
+   "output": null,
+   "error": "Error: Server URL must use http or https"
+  },
+  {
+   "input": "file:///tmp/x",
+   "output": null,
+   "error": "Error: Server URL must use http or https"
+  },
+  {
+   "input": "not a url",
+   "output": null,
+   "error": "TypeError: Invalid URL"
+  },
+  {
+   "input": "",
+   "output": null,
+   "error": "TypeError: Invalid URL"
+  },
+  {
+   "input": "http://",
+   "output": null,
+   "error": "TypeError: Invalid URL"
+  },
+  {
+   "input": "//host/x",
+   "output": null,
+   "error": "TypeError: Invalid URL"
+  }
+ ],
+ "llamaInferenceUrl": [
+  {
+   "input": "http://127.0.0.1:8080",
+   "output": "http://127.0.0.1:8080/v1"
+  },
+  {
+   "input": "https://example.com/llama/",
+   "output": "https://example.com/llama/v1"
+  },
+  {
+   "input": "http://host:8080/v1",
+   "output": "http://host:8080/v1"
+  }
+ ],
+ "llamaClientList": [
+  {
+   "label": "ok",
+   "reload": false,
+   "responses": [
+    {
+     "status": 200,
+     "body": "{\"object\":\"list\",\"data\":[{\"id\":\"m1\",\"status\":{\"value\":\"loaded\"},\"architecture\":{\"input_modalities\":[\"text\"]},\"source\":\"preset\"},{\"id\":\"m2\",\"status\":{\"value\":\"unloaded\",\"failed\":false},\"meta\":{\"n_ctx\":4096}}]}"
+    }
+   ],
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models",
+     "method": "GET",
+     "headers": {
+      "authorization": "Bearer secret-key"
+     },
+     "body": null
+    }
+   ],
+   "result": [
+    {
+     "id": "m1",
+     "status": {
+      "value": "loaded"
+     },
+     "architecture": {
+      "input_modalities": [
+       "text"
+      ]
+     },
+     "source": "preset"
+    },
+    {
+     "id": "m2",
+     "status": {
+      "value": "unloaded",
+      "failed": false
+     },
+     "meta": {
+      "n_ctx": 4096
+     }
+    }
+   ],
+   "error": null
+  },
+  {
+   "label": "reload",
+   "reload": true,
+   "responses": [
+    {
+     "status": 200,
+     "body": "{\"object\":\"list\",\"data\":[{\"id\":\"m1\",\"status\":{\"value\":\"loaded\"},\"architecture\":{\"input_modalities\":[\"text\"]},\"source\":\"preset\"},{\"id\":\"m2\",\"status\":{\"value\":\"unloaded\",\"failed\":false},\"meta\":{\"n_ctx\":4096}}]}"
+    }
+   ],
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models?reload=1",
+     "method": "GET",
+     "headers": {
+      "authorization": "Bearer secret-key"
+     },
+     "body": null
+    }
+   ],
+   "result": [
+    {
+     "id": "m1",
+     "status": {
+      "value": "loaded"
+     },
+     "architecture": {
+      "input_modalities": [
+       "text"
+      ]
+     },
+     "source": "preset"
+    },
+    {
+     "id": "m2",
+     "status": {
+      "value": "unloaded",
+      "failed": false
+     },
+     "meta": {
+      "n_ctx": 4096
+     }
+    }
+   ],
+   "error": null
+  },
+  {
+   "label": "http-error",
+   "reload": false,
+   "responses": [
+    {
+     "status": 500,
+     "body": "{\"error\":{\"message\":\"boom\"}}"
+    }
+   ],
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models",
+     "method": "GET",
+     "headers": {
+      "authorization": "Bearer secret-key"
+     },
+     "body": null
+    }
+   ],
+   "result": null,
+   "error": "Error: boom"
+  },
+  {
+   "label": "http-error-no-message",
+   "reload": false,
+   "responses": [
+    {
+     "status": 503,
+     "body": "not json"
+    }
+   ],
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models",
+     "method": "GET",
+     "headers": {
+      "authorization": "Bearer secret-key"
+     },
+     "body": null
+    }
+   ],
+   "result": null,
+   "error": "Error: llama.cpp returned HTTP 503"
+  },
+  {
+   "label": "invalid-catalog",
+   "reload": false,
+   "responses": [
+    {
+     "status": 200,
+     "body": "{\"data\":\"nope\"}"
+    }
+   ],
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models",
+     "method": "GET",
+     "headers": {
+      "authorization": "Bearer secret-key"
+     },
+     "body": null
+    }
+   ],
+   "result": null,
+   "error": "Error: llama.cpp returned an invalid model catalog"
+  },
+  {
+   "label": "not-router",
+   "reload": false,
+   "responses": [
+    {
+     "status": 200,
+     "body": "{\"data\":[{\"id\":1}]}"
+    }
+   ],
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models",
+     "method": "GET",
+     "headers": {
+      "authorization": "Bearer secret-key"
+     },
+     "body": null
+    }
+   ],
+   "result": null,
+   "error": "Error: Server is not running in llama.cpp router mode"
+  }
+ ],
+ "llamaClientProps": [
+  {
+   "label": "no-model",
+   "model": null,
+   "responses": [
+    {
+     "status": 200,
+     "body": "{\"models_autoload\":true,\"chat_template\":\"tpl\"}"
+    }
+   ],
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/props",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "result": {
+    "models_autoload": true,
+    "chat_template": "tpl"
+   },
+   "error": null
+  },
+  {
+   "label": "with-model",
+   "model": "m1",
+   "responses": [
+    {
+     "status": 200,
+     "body": "{\"models_autoload\":false}"
+    }
+   ],
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/props?model=m1&autoload=false",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "result": {
+    "models_autoload": false
+   },
+   "error": null
+  },
+  {
+   "label": "with-model-space",
+   "model": "a b/c",
+   "responses": [
+    {
+     "status": 200,
+     "body": "{}"
+    }
+   ],
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/props?model=a+b%2Fc&autoload=false",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "result": {},
+   "error": null
+  },
+  {
+   "label": "not-object",
+   "model": null,
+   "responses": [
+    {
+     "status": 200,
+     "body": "42"
+    }
+   ],
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/props",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "result": {},
+   "error": null
+  }
+ ],
+ "llamaClientActions": [
+  {
+   "label": "load",
+   "responses": [
+    {
+     "status": 200,
+     "body": "{}"
+    }
+   ],
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/load",
+     "method": "POST",
+     "headers": {
+      "authorization": "Bearer k",
+      "content-type": "application/json"
+     },
+     "body": "{\"model\":\"m1\"}"
+    }
+   ],
+   "error": null
+  },
+  {
+   "label": "unload",
+   "responses": [
+    {
+     "status": 200,
+     "body": "{}"
+    }
+   ],
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/unload",
+     "method": "POST",
+     "headers": {
+      "authorization": "Bearer k",
+      "content-type": "application/json"
+     },
+     "body": "{\"model\":\"m1\"}"
+    }
+   ],
+   "error": null
+  },
+  {
+   "label": "download",
+   "responses": [
+    {
+     "status": 200,
+     "body": "{}"
+    }
+   ],
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models",
+     "method": "POST",
+     "headers": {
+      "authorization": "Bearer k",
+      "content-type": "application/json"
+     },
+     "body": "{\"model\":\"m1\"}"
+    }
+   ],
+   "error": null
+  },
+  {
+   "label": "load-error",
+   "responses": [
+    {
+     "status": 400,
+     "body": "{\"error\":{\"message\":\"bad model\"}}"
+    }
+   ],
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/load",
+     "method": "POST",
+     "headers": {
+      "authorization": "Bearer k",
+      "content-type": "application/json"
+     },
+     "body": "{\"model\":\"m1\"}"
+    }
+   ],
+   "error": "Error: bad model"
+  }
+ ],
+ "llamaClientUnloadAndWait": [
+  {
+   "label": "already-unloaded",
+   "responses": [
+    {
+     "status": 200,
+     "body": "{}"
+    },
+    {
+     "status": 200,
+     "body": "{\"data\":[{\"id\":\"m1\",\"status\":{\"value\":\"unloaded\"}}]}"
+    }
+   ],
+   "requestCount": 2,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/unload",
+     "method": "POST",
+     "headers": {
+      "content-type": "application/json"
+     },
+     "body": "{\"model\":\"m1\"}"
+    },
+    {
+     "url": "http://127.0.0.1:8080/models",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "error": null
+  },
+  {
+   "label": "missing-model",
+   "responses": [
+    {
+     "status": 200,
+     "body": "{}"
+    },
+    {
+     "status": 200,
+     "body": "{\"data\":[{\"id\":\"other\",\"status\":{\"value\":\"loaded\"}}]}"
+    }
+   ],
+   "requestCount": 2,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/unload",
+     "method": "POST",
+     "headers": {
+      "content-type": "application/json"
+     },
+     "body": "{\"model\":\"m1\"}"
+    },
+    {
+     "url": "http://127.0.0.1:8080/models",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "error": null
+  },
+  {
+   "label": "loaded-then-unloaded",
+   "responses": [
+    {
+     "status": 200,
+     "body": "{}"
+    },
+    {
+     "status": 200,
+     "body": "{\"data\":[{\"id\":\"m1\",\"status\":{\"value\":\"loaded\"}}]}"
+    },
+    {
+     "status": 200,
+     "body": "{\"data\":[{\"id\":\"m1\",\"status\":{\"value\":\"unloaded\"}}]}"
+    }
+   ],
+   "requestCount": 3,
+   "requests": [
+    {
+     "url": "http://127.0.0.1:8080/models/unload",
+     "method": "POST",
+     "headers": {
+      "content-type": "application/json"
+     },
+     "body": "{\"model\":\"m1\"}"
+    },
+    {
+     "url": "http://127.0.0.1:8080/models",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    },
+    {
+     "url": "http://127.0.0.1:8080/models",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "error": null
+  }
+ ],
+ "parseLoadProgress": [
+  {
+   "data": null,
+   "output": null
+  },
+  {
+   "data": null,
+   "output": null
+  },
+  {
+   "data": 42,
+   "output": null
+  },
+  {
+   "data": {},
+   "output": null
+  },
+  {
+   "data": {
+    "progress": null
+   },
+   "output": null
+  },
+  {
+   "data": {
+    "progress": {
+     "current": "loading_tensors",
+     "value": 0.5,
+     "stages": [
+      "init",
+      "loading_tensors",
+      "done"
+     ]
+    }
+   },
+   "output": {
+    "message": "Loading loading tensors",
+    "ratio": 0.5
+   }
+  },
+  {
+   "data": {
+    "progress": {
+     "stage": "init",
+     "stages": [
+      "init",
+      "done"
+     ]
+    }
+   },
+   "output": {
+    "message": "Loading init",
+    "ratio": 0
+   }
+  },
+  {
+   "data": {
+    "progress": {
+     "current": "unknown_stage",
+     "stages": [
+      "a",
+      "b"
+     ]
+    }
+   },
+   "output": {
+    "message": "Loading unknown stage"
+   }
+  },
+  {
+   "data": {
+    "progress": {
+     "current": "step",
+     "value": 2
+    }
+   },
+   "output": {
+    "message": "Loading step",
+    "ratio": 1
+   }
+  },
+  {
+   "data": {
+    "progress": {
+     "current": "step",
+     "value": -1
+    }
+   },
+   "output": {
+    "message": "Loading step",
+    "ratio": 0
+   }
+  },
+  {
+   "data": {
+    "progress": {
+     "current": "step",
+     "value": 5
+    }
+   },
+   "output": {
+    "message": "Loading step",
+    "ratio": 1
+   }
+  },
+  {
+   "data": {
+    "progress": {
+     "value": 0.25
+    }
+   },
+   "output": {
+    "message": "Loading model",
+    "ratio": 0.25
+   }
+  },
+  {
+   "data": {
+    "progress": {
+     "current": "a_b_c"
+    }
+   },
+   "output": {
+    "message": "Loading a b c"
+   }
+  },
+  {
+   "data": {
+    "progress": {
+     "stages": [
+      "a",
+      "b"
+     ],
+     "value": 0.5
+    }
+   },
+   "output": {
+    "message": "Loading model",
+    "ratio": 0.5
+   }
+  }
+ ],
+ "parseDownloadProgress": [
+  {
+   "data": null,
+   "output": null
+  },
+  {
+   "data": null,
+   "output": null
+  },
+  {
+   "data": {},
+   "output": null
+  },
+  {
+   "data": {
+    "progress": {}
+   },
+   "output": null
+  },
+  {
+   "data": {
+    "progress": {
+     "f1": {
+      "done": 1,
+      "total": 10
+     },
+     "f2": {
+      "done": 2,
+      "total": 20
+     }
+    }
+   },
+   "output": {
+    "message": "Downloading model",
+    "ratio": 0.1,
+    "detail": "3 B / 30 B"
+   }
+  },
+  {
+   "data": {
+    "f1": {
+     "done": 5,
+     "total": 5
+    }
+   },
+   "output": {
+    "message": "Downloading model",
+    "ratio": 1,
+    "detail": "5 B / 5 B"
+   }
+  },
+  {
+   "data": {
+    "progress": {
+     "f1": {
+      "done": "x",
+      "total": 10
+     }
+    }
+   },
+   "output": null
+  },
+  {
+   "data": {
+    "progress": {
+     "f1": {
+      "done": 1
+     }
+    }
+   },
+   "output": null
+  },
+  {
+   "data": {
+    "progress": {
+     "f1": {
+      "done": 0,
+      "total": 0
+     }
+    }
+   },
+   "output": null
+  },
+  {
+   "data": {
+    "progress": {
+     "f1": {
+      "done": 3,
+      "total": 4
+     },
+     "f2": {
+      "done": 1,
+      "total": 4
+     }
+    }
+   },
+   "output": {
+    "message": "Downloading model",
+    "ratio": 0.5,
+    "detail": "4 B / 8 B"
+   }
+  },
+  {
+   "data": {
+    "progress": [
+     {
+      "done": 1,
+      "total": 2
+     }
+    ]
+   },
+   "output": {
+    "message": "Downloading model",
+    "ratio": 0.5,
+    "detail": "1 B / 2 B"
+   }
+  },
+  {
+   "data": {
+    "progress": {
+     "a": 1
+    }
+   },
+   "output": null
+  }
+ ],
+ "huggingFaceSearch": [
+  {
+   "label": "ok",
+   "responses": [
+    {
+     "status": 200,
+     "body": "[{\"id\":\"a/b\",\"downloads\":10},{\"id\":\"c/d\"},{\"bad\":true}]"
+    }
+   ],
+   "requests": [
+    {
+     "url": "https://hf.example/api/models?search=llama+3&filter=gguf&sort=downloads&direction=-1&limit=20",
+     "method": "GET",
+     "headers": {
+      "authorization": "Bearer tok"
+     },
+     "body": null
+    }
+   ],
+   "result": [
+    {
+     "id": "a/b",
+     "downloads": 10
+    },
+    {
+     "id": "c/d",
+     "downloads": 0
+    }
+   ],
+   "error": null
+  },
+  {
+   "label": "invalid",
+   "responses": [
+    {
+     "status": 200,
+     "body": "{\"nope\":true}"
+    }
+   ],
+   "requests": [
+    {
+     "url": "https://hf.example/api/models?search=llama+3&filter=gguf&sort=downloads&direction=-1&limit=20",
+     "method": "GET",
+     "headers": {
+      "authorization": "Bearer tok"
+     },
+     "body": null
+    }
+   ],
+   "result": null,
+   "error": "Error: Hugging Face returned invalid search results"
+  },
+  {
+   "label": "http-error",
+   "responses": [
+    {
+     "status": 404,
+     "body": "{\"error\":\"not found\"}"
+    }
+   ],
+   "requests": [
+    {
+     "url": "https://hf.example/api/models?search=llama+3&filter=gguf&sort=downloads&direction=-1&limit=20",
+     "method": "GET",
+     "headers": {
+      "authorization": "Bearer tok"
+     },
+     "body": null
+    }
+   ],
+   "result": null,
+   "error": "Error: not found"
+  },
+  {
+   "label": "rate-limit-retry-after",
+   "responses": [
+    {
+     "status": 429,
+     "body": "",
+     "headers": {
+      "retry-after": "30"
+     }
+    }
+   ],
+   "requests": [
+    {
+     "url": "https://hf.example/api/models?search=llama+3&filter=gguf&sort=downloads&direction=-1&limit=20",
+     "method": "GET",
+     "headers": {
+      "authorization": "Bearer tok"
+     },
+     "body": null
+    }
+   ],
+   "result": null,
+   "error": "Error: Hugging Face rate limit reached; retry in 30s"
+  },
+  {
+   "label": "rate-limit-header",
+   "responses": [
+    {
+     "status": 429,
+     "body": "",
+     "headers": {
+      "ratelimit": "limit=100; t=42"
+     }
+    }
+   ],
+   "requests": [
+    {
+     "url": "https://hf.example/api/models?search=llama+3&filter=gguf&sort=downloads&direction=-1&limit=20",
+     "method": "GET",
+     "headers": {
+      "authorization": "Bearer tok"
+     },
+     "body": null
+    }
+   ],
+   "result": null,
+   "error": "Error: Hugging Face rate limit reached"
+  },
+  {
+   "label": "rate-limit-plain",
+   "responses": [
+    {
+     "status": 429,
+     "body": ""
+    }
+   ],
+   "requests": [
+    {
+     "url": "https://hf.example/api/models?search=llama+3&filter=gguf&sort=downloads&direction=-1&limit=20",
+     "method": "GET",
+     "headers": {
+      "authorization": "Bearer tok"
+     },
+     "body": null
+    }
+   ],
+   "result": null,
+   "error": "Error: Hugging Face rate limit reached"
+  }
+ ],
+ "huggingFaceDetails": [
+  {
+   "label": "quantizations",
+   "id": "org/model",
+   "responses": [
+    {
+     "status": 200,
+     "body": "{\"id\":\"org/model\",\"gated\":false,\"siblings\":[{\"rfilename\":\"model-Q4_K_M.gguf\",\"size\":100},{\"rfilename\":\"model-Q8_0.gguf\",\"size\":200},{\"rfilename\":\"model-F16.gguf\",\"size\":400},{\"rfilename\":\"model-BF16.gguf\"},{\"rfilename\":\"README.md\",\"size\":1},{\"rfilename\":\"mmproj-model-f16.gguf\",\"size\":999}]}"
+    }
+   ],
+   "requests": [
+    {
+     "url": "https://hf.example/api/models/org/model?blobs=true",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "result": {
+    "id": "org/model",
+    "gated": false,
+    "quantizations": [
+     {
+      "name": "Q4_K_M",
+      "size": 100
+     },
+     {
+      "name": "Q8_0",
+      "size": 200
+     },
+     {
+      "name": "F16",
+      "size": 400
+     },
+     {
+      "name": "BF16"
+     }
+    ]
+   },
+   "error": null
+  },
+  {
+   "label": "sharded",
+   "id": "org/sharded",
+   "responses": [
+    {
+     "status": 200,
+     "body": "{\"id\":\"org/sharded\",\"siblings\":[{\"rfilename\":\"sub/model-Q4_K_M-00001-of-00002.gguf\",\"size\":100},{\"rfilename\":\"sub/model-Q4_K_M-00002-of-00002.gguf\",\"size\":150}]}"
+    }
+   ],
+   "requests": [
+    {
+     "url": "https://hf.example/api/models/org/sharded?blobs=true",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "result": {
+    "id": "org/sharded",
+    "gated": false,
+    "quantizations": [
+     {
+      "name": "Q4_K_M",
+      "size": 250
+     }
+    ]
+   },
+   "error": null
+  },
+  {
+   "label": "gated-manual",
+   "id": "org/gated",
+   "responses": [
+    {
+     "status": 200,
+     "body": "{\"id\":\"org/gated\",\"gated\":\"manual\",\"siblings\":[]}"
+    }
+   ],
+   "requests": [
+    {
+     "url": "https://hf.example/api/models/org/gated?blobs=true",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "result": {
+    "id": "org/gated",
+    "gated": "manual",
+    "quantizations": []
+   },
+   "error": null
+  },
+  {
+   "label": "gated-auto-no-id",
+   "id": "org/fallback",
+   "responses": [
+    {
+     "status": 200,
+     "body": "{\"gated\":\"auto\",\"siblings\":[]}"
+    }
+   ],
+   "requests": [
+    {
+     "url": "https://hf.example/api/models/org/fallback?blobs=true",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "result": {
+    "id": "org/fallback",
+    "gated": "auto",
+    "quantizations": []
+   },
+   "error": null
+  },
+  {
+   "label": "ud-iq-prefixes",
+   "id": "org/ud",
+   "responses": [
+    {
+     "status": 200,
+     "body": "{\"id\":\"org/ud\",\"siblings\":[{\"rfilename\":\"m-UD-Q4_K_XL.gguf\",\"size\":10},{\"rfilename\":\"m-IQ3_XXS.gguf\",\"size\":20},{\"rfilename\":\"m-MXFP4.gguf\",\"size\":30},{\"rfilename\":\"m-F32.gguf\",\"size\":40}]}"
+    }
+   ],
+   "requests": [
+    {
+     "url": "https://hf.example/api/models/org/ud?blobs=true",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "result": {
+    "id": "org/ud",
+    "gated": false,
+    "quantizations": [
+     {
+      "name": "UD-Q4_K_XL",
+      "size": 10
+     },
+     {
+      "name": "IQ3_XXS",
+      "size": 20
+     },
+     {
+      "name": "MXFP4",
+      "size": 30
+     },
+     {
+      "name": "F32",
+      "size": 40
+     }
+    ]
+   },
+   "error": null
+  },
+  {
+   "label": "q4-k-m-priority",
+   "id": "org/q4km",
+   "responses": [
+    {
+     "status": 200,
+     "body": "{\"id\":\"org/q4km\",\"siblings\":[{\"rfilename\":\"m-Q4_K_M.gguf\",\"size\":400},{\"rfilename\":\"m-Q8_0.gguf\",\"size\":200},{\"rfilename\":\"m-F16.gguf\",\"size\":300}]}"
+    }
+   ],
+   "requests": [
+    {
+     "url": "https://hf.example/api/models/org/q4km?blobs=true",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "result": {
+    "id": "org/q4km",
+    "gated": false,
+    "quantizations": [
+     {
+      "name": "Q4_K_M",
+      "size": 400
+     },
+     {
+      "name": "Q8_0",
+      "size": 200
+     },
+     {
+      "name": "F16",
+      "size": 300
+     }
+    ]
+   },
+   "error": null
+  },
+  {
+   "label": "equal-size-tie-break",
+   "id": "org/tie",
+   "responses": [
+    {
+     "status": 200,
+     "body": "{\"id\":\"org/tie\",\"siblings\":[{\"rfilename\":\"m-Q8_0.gguf\",\"size\":300},{\"rfilename\":\"m-F16.gguf\",\"size\":300},{\"rfilename\":\"m-BF16.gguf\",\"size\":300}]}"
+    }
+   ],
+   "requests": [
+    {
+     "url": "https://hf.example/api/models/org/tie?blobs=true",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "result": {
+    "id": "org/tie",
+    "gated": false,
+    "quantizations": [
+     {
+      "name": "BF16",
+      "size": 300
+     },
+     {
+      "name": "F16",
+      "size": 300
+     },
+     {
+      "name": "Q8_0",
+      "size": 300
+     }
+    ]
+   },
+   "error": null
+  },
+  {
+   "label": "invalid-details",
+   "id": "org/x",
+   "responses": [
+    {
+     "status": 200,
+     "body": "[]"
+    }
+   ],
+   "requests": [
+    {
+     "url": "https://hf.example/api/models/org/x?blobs=true",
+     "method": "GET",
+     "headers": {},
+     "body": null
+    }
+   ],
+   "result": {
+    "id": "org/x",
+    "gated": false,
+    "quantizations": []
+   },
+   "error": null
+  }
+ ],
+ "findHuggingFaceToken": [
+  {
+   "label": "from-env",
+   "env": {
+    "HF_TOKEN": "  env-token  "
+   },
+   "files": [],
+   "result": "env-token"
+  },
+  {
+   "label": "from-token-path",
+   "env": {
+    "HF_TOKEN_PATH": "<tmp>\\hf-case-1\\direct\\token"
+   },
+   "files": [
+    "direct/token"
+   ],
+   "result": "path-token"
+  },
+  {
+   "label": "from-hf-home",
+   "env": {
+    "HF_HOME": "<tmp>\\hf-case-2\\hf"
+   },
+   "files": [
+    "hf/token"
+   ],
+   "result": "hf-token"
+  },
+  {
+   "label": "from-xdg",
+   "env": {
+    "XDG_CACHE_HOME": "<tmp>\\hf-case-3\\xdg"
+   },
+   "files": [
+    "xdg/huggingface/token"
+   ],
+   "result": "xdg-token"
+  },
+  {
+   "label": "from-home",
+   "env": {},
+   "files": [
+    "home/.cache/huggingface/token"
+   ],
+   "result": "home-token"
+  },
+  {
+   "label": "empty-file",
+   "env": {
+    "HF_HOME": "<tmp>\\hf-case-5\\emptyhf"
+   },
+   "files": [
+    "emptyhf/token"
+   ],
+   "result": null
+  },
+  {
+   "label": "missing",
+   "env": {},
+   "files": [],
+   "result": null
+  },
+  {
+   "label": "env-wins-over-files",
+   "env": {
+    "HF_TOKEN": "winner",
+    "HF_HOME": "<tmp>\\hf-case-7\\hf2"
+   },
+   "files": [
+    "hf2/token"
+   ],
+   "result": "winner"
+  }
+ ]
+}

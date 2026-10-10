@@ -57,7 +57,8 @@ internal sealed record JsUrlValue(
 /// <para>
 /// Not implemented, because nothing in this codebase reaches it: IDNA/domain-to-ASCII (a non-ASCII
 /// special-scheme host is accepted as-is rather than punycoded) and the port-number default-port check
-/// (so <c>https://h:443/x</c> keeps the explicit <c>:443</c> instead of dropping it).
+/// (so <c>https://h:443/x</c> keeps the explicit <c>:443</c> instead of dropping it). A bracketed host
+/// <em>is</em> parsed as an IPv6 address, because the llama server URL can be one.
 /// </para>
 /// </remarks>
 internal static class JsUrl
@@ -161,12 +162,24 @@ internal static class JsUrl
                     return null;
                 }
 
-                host = authority[1..close];
-                isIpv6 = true;
-                if (close + 1 < authority.Length && authority[close + 1] == ':')
+                if (close + 1 < authority.Length)
                 {
+                    // Only a port may follow the closing bracket; `[::1]extra` is not a URL.
+                    if (authority[close + 1] != ':')
+                    {
+                        return null;
+                    }
+
                     port = authority[(close + 2)..];
                 }
+
+                if (!TryParseIpv6(authority[1..close], out var canonical))
+                {
+                    return null;
+                }
+
+                isIpv6 = true;
+                hostname = canonical;
             }
             else
             {
@@ -176,12 +189,12 @@ internal static class JsUrl
                 {
                     port = authority[(portSeparator + 1)..];
                 }
-            }
 
-            hostname = NormalizeHost(host, special);
-            if (special && (hostname.Length == 0 || hostname.AsSpan().ContainsAny(ForbiddenHostCodePoints)))
-            {
-                return null;
+                hostname = NormalizeHost(host, special);
+                if (special && (hostname.Length == 0 || hostname.AsSpan().ContainsAny(ForbiddenHostCodePoints)))
+                {
+                    return null;
+                }
             }
         }
 
@@ -374,6 +387,229 @@ internal static class JsUrl
                 target[index] = source[index] is >= 'A' and <= 'Z' ? (char)(source[index] + 32) : source[index];
             }
         });
+    }
+
+    /// <summary>
+    /// The spec's "IPv6 parser" and "IPv6 serializer" combined: validate a bracketed literal and rewrite it
+    /// in canonical compressed form, so <c>0:0:0:0:0:0:0:1</c> becomes <c>::1</c>. Unlike the rest of the
+    /// host handling the literal is not percent-decoded, and a <c>%</c> makes it invalid (a zone id such as
+    /// <c>fe80::1%25eth0</c> is rejected, as <c>new URL()</c> does).
+    /// </summary>
+    private static bool TryParseIpv6(string input, out string canonical)
+    {
+        canonical = string.Empty;
+        var pieces = new ushort[8];
+        var pieceIndex = 0;
+        int? compress = null;
+        var pointer = 0;
+
+        if (pointer < input.Length && input[pointer] == ':')
+        {
+            if (pointer + 1 >= input.Length || input[pointer + 1] != ':')
+            {
+                return false;
+            }
+
+            pointer += 2;
+            pieceIndex = 1;
+            compress = pieceIndex;
+        }
+
+        while (pointer < input.Length)
+        {
+            if (pieceIndex == 8)
+            {
+                return false;
+            }
+
+            if (input[pointer] == ':')
+            {
+                if (compress is not null)
+                {
+                    return false;
+                }
+
+                pointer++;
+                pieceIndex++;
+                compress = pieceIndex;
+                continue;
+            }
+
+            var value = 0;
+            var length = 0;
+            while (length < 4 && pointer < input.Length && HexValue(input[pointer]) >= 0)
+            {
+                value = (value * 0x10) + HexValue(input[pointer]);
+                pointer++;
+                length++;
+            }
+
+            if (pointer < input.Length && input[pointer] == '.')
+            {
+                // An embedded IPv4 tail occupies the last two 16-bit pieces.
+                if (length == 0 || pieceIndex > 6)
+                {
+                    return false;
+                }
+
+                // Rewind to the first digit of the group, which is the first IPv4 octet.
+                pointer -= length;
+                var numbersSeen = 0;
+                while (pointer < input.Length)
+                {
+                    int? ipv4Piece = null;
+                    if (numbersSeen > 0)
+                    {
+                        if (input[pointer] == '.' && numbersSeen < 4)
+                        {
+                            pointer++;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+
+                    if (pointer >= input.Length || !char.IsAsciiDigit(input[pointer]))
+                    {
+                        return false;
+                    }
+
+                    while (pointer < input.Length && char.IsAsciiDigit(input[pointer]))
+                    {
+                        var number = input[pointer] - '0';
+                        // A leading zero ("01") is invalid, and so is any octet above 255.
+                        ipv4Piece = ipv4Piece is null
+                            ? number
+                            : ipv4Piece == 0 ? -1 : (ipv4Piece * 10) + number;
+                        if (ipv4Piece is -1 or > 255)
+                        {
+                            return false;
+                        }
+
+                        pointer++;
+                    }
+
+                    pieces[pieceIndex] = (ushort)((pieces[pieceIndex] * 0x100) + ipv4Piece!.Value);
+                    numbersSeen++;
+                    if (numbersSeen is 2 or 4)
+                    {
+                        pieceIndex++;
+                    }
+                }
+
+                if (numbersSeen != 4)
+                {
+                    return false;
+                }
+
+                break;
+            }
+
+            if (pointer < input.Length && input[pointer] == ':')
+            {
+                pointer++;
+                if (pointer >= input.Length)
+                {
+                    return false;
+                }
+            }
+            else if (pointer < input.Length)
+            {
+                return false;
+            }
+
+            pieces[pieceIndex] = (ushort)value;
+            pieceIndex++;
+        }
+
+        if (compress is not null)
+        {
+            // Move the tail pieces to the end, leaving the compressed run as zeros in the middle.
+            var swaps = pieceIndex - compress.Value;
+            pieceIndex = 7;
+            while (pieceIndex != 0 && swaps > 0)
+            {
+                (pieces[pieceIndex], pieces[compress.Value + swaps - 1]) =
+                    (pieces[compress.Value + swaps - 1], pieces[pieceIndex]);
+                pieceIndex--;
+                swaps--;
+            }
+        }
+        else if (pieceIndex != 8)
+        {
+            return false;
+        }
+
+        canonical = SerializeIpv6(pieces);
+        return true;
+    }
+
+    /// <summary>
+    /// The spec's "IPv6 serializer": the first <em>longest</em> run of two or more zero pieces becomes
+    /// <c>::</c>, and every other piece is the shortest lowercase hexadecimal form.
+    /// </summary>
+    private static string SerializeIpv6(ushort[] pieces)
+    {
+        var compress = -1;
+        var bestLength = 0;
+        for (var start = 0; start < pieces.Length;)
+        {
+            if (pieces[start] != 0)
+            {
+                start++;
+                continue;
+            }
+
+            var end = start;
+            while (end < pieces.Length && pieces[end] == 0)
+            {
+                end++;
+            }
+
+            if (end - start > bestLength)
+            {
+                bestLength = end - start;
+                compress = start;
+            }
+
+            start = end;
+        }
+
+        if (bestLength < 2)
+        {
+            compress = -1;
+        }
+
+        var builder = new StringBuilder();
+        var ignore0 = false;
+        for (var index = 0; index < pieces.Length; index++)
+        {
+            if (ignore0 && pieces[index] == 0)
+            {
+                continue;
+            }
+
+            if (ignore0)
+            {
+                ignore0 = false;
+            }
+
+            if (compress == index)
+            {
+                builder.Append(index == 0 ? "::" : ":");
+                ignore0 = true;
+                continue;
+            }
+
+            builder.Append(pieces[index].ToString("x", System.Globalization.CultureInfo.InvariantCulture));
+            if (index != pieces.Length - 1)
+            {
+                builder.Append(':');
+            }
+        }
+
+        return builder.ToString();
     }
 
     /// <summary>

@@ -30,7 +30,7 @@
 | **4a** | `src/utils/*`（37 文件）+ 无依赖的根级模块（`config.ts` / `migrations.ts` / `core/defaults.ts` 等） | ~4,500 | ✅ utils 36/36 + `config.ts` 完成（2026-10-09） |
 | **4b** | 配置 / 信任 / 模型层：settings-manager、trust-manager、project-trust、auth-storage、model-config/registry/resolver、models-store、radius、virtual-models、mcp-servers、keybindings | 6,844（实测） | ✅ 16/16 文件（6,844 行）完成（2026-10-09） |
 | **4c** | 工具系统：`core/tools/*` + `core/tools/renderers/*` | ~9,000 | ✅ 8/8 工具 + 6 个支撑文件完成（2026-10-09）；renderers 的 renderCall/renderResult 依赖 Theme，随 4f 落地 |
-| **4d** | 扩展系统：`core/extensions/*`（types / runner / loader）+ `extensions/*`（codemode / llama / mcp / tool-search） | ~12,000 | ⏳ 4d-1 契约层 + 4d-2a 事件总线 + 4d-2b 加载器 + 4d-3 ALC 加载器与内置扩展注册 + 4d-4a/4b MCP 配置与工具适配 + **4d-6 tool-search 完成**（2026-10-10）；4d-4c/4d-4d、4d-5 codemode、4d-7 llama 待办 |
+| **4d** | 扩展系统：`core/extensions/*`（types / runner / loader）+ `extensions/*`（codemode / llama / mcp / tool-search） | ~12,000 | ⏳ 4d-1 契约层 + 4d-2a 事件总线 + 4d-2b 加载器 + 4d-3 ALC 加载器与内置扩展注册 + 4d-4a/4b MCP 配置与工具适配 + 4d-6 tool-search + **4d-7a llama HTTP 层完成**（2026-10-10）；4d-4c/4d-4d、4d-5 codemode、4d-7b llama 流式层待办 |
 | **4e** | 会话与资源：agent-session、session-manager、resource-loader、package-manager、compaction、export-html、system-prompt、telemetry、sdk | ~20,000 | ⏳ |
 | **4f** | 模式层：`modes/rpc/*`、`modes/interactive/*`（含 7,082 行的 `interactive-mode.ts` 与 components / theme） | ~23,700 | ⏳ |
 | **4g** | 入口与实验层：`cli/*`、`main.ts`、`cli.ts`、`rpc-entry.ts`、`package-manager-cli.ts`、`bun/*`、`client/*`、`experimental/*` | ~12,000 | ⏳ |
@@ -466,6 +466,8 @@ C# 侧另有若干「JS 语义」辅助（TS 无对应文件，供全部子阶�
 | `McpConfigTests` | 27 | 4d-4a MCP 配置与日志差分：全局/项目合并（项目条目替换同名全局条目）、override 仅覆盖 enabled/exposure/toolExposure 且保留全局字段、override 无基座报错、override 带额外键报错、`-`/`_` 命名空间冲突、项目 url 带 auth 报错、`autoEnableCodemode` 布尔校验、无效 JSON / 非对象 / `mcpServers` 非对象 / 校验器错误四种错误消息、未信任项目忽略项目文件、文件缺失为空配置、`/mcp` 写回（enabled=true 删除默认键、override 保留显式值、exposure=codemode 删除键而 deferred 设键、缺失服务器抛错、`@override` 建文件、保留外来键与缩进）、`add` 新建/替换、`remove` 存在/缺失/无文件、日志格式（level/logger/默认 info/多行缩进/非 record 包装/空 logger 省略）、追加写入与 5 MiB 轮转 |
 | `McpToolsTests` | 32 | 4d-4b MCP 工具适配差分：工具名生成（`mcp__server__tool` 前缀、非 `[A-Za-z0-9_]` 转 `_`、超长加 8 位哈希后缀、sanitize 冲突加哈希）、exposure 映射（codemode→deferred）、`CallToolResult` 输出 schema（content 必填、structuredContent/isError/_meta、无结构化 schema 时省略键）、20KB 输出限制（未超原样返回、超限截断并保存全文、保存失败报错、图片保留在文本后）、结果转换（文本/图片直通、isError 保留结构化结果且无 `_meta`、isError 无文本时补兜底文案、无 content 但有 structuredContent 转 JSON、resource_link 带 mimeType/size/描述与 read 提示、无 readableResources 时无 read 提示、内嵌文本资源直通、内嵌图片资源转图片、二进制资源保存为文件、文本类 blob 直显、保存失败报错、音频资源占位）、工具定义（schema 补 type/properties、description 回退链 annotations.title→title→默认、annotations 四个 hint 提取）、MCP 内容转换（文本/图片、无块但有结构化内容转 JSON、audio 占位、resource_link、内嵌图片资源、二进制资源占位、未知类型占位） |
 
+| `LlamaCorpusTests` | 85 | 4d-7a llama 差分：`formatBytes`（26 条含 KiB/MiB 进位与 `>=10` 精度切换）、`normalizeLlamaServerUrl`（46 条含 23 条 IPv6：校验、规范压缩、内嵌 IPv4、非法字面量）、`llamaInferenceUrl`、`LlamaClient` 的 `list`/`props`/`load`/`unload`/`download`/`unloadAndWait`（脚本化 fetch，逐请求比对 URL/方法/头/体 + 错误文案）、`parseLoadProgress` / `parseDownloadProgress`、`HuggingFaceClient` 的 `search` / `details`（量化解析、分片合并、`Q4_K_M` 优先与同名次排序）、`findHuggingFaceToken`（临时目录回放发现顺序） |
+
 ## 4d-1 进度（2026-10-10）：扩展系统契约层
 
 `core/extensions/types.ts`（2,272 行，纯类型模块）已移植，构建 0 警告 0 错误，
@@ -668,6 +670,85 @@ runner（随 4e）、`extensions/index.ts` 注册表中占位工厂的逐项替�
 变异验证：把 `Stem` 的 `ies` 分支切片长度改 3→2、把 `Bm25Ranker` 默认 `k1` 改 1.2→1.3，
 分别令 3 项 / 2 项测试失败，再还原。
 
+## 4d-7a 进度（2026-10-10）：llama 非 UI HTTP 层
+
+`extensions/llama/client.ts` 的请求半部与 `extensions/llama/huggingface.ts` 全部已移植。构建 0 警告 0 错误；
+`Pi.CodingAgent.Tests` 730/730 通过（新增 85 项 llama 差分测试；清空沙箱凭据环境变量后全绿，见文末「环境相关失败」）。
+
+新增文件：
+
+| 文件 | 内容 |
+|---|---|
+| `src/Pi.CodingAgent/Extensions/Llama/LlamaHttp.cs` | `LlamaHttpRequest` / `LlamaHttpResponse`（惰性 `Json()`、`Header()`）、`LlamaFetch` 委托（替代全局 `fetch` 的注入缝）、`LlamaFetchDefaults.Fetch`（共享 `HttpClient`） |
+| `src/Pi.CodingAgent/Extensions/Llama/LlamaModels.cs` | `LlamaModelStatusValue`、`LlamaModelInfo`（保留 raw JSON）、`LlamaServerProps`、`LlamaProgress`、`ErrorMessage` / `IsModelInfo` / `FormatBytes` / `NormalizeLlamaServerUrl` / `LlamaInferenceUrl` / `ParseLoadProgress` / `ParseDownloadProgress` |
+| `src/Pi.CodingAgent/Extensions/Llama/LlamaClient.cs` | `list`（reload）、`props`（`URLSearchParams` 表单编码）、`load` / `unload` / `download`（`{"model":…}` JSON 体）、`unloadAndWait`（100 ms 轮询）；15 s 超时与 `Content-Type` / `Authorization` 头 |
+| `src/Pi.CodingAgent/Extensions/Llama/HuggingFaceClient.cs` | `PayloadError` / `ParseRateLimitDelay` / `FindHuggingFaceTokenAsync`、`HuggingFaceClient.SearchAsync`（`filter=gguf&sort=downloads&direction=-1&limit=20`）、`DetailsAsync`（量化正则、分片后缀剥离、`Q4_K_M` 优先 + 尺寸 + 名称三级排序、`gated` 归一化） |
+| `src/Pi.CodingAgent/Utils/JsUrl.cs` | **补上 bracketed IPv6 主机**（见 C122） |
+| `tests/Pi.CodingAgent.Tests/LlamaCorpusTests.cs` | 85 项差分测试 |
+| `tests/Pi.CodingAgent.Tests/llama-corpus.json` | 语料：formatBytes 26 / normalizeLlamaServerUrl 46 / llamaInferenceUrl 3 / llamaClientList 6 / llamaClientProps 4 / llamaClientActions 4 / llamaClientUnloadAndWait 3 / parseLoadProgress 14 / parseDownloadProgress 12 / huggingFaceSearch 6 / huggingFaceDetails 8 / findHuggingFaceToken 8 |
+
+`watch` / `loadAndWait` / `downloadAndWait`（SSE 事件流）与 `provider.ts` / `index.ts` 留给 **4d-7b**：
+前者需要一条流式注入缝，后者依赖 4e/4f 的 `modelRegistry` 与 `ui`。因此 `BuiltInExtensions` 里
+`llama.cpp` 仍是占位工厂。
+
+与 TS 的差异：
+
+| # | 差异 | 理由 |
+|---|---|---|
+| C118 | 全局 `fetch` 改为 `LlamaFetch` 委托注入（默认 `LlamaFetchDefaults.Fetch`） | TS 直接调 `globalThis.fetch`；C# 无全局可替换的 fetch，注入缝同时让差分语料能脚本化响应且离线确定 |
+| C119 | `LlamaModelInfo` 保留原始 `JsonObject`，类型化字段（`Id` / `StatusValue` / `StatusFailed` / `StatusExitCode` / `Aliases` / `Source`）是只读访问器 | TS 的 `LlamaModelInfo` 是纯接口、字段可缺省；保留 raw 可让语料逐字段比对而不必为每个可选字段建模 |
+| C120 | `normalizeLlamaServerUrl` 走 `JsUrl`（WHATWG 子集）而非 `System.Uri` | `System.Uri` 会重排/规范化 userinfo、丢弃非特殊 scheme 的 opaque path 等；llama 的 URL 需要与 `new URL()` 逐字一致（含尾斜杠、`/v1` 剥离规则） |
+| C121 | `FindHuggingFaceTokenAsync(env, homeDir)` 把 `process.env` 与 `os.homedir()` 显式参数化 | 同 C118：便于语料在临时目录回放 token 发现顺序，且不读宿主真实环境 |
+| C122 | `JsUrl` 新增 bracketed IPv6 解析：按 WHATWG「IPv6 parser + serializer」校验并做规范压缩（`0:0:0:0:0:0:0:1`→`::1`、`::ffff:1.2.3.4`→`::ffff:102:304`），非法字面量（`[:::]` / `[]` / `[::1]extra` / 未闭合 / `%` 区域号）返回 null | 原先任何 `[…]` 主机都因「hostname 含 `:` 命中 forbidden host code point」而返回 null。llama 的服务器 URL 真实可达 IPv6（`http://[::1]:8080`），TS 接受，故必须补齐；此路径此前无任何向量可达，补齐不改变既有行为 |
+| C123 | HTTP 头名大小写：C# 缝保留源写法（`Content-Type` / `Authorization`），语料记录的是 `new Headers()` 归一化后的小写形式 | 规范上头名大小写不敏感（RFC 7230 §3.2）；差分测试对两侧头名做大小写折叠后比对，**头名集合与取值仍逐字校验**，因此漏头/多头/错值依然会失败 |
+| C124 | `watch` / `loadAndWait` / `downloadAndWait` 延后到 4d-7b | 三者读 `text/event-stream` 增量；需要先定一条与 `LlamaFetch` 对称的流式缝，避免为它们单独发明一套 IO 抽象 |
+
+语料生成器 `tools/gen-coding-agent-llama-corpus.mjs`（gitignored），Node 直接跑原 TS 源：client.ts 无导入，
+huggingface.ts 只导入 `node:fs/promises` / `node:os` / `node:path`；生成器用脚本化 `fetch` 队列与临时
+`os.homedir()` 桩把向量钉成离线确定。
+
+变异验证（`tools/mutate-check.py`，25 处全部被捕获；该脚本在开始时快照所有被改文件并在 `finally` 里整份还原）：
+
+| 变异 | 捕获数 |
+|---|---:|
+| `JsUrl` 规范压缩阈值 `< 2` → `< 3` | 1 |
+| `JsUrl` IPv4 尾回退 `length` → `length + 1`（即本轮修掉的那个 bug） | 3 |
+| `JsUrl` bracket 尾部垃圾检查改永假 | 1 |
+| `JsUrl` IPv6 分支用未压缩的 `authority[1..close]` 当主机名 | 7 |
+| `JsUrl` 去掉 IPv4 尾的 `pieceIndex > 6` 越界守卫 | 2 |
+| `LlamaClient` `Bearer` → `Token` | 2 |
+| `LlamaClient` `Content-Type` `application/json` → `text/plain` | 2 |
+| `LlamaClient` 去掉 `?reload=1` | 1 |
+| `FormatBytes` 阈值 `>= 10 ? 1 : 2` → `? 2 : 1` | 18 |
+| `FormatBytes` 单位表去掉 `TiB` | 2 |
+| `ParseDownloadProgress` `total <= 0` → `< 0` | 1 |
+| `ParseDownloadProgress` detail 分子分母对调 | 1 |
+| `ParseLoadProgress` 阶段权重分母 `stages.Count` → `+1` | 1 |
+| `ParseLoadProgress` 文案 `Loading` → `Load` | 1 |
+| `HuggingFace` `Q4_K_M` 优先 → `Q4_K_S` | 1 |
+| `HuggingFace` 同尺寸次排序反转 | 1 |
+| `HuggingFace` 分片后缀不剥离 | 1 |
+| `HuggingFace` 量化匹配改用分片正则 | 1 |
+| `HuggingFace` `payloadError` 恒返回 fallback | 1 |
+| `HuggingFace` `mmproj` 跳过条件失效 | 1 |
+| `HuggingFace` `gated` 缺省 `false` → `auto` | 1 |
+| `HuggingFace` 不裁 baseUrl 尾斜杠 | 1 |
+| `HuggingFace` search `limit` 20 → 10 | 1 |
+| `HuggingFace` search `filter` `gguf` → `safetensors` | 1 |
+| `HuggingFace` `MaxSafeInteger` 哨兵 → 0 | 1 |
+
+两轮之间有三处「首轮未捕获」，都补了向量：
+
+1. `Q4_K_M` 优先规则：原语料里 `Q4_K_M` 恰好也是尺寸最小的，**任何只按尺寸排的实现都能通过**。
+   补 `q4-k-m-priority`（`Q4_K_M` 尺寸最大）与 `equal-size-tie-break`（三个同尺寸，钉住次排序）后捕获。
+2. IPv4 尾的 `pieceIndex > 6` 守卫：补 `[1:2:3:4:5:6:7:1.2.3.4]`（应拒绝）、
+   `[1:2:3:4:5:6:1.2.3.4]`（应接受并压成 `1:2:3:4:5:6:102:304`）、`[1:2:3:4:5:6:7:8.1.2.3]`（应拒绝）后捕获。
+3. 两处变异体本身编译不过（`if (false)` 触发 `TreatWarningsAsErrors` 下的 CS0162），换成等价但可编译的写法后重跑。
+
+> 复盘：首轮用的临时变异脚本「先改、后无条件反向替换」在正向替换未命中时会**把反向替换当成正向写入**，
+> 从而污染源码（本轮真把 `QuantizationPattern` 误改成了 `ShardSuffixPattern`，且被增量构建掩盖了一轮）。
+> 现改为「开始时快照、`finally` 整份还原、并校验锚点唯一」，且提交前一律 `--no-incremental` 全量重建。
+
 ## 环境相关失败（非移植缺陷，2026-10-10 记录）
 
 `Pi.CodingAgent.Tests` 在本沙箱内恒定有 6 项失败：`ModelResolverTests`（2）+ `CoreModelRuntimeTests`（4），
@@ -675,7 +756,7 @@ runner（随 4e）、`extensions/index.ts` 注册表中占位工厂的逐项替�
 （`ANTHROPIC_AUTH_TOKEN` / `OPENAI_API_KEY` / `ANTHROPIC_BASE_URL` 等），内置 provider 的凭据解析会读到它们，
 于是测试里「唯一可用的 solo provider」不再是唯一，回退分支选中了 `anthropic/claude-sonnet-4-5`。
 
-- 验证：`env -u ANTHROPIC_AUTH_TOKEN -u ANTHROPIC_API_KEY … <test.exe>` 后，这 6 项全部通过（645/645）。
+- 验证：`env -u ANTHROPIC_AUTH_TOKEN -u ANTHROPIC_API_KEY … <test.exe>` 后，这 6 项全部通过（现为 730/730）。
 - 结论：环境导致，与移植代码无关；宿主（用户本机）未注入这些变量时应为全绿。
 - 待办（可选，4b/model-runtime 范围）：`ModelRuntime` 的内置 provider 凭据解析目前读真实 `process.env`，
   未走注入的 `Env` 缝，导致测试对宿主环境敏感。若要让测试在任何环境都确定，需要把内置 provider 的
