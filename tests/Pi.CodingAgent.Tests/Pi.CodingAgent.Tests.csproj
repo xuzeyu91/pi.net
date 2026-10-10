@@ -38,6 +38,9 @@
          guidance, the telemetry/experimental gates, the missing-cwd guard, provider attribution, the
          crash log, and decodeURI. -->
     <None Include="prompt-corpus.json" CopyToOutputDirectory="PreserveNewest" />
+    <!-- 4e-2b: core/messages.ts — the four coding-agent message roles, the summary constants,
+         bashExecutionToText, the three factories, convertToLlm, and the AgentMessage JSON wire shape. -->
+    <None Include="messages-corpus.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Pi.CodingAgent\Pi.CodingAgent.csproj" />

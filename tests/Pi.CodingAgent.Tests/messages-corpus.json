@@ -1,0 +1,813 @@
+{
+	"constants": {
+		"COMPACTION_SUMMARY_PREFIX": "The conversation history before this point was compacted into the following summary:\n\n<summary>\n",
+		"COMPACTION_SUMMARY_SUFFIX": "\n</summary>",
+		"BRANCH_SUMMARY_PREFIX": "The following is a summary of a branch that this conversation came back from:\n\n<summary>\n",
+		"BRANCH_SUMMARY_SUFFIX": "</summary>"
+	},
+	"bashExecutionToText": [
+		{
+			"name": "plain",
+			"message": {
+				"role": "bashExecution",
+				"command": "ls -la",
+				"output": "a\nb",
+				"exitCode": 0,
+				"cancelled": false,
+				"truncated": false,
+				"timestamp": 1000
+			},
+			"text": "Ran `ls -la`\n```\na\nb\n```"
+		},
+		{
+			"name": "empty-output",
+			"message": {
+				"role": "bashExecution",
+				"command": "ls -la",
+				"output": "",
+				"exitCode": 0,
+				"cancelled": false,
+				"truncated": false,
+				"timestamp": 1000
+			},
+			"text": "Ran `ls -la`\n(no output)"
+		},
+		{
+			"name": "no-output-key",
+			"message": {
+				"role": "bashExecution",
+				"command": "ls -la",
+				"exitCode": 0,
+				"cancelled": false,
+				"truncated": false,
+				"timestamp": 1000
+			},
+			"text": "Ran `ls -la`\n(no output)"
+		},
+		{
+			"name": "cancelled",
+			"message": {
+				"role": "bashExecution",
+				"command": "ls -la",
+				"output": "a\nb",
+				"exitCode": 0,
+				"cancelled": true,
+				"truncated": false,
+				"timestamp": 1000
+			},
+			"text": "Ran `ls -la`\n```\na\nb\n```\n\n(command cancelled)"
+		},
+		{
+			"name": "cancelled-wins-over-exit",
+			"message": {
+				"role": "bashExecution",
+				"command": "ls -la",
+				"output": "a\nb",
+				"exitCode": 7,
+				"cancelled": true,
+				"truncated": false,
+				"timestamp": 1000
+			},
+			"text": "Ran `ls -la`\n```\na\nb\n```\n\n(command cancelled)"
+		},
+		{
+			"name": "exit-zero",
+			"message": {
+				"role": "bashExecution",
+				"command": "ls -la",
+				"output": "a\nb",
+				"exitCode": 0,
+				"cancelled": false,
+				"truncated": false,
+				"timestamp": 1000
+			},
+			"text": "Ran `ls -la`\n```\na\nb\n```"
+		},
+		{
+			"name": "exit-nonzero",
+			"message": {
+				"role": "bashExecution",
+				"command": "ls -la",
+				"output": "a\nb",
+				"exitCode": 1,
+				"cancelled": false,
+				"truncated": false,
+				"timestamp": 1000
+			},
+			"text": "Ran `ls -la`\n```\na\nb\n```\n\nCommand exited with code 1"
+		},
+		{
+			"name": "exit-null",
+			"message": {
+				"role": "bashExecution",
+				"command": "ls -la",
+				"output": "a\nb",
+				"exitCode": null,
+				"cancelled": false,
+				"truncated": false,
+				"timestamp": 1000
+			},
+			"text": "Ran `ls -la`\n```\na\nb\n```"
+		},
+		{
+			"name": "exit-undefined",
+			"message": {
+				"role": "bashExecution",
+				"command": "ls -la",
+				"output": "a\nb",
+				"cancelled": false,
+				"truncated": false,
+				"timestamp": 1000
+			},
+			"text": "Ran `ls -la`\n```\na\nb\n```"
+		},
+		{
+			"name": "exit-negative",
+			"message": {
+				"role": "bashExecution",
+				"command": "ls -la",
+				"output": "a\nb",
+				"exitCode": -9,
+				"cancelled": false,
+				"truncated": false,
+				"timestamp": 1000
+			},
+			"text": "Ran `ls -la`\n```\na\nb\n```\n\nCommand exited with code -9"
+		},
+		{
+			"name": "truncated-with-path",
+			"message": {
+				"role": "bashExecution",
+				"command": "ls -la",
+				"output": "a\nb",
+				"exitCode": 0,
+				"cancelled": false,
+				"truncated": true,
+				"timestamp": 1000,
+				"fullOutputPath": "/tmp/out.txt"
+			},
+			"text": "Ran `ls -la`\n```\na\nb\n```\n\n[Output truncated. Full output: /tmp/out.txt]"
+		},
+		{
+			"name": "truncated-empty-path",
+			"message": {
+				"role": "bashExecution",
+				"command": "ls -la",
+				"output": "a\nb",
+				"exitCode": 0,
+				"cancelled": false,
+				"truncated": true,
+				"timestamp": 1000,
+				"fullOutputPath": ""
+			},
+			"text": "Ran `ls -la`\n```\na\nb\n```"
+		},
+		{
+			"name": "truncated-no-path",
+			"message": {
+				"role": "bashExecution",
+				"command": "ls -la",
+				"output": "a\nb",
+				"exitCode": 0,
+				"cancelled": false,
+				"truncated": true,
+				"timestamp": 1000
+			},
+			"text": "Ran `ls -la`\n```\na\nb\n```"
+		},
+		{
+			"name": "path-without-truncated",
+			"message": {
+				"role": "bashExecution",
+				"command": "ls -la",
+				"output": "a\nb",
+				"exitCode": 0,
+				"cancelled": false,
+				"truncated": false,
+				"timestamp": 1000,
+				"fullOutputPath": "/tmp/out.txt"
+			},
+			"text": "Ran `ls -la`\n```\na\nb\n```"
+		},
+		{
+			"name": "cancelled-and-truncated",
+			"message": {
+				"role": "bashExecution",
+				"command": "ls -la",
+				"output": "a\nb",
+				"exitCode": 0,
+				"cancelled": true,
+				"truncated": true,
+				"timestamp": 1000,
+				"fullOutputPath": "/tmp/out.txt"
+			},
+			"text": "Ran `ls -la`\n```\na\nb\n```\n\n(command cancelled)\n\n[Output truncated. Full output: /tmp/out.txt]"
+		},
+		{
+			"name": "multiline-command",
+			"message": {
+				"role": "bashExecution",
+				"command": "echo 'a'\necho 'b'",
+				"output": "a\nb",
+				"exitCode": 0,
+				"cancelled": false,
+				"truncated": false,
+				"timestamp": 1000
+			},
+			"text": "Ran `echo 'a'\necho 'b'`\n```\na\nb\n```"
+		},
+		{
+			"name": "output-with-backticks",
+			"message": {
+				"role": "bashExecution",
+				"command": "ls -la",
+				"output": "```\nnested\n```",
+				"exitCode": 0,
+				"cancelled": false,
+				"truncated": false,
+				"timestamp": 1000
+			},
+			"text": "Ran `ls -la`\n```\n```\nnested\n```\n```"
+		}
+	],
+	"createBranchSummaryMessage": [
+		{
+			"summary": "branch 2026-10-10T17:30:00.123Z",
+			"fromId": "entry-42",
+			"timestamp": "2026-10-10T17:30:00.123Z",
+			"message": {
+				"role": "branchSummary",
+				"summary": "branch 2026-10-10T17:30:00.123Z",
+				"fromId": "entry-42",
+				"timestamp": 1791653400123
+			}
+		},
+		{
+			"summary": "branch 1970-01-01T00:00:00.000Z",
+			"fromId": "entry-42",
+			"timestamp": "1970-01-01T00:00:00.000Z",
+			"message": {
+				"role": "branchSummary",
+				"summary": "branch 1970-01-01T00:00:00.000Z",
+				"fromId": "entry-42",
+				"timestamp": 0
+			}
+		},
+		{
+			"summary": "branch 2024-02-29T23:59:59.999Z",
+			"fromId": "entry-42",
+			"timestamp": "2024-02-29T23:59:59.999Z",
+			"message": {
+				"role": "branchSummary",
+				"summary": "branch 2024-02-29T23:59:59.999Z",
+				"fromId": "entry-42",
+				"timestamp": 1709251199999
+			}
+		},
+		{
+			"summary": "branch 2024-01-01",
+			"fromId": "entry-42",
+			"timestamp": "2024-01-01",
+			"message": {
+				"role": "branchSummary",
+				"summary": "branch 2024-01-01",
+				"fromId": "entry-42",
+				"timestamp": 1704067200000
+			}
+		},
+		{
+			"summary": "branch 2024-01-01T00:00:00+08:00",
+			"fromId": "entry-42",
+			"timestamp": "2024-01-01T00:00:00+08:00",
+			"message": {
+				"role": "branchSummary",
+				"summary": "branch 2024-01-01T00:00:00+08:00",
+				"fromId": "entry-42",
+				"timestamp": 1704038400000
+			}
+		}
+	],
+	"createBranchSummaryMessageNullFrom": {
+		"summary": "detached",
+		"fromId": null,
+		"timestamp": "2026-10-10T17:30:00.123Z",
+		"message": {
+			"role": "branchSummary",
+			"summary": "detached",
+			"fromId": null,
+			"timestamp": 1791653400123
+		}
+	},
+	"createCompactionSummaryMessage": [
+		{
+			"summary": "compacted 2026-10-10T17:30:00.123Z",
+			"tokensBefore": 12345,
+			"timestamp": "2026-10-10T17:30:00.123Z",
+			"message": {
+				"role": "compactionSummary",
+				"summary": "compacted 2026-10-10T17:30:00.123Z",
+				"tokensBefore": 12345,
+				"timestamp": 1791653400123
+			}
+		},
+		{
+			"summary": "compacted 1970-01-01T00:00:00.000Z",
+			"tokensBefore": 12345,
+			"timestamp": "1970-01-01T00:00:00.000Z",
+			"message": {
+				"role": "compactionSummary",
+				"summary": "compacted 1970-01-01T00:00:00.000Z",
+				"tokensBefore": 12345,
+				"timestamp": 0
+			}
+		},
+		{
+			"summary": "compacted 2024-02-29T23:59:59.999Z",
+			"tokensBefore": 12345,
+			"timestamp": "2024-02-29T23:59:59.999Z",
+			"message": {
+				"role": "compactionSummary",
+				"summary": "compacted 2024-02-29T23:59:59.999Z",
+				"tokensBefore": 12345,
+				"timestamp": 1709251199999
+			}
+		},
+		{
+			"summary": "compacted 2024-01-01",
+			"tokensBefore": 12345,
+			"timestamp": "2024-01-01",
+			"message": {
+				"role": "compactionSummary",
+				"summary": "compacted 2024-01-01",
+				"tokensBefore": 12345,
+				"timestamp": 1704067200000
+			}
+		},
+		{
+			"summary": "compacted 2024-01-01T00:00:00+08:00",
+			"tokensBefore": 12345,
+			"timestamp": "2024-01-01T00:00:00+08:00",
+			"message": {
+				"role": "compactionSummary",
+				"summary": "compacted 2024-01-01T00:00:00+08:00",
+				"tokensBefore": 12345,
+				"timestamp": 1704038400000
+			}
+		}
+	],
+	"createCustomMessage": [
+		{
+			"name": "string-content",
+			"customType": "artifact",
+			"content": "hello",
+			"display": true,
+			"details": {
+				"id": 1
+			},
+			"timestamp": "2026-10-10T17:30:00.123Z",
+			"message": {
+				"role": "custom",
+				"customType": "artifact",
+				"content": "hello",
+				"display": true,
+				"details": {
+					"id": 1
+				},
+				"timestamp": 1791653400123
+			}
+		},
+		{
+			"name": "block-content",
+			"customType": "artifact",
+			"content": [
+				{
+					"type": "text",
+					"text": "hello"
+				}
+			],
+			"display": false,
+			"timestamp": "1970-01-01T00:00:00.000Z",
+			"message": {
+				"role": "custom",
+				"customType": "artifact",
+				"content": [
+					{
+						"type": "text",
+						"text": "hello"
+					}
+				],
+				"display": false,
+				"timestamp": 0
+			}
+		},
+		{
+			"name": "empty-block-content",
+			"customType": "artifact",
+			"content": [],
+			"display": false,
+			"details": null,
+			"timestamp": "2024-02-29T23:59:59.999Z",
+			"message": {
+				"role": "custom",
+				"customType": "artifact",
+				"content": [],
+				"display": false,
+				"details": null,
+				"timestamp": 1709251199999
+			}
+		}
+	],
+	"convertToLlm": [
+		{
+			"name": "empty",
+			"messages": [],
+			"converted": []
+		},
+		{
+			"name": "bash-plain",
+			"messages": [
+				{
+					"role": "bashExecution",
+					"command": "ls",
+					"output": "a",
+					"exitCode": 0,
+					"cancelled": false,
+					"truncated": false,
+					"timestamp": 1000
+				}
+			],
+			"converted": [
+				{
+					"role": "user",
+					"content": [
+						{
+							"type": "text",
+							"text": "Ran `ls`\n```\na\n```"
+						}
+					],
+					"timestamp": 1000
+				}
+			]
+		},
+		{
+			"name": "bash-excluded-dropped",
+			"messages": [
+				{
+					"role": "bashExecution",
+					"command": "ls",
+					"output": "a",
+					"exitCode": 0,
+					"cancelled": false,
+					"truncated": false,
+					"timestamp": 1000,
+					"excludeFromContext": true
+				}
+			],
+			"converted": []
+		},
+		{
+			"name": "bash-exclude-false-kept",
+			"messages": [
+				{
+					"role": "bashExecution",
+					"command": "ls",
+					"output": "",
+					"exitCode": 3,
+					"cancelled": false,
+					"truncated": false,
+					"timestamp": 2000,
+					"excludeFromContext": false
+				}
+			],
+			"converted": [
+				{
+					"role": "user",
+					"content": [
+						{
+							"type": "text",
+							"text": "Ran `ls`\n(no output)\n\nCommand exited with code 3"
+						}
+					],
+					"timestamp": 2000
+				}
+			]
+		},
+		{
+			"name": "custom-string",
+			"messages": [
+				{
+					"role": "custom",
+					"customType": "artifact",
+					"content": "hello",
+					"display": true,
+					"timestamp": 3000
+				}
+			],
+			"converted": [
+				{
+					"role": "user",
+					"content": [
+						{
+							"type": "text",
+							"text": "hello"
+						}
+					],
+					"timestamp": 3000
+				}
+			]
+		},
+		{
+			"name": "custom-blocks",
+			"messages": [
+				{
+					"role": "custom",
+					"customType": "artifact",
+					"content": [
+						{
+							"type": "text",
+							"text": "hello"
+						},
+						{
+							"type": "image",
+							"data": "AAAA",
+							"mimeType": "image/png"
+						}
+					],
+					"display": false,
+					"details": {
+						"k": 1
+					},
+					"timestamp": 4000
+				}
+			],
+			"converted": [
+				{
+					"role": "user",
+					"content": [
+						{
+							"type": "text",
+							"text": "hello"
+						},
+						{
+							"type": "image",
+							"data": "AAAA",
+							"mimeType": "image/png"
+						}
+					],
+					"timestamp": 4000
+				}
+			]
+		},
+		{
+			"name": "branch-summary",
+			"messages": [
+				{
+					"role": "branchSummary",
+					"summary": "went sideways",
+					"fromId": "e1",
+					"timestamp": 5000
+				}
+			],
+			"converted": [
+				{
+					"role": "user",
+					"content": [
+						{
+							"type": "text",
+							"text": "The following is a summary of a branch that this conversation came back from:\n\n<summary>\nwent sideways</summary>"
+						}
+					],
+					"timestamp": 5000
+				}
+			]
+		},
+		{
+			"name": "compaction-summary",
+			"messages": [
+				{
+					"role": "compactionSummary",
+					"summary": "long story",
+					"tokensBefore": 99,
+					"timestamp": 6000
+				}
+			],
+			"converted": [
+				{
+					"role": "user",
+					"content": [
+						{
+							"type": "text",
+							"text": "The conversation history before this point was compacted into the following summary:\n\n<summary>\nlong story\n</summary>"
+						}
+					],
+					"timestamp": 6000
+				}
+			]
+		},
+		{
+			"name": "passthrough-basics",
+			"messages": [
+				{
+					"role": "system",
+					"content": "sys",
+					"timestamp": 7000
+				},
+				{
+					"role": "user",
+					"content": [
+						{
+							"type": "text",
+							"text": "hi"
+						}
+					],
+					"timestamp": 7001
+				},
+				{
+					"role": "assistant",
+					"content": [
+						{
+							"type": "text",
+							"text": "yo"
+						}
+					],
+					"api": "openai-completions",
+					"provider": "openai",
+					"model": "gpt",
+					"usage": {
+						"input": 1,
+						"output": 2,
+						"cacheRead": 0,
+						"cacheWrite": 0,
+						"totalTokens": 3,
+						"cost": {
+							"input": 0,
+							"output": 0,
+							"cacheRead": 0,
+							"cacheWrite": 0,
+							"total": 0
+						}
+					},
+					"stopReason": "stop",
+					"timestamp": 7002
+				},
+				{
+					"role": "toolResult",
+					"toolCallId": "call-1",
+					"toolName": "read",
+					"content": [
+						{
+							"type": "text",
+							"text": "file"
+						}
+					],
+					"isError": false,
+					"timestamp": 7003
+				}
+			],
+			"converted": [
+				{
+					"role": "system",
+					"content": "sys",
+					"timestamp": 7000
+				},
+				{
+					"role": "user",
+					"content": [
+						{
+							"type": "text",
+							"text": "hi"
+						}
+					],
+					"timestamp": 7001
+				},
+				{
+					"role": "assistant",
+					"content": [
+						{
+							"type": "text",
+							"text": "yo"
+						}
+					],
+					"api": "openai-completions",
+					"provider": "openai",
+					"model": "gpt",
+					"usage": {
+						"input": 1,
+						"output": 2,
+						"cacheRead": 0,
+						"cacheWrite": 0,
+						"totalTokens": 3,
+						"cost": {
+							"input": 0,
+							"output": 0,
+							"cacheRead": 0,
+							"cacheWrite": 0,
+							"total": 0
+						}
+					},
+					"stopReason": "stop",
+					"timestamp": 7002
+				},
+				{
+					"role": "toolResult",
+					"toolCallId": "call-1",
+					"toolName": "read",
+					"content": [
+						{
+							"type": "text",
+							"text": "file"
+						}
+					],
+					"isError": false,
+					"timestamp": 7003
+				}
+			]
+		},
+		{
+			"name": "mixed-order-preserved",
+			"messages": [
+				{
+					"role": "user",
+					"content": [
+						{
+							"type": "text",
+							"text": "first"
+						}
+					],
+					"timestamp": 1
+				},
+				{
+					"role": "bashExecution",
+					"command": "echo hi",
+					"output": "hi",
+					"exitCode": 0,
+					"cancelled": false,
+					"truncated": false,
+					"timestamp": 2,
+					"excludeFromContext": true
+				},
+				{
+					"role": "branchSummary",
+					"summary": "b",
+					"fromId": null,
+					"timestamp": 3
+				},
+				{
+					"role": "custom",
+					"customType": "t",
+					"content": "c",
+					"display": false,
+					"timestamp": 4
+				},
+				{
+					"role": "compactionSummary",
+					"summary": "k",
+					"tokensBefore": 5,
+					"timestamp": 5
+				}
+			],
+			"converted": [
+				{
+					"role": "user",
+					"content": [
+						{
+							"type": "text",
+							"text": "first"
+						}
+					],
+					"timestamp": 1
+				},
+				{
+					"role": "user",
+					"content": [
+						{
+							"type": "text",
+							"text": "The following is a summary of a branch that this conversation came back from:\n\n<summary>\nb</summary>"
+						}
+					],
+					"timestamp": 3
+				},
+				{
+					"role": "user",
+					"content": [
+						{
+							"type": "text",
+							"text": "c"
+						}
+					],
+					"timestamp": 4
+				},
+				{
+					"role": "user",
+					"content": [
+						{
+							"type": "text",
+							"text": "The conversation history before this point was compacted into the following summary:\n\n<summary>\nk\n</summary>"
+						}
+					],
+					"timestamp": 5
+				}
+			]
+		}
+	]
+}

@@ -145,19 +145,11 @@ public sealed record ToolInfo
     public required SourceInfo SourceInfo { get; init; }
 }
 
-/// <summary>User message content: plain text or text/image blocks. TS <c>string | (TextContent | ImageContent)[]</c>.</summary>
-public abstract record UserMessageContent
-{
-    public sealed record Text(string Content) : UserMessageContent;
-
-    public sealed record Blocks(IReadOnlyList<ContentBlock> Content) : UserMessageContent;
-}
-
 /// <summary>TS <c>SendMessageHandler</c>.</summary>
 public delegate void SendMessageHandler(CustomMessageDraft message, SendMessageOptions? options);
 
 /// <summary>TS <c>SendUserMessageHandler</c>.</summary>
-public delegate void SendUserMessageHandler(UserMessageContent content, SendUserMessageOptions? options);
+public delegate void SendUserMessageHandler(MessageContent content, SendUserMessageOptions? options);
 
 /// <summary>TS <c>AppendEntryHandler</c>.</summary>
 public delegate void AppendEntryHandler(string customType, object? data);
@@ -308,7 +300,7 @@ public interface IExtensionApi
     // ---- Message rendering ----
 
     /// <summary>Register a custom renderer for CustomMessageEntry.</summary>
-    void RegisterMessageRenderer<T>(string customType, MessageRenderer<T> renderer);
+    void RegisterMessageRenderer(string customType, MessageRenderer renderer);
 
     /// <summary>Register a transformer for user and assistant Markdown before Pi renders it.</summary>
     void RegisterMarkdownTransformer(MarkdownTransformer transformer);

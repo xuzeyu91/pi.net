@@ -413,7 +413,7 @@ public sealed record CustomMessageDraft
 {
     public required string CustomType { get; init; }
 
-    public required string Content { get; init; }
+    public required MessageContent Content { get; init; }
 
     public bool Display { get; init; }
 

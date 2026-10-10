@@ -41,7 +41,7 @@ public interface IExtensionRuntime
 
     void SendMessage(CustomMessageDraft message, SendMessageOptions? options);
 
-    void SendUserMessage(UserMessageContent content, SendUserMessageOptions? options);
+    void SendUserMessage(MessageContent content, SendUserMessageOptions? options);
 
     void AppendEntry(string customType, object? data);
 

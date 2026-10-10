@@ -93,22 +93,9 @@ public sealed record CacheWarmingDecisionEventResult
 }
 
 // ---------------------------------------------------------------------------
-// messages.ts（4e）
+// messages.ts（4e-2b）—— CustomMessage / UserMessageContent 占位已移除，
+// 真实类型见 Core/Messages.cs（CustomMessage 派生自 Pi.Ai 的 ChatMessage）。
 // ---------------------------------------------------------------------------
-
-/// <summary>
-/// TS <c>CustomMessage&lt;T&gt;</c> 占位（会话中的自定义消息）。// 4e/4f 接入后替换
-/// </summary>
-public sealed record CustomMessage<T>
-{
-    public required string CustomType { get; init; }
-
-    public required string Content { get; init; }
-
-    public bool Display { get; init; }
-
-    public T? Details { get; init; }
-}
 
 /// <summary>TS <c>CustomEntry&lt;T&gt;</c> 占位（会话中的自定义条目）。// 4e/4f 接入后替换</summary>
 public sealed record CustomEntry<T>

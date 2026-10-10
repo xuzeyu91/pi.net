@@ -540,7 +540,7 @@ public sealed record CustomMessageEntryDraft
 {
     public required string CustomType { get; init; }
 
-    public required string Content { get; init; }
+    public required MessageContent Content { get; init; }
 
     public bool Display { get; init; }
 
@@ -804,7 +804,11 @@ public sealed record EntryRenderOptions
 }
 
 /// <summary>TS <c>MessageRenderer&lt;T&gt;</c>.</summary>
-public delegate IComponent? MessageRenderer<T>(CustomMessage<T> message, MessageRenderOptions options, Theme theme);
+/// <remarks>
+/// TS 的 <c>T</c> 只用于把 <c>message.details</c> 收窄成调用方声明的类型；端口按 C88 的约定
+/// 让 <see cref="CustomMessage.Details"/> 承载 <c>object?</c>，故这里去掉该类型参数。
+/// </remarks>
+public delegate IComponent? MessageRenderer(CustomMessage message, MessageRenderOptions options, Theme theme);
 
 /// <summary>TS <c>EntryRenderer&lt;T&gt;</c>.</summary>
 public delegate IComponent? EntryRenderer<T>(CustomEntry<T> entry, EntryRenderOptions options, Theme theme);

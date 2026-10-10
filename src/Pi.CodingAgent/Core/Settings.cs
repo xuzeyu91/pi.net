@@ -163,8 +163,10 @@ internal static class SettingsJson
 /// </summary>
 /// <remarks>
 /// The enum name <c>XHigh</c> does not map to the wire text <c>"xhigh"</c> under any naming policy, so
-/// the mapping is explicit. TS settings accept any string; <see cref="Parse"/> returns null for an
-/// unknown one rather than throwing.
+/// the mapping is explicit. (4e-2b gave the enum itself matching
+/// <c>[JsonStringEnumMemberName]</c> attributes, but this helper is still the seam the settings layer
+/// uses for parsing, where an unknown string must yield null rather than throw.) TS settings accept any
+/// string; <see cref="Parse"/> returns null for an unknown one rather than throwing.
 /// </remarks>
 public static class ThinkingLevels
 {

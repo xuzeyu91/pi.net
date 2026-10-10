@@ -8,8 +8,13 @@ namespace Pi.Ai.Types;
 [JsonConverter(typeof(JsonStringEnumConverter<ClassifierStopReason>))]
 public enum ClassifierStopReason
 {
+    [JsonStringEnumMemberName("stop")]
     Stop,
+
+    [JsonStringEnumMemberName("error")]
     Error,
+
+    [JsonStringEnumMemberName("aborted")]
     Aborted,
 }
 

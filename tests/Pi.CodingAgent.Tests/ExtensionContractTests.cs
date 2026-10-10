@@ -279,7 +279,7 @@ public class ExtensionContractTests
         Assert.NotNull(EventBusController.CreateEventBus());
         Assert.NotNull(new Theme());
         Assert.NotNull(new OverlayHandle());
-        Assert.NotNull(new CustomMessage<int> { CustomType = "t", Content = "c" });
+        Assert.NotNull(new CustomMessage("t", new MessageContent.Text("c"), false, 0));
         Assert.NotNull(new Provider { Id = "p" });
         Assert.NotNull(new BashOperations());
     }

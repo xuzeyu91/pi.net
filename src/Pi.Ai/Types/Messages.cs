@@ -9,6 +9,7 @@ namespace Pi.Ai.Types;
 public sealed record TextContent(string Text) : ContentBlock
 {
     [JsonPropertyName("textSignature")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? TextSignature { get; set; }
 }
 
@@ -21,6 +22,7 @@ public sealed record ThinkingContent(string Thinking, string? Signature = null) 
 {
     /// <summary>加密思维块：内容不透明，仅同模型可回放。对应 TS <c>redacted</c>。</summary>
     [JsonPropertyName("redacted")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? Redacted { get; set; }
 }
 
@@ -29,10 +31,12 @@ public sealed record ToolCallContent(string Id, string Name, object? Arguments) 
 {
     /// <summary>Google 系模型的 thought signature（跨模型回放时须剥离）。对应 TS <c>thoughtSignature</c>。</summary>
     [JsonPropertyName("thoughtSignature")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? ThoughtSignature { get; set; }
 
     /// <summary>工具命名空间（openai-responses custom tool）。对应 TS <c>namespace</c>。</summary>
     [JsonPropertyName("namespace")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Namespace { get; set; }
 }
 
@@ -51,28 +55,39 @@ public abstract record ContentBlock
 }
 
 /// <summary>助手回合停止原因。对应 TS <c>StopReason</c> 字符串联合。</summary>
+/// <remarks>
+/// TS 的线名是小写驼峰字面量；<see cref="JsonStringEnumMemberNameAttribute"/> 逐个钉死，
+/// 以免依赖命名策略（<c>XHigh</c> 这类名字在任何策略下都得不到 TS 的 <c>"xhigh"</c>）。
+/// </remarks>
 [JsonConverter(typeof(JsonStringEnumConverter<StopReason>))]
 public enum StopReason
 {
     /// <summary>流处理中（尚未到达停止原因）。对应 TS <c>pending</c>。</summary>
+    [JsonStringEnumMemberName("pending")]
     Pending,
 
     /// <summary>自然结束。</summary>
+    [JsonStringEnumMemberName("stop")]
     Stop,
 
     /// <summary>输出被 token 上限截断。</summary>
+    [JsonStringEnumMemberName("length")]
     Length,
 
     /// <summary>请求了工具调用。</summary>
+    [JsonStringEnumMemberName("toolUse")]
     ToolUse,
 
     /// <summary>请求/运行时失败（错误详情见 <c>ErrorMessage</c>）。</summary>
+    [JsonStringEnumMemberName("error")]
     Error,
 
     /// <summary>被用户中止。</summary>
+    [JsonStringEnumMemberName("aborted")]
     Aborted,
 
     /// <summary>请求被延后，<c>deferred</c> 句柄可续取最终结果。对应 TS <c>deferred</c>。</summary>
+    [JsonStringEnumMemberName("deferred")]
     Deferred,
 }
 
@@ -80,12 +95,25 @@ public enum StopReason
 [JsonConverter(typeof(JsonStringEnumConverter<ThinkingLevel>))]
 public enum ThinkingLevel
 {
+    [JsonStringEnumMemberName("off")]
     Off,
+
+    [JsonStringEnumMemberName("minimal")]
     Minimal,
+
+    [JsonStringEnumMemberName("low")]
     Low,
+
+    [JsonStringEnumMemberName("medium")]
     Medium,
+
+    [JsonStringEnumMemberName("high")]
     High,
+
+    [JsonStringEnumMemberName("xhigh")]
     XHigh,
+
+    [JsonStringEnumMemberName("max")]
     Max,
 }
 
@@ -158,7 +186,10 @@ public sealed record Usage(long Input, long Output, long CacheRead = 0, long Cac
 [JsonDerivedType(typeof(ToolResultMessage), "toolResult")]
 public abstract record ChatMessage
 {
-    private protected ChatMessage() { }
+    // protected（而非 private protected）：coding-agent 的 4 个自定义 role
+    // （bashExecution / custom / branchSummary / compactionSummary）在 Pi.CodingAgent 中派生，
+    // 对应 TS 侧 pi-agent-core 的 CustomAgentMessages declaration merging。
+    protected ChatMessage() { }
 }
 
 /// <summary>
@@ -168,54 +199,76 @@ public abstract record ChatMessage
 /// 增量变更工具集。按序回放全部 system 消息得到当前 prompt 与工具。
 /// </summary>
 public sealed record SystemMessage(
-    string? Content = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Content = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     IReadOnlyDictionary<string, string?>? Sections = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     IReadOnlyList<ToolDefinition>? ToolsAdded = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     IReadOnlyList<string>? ToolsRemoved = null,
-    long? Timestamp = null) : ChatMessage;
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] long? Timestamp = null) : ChatMessage;
 
 /// <summary>用户消息。对应 TS <c>UserMessage</c>。</summary>
 public sealed record UserMessage(IReadOnlyList<ContentBlock> Content, long Timestamp) : ChatMessage;
 
 /// <summary>助手消息。对应 TS <c>AssistantMessage</c>。</summary>
+/// <remarks>
+/// 可空字段一律「null 即省略」，对齐 TS 里 <c>undefined</c> 不参与 JSON 序列化的行为。
+/// </remarks>
 public sealed record AssistantMessage(
     IReadOnlyList<ContentBlock> Content,
     StopReason StopReason = Types.StopReason.Stop,
+    [property: JsonPropertyName("errorMessage")]
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     string? ErrorMessage = null,
+    [property: JsonPropertyName("usage")]
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     Usage? UsageStats = null,
-    string? Model = null,
-    string? Api = null,
-    string? Provider = null,
-    ThinkingLevel? ThinkingLevel = null,
-    long? Timestamp = null) : ChatMessage
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Model = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Api = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Provider = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] ThinkingLevel? ThinkingLevel = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] long? Timestamp = null) : ChatMessage
 {
     /// <summary>provider 原始停止原因（如 "incomplete.max_output_tokens"）。对应 TS <c>rawStopReason</c>。</summary>
     [JsonPropertyName("rawStopReason")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? RawStopReason { get; set; }
 
     /// <summary>provider 报告的实际模型（与请求的 <c>model</c> 不同时）。对应 TS <c>responseModel</c>。</summary>
     [JsonPropertyName("responseModel")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? ResponseModel { get; set; }
 
     /// <summary>响应 id（openai-responses 等）。对应 TS <c>responseId</c>。</summary>
     [JsonPropertyName("responseId")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? ResponseId { get; set; }
 
     /// <summary>流处理附加的诊断条目（传输降级等）。对应 TS <c>diagnostics</c>。</summary>
     [JsonPropertyName("diagnostics")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<Utils.AssistantMessageDiagnostic>? Diagnostics { get; set; }
 
     /// <summary>模型是否自然说完（codex end_turn）。对应 TS <c>endTurn</c>。</summary>
     [JsonPropertyName("endTurn")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? EndTurn { get; set; }
 
     /// <summary>provider 侧实际使用的思考档位（pi-messages 回传）。对应 TS <c>providerThinkingLevel</c>。</summary>
     [JsonPropertyName("providerThinkingLevel")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? ProviderThinkingLevel { get; set; }
 
     /// <summary>延后响应句柄（StopReason=Deferred 时携带）。对应 TS <c>deferred</c>。</summary>
     [JsonPropertyName("deferred")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public DeferredHandle? Deferred { get; set; }
+
+    /// <summary>从 <c>timestamp</c> 到响应结束的毫秒数（单调时钟）。对应 TS <c>durationMs</c>。</summary>
+    [JsonPropertyName("durationMs")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public long? DurationMs { get; set; }
 
     /// <summary>本条消息中的全部工具调用块（按出现顺序）。</summary>
     [JsonIgnore]
@@ -229,8 +282,21 @@ public sealed record ToolResultMessage(
     string ToolName,
     IReadOnlyList<ContentBlock> Content,
     bool IsError = false,
-    object? Details = null,
-    long? Timestamp = null) : ChatMessage;
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] object? Details = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] long? Timestamp = null) : ChatMessage
+{
+    /// <summary>
+    /// 工具执行自身的用量（不计入主 LLM 上下文账）。对应 TS <c>usage?</c>。
+    /// </summary>
+    [JsonPropertyName("usage")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public Usage? UsageStats { get; set; }
+
+    /// <summary>工具执行耗时（毫秒，单调时钟）。对应 TS <c>durationMs</c>。</summary>
+    [JsonPropertyName("durationMs")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public long? DurationMs { get; set; }
+}
 
 /// <summary>静态构造辅助（对齐 TS 侧消息工厂的易用性）。</summary>
 public static class Messages

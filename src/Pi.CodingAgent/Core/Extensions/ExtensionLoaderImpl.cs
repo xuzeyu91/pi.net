@@ -40,7 +40,7 @@ internal sealed class ExtensionRuntimeImpl : IExtensionRuntime
 
     public void SendMessage(CustomMessageDraft message, SendMessageOptions? options) => throw NotInitialized();
 
-    public void SendUserMessage(UserMessageContent content, SendUserMessageOptions? options) => throw NotInitialized();
+    public void SendUserMessage(MessageContent content, SendUserMessageOptions? options) => throw NotInitialized();
 
     public void AppendEntry(string customType, object? data) => throw NotInitialized();
 
@@ -329,7 +329,7 @@ internal sealed class ExtensionApiImpl : IExtensionApi
         return runtime.FlagValues.TryGetValue(name, out var value) ? value : pendingFlagValues.GetValueOrDefault(name);
     }
 
-    public void RegisterMessageRenderer<T>(string customType, MessageRenderer<T> renderer)
+    public void RegisterMessageRenderer(string customType, MessageRenderer renderer)
     {
         AssertActive();
         extension.MessageRenderers[customType] = renderer;
@@ -364,13 +364,13 @@ internal sealed class ExtensionApiImpl : IExtensionApi
     public void SendUserMessage(string content, SendUserMessageOptions? options = null)
     {
         AssertActive();
-        runtime.SendUserMessage(new UserMessageContent.Text(content), options);
+        runtime.SendUserMessage(new MessageContent.Text(content), options);
     }
 
     public void SendUserMessage(IReadOnlyList<ContentBlock> content, SendUserMessageOptions? options = null)
     {
         AssertActive();
-        runtime.SendUserMessage(new UserMessageContent.Blocks(content), options);
+        runtime.SendUserMessage(new MessageContent.Blocks(content), options);
     }
 
     public void AppendEntry(string customType, object? data = null)

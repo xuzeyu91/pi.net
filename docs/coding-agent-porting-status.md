@@ -1006,6 +1006,142 @@ google 用 `totalTokenCount`。原来的 `Input + Output` 对大多数 provider 
 `output_tokens_details.thinking_tokens`（TS 都有）。这两处属于 **provider 保真工作**（与 4d-7 的
 provider 尾巴同源），不在 4e-2a 的类型升级范围内，已在代码里留注释指向本节。
 
+## 4e-2b 进度（2026-10-10）：AgentMessage 与 `core/messages.ts`
+
+4e 会话层的第二个前置。TS 的 `AgentMessage` 不是 `Message`，而是
+`Message | CustomAgentMessages[keyof CustomAgentMessages]`——`pi-agent-core` 留一个**空**的
+`CustomAgentMessages` 接口，`coding-agent` 用 **declaration merging** 把 4 个自定义 role
+（`bashExecution` / `custom` / `branchSummary` / `compactionSummary`）并进去。C# 没有 declaration
+merging，且 `Pi.Ai` 不能反向引用 `Pi.CodingAgent`，所以端口分两步落地：
+
+1. 4 个自定义消息**直接派生**自 `Pi.Ai.Types.ChatMessage`（基类判别符就是 TS 的 `role`）；
+2. 用**运行时 type-info 修饰器**（`DefaultJsonTypeInfoResolver.Modifiers`）把 4 个自定义 role
+   追加进 `ChatMessage` 的多态表——等价于 declaration merging 的运行时版本。
+
+为此 `ChatMessage` 的构造函数由 `private protected` 放开为 `protected`（跨程序集派生需要）。
+
+### 新增 `src/Pi.CodingAgent/Core/Messages.cs`
+
+| 成员 | 对应 TS |
+|---|---|
+| `MessageContent`（`Text` / `Blocks` 两分支 + `MessageContentJsonConverter`） | 匿名结构类型 `string \| (TextContent \| ImageContent)[]` |
+| `BashExecutionMessage`（`Command` / `Output` / `ExitCode?` / `Cancelled` / `Truncated` / `Timestamp` + `FullOutputPath?` / `ExcludeFromContext?`） | `BashExecutionMessage` |
+| `CustomMessage`（`CustomType` / `Content` / `Display` / `Timestamp` + `Details?`） | `CustomMessage<T = unknown>` |
+| `BranchSummaryMessage`（`Summary` / `FromId?` / `Timestamp`） | `BranchSummaryMessage` |
+| `CompactionSummaryMessage`（`Summary` / `TokensBefore` / `Timestamp`） | `CompactionSummaryMessage` |
+| `AgentMessages.CompactionSummaryPrefix` / `CompactionSummarySuffix` / `BranchSummaryPrefix` / `BranchSummarySuffix` | 同名四个常量 |
+| `AgentMessages.BashExecutionToText` | `bashExecutionToText` |
+| `AgentMessages.CreateBranchSummaryMessage` / `CreateCompactionSummaryMessage` / `CreateCustomMessage` | 同名三个工厂 |
+| `AgentMessages.ConvertToLlm` | `convertToLlm` |
+| `AgentMessageJson.Options` | （无对应：declaration merging 的运行时替代） |
+
+### 扩展契约同步（占位 → 真实类型）
+
+| 位置 | 改动 |
+|---|---|
+| `Extensions/ExtensionApi.cs` | `UserMessageContent`（Text / Blocks 联合）**删除**，改用 `Core.MessageContent`——TS 里 `CustomMessage.content` 与 `sendUserMessage` 的 content 是**同一个**结构类型，端口只保留一个 C# 类型 |
+| `Extensions/ExtensionEvents.cs` | `MessageRenderer<T>(CustomMessage<T> …)` → **`MessageRenderer(CustomMessage …)`**（`CustomMessage` 已非泛型，T 无处可去）；`CustomMessageEntryDraft.Content` 由 `string` 改为 `MessageContent`（**真实缺陷**，见下） |
+| `Extensions/ExtensionContexts.cs` | `CustomMessageDraft.Content` 由 `required string` 改为 `required MessageContent`（同一缺陷） |
+| `Extensions/ExtensionLoaderImpl.cs` / `ExtensionRuntime.cs` | `UserMessageContent` → `MessageContent`；`RegisterMessageRenderer<T>` → 非泛型 |
+| `Extensions/Types/Placeholders.cs` | 删除 `CustomMessage<T>` 占位 |
+| `Core/Settings.cs` | 更新 `ThinkingLevels` 的注释（枚举线名已由 4e-2b 钉死） |
+
+### 4e-2b 发现并修复的真实缺陷
+
+1. **`StopReason` / `ThinkingLevel` 的线名是 PascalCase**。`JsonStringEnumConverter<T>` 默认用
+   **成员名**，于是端口写出 `"Stop"` / `"ToolUse"`，而 TS 是小写字面量 `"stop"` / `"toolUse"`。
+   `ThinkingLevel` 更糟：`XHigh` 在任何命名策略下都得不到 `"xhigh"`（`Settings.cs` 里早已有注释
+   承认这一点，并为此手写了映射）。改为逐成员 `[JsonStringEnumMemberName(...)]`。顺带把
+   `ClassifierStopReason` / `ImagesStopReason`（同为 TS 小写字面量联合）一并钉死。
+2. **`AssistantMessage.UsageStats` 的线名是 `usageStats`**，TS 是 `usage`。加
+   `[property: JsonPropertyName("usage")]`。
+3. **可空字段一律写出 `null`**。TS 里 `undefined` 不参与 JSON，端口却在 `TextContent.textSignature`
+   / `ThinkingContent.redacted` / `ToolCallContent.thoughtSignature` / `namespace` 以及
+   `AssistantMessage` / `ToolResultMessage` / `SystemMessage` 的全部可空字段上写出 `null`，
+   会话 JSONL 会与 TS 不一致。统一加 `[JsonIgnore(Condition = WhenWritingNull)]`。
+   例外：`BranchSummaryMessage.FromId` 是 TS 的 `string | null`（**必填**），写 `null` 才是对的，
+   故不加忽略。
+4. **`CustomMessageEntryDraft.Content` / `CustomMessageDraft.Content` 声明成 `string`**。
+   TS 是 `Pick<CustomMessage<T>, "customType" | "content" | "display" | "details">`，`content` 是
+   `string | (TextContent | ImageContent)[]`；`session-manager` 还传 `entry.content ?? []`（数组）。
+   声明成 `string` 会让「扩展注入图片消息」这条路径在 C# 侧不可表达。
+
+另外补齐了 TS `Message` 上端口缺失的两个字段：`AssistantMessage.DurationMs` 与
+`ToolResultMessage.UsageStats`（线名 `usage`）/ `DurationMs`。`ToolResultMessage.NestedCalls`
+（`nested-tool-calls.ts`）仍缺席，属后续批次。
+
+### 4e-2b 设计差异
+
+| # | 差异 | 说明 |
+|---|---|---|
+| C134 | **`MessageRenderer<T>` / `RegisterMessageRenderer<T>` 去掉类型参数** | TS 的 `T` 只用于把 `message.details` 收窄成调用方声明的类型。端口按 C88 的既有约定让 `CustomMessage.Details` 承载 `object?`，`T` 无处可去且无法从实参推断（C# 没有默认类型参数），去掉 |
+| C135 | **`CustomMessage` 不带泛型** | 同 C88：`details?: T` 的泛型只是编译期便利，运行时就是任意 JSON |
+| C136 | **`MessageContent` 用 `Text` / `Blocks` 两分支 + 自定义转换器** | TS 是匿名联合，靠 JSON token 类型（字符串 vs 数组）区分，没有判别字段，故不能走 `[JsonPolymorphic]`。原 `UserMessageContent` 并入此类型（原 C89 撤销） |
+| C137 | **`AgentMessageJson.Options` 用运行时修饰器扩展多态表** | declaration merging 在 C# 无对应。修饰器在 `ChatMessage` 的 `PolymorphismOptions` 上追加 4 个 `JsonDerivedType`，与属性上的 4 个基础 role 合并 |
+| C138 | **`ParseTimestamp` 对无法解析的输入抛 `FormatException`** | JS 的 `new Date(x).getTime()` 返回 `NaN`；C# 的 `long` 无法表示。真实调用点的时间戳全部来自 `Date.toISOString()`，走不到该分支。日期型输入（`"YYYY-MM-DD"`）按 JS 语义解释为 **UTC**（.NET 默认按本地时区，会差一个时区偏移） |
+| C139 | **`CustomMessage.Details` 显式 `null` 时被省略** | TS 区分 `undefined`（省略）与 `null`（写出 `null`）；C# 的 `object?` 无法区分。真实调用点传 `entry.details`（`T \| undefined`），不产生显式 `null`。已由 `CustomFactory_NullDetails_DivergesAsDocumented` 单独钉住这条差异 |
+
+### 4e-2b 差分验证
+
+`tools/gen-coding-agent-messages-corpus.mjs`（新）直接 `import` 真实 TS 的 `core/messages.ts`
+（该模块只从 `pi-agent-core` / `pi-ai` 引入**类型**，类型擦除后所有 import 都被抹掉，可独立加载）：
+
+| 语料段 | 向量数 | 覆盖 |
+|---|---:|---|
+| `constants` | 4 | 四个前缀/后缀常量（注意 `COMPACTION_SUMMARY_SUFFIX` 有前导换行、`BRANCH_SUMMARY_SUFFIX` 没有） |
+| `bashExecutionToText` | 17 | 空输出 / 缺 `output` 键 / `cancelled` / `cancelled` 压过 `exitCode` / `exitCode` 为 0 / 1 / -9 / `null` / 缺失 / 截断 + 路径 / 截断 + 空路径 / 截断 + 无路径 / 有路径但未截断 / 多行命令 / 输出里含反引号 |
+| `createBranchSummaryMessage` | 5 + 1 | 五种时间戳写法（`Z` / epoch / 闰日 / **纯日期** / 带偏移）+ `fromId: null` |
+| `createCompactionSummaryMessage` | 5 | 同上五种时间戳 |
+| `createCustomMessage` | 3 | 字符串 content / 块 content / **显式 `null` 的 details** |
+| `convertToLlm` | 10 | 空数组 / bash 保留 / bash 被 `excludeFromContext` 丢弃 / `excludeFromContext: false` 保留 / custom 字符串 / custom 块 / 分支摘要 / 压缩摘要 / 四种基础 role 透传 / 混合顺序与丢帧后的顺序 |
+
+`tests/Pi.CodingAgent.Tests/MessagesCorpusTests.cs`（12 项）逐条回放。比较**全部走
+`AgentMessageJson.Options`**，所以语料同时钉住 JSON 线路形状（role 判别符、camelCase 名、
+null-vs-省略），不只是逻辑。另有两项不依赖语料的断言：透传消息返回**同一实例**（TS 的 `return m`），
+以及 8 个 role 的序列化 → 反序列化往返。
+
+> 测试里三处高频比较用 `Assert.True(failures.Count == 0, string.Join("\n---\n", failures))` 而非
+> `Assert.Empty(failures)`：xUnit 会把后者的集合内容**截断**，本轮就是靠完整输出才定位到
+> `textSignature: null` 与 `stopReason: "Stop"` 两个缺陷。
+
+### 4e-2b 变异验证
+
+`tools/mutate-check.py` 新增 **`messages` 套件（21 处变异）**，首轮即 **21/21 全部被捕获**，还原后
+12/12 绿：
+
+| 变异 | 捕获数 | 变异 | 捕获数 |
+|---|---:|---|---:|
+| `bash-command-line` | 2 | `convert-custom-blocks` | 1 |
+| `bash-no-output` | 2 | `convert-passthrough` | 2 |
+| `bash-cancelled` | 1 | `parse-date-only` | 2 |
+| `bash-exit-zero-guard` | 2 | `factory-timestamp` | 1 |
+| `bash-exit-code-text` | 2 | `wire-bash-role` | 2 |
+| `bash-truncated-guard` | 1 | `wire-custom-role` | 4 |
+| `bash-truncated-text` | 1 | `wire-string-content` | 3 |
+| `branch-suffix` | 2 | `wire-usage-name` | 1 |
+| `compaction-suffix` | 2 | `wire-stop-reason` | 1 |
+| `convert-exclude-guard` | 1 | `wire-text-signature` | 2 |
+| `convert-custom-text` | 1 | | |
+
+`messages-parse-date-only` 变异为 `+ 1` 而非「去掉 UTC 分支」：后者只在**非 UTC 宿主**上产生不同
+的毫秒值（CI 跑 UTC 时会变成盲点），改 `+1` 保证任何时区都能观测到该分支被走到，而具体数值仍由
+语料里的 `"2024-01-01" → 1704067200000` 钉死。
+
+### 4e-2b 已知缺口（4e-2c 的前置）
+
+1. **`Pi.Ai.Types.UserMessage.Content` 是纯列表，装不下 TS 的 `string` 分支**。TS 的
+   `UserMessage.content: string | (TextContent | ImageContent)[]`，各 provider 都有
+   `typeof msg.content === "string"` 分支。端口把它塌成了 `IReadOnlyList<ContentBlock>`，于是
+   **TS 写的会话 JSONL 里 `"content": "hi"` 这种消息无法反序列化**。改它要动 `Pi.Ai` 的
+   `UserMessage` 类型 + 约 10 个 provider 消费点，属独立的「Pi.Ai 消息线路保真」批次。
+   （本批的语料因此把 `user` 向量写成块形式，避免把 Pi.Ai 的问题混进 `messages.ts` 的验证。）
+2. **`Pi.Durable/Storage/MemoryStorage.CloneMessages` 用默认 `JsonSerializerOptions` 做
+   `ChatMessage` 的 JSON 往返**。默认解析器不认识 4 个自定义 role，所以一旦消息里出现
+   `bashExecution` 等，克隆会失败。4e-2c 落会话持久化时必须改走 `AgentMessageJson.Options`；
+   若 `Pi.Durable` 不便引用 `Pi.CodingAgent`（当前不引用），则应把多态注册点下沉到 `Pi.Ai`。
+3. **`SystemMessage.Content` 是 `string?`**，TS 是 `string | TextContent[]`（同 1 的类别）。
+4. **`ToolResultMessage.NestedCalls`** 未移植（依赖 `nested-tool-calls.ts`）。
+
 ## 环境相关失败（非移植缺陷，2026-10-10 记录）
 
 `Pi.CodingAgent.Tests` 在本沙箱内恒定有 6 项失败：`ModelResolverTests`（2）+ `CoreModelRuntimeTests`（4），
